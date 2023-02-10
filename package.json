@@ -35,7 +35,7 @@
     "packages:new": "node configs/generate-new-package.mjs",
     "packages:change": "changeset",
     "packages:version": "changeset version",
-    "packages:publish": "pnpm lint && pnpm build && changeset publish"
+    "packages:publish": "pnpm lint && pnpm build && changeset publish --no-git-tag"
   },
   "devDependencies": {
     "@babel/core": "^7.17.10",
