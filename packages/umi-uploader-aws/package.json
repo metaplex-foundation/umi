@@ -1,6 +1,6 @@
 {
-  "name": "@metaplex-foundation/{{package-name}}",
-  "version": "0.0.1",
+  "name": "@metaplex-foundation/umi-uploader-aws",
+  "version": "0.1.0",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -26,11 +26,14 @@
     "test": "ava"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.54.1",
     "@metaplex-foundation/umi-core": "workspace:^"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
-    "ava": "^5.1.0"
+    "@types/sinon": "^10.0.13",
+    "ava": "^5.1.0",
+    "sinon": "^13.0.1"
   },
   "publishConfig": {
     "access": "public"
@@ -43,7 +46,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "{{package-name}}"
+    "displayName": "umi-uploader-aws"
   },
   "ava": {
     "typescript": {

@@ -1,6 +1,6 @@
 {
-  "name": "@metaplex-foundation/{{package-name}}",
-  "version": "0.0.1",
+  "name": "@metaplex-foundation/umi",
+  "version": "0.1.0",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -26,7 +26,17 @@
     "test": "ava"
   },
   "dependencies": {
-    "@metaplex-foundation/umi-core": "workspace:^"
+    "@metaplex-foundation/umi-core": "workspace:^",
+    "@metaplex-foundation/umi-downloader-http": "workspace:^",
+    "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
+    "@metaplex-foundation/umi-http-fetch": "workspace:^",
+    "@metaplex-foundation/umi-program-repository": "workspace:^",
+    "@metaplex-foundation/umi-rpc-web3js": "workspace:^",
+    "@metaplex-foundation/umi-serializer-beet": "workspace:^",
+    "@metaplex-foundation/umi-transaction-factory-web3js": "workspace:^"
+  },
+  "peerDependencies": {
+    "@solana/web3.js": "^1.72.0"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
@@ -43,7 +53,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "{{package-name}}"
+    "displayName": "umi"
   },
   "ava": {
     "typescript": {

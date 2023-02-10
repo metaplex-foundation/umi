@@ -1,6 +1,6 @@
 {
-  "name": "@metaplex-foundation/{{package-name}}",
-  "version": "0.0.1",
+  "name": "@metaplex-foundation/umi-signer-derived",
+  "version": "0.1.0",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -26,7 +26,8 @@
     "test": "ava"
   },
   "dependencies": {
-    "@metaplex-foundation/umi-core": "workspace:^"
+    "@metaplex-foundation/umi-core": "workspace:^",
+    "@noble/hashes": "^1.2.0"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
@@ -43,7 +44,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "{{package-name}}"
+    "displayName": "umi-signer-derived"
   },
   "ava": {
     "typescript": {

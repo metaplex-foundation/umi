@@ -1,6 +1,6 @@
 {
-  "name": "@metaplex-foundation/{{package-name}}",
-  "version": "0.0.1",
+  "name": "@metaplex-foundation/umi-downloader-http",
+  "version": "0.1.0",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -43,7 +43,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "{{package-name}}"
+    "displayName": "umi-downloader-http"
   },
   "ava": {
     "typescript": {

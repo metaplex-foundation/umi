@@ -1,4 +1,4 @@
-import { MetaplexPlugin } from '@metaplex-foundation/js-core';
+import { MetaplexPlugin } from '@metaplex-foundation/umi-core';
 
 export const myPlugin = (): MetaplexPlugin => ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

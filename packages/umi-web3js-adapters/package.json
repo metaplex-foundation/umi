@@ -1,6 +1,6 @@
 {
-  "name": "@metaplex-foundation/{{package-name}}",
-  "version": "0.0.1",
+  "name": "@metaplex-foundation/umi-web3js-adapters",
+  "version": "0.1.0",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -26,10 +26,15 @@
     "test": "ava"
   },
   "dependencies": {
-    "@metaplex-foundation/umi-core": "workspace:^"
+    "@metaplex-foundation/umi-core": "workspace:^",
+    "buffer": "^6.0.3"
+  },
+  "peerDependencies": {
+    "@solana/web3.js": "^1.72.0"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
+    "@solana/web3.js": "^1.72.0",
     "ava": "^5.1.0"
   },
   "publishConfig": {
@@ -43,7 +48,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "{{package-name}}"
+    "displayName": "umi-web3js-adapters"
   },
   "ava": {
     "typescript": {

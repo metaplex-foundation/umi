@@ -68,32 +68,32 @@ importers:
       typedoc: 0.23.21_typescript@4.9.5
       typescript: 4.9.5
 
-  packages/js:
+  packages/umi:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@lorisleiva/js-core': workspace:^
-      '@lorisleiva/js-downloader-http': workspace:^
-      '@lorisleiva/js-eddsa-web3js': workspace:^
-      '@lorisleiva/js-http-fetch': workspace:^
-      '@lorisleiva/js-program-repository': workspace:^
-      '@lorisleiva/js-rpc-web3js': workspace:^
-      '@lorisleiva/js-serializer-beet': workspace:^
-      '@lorisleiva/js-transaction-factory-web3js': workspace:^
+      '@metaplex-foundation/umi-core': workspace:^
+      '@metaplex-foundation/umi-downloader-http': workspace:^
+      '@metaplex-foundation/umi-eddsa-web3js': workspace:^
+      '@metaplex-foundation/umi-http-fetch': workspace:^
+      '@metaplex-foundation/umi-program-repository': workspace:^
+      '@metaplex-foundation/umi-rpc-web3js': workspace:^
+      '@metaplex-foundation/umi-serializer-beet': workspace:^
+      '@metaplex-foundation/umi-transaction-factory-web3js': workspace:^
       ava: ^5.1.0
     dependencies:
-      '@lorisleiva/js-core': link:../js-core
-      '@lorisleiva/js-downloader-http': link:../js-downloader-http
-      '@lorisleiva/js-eddsa-web3js': link:../js-eddsa-web3js
-      '@lorisleiva/js-http-fetch': link:../js-http-fetch
-      '@lorisleiva/js-program-repository': link:../js-program-repository
-      '@lorisleiva/js-rpc-web3js': link:../js-rpc-web3js
-      '@lorisleiva/js-serializer-beet': link:../js-serializer-beet
-      '@lorisleiva/js-transaction-factory-web3js': link:../js-transaction-factory-web3js
+      '@metaplex-foundation/umi-core': link:../umi-core
+      '@metaplex-foundation/umi-downloader-http': link:../umi-downloader-http
+      '@metaplex-foundation/umi-eddsa-web3js': link:../umi-eddsa-web3js
+      '@metaplex-foundation/umi-http-fetch': link:../umi-http-fetch
+      '@metaplex-foundation/umi-program-repository': link:../umi-program-repository
+      '@metaplex-foundation/umi-rpc-web3js': link:../umi-rpc-web3js
+      '@metaplex-foundation/umi-serializer-beet': link:../umi-serializer-beet
+      '@metaplex-foundation/umi-transaction-factory-web3js': link:../umi-transaction-factory-web3js
     devDependencies:
       '@ava/typescript': 3.0.1
       ava: 5.1.0_@ava+typescript@3.0.1
 
-  packages/js-core:
+  packages/umi-core:
     specifiers:
       '@ava/typescript': ^3.0.1
       ava: ^5.1.0
@@ -101,138 +101,136 @@ importers:
       '@ava/typescript': 3.0.1
       ava: 5.1.0_@ava+typescript@3.0.1
 
-  packages/js-downloader-http:
+  packages/umi-downloader-http:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@lorisleiva/js-core': workspace:^
+      '@metaplex-foundation/umi-core': workspace:^
       ava: ^5.1.0
     dependencies:
-      '@lorisleiva/js-core': link:../js-core
+      '@metaplex-foundation/umi-core': link:../umi-core
     devDependencies:
       '@ava/typescript': 3.0.1
       ava: 5.1.0_@ava+typescript@3.0.1
 
-  packages/js-eddsa-web3js:
+  packages/umi-eddsa-web3js:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@lorisleiva/js-core': workspace:^
-      '@lorisleiva/js-web3js-adapters': workspace:^
+      '@metaplex-foundation/umi-core': workspace:^
+      '@metaplex-foundation/umi-web3js-adapters': workspace:^
       '@noble/ed25519': ^1.7.1
       '@solana/web3.js': ^1.72.0
       ava: ^5.1.0
     dependencies:
-      '@lorisleiva/js-core': link:../js-core
-      '@lorisleiva/js-web3js-adapters': link:../js-web3js-adapters
+      '@metaplex-foundation/umi-core': link:../umi-core
+      '@metaplex-foundation/umi-web3js-adapters': link:../umi-web3js-adapters
       '@noble/ed25519': 1.7.1
     devDependencies:
       '@ava/typescript': 3.0.1
       '@solana/web3.js': 1.72.0
       ava: 5.1.0_@ava+typescript@3.0.1
 
-  packages/js-http-fetch:
+  packages/umi-http-fetch:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@lorisleiva/js-core': workspace:^
+      '@metaplex-foundation/umi-core': workspace:^
       '@types/node-fetch': ^2.6.2
       ava: ^5.1.0
       json-server: ^0.17.1
       node-fetch: ^2.6.7
     dependencies:
-      '@lorisleiva/js-core': link:../js-core
-      node-fetch: 2.6.7
+      '@metaplex-foundation/umi-core': link:../umi-core
+      node-fetch: 2.6.9
     devDependencies:
       '@ava/typescript': 3.0.1
       '@types/node-fetch': 2.6.2
       ava: 5.1.0_@ava+typescript@3.0.1
       json-server: 0.17.1
 
-  packages/js-program-repository:
+  packages/umi-program-repository:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@lorisleiva/js-core': workspace:^
+      '@metaplex-foundation/umi-core': workspace:^
       ava: ^5.1.0
     dependencies:
-      '@lorisleiva/js-core': link:../js-core
+      '@metaplex-foundation/umi-core': link:../umi-core
     devDependencies:
       '@ava/typescript': 3.0.1
       ava: 5.1.0_@ava+typescript@3.0.1
 
-  packages/js-rpc-web3js:
+  packages/umi-rpc-web3js:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@lorisleiva/js-core': workspace:^
-      '@lorisleiva/js-web3js-adapters': workspace:^
+      '@metaplex-foundation/umi-core': workspace:^
+      '@metaplex-foundation/umi-web3js-adapters': workspace:^
       '@solana/web3.js': ^1.72.0
       ava: ^5.1.0
       jayson: ^3.4.4
     dependencies:
-      '@lorisleiva/js-core': link:../js-core
-      '@lorisleiva/js-web3js-adapters': link:../js-web3js-adapters
+      '@metaplex-foundation/umi-core': link:../umi-core
+      '@metaplex-foundation/umi-web3js-adapters': link:../umi-web3js-adapters
     devDependencies:
       '@ava/typescript': 3.0.1
       '@solana/web3.js': 1.72.0
       ava: 5.1.0_@ava+typescript@3.0.1
       jayson: 3.7.0
 
-  packages/js-serializer-beet:
+  packages/umi-serializer-beet:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@lorisleiva/js-core': workspace:^
       '@metaplex-foundation/beet': ^0.7.1
+      '@metaplex-foundation/umi-core': workspace:^
       '@solana/web3.js': ^1.72.0
       ava: ^5.1.0
       buffer: ^6.0.3
     dependencies:
-      '@lorisleiva/js-core': link:../js-core
       '@metaplex-foundation/beet': 0.7.1
+      '@metaplex-foundation/umi-core': link:../umi-core
       buffer: 6.0.3
     devDependencies:
       '@ava/typescript': 3.0.1
       '@solana/web3.js': 1.72.0
       ava: 5.1.0_@ava+typescript@3.0.1
 
-  packages/js-signer-derived:
+  packages/umi-signer-derived:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@lorisleiva/js-core': workspace:^
-      '@lorisleiva/mpl-essentials': ^0.0.5
+      '@metaplex-foundation/umi-core': workspace:^
       '@noble/hashes': ^1.2.0
       ava: ^5.1.0
     dependencies:
-      '@lorisleiva/js-core': link:../js-core
-      '@lorisleiva/mpl-essentials': 0.0.5
+      '@metaplex-foundation/umi-core': link:../umi-core
       '@noble/hashes': 1.2.0
     devDependencies:
       '@ava/typescript': 3.0.1
       ava: 5.1.0_@ava+typescript@3.0.1
 
-  packages/js-signer-wallet-adapters:
+  packages/umi-signer-wallet-adapters:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@lorisleiva/js-core': workspace:^
-      '@lorisleiva/js-web3js-adapters': workspace:^
+      '@metaplex-foundation/umi-core': workspace:^
+      '@metaplex-foundation/umi-web3js-adapters': workspace:^
       '@solana/web3.js': ^1.72.0
       ava: ^5.1.0
     dependencies:
-      '@lorisleiva/js-core': link:../js-core
-      '@lorisleiva/js-web3js-adapters': link:../js-web3js-adapters
+      '@metaplex-foundation/umi-core': link:../umi-core
+      '@metaplex-foundation/umi-web3js-adapters': link:../umi-web3js-adapters
     devDependencies:
       '@ava/typescript': 3.0.1
       '@solana/web3.js': 1.72.0
       ava: 5.1.0_@ava+typescript@3.0.1
 
-  packages/js-storage-mock:
+  packages/umi-storage-mock:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@lorisleiva/js-core': workspace:^
+      '@metaplex-foundation/umi-core': workspace:^
       ava: ^5.1.0
     dependencies:
-      '@lorisleiva/js-core': link:../js-core
+      '@metaplex-foundation/umi-core': link:../umi-core
     devDependencies:
       '@ava/typescript': 3.0.1
       ava: 5.1.0_@ava+typescript@3.0.1
 
-  packages/js-tasks:
+  packages/umi-tasks:
     specifiers:
       '@ava/typescript': ^3.0.1
       ava: ^5.1.0
@@ -243,101 +241,101 @@ importers:
       '@ava/typescript': 3.0.1
       ava: 5.1.0_@ava+typescript@3.0.1
 
-  packages/js-test:
+  packages/umi-test:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@lorisleiva/js-core': workspace:^
-      '@lorisleiva/js-eddsa-web3js': workspace:^
-      '@lorisleiva/js-http-fetch': workspace:^
-      '@lorisleiva/js-program-repository': workspace:^
-      '@lorisleiva/js-rpc-web3js': workspace:^
-      '@lorisleiva/js-serializer-beet': workspace:^
-      '@lorisleiva/js-storage-mock': workspace:^
-      '@lorisleiva/js-transaction-factory-web3js': workspace:^
+      '@metaplex-foundation/umi-core': workspace:^
+      '@metaplex-foundation/umi-eddsa-web3js': workspace:^
+      '@metaplex-foundation/umi-http-fetch': workspace:^
+      '@metaplex-foundation/umi-program-repository': workspace:^
+      '@metaplex-foundation/umi-rpc-web3js': workspace:^
+      '@metaplex-foundation/umi-serializer-beet': workspace:^
+      '@metaplex-foundation/umi-storage-mock': workspace:^
+      '@metaplex-foundation/umi-transaction-factory-web3js': workspace:^
       ava: ^5.1.0
     dependencies:
-      '@lorisleiva/js-core': link:../js-core
-      '@lorisleiva/js-eddsa-web3js': link:../js-eddsa-web3js
-      '@lorisleiva/js-http-fetch': link:../js-http-fetch
-      '@lorisleiva/js-program-repository': link:../js-program-repository
-      '@lorisleiva/js-rpc-web3js': link:../js-rpc-web3js
-      '@lorisleiva/js-serializer-beet': link:../js-serializer-beet
-      '@lorisleiva/js-storage-mock': link:../js-storage-mock
-      '@lorisleiva/js-transaction-factory-web3js': link:../js-transaction-factory-web3js
+      '@metaplex-foundation/umi-core': link:../umi-core
+      '@metaplex-foundation/umi-eddsa-web3js': link:../umi-eddsa-web3js
+      '@metaplex-foundation/umi-http-fetch': link:../umi-http-fetch
+      '@metaplex-foundation/umi-program-repository': link:../umi-program-repository
+      '@metaplex-foundation/umi-rpc-web3js': link:../umi-rpc-web3js
+      '@metaplex-foundation/umi-serializer-beet': link:../umi-serializer-beet
+      '@metaplex-foundation/umi-storage-mock': link:../umi-storage-mock
+      '@metaplex-foundation/umi-transaction-factory-web3js': link:../umi-transaction-factory-web3js
     devDependencies:
       '@ava/typescript': 3.0.1
       ava: 5.1.0_@ava+typescript@3.0.1
 
-  packages/js-transaction-factory-web3js:
+  packages/umi-transaction-factory-web3js:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@lorisleiva/js-core': workspace:^
-      '@lorisleiva/js-web3js-adapters': workspace:^
+      '@metaplex-foundation/umi-core': workspace:^
+      '@metaplex-foundation/umi-web3js-adapters': workspace:^
       '@solana/web3.js': ^1.72.0
       ava: ^5.1.0
     dependencies:
-      '@lorisleiva/js-core': link:../js-core
-      '@lorisleiva/js-web3js-adapters': link:../js-web3js-adapters
+      '@metaplex-foundation/umi-core': link:../umi-core
+      '@metaplex-foundation/umi-web3js-adapters': link:../umi-web3js-adapters
     devDependencies:
       '@ava/typescript': 3.0.1
       '@solana/web3.js': 1.72.0
       ava: 5.1.0_@ava+typescript@3.0.1
 
-  packages/js-uploader-aws:
+  packages/umi-uploader-aws:
     specifiers:
       '@ava/typescript': ^3.0.1
       '@aws-sdk/client-s3': ^3.54.1
-      '@lorisleiva/js-core': workspace:^
+      '@metaplex-foundation/umi-core': workspace:^
       '@types/sinon': ^10.0.13
       ava: ^5.1.0
       sinon: ^13.0.1
     dependencies:
       '@aws-sdk/client-s3': 3.264.0
-      '@lorisleiva/js-core': link:../js-core
+      '@metaplex-foundation/umi-core': link:../umi-core
     devDependencies:
       '@ava/typescript': 3.0.1
       '@types/sinon': 10.0.13
       ava: 5.1.0_@ava+typescript@3.0.1
       sinon: 13.0.2
 
-  packages/js-uploader-bundlr:
+  packages/umi-uploader-bundlr:
     specifiers:
       '@ava/typescript': ^3.0.1
       '@bundlr-network/client': ^0.8.8
-      '@lorisleiva/js-core': workspace:^
-      '@lorisleiva/js-downloader-http': workspace:^
-      '@lorisleiva/js-eddsa-web3js': workspace:^
-      '@lorisleiva/js-http-fetch': workspace:^
-      '@lorisleiva/js-rpc-web3js': workspace:^
-      '@lorisleiva/js-web3js-adapters': workspace:^
+      '@metaplex-foundation/umi-core': workspace:^
+      '@metaplex-foundation/umi-downloader-http': workspace:^
+      '@metaplex-foundation/umi-eddsa-web3js': workspace:^
+      '@metaplex-foundation/umi-http-fetch': workspace:^
+      '@metaplex-foundation/umi-rpc-web3js': workspace:^
+      '@metaplex-foundation/umi-web3js-adapters': workspace:^
       '@solana/web3.js': ^1.72.0
       ava: ^5.1.0
       bignumber.js: ^9.0.2
       buffer: ^6.0.3
     dependencies:
       '@bundlr-network/client': 0.8.9
-      '@lorisleiva/js-core': link:../js-core
-      '@lorisleiva/js-web3js-adapters': link:../js-web3js-adapters
+      '@metaplex-foundation/umi-core': link:../umi-core
+      '@metaplex-foundation/umi-web3js-adapters': link:../umi-web3js-adapters
       bignumber.js: 9.1.1
       buffer: 6.0.3
     devDependencies:
       '@ava/typescript': 3.0.1
-      '@lorisleiva/js-downloader-http': link:../js-downloader-http
-      '@lorisleiva/js-eddsa-web3js': link:../js-eddsa-web3js
-      '@lorisleiva/js-http-fetch': link:../js-http-fetch
-      '@lorisleiva/js-rpc-web3js': link:../js-rpc-web3js
+      '@metaplex-foundation/umi-downloader-http': link:../umi-downloader-http
+      '@metaplex-foundation/umi-eddsa-web3js': link:../umi-eddsa-web3js
+      '@metaplex-foundation/umi-http-fetch': link:../umi-http-fetch
+      '@metaplex-foundation/umi-rpc-web3js': link:../umi-rpc-web3js
       '@solana/web3.js': 1.72.0
       ava: 5.1.0_@ava+typescript@3.0.1
 
-  packages/js-uploader-nft-storage:
+  packages/umi-uploader-nft-storage:
     specifiers:
       '@ava/typescript': ^3.0.1
       '@ipld/dag-pb': ^2.1.17
-      '@lorisleiva/js-core': workspace:^
-      '@lorisleiva/js-downloader-http': workspace:^
-      '@lorisleiva/js-eddsa-web3js': workspace:^
-      '@lorisleiva/js-http-fetch': workspace:^
-      '@lorisleiva/js-rpc-web3js': workspace:^
+      '@metaplex-foundation/umi-core': workspace:^
+      '@metaplex-foundation/umi-downloader-http': workspace:^
+      '@metaplex-foundation/umi-eddsa-web3js': workspace:^
+      '@metaplex-foundation/umi-http-fetch': workspace:^
+      '@metaplex-foundation/umi-rpc-web3js': workspace:^
       '@nftstorage/metaplex-auth': ^1.2.0
       ava: ^5.1.0
       ipfs-car: ^0.7.0
@@ -349,8 +347,8 @@ importers:
       typescript: ^4.5.4
     dependencies:
       '@ipld/dag-pb': 2.1.18
-      '@lorisleiva/js-core': link:../js-core
-      '@nftstorage/metaplex-auth': 1.2.0_pjnlmb5bbq6ge2p4la2ah5ry4q
+      '@metaplex-foundation/umi-core': link:../umi-core
+      '@nftstorage/metaplex-auth': 1.2.0_kf66v4fzf2aybd3rukjolrzzey
       ipfs-car: 0.7.0_node-fetch@2.6.9
       ipfs-unixfs: 6.0.9
       multiformats: 9.9.0
@@ -359,22 +357,22 @@ importers:
       tweetnacl: 1.0.3
     devDependencies:
       '@ava/typescript': 3.0.1
-      '@lorisleiva/js-downloader-http': link:../js-downloader-http
-      '@lorisleiva/js-eddsa-web3js': link:../js-eddsa-web3js
-      '@lorisleiva/js-http-fetch': link:../js-http-fetch
-      '@lorisleiva/js-rpc-web3js': link:../js-rpc-web3js
+      '@metaplex-foundation/umi-downloader-http': link:../umi-downloader-http
+      '@metaplex-foundation/umi-eddsa-web3js': link:../umi-eddsa-web3js
+      '@metaplex-foundation/umi-http-fetch': link:../umi-http-fetch
+      '@metaplex-foundation/umi-rpc-web3js': link:../umi-rpc-web3js
       ava: 5.1.0_@ava+typescript@3.0.1
-      typescript: 4.9.3
+      typescript: 4.9.5
 
-  packages/js-web3js-adapters:
+  packages/umi-web3js-adapters:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@lorisleiva/js-core': workspace:^
+      '@metaplex-foundation/umi-core': workspace:^
       '@solana/web3.js': ^1.72.0
       ava: ^5.1.0
       buffer: ^6.0.3
     dependencies:
-      '@lorisleiva/js-core': link:../js-core
+      '@metaplex-foundation/umi-core': link:../umi-core
       buffer: 6.0.3
     devDependencies:
       '@ava/typescript': 3.0.1
@@ -3222,16 +3220,6 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
 
-  /@lorisleiva/js-core/0.0.54:
-    resolution: {integrity: sha512-syxJMNnNqisIKcrr7QPbq15iR8aopjAd5PzmNZE/FV7QlHq9xjqZaTpsljg8INLlUshoa71W2MDGA8BBlfI4Dg==}
-    dev: false
-
-  /@lorisleiva/mpl-essentials/0.0.5:
-    resolution: {integrity: sha512-P/lmj1ASo8uILW956WmDHbFHnjh5w8TzXkJqy9kAkwE7OyJSc8DVdrtd9JDMmcdytnYCfS3yAyE180llGLx6OA==}
-    dependencies:
-      '@lorisleiva/js-core': 0.0.54
-    dev: false
-
   /@manypkg/find-root/1.1.0:
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
     dependencies:
@@ -3314,7 +3302,7 @@ packages:
     resolution: {integrity: sha512-S9RulC2fFCFOQraz61bij+5YCHhSO9llJegK8c8Y6731fSi6snUSQJdCUqYS8AIgR0TKbQvdvgSyIIdbDFZbBA==}
     dev: true
 
-  /@morgan-stanley/ts-mocking-bird/0.6.4_typescript@4.9.3:
+  /@morgan-stanley/ts-mocking-bird/0.6.4_typescript@4.9.5:
     resolution: {integrity: sha512-57VJIflP8eR2xXa9cD1LUawh+Gh+BVQfVu0n6GALyg/AqV/Nz25kDRvws3i9kIe1PTrbsZZOYpsYp6bXPd6nVA==}
     peerDependencies:
       jasmine: 2.x || 3.x || 4.x
@@ -3327,7 +3315,7 @@ packages:
         optional: true
     dependencies:
       lodash: 4.17.21
-      typescript: 4.9.3
+      typescript: 4.9.5
       uuid: 7.0.3
     dev: false
 
@@ -3338,7 +3326,7 @@ packages:
       murmurhash3js-revisited: 3.0.0
     dev: false
 
-  /@nftstorage/metaplex-auth/1.2.0_pjnlmb5bbq6ge2p4la2ah5ry4q:
+  /@nftstorage/metaplex-auth/1.2.0_kf66v4fzf2aybd3rukjolrzzey:
     resolution: {integrity: sha512-ffT/cZv1GWXDVrwzNUGGxApDwQJSxUZJAqnPpTk5VBc55T2RtUm2yZ11p74h2fyam1erJH38zg7S9IoaTxSZ8w==}
     dependencies:
       '@dashkite/tweetnacl': 1.0.3
@@ -3355,7 +3343,7 @@ packages:
       p-retry: 5.1.2
       path-browserify: 1.0.1
       streaming-iterables: 6.2.0
-      ts-command-line-args: 2.4.2_typescript@4.9.3
+      ts-command-line-args: 2.4.2_typescript@4.9.5
       varint: 6.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -3722,7 +3710,7 @@ packages:
       buffer: 6.0.1
       fast-stable-stringify: 1.0.0
       jayson: 3.7.0
-      node-fetch: 2.6.7
+      node-fetch: 2.6.9
       rpc-websockets: 7.5.0
       superstruct: 0.14.2
     transitivePeerDependencies:
@@ -4541,7 +4529,7 @@ packages:
   /axios/0.25.0_debug@4.3.4:
     resolution: {integrity: sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==}
     dependencies:
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
     transitivePeerDependencies:
       - debug
     dev: true
@@ -6348,7 +6336,6 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
-    dev: false
 
   /follow-redirects/1.15.2_debug@4.3.4:
     resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
@@ -8109,6 +8096,7 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
+    dev: false
 
   /node-fetch/2.6.9:
     resolution: {integrity: sha512-DJm/CJkZkRjKKj4Zi4BsKVZh3ValV5IR5s7LVZnW+6YMh0W1BfNA8XSs6DLMGYlId5F3KnA70uu2qepcR08Qqg==}
@@ -9586,11 +9574,11 @@ packages:
       escape-string-regexp: 1.0.5
     dev: true
 
-  /ts-command-line-args/2.4.2_typescript@4.9.3:
+  /ts-command-line-args/2.4.2_typescript@4.9.5:
     resolution: {integrity: sha512-mJLQQBOdyD4XI/ZWQY44PIdYde47JhV2xl380O7twPkTQ+Y5vFDHsk8LOeXKuz7dVY5aDCfAzRarNfSqtKOkQQ==}
     hasBin: true
     dependencies:
-      '@morgan-stanley/ts-mocking-bird': 0.6.4_typescript@4.9.3
+      '@morgan-stanley/ts-mocking-bird': 0.6.4_typescript@4.9.5
       chalk: 4.1.2
       command-line-args: 5.2.1
       command-line-usage: 6.1.3
@@ -9774,16 +9762,10 @@ packages:
       typescript: 4.9.5
     dev: true
 
-  /typescript/4.9.3:
-    resolution: {integrity: sha512-CIfGzTelbKNEnLpLdGFgdyKhG23CKdKgQPOBc+OUNrkJ2vr+KSzsSV5kq5iWhEQbok+quxgGzrAtGWCyU7tHnA==}
-    engines: {node: '>=4.2.0'}
-    hasBin: true
-
   /typescript/4.9.5:
     resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
     engines: {node: '>=4.2.0'}
     hasBin: true
-    dev: true
 
   /typical/4.0.0:
     resolution: {integrity: sha512-VAH4IvQ7BDFYglMd7BPRDfLgxZZX4O4TFcRDA6EN5X7erNJJq+McIEp8np9aVtxrCJ6qx4GTYVfOWNjcqwZgRw==}

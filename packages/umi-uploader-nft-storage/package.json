@@ -1,6 +1,6 @@
 {
-  "name": "@metaplex-foundation/{{package-name}}",
-  "version": "0.0.1",
+  "name": "@metaplex-foundation/umi-uploader-nft-storage",
+  "version": "0.1.0",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -26,11 +26,24 @@
     "test": "ava"
   },
   "dependencies": {
-    "@metaplex-foundation/umi-core": "workspace:^"
+    "@ipld/dag-pb": "^2.1.17",
+    "@metaplex-foundation/umi-core": "workspace:^",
+    "@nftstorage/metaplex-auth": "^1.2.0",
+    "ipfs-car": "^0.7.0",
+    "ipfs-unixfs": "^6.0.9",
+    "multiformats": "^9.7.0",
+    "nft.storage": "^6.4.1",
+    "node-fetch": "^2.6.7",
+    "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
-    "ava": "^5.1.0"
+    "@metaplex-foundation/umi-downloader-http": "workspace:^",
+    "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
+    "@metaplex-foundation/umi-http-fetch": "workspace:^",
+    "@metaplex-foundation/umi-rpc-web3js": "workspace:^",
+    "ava": "^5.1.0",
+    "typescript": "^4.5.4"
   },
   "publishConfig": {
     "access": "public"
@@ -43,7 +56,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "{{package-name}}"
+    "displayName": "umi-uploader-nft-storage"
   },
   "ava": {
     "typescript": {

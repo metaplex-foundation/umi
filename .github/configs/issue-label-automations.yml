@@ -28,7 +28,7 @@ question:
 
     ---
 
-    _This [automated message](https://github.com/metaplex-foundation/js/tree/main/.github/configs/issue-label-automations.yml) is a result of having added the "question" label._
+    _This [automated message](https://github.com/metaplex-foundation/umi/tree/main/.github/configs/issue-label-automations.yml) is a result of having added the "question" label._
 
 # Direct feature requests to Canny.
 'feature request':
@@ -59,7 +59,7 @@ question:
 
     ---
 
-    _This [automated message](https://github.com/metaplex-foundation/js/tree/main/.github/configs/issue-label-automations.yml) is a result of having added the "feature request" label._
+    _This [automated message](https://github.com/metaplex-foundation/umi/tree/main/.github/configs/issue-label-automations.yml) is a result of having added the "feature request" label._
 
 # Ask for community contributions.
 'community contribution':
@@ -81,4 +81,4 @@ question:
 
     ---
 
-    _This [automated message](https://github.com/metaplex-foundation/js/tree/main/.github/configs/issue-label-automations.yml) is a result of having added the "community contribution" label._
+    _This [automated message](https://github.com/metaplex-foundation/umi/tree/main/.github/configs/issue-label-automations.yml) is a result of having added the "community contribution" label._
