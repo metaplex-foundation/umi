@@ -1,3 +1,5 @@
-# Metaplex JavaScript Core
+# Umi
 
-A playground for the Core interfaces of the Metaplex JS SDK. (bump:2).
+A Solana Framework for Clients.
+
+_Documentation coming soon..._
