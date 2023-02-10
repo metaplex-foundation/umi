@@ -1,0 +1,51 @@
+{
+  "include": ["packages/*/src", "packages/*/test"],
+  "exclude": ["node_modules", "packages/*/node_modules"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "sourceMap": true,
+    "noEmit": false,
+    "noEmitOnError": true,
+    "emitDeclarationOnly": true,
+
+    "target": "es2020",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "allowJs": false,
+    "skipLibCheck": true,
+
+    "noUnusedLocals": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": false,
+    "strict": true,
+    "isolatedModules": true,
+
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "removeComments": false,
+    "jsx": "preserve",
+    "stripInternal": true
+  },
+  "typedocOptions": {
+    "entryPoints": ".",
+    "entryPointStrategy": "packages",
+    "plugin": ["./configs/typedoc-plugin.js"],
+    "out": "docs",
+    "readme": "README.md",
+    "name": "API References",
+    "includeVersion": true,
+    "excludeNotDocumented": false,
+    "sort": ["static-first", "required-first", "source-order"],
+    "categoryOrder": [
+      "Constructors",
+      "Types",
+      "Inputs",
+      "Outputs",
+      "Contexts",
+      "*"
+    ]
+  }
+}

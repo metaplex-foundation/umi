@@ -1,0 +1,82 @@
+{
+  "name": "@metaplex-foundation/js",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "license": "MIT",
+  "description": "A JavaScript Framework for Solana clients",
+  "keywords": [
+    "nft",
+    "metaplex",
+    "solana",
+    "blockchain"
+  ],
+  "author": "Metaplex Maintainers <contact@metaplex.com>",
+  "homepage": "https://metaplex.com",
+  "repository": {
+    "url": "https://github.com/metaplex-foundation/js.git"
+  },
+  "scripts": {
+    "clean": "turbo run clean --filter=[origin/main]",
+    "clean:all": "turbo run clean",
+    "build": "turbo run build --filter=[origin/main]",
+    "build:all": "turbo run build",
+    "test": "turbo run test --filter=[origin/main]",
+    "test:all": "turbo run test",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "format": "prettier --check packages/",
+    "format:fix": "prettier --write packages/",
+    "docs": "typedoc",
+    "docs:deploy": "pnpm docs && gh-pages --dist docs --dotfiles",
+    "validator": "DEBUG='amman:(info|error|debug)' CI=1 amman start",
+    "validator:stop": "amman stop",
+    "packages:new": "node configs/generate-new-package.mjs",
+    "packages:change": "changeset",
+    "packages:version": "changeset version",
+    "packages:publish": "pnpm lint && pnpm build && changeset publish"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.10",
+    "@babel/preset-env": "^7.17.10",
+    "@babel/preset-typescript": "^7.16.7",
+    "@changesets/changelog-github": "^0.4.8",
+    "@changesets/cli": "^2.24.4",
+    "@metaplex-foundation/amman": "^0.12.0",
+    "@metaplex-foundation/amman-client": "^0.2.2",
+    "@rollup/plugin-babel": "^5.3.1",
+    "@rollup/plugin-commonjs": "^22.0.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-replace": "^4.0.0",
+    "@rollup/plugin-terser": "^0.2.0",
+    "@rollup/plugin-typescript": "^8.5.0",
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
+    "chalk": "^5.2.0",
+    "depcheck": "^1.4.3",
+    "eslint": "^8.33.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-prettier": "^4.2.1",
+    "gh-pages": "^4.0.0",
+    "prettier": "^2.8.4",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.72.0",
+    "rollup-plugin-polyfill-node": "^0.9.0",
+    "turbo": "^1.7.4",
+    "typedoc": "^0.23.0",
+    "typescript": "^4.9.5"
+  },
+  "engines": {
+    "node": ">=16.0"
+  },
+  "browserslist": [
+    "defaults",
+    "not IE 11",
+    "maintained node versions"
+  ],
+  "packageManager": "pnpm@7.18.1"
+}
