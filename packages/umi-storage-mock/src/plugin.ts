@@ -1,4 +1,4 @@
-import { MetaplexPlugin } from '@lorisleiva/js-core';
+import { MetaplexPlugin } from '@metaplex-foundation/umi-core';
 import { MockStorage, MockStorageOptions } from './MockStorage';
 
 export const mockStorage = (options?: MockStorageOptions): MetaplexPlugin => ({

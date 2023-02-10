@@ -5,5 +5,5 @@ TODO
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/js-core
+npm install @metaplex-foundation/umi-core
 ```

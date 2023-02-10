@@ -1,4 +1,4 @@
-import { MetaplexError } from '@lorisleiva/js-core';
+import { MetaplexError } from '@metaplex-foundation/umi-core';
 
 export class BundlrError extends MetaplexError {
   readonly name: string = 'BundlrError';

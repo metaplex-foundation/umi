@@ -5,11 +5,11 @@ import {
   generatedSignerIdentity,
   sol,
   utf8,
-} from '@lorisleiva/js-core';
-import { httpDownloader } from '@lorisleiva/js-downloader-http';
-import { web3JsEddsa } from '@lorisleiva/js-eddsa-web3js';
-import { fetchHttp } from '@lorisleiva/js-http-fetch';
-import { web3JsRpc } from '@lorisleiva/js-rpc-web3js';
+} from '@metaplex-foundation/umi-core';
+import { httpDownloader } from '@metaplex-foundation/umi-downloader-http';
+import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
+import { fetchHttp } from '@metaplex-foundation/umi-http-fetch';
+import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
 import test from 'ava';
 import { bundlrUploader, BundlrUploaderOptions } from '../src';
 

@@ -1,4 +1,4 @@
-import { SdkError } from '@lorisleiva/js-core';
+import { SdkError } from '@metaplex-foundation/umi-core';
 
 /** @group Errors */
 export class AssetNotFoundError extends SdkError {

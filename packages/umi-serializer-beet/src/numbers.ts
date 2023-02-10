@@ -1,4 +1,4 @@
-import { Serializer } from '@lorisleiva/js-core';
+import { Serializer } from '@metaplex-foundation/umi-core';
 import type { FixedSizeBeet } from '@metaplex-foundation/beet';
 import * as beet from '@metaplex-foundation/beet';
 import { Buffer } from 'buffer';

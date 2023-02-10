@@ -1,5 +1,5 @@
 {
-  "name": "@lorisleiva/js-uploader-nft-storage",
+  "name": "@metaplex-foundation/umi-uploader-nft-storage",
   "version": "0.0.61",
   "license": "MIT",
   "sideEffects": false,
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@ipld/dag-pb": "^2.1.17",
-    "@lorisleiva/js-core": "workspace:^",
+    "@metaplex-foundation/umi-core": "workspace:^",
     "@nftstorage/metaplex-auth": "^1.2.0",
     "ipfs-car": "^0.7.0",
     "ipfs-unixfs": "^6.0.9",
@@ -38,10 +38,10 @@
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
-    "@lorisleiva/js-downloader-http": "workspace:^",
-    "@lorisleiva/js-eddsa-web3js": "workspace:^",
-    "@lorisleiva/js-http-fetch": "workspace:^",
-    "@lorisleiva/js-rpc-web3js": "workspace:^",
+    "@metaplex-foundation/umi-downloader-http": "workspace:^",
+    "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
+    "@metaplex-foundation/umi-http-fetch": "workspace:^",
+    "@metaplex-foundation/umi-rpc-web3js": "workspace:^",
     "ava": "^5.1.0",
     "typescript": "^4.5.4"
   },
@@ -51,7 +51,7 @@
   "author": "Metaplex Maintainers <contact@metaplex.com>",
   "homepage": "https://metaplex.com",
   "repository": {
-    "url": "https://github.com/metaplex-foundation/js.git"
+    "url": "https://github.com/metaplex-foundation/umi.git"
   },
   "typedoc": {
     "entryPoint": "./src/index.ts",

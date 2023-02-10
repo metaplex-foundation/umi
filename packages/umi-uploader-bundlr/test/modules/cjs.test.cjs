@@ -3,9 +3,9 @@ const test = require('ava');
 const {
   createMetaplex,
   generatedSignerIdentity,
-} = require('@lorisleiva/js-core');
-const { web3JsRpc } = require('@lorisleiva/js-rpc-web3js');
-const { web3JsEddsa } = require('@lorisleiva/js-eddsa-web3js');
+} = require('@metaplex-foundation/umi-core');
+const { web3JsRpc } = require('@metaplex-foundation/umi-rpc-web3js');
+const { web3JsEddsa } = require('@metaplex-foundation/umi-eddsa-web3js');
 const exported = require('../../dist/cjs/index.cjs');
 
 test('it successfully exports commonjs named exports', (t) => {

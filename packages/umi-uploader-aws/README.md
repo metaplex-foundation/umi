@@ -5,5 +5,5 @@ TODO
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/js-uploader-aws
+npm install @metaplex-foundation/umi-uploader-aws
 ```

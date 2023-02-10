@@ -36,12 +36,12 @@ import {
   TransactionMetaTokenBalance,
   TransactionSignature,
   TransactionWithMeta,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 import {
   fromWeb3JsMessage,
   fromWeb3JsPublicKey,
   toWeb3JsPublicKey,
-} from '@lorisleiva/js-web3js-adapters';
+} from '@metaplex-foundation/umi-web3js-adapters';
 import {
   AccountInfo as Web3JsAccountInfo,
   Connection as Web3JsConnection,

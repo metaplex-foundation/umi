@@ -5,5 +5,5 @@ TODO
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/js-storage-mock
+npm install @metaplex-foundation/umi-storage-mock
 ```

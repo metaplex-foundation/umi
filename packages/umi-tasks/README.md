@@ -5,5 +5,5 @@ TODO
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/js-tasks
+npm install @metaplex-foundation/umi-tasks
 ```

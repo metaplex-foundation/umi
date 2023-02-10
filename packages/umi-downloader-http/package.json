@@ -1,5 +1,5 @@
 {
-  "name": "@lorisleiva/js-downloader-http",
+  "name": "@metaplex-foundation/umi-downloader-http",
   "version": "0.0.61",
   "license": "MIT",
   "sideEffects": false,
@@ -26,7 +26,7 @@
     "test": "ava"
   },
   "dependencies": {
-    "@lorisleiva/js-core": "workspace:^"
+    "@metaplex-foundation/umi-core": "workspace:^"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
@@ -38,7 +38,7 @@
   "author": "Metaplex Maintainers <contact@metaplex.com>",
   "homepage": "https://metaplex.com",
   "repository": {
-    "url": "https://github.com/metaplex-foundation/js.git"
+    "url": "https://github.com/metaplex-foundation/umi.git"
   },
   "typedoc": {
     "entryPoint": "./src/index.ts",

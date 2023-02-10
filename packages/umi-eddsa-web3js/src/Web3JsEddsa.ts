@@ -5,12 +5,12 @@ import {
   publicKey,
   PublicKey,
   PublicKeyInput,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 import {
   fromWeb3JsKeypair,
   fromWeb3JsPublicKey,
   toWeb3JsPublicKey,
-} from '@lorisleiva/js-web3js-adapters';
+} from '@metaplex-foundation/umi-web3js-adapters';
 import * as ed25519 from '@noble/ed25519';
 import {
   Keypair as Web3JsKeypair,

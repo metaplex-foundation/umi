@@ -1,4 +1,4 @@
-import { MetaplexError } from '@lorisleiva/js-core';
+import { MetaplexError } from '@metaplex-foundation/umi-core';
 
 export class WalletAdaptersError extends MetaplexError {
   readonly name: string = 'WalletAdaptersError';

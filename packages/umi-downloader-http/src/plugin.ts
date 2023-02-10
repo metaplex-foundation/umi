@@ -1,4 +1,4 @@
-import { MetaplexPlugin } from '@lorisleiva/js-core';
+import { MetaplexPlugin } from '@metaplex-foundation/umi-core';
 import { HttpDownloader } from './HttpDownloader';
 
 export const httpDownloader = (): MetaplexPlugin => ({

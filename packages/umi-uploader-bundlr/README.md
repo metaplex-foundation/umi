@@ -5,5 +5,5 @@ TODO
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/js-uploader-bundlr
+npm install @metaplex-foundation/umi-uploader-bundlr
 ```

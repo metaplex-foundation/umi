@@ -5,5 +5,5 @@ TODO
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/js-downloader-http
+npm install @metaplex-foundation/umi-downloader-http
 ```

@@ -5,5 +5,5 @@ TODO
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/js-eddsa-web3js
+npm install @metaplex-foundation/umi-eddsa-web3js
 ```

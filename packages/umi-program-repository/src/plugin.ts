@@ -1,4 +1,4 @@
-import { MetaplexPlugin } from '@lorisleiva/js-core';
+import { MetaplexPlugin } from '@metaplex-foundation/umi-core';
 import { DefaultProgramRepository } from './DefaultProgramRepository';
 
 export const defaultProgramRepository = (): MetaplexPlugin => ({

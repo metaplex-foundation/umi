@@ -1,4 +1,4 @@
-import { MetaplexPlugin } from '@lorisleiva/js-core';
+import { MetaplexPlugin } from '@metaplex-foundation/umi-core';
 import { Web3JsEddsa } from './Web3JsEddsa';
 
 export const web3JsEddsa = (): MetaplexPlugin => ({

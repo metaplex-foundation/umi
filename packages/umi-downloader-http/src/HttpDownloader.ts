@@ -5,7 +5,7 @@ import {
   DownloaderOptions,
   GenericFile,
   request,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 
 export class HttpDownloader implements DownloaderInterface {
   constructor(protected context: Pick<Context, 'http'>) {}

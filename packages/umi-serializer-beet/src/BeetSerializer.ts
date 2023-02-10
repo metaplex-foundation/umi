@@ -17,7 +17,7 @@ import {
   StructToSerializerTuple,
   utf8,
   WrapInSerializer,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 import {
   BeetSerializerError,
   DeserializingEmptyBufferError,

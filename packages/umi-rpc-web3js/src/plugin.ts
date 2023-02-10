@@ -1,4 +1,4 @@
-import { MetaplexPlugin } from '@lorisleiva/js-core';
+import { MetaplexPlugin } from '@metaplex-foundation/umi-core';
 import { Web3JsRpc, Web3JsRpcOptions } from './Web3JsRpc';
 
 export const web3JsRpc = (

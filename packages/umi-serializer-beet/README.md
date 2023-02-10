@@ -5,5 +5,5 @@ TODO
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/js-serializer-beet
+npm install @metaplex-foundation/umi-serializer-beet
 ```

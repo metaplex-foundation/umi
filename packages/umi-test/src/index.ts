@@ -4,8 +4,8 @@ import {
   sol,
   Context,
   generateSigner,
-} from '@lorisleiva/js-core';
-import { Web3JsRpcOptions } from '@lorisleiva/js-rpc-web3js';
+} from '@metaplex-foundation/umi-core';
+import { Web3JsRpcOptions } from '@metaplex-foundation/umi-rpc-web3js';
 import { testPlugins } from './plugin';
 
 export const createMetaplex = async (
@@ -28,4 +28,4 @@ export const generateSignerWithSol = async (
 };
 
 export * from './plugin';
-export * from '@lorisleiva/js-core';
+export * from '@metaplex-foundation/umi-core';

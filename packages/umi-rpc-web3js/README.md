@@ -5,5 +5,5 @@ TODO
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/js-rpc-web3js
+npm install @metaplex-foundation/umi-rpc-web3js
 ```

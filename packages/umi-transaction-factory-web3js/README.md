@@ -5,5 +5,5 @@ TODO
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/js-transaction-factory-web3js
+npm install @metaplex-foundation/umi-transaction-factory-web3js
 ```

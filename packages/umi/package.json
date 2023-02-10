@@ -1,5 +1,5 @@
 {
-  "name": "@lorisleiva/js",
+  "name": "@metaplex-foundation/umi",
   "version": "0.0.61",
   "license": "MIT",
   "sideEffects": false,
@@ -26,14 +26,14 @@
     "test": "ava"
   },
   "dependencies": {
-    "@lorisleiva/js-core": "workspace:^",
-    "@lorisleiva/js-downloader-http": "workspace:^",
-    "@lorisleiva/js-eddsa-web3js": "workspace:^",
-    "@lorisleiva/js-http-fetch": "workspace:^",
-    "@lorisleiva/js-program-repository": "workspace:^",
-    "@lorisleiva/js-rpc-web3js": "workspace:^",
-    "@lorisleiva/js-serializer-beet": "workspace:^",
-    "@lorisleiva/js-transaction-factory-web3js": "workspace:^"
+    "@metaplex-foundation/umi-core": "workspace:^",
+    "@metaplex-foundation/umi-downloader-http": "workspace:^",
+    "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
+    "@metaplex-foundation/umi-http-fetch": "workspace:^",
+    "@metaplex-foundation/umi-program-repository": "workspace:^",
+    "@metaplex-foundation/umi-rpc-web3js": "workspace:^",
+    "@metaplex-foundation/umi-serializer-beet": "workspace:^",
+    "@metaplex-foundation/umi-transaction-factory-web3js": "workspace:^"
   },
   "peerDependencies": {
     "@solana/web3.js": "^1.72.0"
@@ -48,7 +48,7 @@
   "author": "Metaplex Maintainers <contact@metaplex.com>",
   "homepage": "https://metaplex.com",
   "repository": {
-    "url": "https://github.com/metaplex-foundation/js.git"
+    "url": "https://github.com/metaplex-foundation/umi.git"
   },
   "typedoc": {
     "entryPoint": "./src/index.ts",

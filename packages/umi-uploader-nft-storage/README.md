@@ -5,5 +5,5 @@ TODO
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/js-uploader-nft-storage
+npm install @metaplex-foundation/umi-uploader-nft-storage
 ```

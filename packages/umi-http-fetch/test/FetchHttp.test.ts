@@ -1,5 +1,5 @@
 import test from 'ava';
-import { HttpResponse, request } from '@lorisleiva/js-core';
+import { HttpResponse, request } from '@metaplex-foundation/umi-core';
 import { FetchHttp } from '../src';
 
 const BASE_URL = 'http://localhost:3000';

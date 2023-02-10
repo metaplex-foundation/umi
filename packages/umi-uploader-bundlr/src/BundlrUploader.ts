@@ -16,13 +16,13 @@ import {
   signTransaction,
   SolAmount,
   UploaderInterface,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 import {
   fromWeb3JsKeypair,
   fromWeb3JsLegacyTransaction,
   toWeb3JsLegacyTransaction,
   toWeb3JsPublicKey,
-} from '@lorisleiva/js-web3js-adapters';
+} from '@metaplex-foundation/umi-web3js-adapters';
 import {
   Connection as Web3JsConnection,
   Keypair as Web3JsKeypair,

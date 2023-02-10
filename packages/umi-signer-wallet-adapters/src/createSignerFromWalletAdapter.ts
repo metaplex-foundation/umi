@@ -1,4 +1,8 @@
-import type { PublicKey, Signer, Transaction } from '@lorisleiva/js-core';
+import type {
+  PublicKey,
+  Signer,
+  Transaction,
+} from '@metaplex-foundation/umi-core';
 import {
   PublicKey as Web3JsPublicKey,
   Transaction as Web3JsTransaction,
@@ -8,7 +12,7 @@ import {
   fromWeb3JsPublicKey,
   fromWeb3JsTransaction,
   toWeb3JsTransaction,
-} from '@lorisleiva/js-web3js-adapters';
+} from '@metaplex-foundation/umi-web3js-adapters';
 import {
   OperationNotSupportedByWalletAdapterError,
   UninitializedWalletAdapterError,

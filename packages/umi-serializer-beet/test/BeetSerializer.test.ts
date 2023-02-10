@@ -7,7 +7,7 @@ import {
   Serializer,
   some,
   utf8,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 import { Keypair as Web3Keypair } from '@solana/web3.js';
 import test, { ThrowsExpectation } from 'ava';
 import {

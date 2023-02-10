@@ -5,7 +5,7 @@ import {
   KeypairSigner,
   Signer,
   utf8,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 import { sha512 } from '@noble/hashes/sha512';
 
 export type DerivedSigner = KeypairSigner & {

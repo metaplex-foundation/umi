@@ -5,7 +5,7 @@ import {
   lamports,
   SolAmount,
   UploaderInterface,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 
 export class AwsUploader implements UploaderInterface {
   protected client: S3Client;

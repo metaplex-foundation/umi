@@ -1,4 +1,8 @@
-import { HttpInterface, HttpRequest, HttpResponse } from '@lorisleiva/js-core';
+import {
+  HttpInterface,
+  HttpRequest,
+  HttpResponse,
+} from '@metaplex-foundation/umi-core';
 import fetch, { BodyInit, RequestInit } from 'node-fetch';
 
 export class FetchHttp implements HttpInterface {

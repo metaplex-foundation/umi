@@ -5,5 +5,5 @@ TODO
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/js-web3js-adapters
+npm install @metaplex-foundation/umi-web3js-adapters
 ```

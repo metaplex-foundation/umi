@@ -9,7 +9,7 @@ import {
   PublicKey,
   samePublicKey,
   Transaction,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 import {
   ProgramErrorNotRecognizedError,
   ProgramNotRecognizedError,

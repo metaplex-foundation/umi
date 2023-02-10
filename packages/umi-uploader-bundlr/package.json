@@ -1,5 +1,5 @@
 {
-  "name": "@lorisleiva/js-uploader-bundlr",
+  "name": "@metaplex-foundation/umi-uploader-bundlr",
   "version": "0.0.61",
   "license": "MIT",
   "sideEffects": false,
@@ -27,8 +27,8 @@
   },
   "dependencies": {
     "@bundlr-network/client": "^0.8.8",
-    "@lorisleiva/js-core": "workspace:^",
-    "@lorisleiva/js-web3js-adapters": "workspace:^",
+    "@metaplex-foundation/umi-core": "workspace:^",
+    "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
     "bignumber.js": "^9.0.2",
     "buffer": "^6.0.3"
   },
@@ -37,10 +37,10 @@
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
-    "@lorisleiva/js-downloader-http": "workspace:^",
-    "@lorisleiva/js-eddsa-web3js": "workspace:^",
-    "@lorisleiva/js-http-fetch": "workspace:^",
-    "@lorisleiva/js-rpc-web3js": "workspace:^",
+    "@metaplex-foundation/umi-downloader-http": "workspace:^",
+    "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
+    "@metaplex-foundation/umi-http-fetch": "workspace:^",
+    "@metaplex-foundation/umi-rpc-web3js": "workspace:^",
     "@solana/web3.js": "^1.72.0",
     "ava": "^5.1.0"
   },
@@ -50,7 +50,7 @@
   "author": "Metaplex Maintainers <contact@metaplex.com>",
   "homepage": "https://metaplex.com",
   "repository": {
-    "url": "https://github.com/metaplex-foundation/js.git"
+    "url": "https://github.com/metaplex-foundation/umi.git"
   },
   "typedoc": {
     "entryPoint": "./src/index.ts",

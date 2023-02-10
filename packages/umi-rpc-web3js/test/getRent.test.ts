@@ -3,7 +3,7 @@ import {
   ACCOUNT_HEADER_SIZE,
   createNullContext,
   lamports,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 import { Connection as Web3JsConnection } from '@solana/web3.js';
 import { Web3JsRpc } from '../src';
 

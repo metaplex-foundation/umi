@@ -1,5 +1,5 @@
 {
-  "name": "@lorisleiva/js-signer-derived",
+  "name": "@metaplex-foundation/umi-signer-derived",
   "version": "0.0.61",
   "license": "MIT",
   "sideEffects": false,
@@ -26,8 +26,7 @@
     "test": "ava"
   },
   "dependencies": {
-    "@lorisleiva/js-core": "workspace:^",
-    "@lorisleiva/mpl-essentials": "^0.0.5",
+    "@metaplex-foundation/umi-core": "workspace:^",
     "@noble/hashes": "^1.2.0"
   },
   "devDependencies": {
@@ -40,7 +39,7 @@
   "author": "Metaplex Maintainers <contact@metaplex.com>",
   "homepage": "https://metaplex.com",
   "repository": {
-    "url": "https://github.com/metaplex-foundation/js.git"
+    "url": "https://github.com/metaplex-foundation/umi.git"
   },
   "typedoc": {
     "entryPoint": "./src/index.ts",

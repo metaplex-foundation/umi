@@ -1,9 +1,12 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-extraneous-dependencies */
 import test from 'ava';
-import { createMetaplex, generatedSignerIdentity } from '@lorisleiva/js-core';
-import { web3JsRpc } from '@lorisleiva/js-rpc-web3js';
-import { web3JsEddsa } from '@lorisleiva/js-eddsa-web3js';
+import {
+  createMetaplex,
+  generatedSignerIdentity,
+} from '@metaplex-foundation/umi-core';
+import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
+import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import * as exported from '../../dist/esm/index.mjs';
 
 test('it successfully exports esm named exports', (t) => {

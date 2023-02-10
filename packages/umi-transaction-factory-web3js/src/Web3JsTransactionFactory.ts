@@ -5,14 +5,14 @@ import {
   TransactionFactoryInterface,
   TransactionInput,
   TransactionMessage,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 import {
   fromWeb3JsMessage,
   fromWeb3JsTransaction,
   toWeb3JsMessage,
   toWeb3JsMessageFromInput,
   toWeb3JsTransaction,
-} from '@lorisleiva/js-web3js-adapters';
+} from '@metaplex-foundation/umi-web3js-adapters';
 import {
   VersionedTransaction as Web3JsTransaction,
   VersionedMessage as Web3JsMessage,

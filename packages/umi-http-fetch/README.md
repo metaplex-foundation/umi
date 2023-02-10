@@ -5,5 +5,5 @@ TODO
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/js-http-fetch
+npm install @metaplex-foundation/umi-http-fetch
 ```

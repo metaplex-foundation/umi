@@ -2,7 +2,7 @@ import {
   MetaplexPlugin,
   signerIdentity,
   signerPayer,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 import {
   createSignerFromWalletAdapter,
   WalletAdapter,

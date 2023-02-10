@@ -1,5 +1,5 @@
 {
-  "name": "@lorisleiva/js-web3js-adapters",
+  "name": "@metaplex-foundation/umi-web3js-adapters",
   "version": "0.0.61",
   "license": "MIT",
   "sideEffects": false,
@@ -26,7 +26,7 @@
     "test": "ava"
   },
   "dependencies": {
-    "@lorisleiva/js-core": "workspace:^",
+    "@metaplex-foundation/umi-core": "workspace:^",
     "buffer": "^6.0.3"
   },
   "peerDependencies": {
@@ -43,7 +43,7 @@
   "author": "Metaplex Maintainers <contact@metaplex.com>",
   "homepage": "https://metaplex.com",
   "repository": {
-    "url": "https://github.com/metaplex-foundation/js.git"
+    "url": "https://github.com/metaplex-foundation/umi.git"
   },
   "typedoc": {
     "entryPoint": "./src/index.ts",

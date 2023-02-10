@@ -1,4 +1,4 @@
-import { MetaplexError } from '@lorisleiva/js-core';
+import { MetaplexError } from '@metaplex-foundation/umi-core';
 
 /** @group Errors */
 export class BeetSerializerError extends MetaplexError {

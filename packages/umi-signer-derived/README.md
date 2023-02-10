@@ -5,5 +5,5 @@ TODO
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/js-signer-derived
+npm install @metaplex-foundation/umi-signer-derived
 ```

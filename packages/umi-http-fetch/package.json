@@ -1,5 +1,5 @@
 {
-  "name": "@lorisleiva/js-http-fetch",
+  "name": "@metaplex-foundation/umi-http-fetch",
   "version": "0.0.61",
   "license": "MIT",
   "sideEffects": false,
@@ -28,7 +28,7 @@
     "server:stop": "kill $(lsof -t -i:3000) 2> /dev/null || true"
   },
   "dependencies": {
-    "@lorisleiva/js-core": "workspace:^",
+    "@metaplex-foundation/umi-core": "workspace:^",
     "node-fetch": "^2.6.7"
   },
   "devDependencies": {
@@ -43,7 +43,7 @@
   "author": "Metaplex Maintainers <contact@metaplex.com>",
   "homepage": "https://metaplex.com",
   "repository": {
-    "url": "https://github.com/metaplex-foundation/js.git"
+    "url": "https://github.com/metaplex-foundation/umi.git"
   },
   "typedoc": {
     "entryPoint": "./src/index.ts",

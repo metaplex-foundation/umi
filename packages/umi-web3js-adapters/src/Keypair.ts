@@ -1,4 +1,4 @@
-import { Keypair } from '@lorisleiva/js-core';
+import { Keypair } from '@metaplex-foundation/umi-core';
 import { Keypair as Web3JsKeypair } from '@solana/web3.js';
 import { fromWeb3JsPublicKey } from './PublicKey';
 
