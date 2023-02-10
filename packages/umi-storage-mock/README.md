@@ -1,4 +1,4 @@
-# js-storage-mock
+# umi-storage-mock
 
 TODO
 

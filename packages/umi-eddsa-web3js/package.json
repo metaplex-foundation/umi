@@ -49,7 +49,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "js-eddsa-web3js"
+    "displayName": "umi-eddsa-web3js"
   },
   "ava": {
     "typescript": {

@@ -49,7 +49,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "js-rpc-web3js"
+    "displayName": "umi-rpc-web3js"
   },
   "ava": {
     "typescript": {

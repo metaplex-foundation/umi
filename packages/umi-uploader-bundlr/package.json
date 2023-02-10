@@ -55,7 +55,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "js-uploader-bundlr"
+    "displayName": "umi-uploader-bundlr"
   },
   "ava": {
     "typescript": {

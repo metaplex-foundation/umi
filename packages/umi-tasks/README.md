@@ -1,4 +1,4 @@
-# js-tasks
+# umi-tasks
 
 TODO
 

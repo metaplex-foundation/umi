@@ -1,4 +1,4 @@
-# js-signer-wallet-adapters
+# umi-signer-wallet-adapters
 
 TODO
 

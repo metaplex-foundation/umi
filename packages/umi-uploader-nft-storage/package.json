@@ -56,7 +56,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "js-uploader-nft-storage"
+    "displayName": "umi-uploader-nft-storage"
   },
   "ava": {
     "typescript": {

@@ -1,4 +1,4 @@
-# js-uploader-bundlr
+# umi-uploader-bundlr
 
 TODO
 

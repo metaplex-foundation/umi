@@ -1,4 +1,4 @@
-# js-signer-derived
+# umi-signer-derived
 
 TODO
 

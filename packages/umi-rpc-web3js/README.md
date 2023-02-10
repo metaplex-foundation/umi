@@ -1,4 +1,4 @@
-# js-rpc-web3js
+# umi-rpc-web3js
 
 TODO
 

@@ -1,4 +1,4 @@
-# js-downloader-http
+# umi-downloader-http
 
 TODO
 

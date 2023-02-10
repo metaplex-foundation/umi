@@ -48,7 +48,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "js-http-fetch"
+    "displayName": "umi-http-fetch"
   },
   "ava": {
     "typescript": {

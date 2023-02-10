@@ -1,4 +1,4 @@
-# js-test
+# umi-test
 
 TODO
 

@@ -48,7 +48,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "js-web3js-adapters"
+    "displayName": "umi-web3js-adapters"
   },
   "ava": {
     "typescript": {

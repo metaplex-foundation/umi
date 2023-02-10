@@ -1,4 +1,4 @@
-# js-transaction-factory-web3js
+# umi-transaction-factory-web3js
 
 TODO
 

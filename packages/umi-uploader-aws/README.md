@@ -1,4 +1,4 @@
-# js-uploader-aws
+# umi-uploader-aws
 
 TODO
 

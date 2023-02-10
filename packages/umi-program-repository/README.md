@@ -1,4 +1,4 @@
-# js-program-repository
+# umi-program-repository
 
 TODO
 

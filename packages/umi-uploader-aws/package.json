@@ -46,7 +46,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "js-uploader-aws"
+    "displayName": "umi-uploader-aws"
   },
   "ava": {
     "typescript": {

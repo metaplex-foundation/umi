@@ -1,4 +1,4 @@
-# js-core
+# umi-core
 
 TODO
 

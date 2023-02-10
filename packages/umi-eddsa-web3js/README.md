@@ -1,4 +1,4 @@
-# js-eddsa-web3js
+# umi-eddsa-web3js
 
 TODO
 

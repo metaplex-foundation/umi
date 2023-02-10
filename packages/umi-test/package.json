@@ -53,7 +53,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "js-test"
+    "displayName": "umi-test"
   },
   "ava": {
     "typescript": {

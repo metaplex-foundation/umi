@@ -44,7 +44,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "js-signer-derived"
+    "displayName": "umi-signer-derived"
   },
   "ava": {
     "typescript": {

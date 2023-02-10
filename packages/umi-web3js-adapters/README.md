@@ -1,4 +1,4 @@
-# js-web3js-adapters
+# umi-web3js-adapters
 
 TODO
 

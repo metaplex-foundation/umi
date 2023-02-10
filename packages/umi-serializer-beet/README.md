@@ -1,4 +1,4 @@
-# js-serializer-beet
+# umi-serializer-beet
 
 TODO
 

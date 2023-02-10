@@ -48,7 +48,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "js-transaction-factory-web3js"
+    "displayName": "umi-transaction-factory-web3js"
   },
   "ava": {
     "typescript": {

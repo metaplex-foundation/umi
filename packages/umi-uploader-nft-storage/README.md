@@ -1,4 +1,4 @@
-# js-uploader-nft-storage
+# umi-uploader-nft-storage
 
 TODO
 
