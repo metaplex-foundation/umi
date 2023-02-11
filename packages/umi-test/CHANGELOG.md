@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-test
 
+## 0.1.3
+
+### Patch Changes
+
+- [`cb833de`](https://github.com/metaplex-foundation/umi/commit/cb833deab026cbbed866a566af4e64018a529a66) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Use local IP instead of localhost for better interop with CI
+
 ## 0.1.2
 
 ### Patch Changes
