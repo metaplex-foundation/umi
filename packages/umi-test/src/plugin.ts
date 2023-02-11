@@ -14,7 +14,7 @@ import { mockStorage } from '@metaplex-foundation/umi-storage-mock';
 import { web3JsTransactionFactory } from '@metaplex-foundation/umi-transaction-factory-web3js';
 
 export const testPlugins = (
-  endpoint: string = 'http://localhost:8899',
+  endpoint: string = 'http://127.0.0.1:8899',
   rpcOptions: Web3JsRpcOptions = 'confirmed'
 ): MetaplexPlugin => ({
   install(metaplex) {
