@@ -18,12 +18,9 @@
     "url": "https://github.com/metaplex-foundation/umi.git"
   },
   "scripts": {
-    "clean": "turbo run clean --filter=[origin/main]",
-    "clean:all": "turbo run clean",
-    "build": "turbo run build --filter=[origin/main]",
-    "build:all": "turbo run build",
-    "test": "turbo run test --filter=[origin/main]",
-    "test:all": "turbo run test",
+    "clean": "turbo run clean",
+    "build": "turbo run build",
+    "test": "turbo run test",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "format": "prettier --check packages/",
