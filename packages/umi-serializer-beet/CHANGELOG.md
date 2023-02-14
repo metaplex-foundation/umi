@@ -1,5 +1,16 @@
 # @metaplex-foundation/umi-serializer-beet
 
+## 0.2.0
+
+### Minor Changes
+
+- [`b4d681f`](https://github.com/metaplex-foundation/umi/commit/b4d681fd173fb5cc6fe7907c610a23703695c4f6) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Rename Metaplex to Umi
+
+### Patch Changes
+
+- Updated dependencies [[`b4d681f`](https://github.com/metaplex-foundation/umi/commit/b4d681fd173fb5cc6fe7907c610a23703695c4f6)]:
+  - @metaplex-foundation/umi-core@0.2.0
+
 ## 0.1.2
 
 ### Patch Changes
