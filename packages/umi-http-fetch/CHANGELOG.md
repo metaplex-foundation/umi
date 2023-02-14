@@ -1,5 +1,18 @@
 # @metaplex-foundation/umi-http-fetch
 
+## 0.2.0
+
+### Minor Changes
+
+- [`b4d681f`](https://github.com/metaplex-foundation/umi/commit/b4d681fd173fb5cc6fe7907c610a23703695c4f6) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Rename Metaplex to Umi
+
+### Patch Changes
+
+- [`6105aa2`](https://github.com/metaplex-foundation/umi/commit/6105aa2b2159fd7624ac4d016f0545df6d306f96) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Keep test exit status after stopping server
+
+- Updated dependencies [[`b4d681f`](https://github.com/metaplex-foundation/umi/commit/b4d681fd173fb5cc6fe7907c610a23703695c4f6)]:
+  - @metaplex-foundation/umi-core@0.2.0
+
 ## 0.1.2
 
 ### Patch Changes
