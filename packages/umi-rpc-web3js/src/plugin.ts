@@ -1,11 +1,11 @@
-import { MetaplexPlugin } from '@metaplex-foundation/umi-core';
+import { UmiPlugin } from '@metaplex-foundation/umi-core';
 import { Web3JsRpc, Web3JsRpcOptions } from './Web3JsRpc';
 
 export const web3JsRpc = (
   endpoint: string,
   rpcOptions?: Web3JsRpcOptions
-): MetaplexPlugin => ({
-  install(metaplex) {
-    metaplex.rpc = new Web3JsRpc(metaplex, endpoint, rpcOptions);
+): UmiPlugin => ({
+  install(umi) {
+    umi.rpc = new Web3JsRpc(umi, endpoint, rpcOptions);
   },
 });

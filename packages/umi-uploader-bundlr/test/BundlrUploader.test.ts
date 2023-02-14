@@ -1,7 +1,7 @@
 import {
   Context,
   createGenericFile,
-  createMetaplex,
+  createUmi,
   generatedSignerIdentity,
   sol,
   utf8,
@@ -22,14 +22,14 @@ test('example test', async (t) => {
 const getContext = async (
   options?: BundlrUploaderOptions
 ): Promise<Context> => {
-  const context = createMetaplex().use({
-    install(metaplex) {
-      metaplex.use(web3JsRpc('https://metaplex.devnet.rpcpool.com/'));
-      metaplex.use(web3JsEddsa());
-      metaplex.use(fetchHttp());
-      metaplex.use(httpDownloader());
-      metaplex.use(bundlrUploader(options));
-      metaplex.use(generatedSignerIdentity());
+  const context = createUmi().use({
+    install(umi) {
+      umi.use(web3JsRpc('https://metaplex.devnet.rpcpool.com/'));
+      umi.use(web3JsEddsa());
+      umi.use(fetchHttp());
+      umi.use(httpDownloader());
+      umi.use(bundlrUploader(options));
+      umi.use(generatedSignerIdentity());
     },
   });
   await context.rpc.airdrop(context.payer.publicKey, sol(1));

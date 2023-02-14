@@ -1,7 +1,7 @@
 import {
   Context,
   createGenericFile,
-  createMetaplex,
+  createUmi,
   generatedSignerIdentity,
   utf8,
 } from '@metaplex-foundation/umi-core';
@@ -19,14 +19,14 @@ test('example test', async (t) => {
 // TODO(loris): Unskip these tests when we can mock the NFT Storage API.
 
 const getContext = (options?: NftStorageUploaderOptions): Context =>
-  createMetaplex().use({
-    install(metaplex) {
-      metaplex.use(web3JsRpc('https://metaplex.devnet.rpcpool.com/'));
-      metaplex.use(web3JsEddsa());
-      metaplex.use(fetchHttp());
-      metaplex.use(httpDownloader());
-      metaplex.use(generatedSignerIdentity());
-      metaplex.use(nftStorageUploader(options));
+  createUmi().use({
+    install(umi) {
+      umi.use(web3JsRpc('https://metaplex.devnet.rpcpool.com/'));
+      umi.use(web3JsEddsa());
+      umi.use(fetchHttp());
+      umi.use(httpDownloader());
+      umi.use(generatedSignerIdentity());
+      umi.use(nftStorageUploader(options));
     },
   });
 

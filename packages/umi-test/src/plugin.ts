@@ -1,6 +1,6 @@
 import {
   generatedSignerIdentity,
-  MetaplexPlugin,
+  UmiPlugin,
 } from '@metaplex-foundation/umi-core';
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { fetchHttp } from '@metaplex-foundation/umi-http-fetch';
@@ -16,15 +16,15 @@ import { web3JsTransactionFactory } from '@metaplex-foundation/umi-transaction-f
 export const testPlugins = (
   endpoint: string = 'http://127.0.0.1:8899',
   rpcOptions: Web3JsRpcOptions = 'confirmed'
-): MetaplexPlugin => ({
-  install(metaplex) {
-    metaplex.use(beetSerializer());
-    metaplex.use(defaultProgramRepository());
-    metaplex.use(fetchHttp());
-    metaplex.use(web3JsEddsa());
-    metaplex.use(web3JsRpc(endpoint, rpcOptions));
-    metaplex.use(web3JsTransactionFactory());
-    metaplex.use(mockStorage());
-    metaplex.use(generatedSignerIdentity());
+): UmiPlugin => ({
+  install(umi) {
+    umi.use(beetSerializer());
+    umi.use(defaultProgramRepository());
+    umi.use(fetchHttp());
+    umi.use(web3JsEddsa());
+    umi.use(web3JsRpc(endpoint, rpcOptions));
+    umi.use(web3JsTransactionFactory());
+    umi.use(mockStorage());
+    umi.use(generatedSignerIdentity());
   },
 });

@@ -1,8 +1,8 @@
-import { MetaplexPlugin } from '@metaplex-foundation/umi-core';
+import { UmiPlugin } from '@metaplex-foundation/umi-core';
 import { FetchHttp } from './FetchHttp';
 
-export const fetchHttp = (): MetaplexPlugin => ({
-  install(metaplex) {
-    metaplex.http = new FetchHttp();
+export const fetchHttp = (): UmiPlugin => ({
+  install(umi) {
+    umi.http = new FetchHttp();
   },
 });

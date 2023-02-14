@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const test = require('ava');
 const {
-  createMetaplex,
+  createUmi,
   generatedSignerIdentity,
 } = require('@metaplex-foundation/umi-core');
 const { web3JsRpc } = require('@metaplex-foundation/umi-rpc-web3js');
@@ -16,7 +16,7 @@ test('it successfully exports commonjs named exports', (t) => {
 
 test('it can import the Bundlr client', async (t) => {
   const { BundlrUploader } = exported;
-  const context = createMetaplex()
+  const context = createUmi()
     .use(web3JsRpc('http://localhost:8899'))
     .use(web3JsEddsa())
     .use(generatedSignerIdentity());

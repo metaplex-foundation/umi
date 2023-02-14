@@ -1,6 +1,6 @@
 import {
-  Metaplex,
-  createMetaplex as baseCreateMetaplex,
+  Umi,
+  createUmi as baseCreateUmi,
   sol,
   Context,
   generateSigner,
@@ -8,14 +8,14 @@ import {
 import { Web3JsRpcOptions } from '@metaplex-foundation/umi-rpc-web3js';
 import { testPlugins } from './plugin';
 
-export const createMetaplex = async (
+export const createUmi = async (
   endpoint?: string,
   rpcOptions?: Web3JsRpcOptions,
   airdropAmount = sol(100)
-): Promise<Metaplex> => {
-  const metaplex = baseCreateMetaplex().use(testPlugins(endpoint, rpcOptions));
-  await metaplex.rpc.airdrop(metaplex.identity.publicKey, airdropAmount);
-  return metaplex;
+): Promise<Umi> => {
+  const umi = baseCreateUmi().use(testPlugins(endpoint, rpcOptions));
+  await umi.rpc.airdrop(umi.identity.publicKey, airdropAmount);
+  return umi;
 };
 
 export const generateSignerWithSol = async (

@@ -1,5 +1,5 @@
 import {
-  MetaplexPlugin,
+  UmiPlugin,
   signerIdentity,
   signerPayer,
 } from '@metaplex-foundation/umi-core';
@@ -11,18 +11,18 @@ import {
 export const walletAdapterIdentity = (
   walletAdapter: WalletAdapter,
   setPayer = true
-): MetaplexPlugin => ({
-  install(metaplex) {
+): UmiPlugin => ({
+  install(umi) {
     const signer = createSignerFromWalletAdapter(walletAdapter);
-    metaplex.use(signerIdentity(signer, setPayer));
+    umi.use(signerIdentity(signer, setPayer));
   },
 });
 
 export const walletAdapterPayer = (
   walletAdapter: WalletAdapter
-): MetaplexPlugin => ({
-  install(metaplex) {
+): UmiPlugin => ({
+  install(umi) {
     const signer = createSignerFromWalletAdapter(walletAdapter);
-    metaplex.use(signerPayer(signer));
+    umi.use(signerPayer(signer));
   },
 });
