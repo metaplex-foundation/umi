@@ -23,7 +23,7 @@
     "lint:fix": "eslint --fix --ext js,ts,tsx src",
     "clean": "rimraf dist",
     "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
-    "test": "pnpm server:start && ava; pnpm server:stop",
+    "test": "pnpm server:start && ava; ret=$?; pnpm server:stop; exit $ret",
     "server:start": "node ./test/_server.cjs > /dev/null &",
     "server:stop": "kill $(lsof -t -i:3000) 2> /dev/null || true"
   },
