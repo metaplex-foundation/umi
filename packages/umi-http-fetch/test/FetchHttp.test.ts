@@ -60,7 +60,8 @@ test('it can send a JSON post request', async (t) => {
   });
 });
 
-test('it can send a Multipart post request', async (t) => {
+// FormData unavailable in Node.js 16.
+test.skip('it can send a Multipart post request', async (t) => {
   const http = new FetchHttp();
   const response = await http.send<User>(
     request()
