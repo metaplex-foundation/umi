@@ -5,7 +5,7 @@
 
 Add support for variable string serializers
 
-There is now three ways to serialize/deserialize a string:
+There are now three ways to serialize/deserialize a string:
 
 ```ts
 // With prefix.
