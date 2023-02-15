@@ -583,6 +583,18 @@ export class BeetSerializer implements SerializerInterface {
     );
   }
 
+  variableString(
+    content?: Serializer<string>,
+    description?: string
+  ): Serializer<string> {
+    const contentSerializer = content ?? utf8;
+    return {
+      ...contentSerializer,
+      description:
+        description ?? `variableString(${contentSerializer.description})`,
+    };
+  }
+
   bool(size?: NumberSerializer, description?: string): Serializer<boolean> {
     const serializer = size ?? u8();
     if (serializer.fixedSize === null) {

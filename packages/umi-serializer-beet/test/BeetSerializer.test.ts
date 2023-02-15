@@ -316,6 +316,20 @@ test('it can serialize fixed strings', (t) => {
   t.is(doffset(fixedString(5, base58), '7893000000'), 5);
 });
 
+test('it can serialize variable strings', (t) => {
+  const { variableString } = new BeetSerializer();
+  t.is(variableString().description, 'variableString(utf8)');
+  t.is(variableString(undefined, 'My string').description, 'My string');
+  t.is(variableString().fixedSize, null);
+  t.is(variableString().maxSize, null);
+
+  // It simply delegates to the content serializer.
+  t.is(s(variableString(), 'Hello World!'), '48656c6c6f20576f726c6421');
+  t.is(d(variableString(), '48656c6c6f20576f726c6421'), 'Hello World!');
+  t.is(doffset(variableString(), '48656c6c6f20576f726c6421'), 12);
+  t.is(sd(variableString(), 'Hello World!'), 'Hello World!');
+});
+
 test('it can serialize bytes', (t) => {
   const { bytes } = new BeetSerializer();
   t.is(bytes.description, 'bytes');

@@ -202,7 +202,7 @@ export interface SerializerInterface {
   ) => Serializer<string>;
 
   /**
-   * Creates serializer of fixed length strings.
+   * Creates a fixed-length serializer for strings.
    *
    * @param bytes - The fixed number of bytes to read.
    * @param content - The string serializer to use for the content. Defaults to `utf8`.
@@ -210,6 +210,17 @@ export interface SerializerInterface {
    */
   fixedString: (
     bytes: number,
+    content?: Serializer<string>,
+    description?: string
+  ) => Serializer<string>;
+
+  /**
+   * Creates a variable-length serializer for strings.
+   *
+   * @param content - The string serializer to use for the content. Defaults to `utf8`.
+   * @param description - A custom description for the serializer.
+   */
+  variableString: (
     content?: Serializer<string>,
     description?: string
   ) => Serializer<string>;
@@ -334,6 +345,10 @@ export class NullSerializer implements SerializerInterface {
   }
 
   fixedString(): Serializer<string> {
+    throw this.error;
+  }
+
+  variableString(): Serializer<string> {
     throw this.error;
   }
 
