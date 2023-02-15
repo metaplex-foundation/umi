@@ -1,5 +1,30 @@
 # @metaplex-foundation/umi-serializer-beet
 
+## 0.2.1
+
+### Patch Changes
+
+- [#6](https://github.com/metaplex-foundation/umi/pull/6) [`d28f4dc`](https://github.com/metaplex-foundation/umi/commit/d28f4dc05c45f35a429fa818e060aed648778718) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Add support for variable string serializers
+
+  There are now three ways to serialize/deserialize a string:
+
+  ```ts
+  // With prefix.
+  umi.serializer.string().serialize('A');
+  // -> 0x0100000041
+
+  // Fixed.
+  umi.serializer.fixedString(8).serialize('A');
+  // -> 0x4100000000000000
+
+  // Variable.
+  umi.serializer.variableString().serialize('A');
+  // -> 0x41
+  ```
+
+- Updated dependencies [[`d28f4dc`](https://github.com/metaplex-foundation/umi/commit/d28f4dc05c45f35a429fa818e060aed648778718)]:
+  - @metaplex-foundation/umi-core@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes
