@@ -1,5 +1,14 @@
 # @metaplex-foundation/umi-serializer-beet
 
+## 0.2.2
+
+### Patch Changes
+
+- [`e1c9595`](https://github.com/metaplex-foundation/umi/commit/e1c9595dd7f0aeb4469e86a496bc25bbb43a1b5d) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Rename MetaplexError to UmiError
+
+- Updated dependencies [[`e1c9595`](https://github.com/metaplex-foundation/umi/commit/e1c9595dd7f0aeb4469e86a496bc25bbb43a1b5d)]:
+  - @metaplex-foundation/umi-core@0.2.2
+
 ## 0.2.1
 
 ### Patch Changes
