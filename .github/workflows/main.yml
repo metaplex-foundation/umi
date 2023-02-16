@@ -151,8 +151,8 @@ jobs:
   deploy_docs:
     name: Deploy docs
     runs-on: ubuntu-latest
-    # needs: release (todo)
-    # if: needs.release.outputs.published == 'true'
+    needs: release
+    if: needs.release.outputs.published == 'true'
     environment:
       name: js-documentation
       url: ${{ steps.deploy.outputs.url }}
