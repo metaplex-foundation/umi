@@ -1,11 +1,11 @@
 import type { Program } from '../Program';
 import { base58PublicKey } from '../PublicKey';
-import { MetaplexError } from './MetaplexError';
+import { UmiError } from './UmiError';
 
 export type UnderlyingProgramError = Error & { code?: number; logs?: string[] };
 
 /** @group Errors */
-export class ProgramError extends MetaplexError {
+export class ProgramError extends UmiError {
   readonly name: string = 'ProgramError';
 
   readonly program: Program;

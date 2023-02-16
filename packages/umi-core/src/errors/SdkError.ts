@@ -1,7 +1,7 @@
-import { MetaplexError } from './MetaplexError';
+import { UmiError } from './UmiError';
 
 /** @group Errors */
-export class SdkError extends MetaplexError {
+export class SdkError extends UmiError {
   readonly name: string = 'SdkError';
 
   constructor(message: string, cause?: Error) {

@@ -1,6 +1,6 @@
-import { MetaplexError } from '@metaplex-foundation/umi-core';
+import { UmiError } from '@metaplex-foundation/umi-core';
 
-export class WalletAdaptersError extends MetaplexError {
+export class WalletAdaptersError extends UmiError {
   readonly name: string = 'WalletAdaptersError';
 
   constructor(message: string, cause?: Error) {

@@ -1,8 +1,8 @@
 /** @group Errors */
-export class MetaplexError extends Error {
-  readonly name: string = 'MetaplexError';
+export class UmiError extends Error {
+  readonly name: string = 'UmiError';
 
-  readonly source: MetaplexErrorSource;
+  readonly source: UmiErrorSource;
 
   readonly sourceDetails?: string;
 
@@ -10,7 +10,7 @@ export class MetaplexError extends Error {
 
   constructor(
     message: string,
-    source: MetaplexErrorSource,
+    source: UmiErrorSource,
     sourceDetails?: string,
     cause?: Error
   ) {
@@ -44,9 +44,4 @@ export class MetaplexError extends Error {
 }
 
 /** @group Errors */
-export type MetaplexErrorSource =
-  | 'sdk'
-  | 'network'
-  | 'rpc'
-  | 'plugin'
-  | 'program';
+export type UmiErrorSource = 'sdk' | 'network' | 'rpc' | 'plugin' | 'program';

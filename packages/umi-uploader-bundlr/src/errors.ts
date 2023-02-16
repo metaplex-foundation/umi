@@ -1,6 +1,6 @@
-import { MetaplexError } from '@metaplex-foundation/umi-core';
+import { UmiError } from '@metaplex-foundation/umi-core';
 
-export class BundlrError extends MetaplexError {
+export class BundlrError extends UmiError {
   readonly name: string = 'BundlrError';
 
   constructor(message: string, cause?: Error) {

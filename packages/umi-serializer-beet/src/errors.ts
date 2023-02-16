@@ -1,7 +1,7 @@
-import { MetaplexError } from '@metaplex-foundation/umi-core';
+import { UmiError } from '@metaplex-foundation/umi-core';
 
 /** @group Errors */
-export class BeetSerializerError extends MetaplexError {
+export class BeetSerializerError extends UmiError {
   readonly name: string = 'BeetSerializerError';
 
   constructor(message: string, cause?: Error) {
