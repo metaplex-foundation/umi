@@ -32,7 +32,6 @@
   "typedocOptions": {
     "entryPoints": ".",
     "entryPointStrategy": "packages",
-    "plugin": ["./configs/typedoc-plugin.js"],
     "out": "docs",
     "readme": "README.md",
     "name": "API References",
