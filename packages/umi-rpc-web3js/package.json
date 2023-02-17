@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-rpc-web3js",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",

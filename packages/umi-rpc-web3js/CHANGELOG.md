@@ -1,5 +1,15 @@
 # @metaplex-foundation/umi-rpc-web3js
 
+## 0.2.3
+
+### Patch Changes
+
+- [`697bddd`](https://github.com/metaplex-foundation/umi/commit/697bddd6cdd520bd1f9190eb9827c3f351512145) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Add getSlot to RPC Interface
+
+- Updated dependencies [[`697bddd`](https://github.com/metaplex-foundation/umi/commit/697bddd6cdd520bd1f9190eb9827c3f351512145)]:
+  - @metaplex-foundation/umi-core@0.2.3
+  - @metaplex-foundation/umi-web3js-adapters@0.2.3
+
 ## 0.2.2
 
 ### Patch Changes
