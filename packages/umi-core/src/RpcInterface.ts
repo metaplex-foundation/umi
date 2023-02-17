@@ -32,6 +32,7 @@ export interface RpcInterface {
     options?: RpcGetBalanceOptions
   ): Promise<SolAmount>;
   getRent(bytes: number, options?: RpcGetRentOptions): Promise<SolAmount>;
+  getSlot(options?: RpcGetSlotOptions): Promise<number>;
   getLatestBlockhash(
     options?: RpcGetLatestBlockhashOptions
   ): Promise<BlockhashWithExpiryBlockHeight>;
@@ -108,6 +109,8 @@ export type RpcGetRentOptions = RpcBaseOptions & {
   includesHeaderBytes?: boolean;
 };
 
+export type RpcGetSlotOptions = RpcBaseOptions;
+
 export type RpcGetLatestBlockhashOptions = RpcBaseOptions;
 
 export type RpcGetTransactionOptions = RpcBaseOptions;
@@ -178,6 +181,10 @@ export class NullRpc implements RpcInterface {
   }
 
   getRent(): Promise<SolAmount> {
+    throw this.error;
+  }
+
+  getSlot(): Promise<number> {
     throw this.error;
   }
 

@@ -36,6 +36,7 @@ import {
   TransactionMetaTokenBalance,
   TransactionSignature,
   TransactionWithMeta,
+  RpcGetSlotOptions,
 } from '@metaplex-foundation/umi-core';
 import {
   fromWeb3JsMessage,
@@ -147,6 +148,10 @@ export class Web3JsRpc implements RpcInterface {
       return lamports(rentPerByte * BigInt(bytes));
     }
     return lamports(await rentFor(bytes));
+  }
+
+  async getSlot(options: RpcGetSlotOptions = {}): Promise<number> {
+    return this.connection.getSlot(options);
   }
 
   async getLatestBlockhash(
