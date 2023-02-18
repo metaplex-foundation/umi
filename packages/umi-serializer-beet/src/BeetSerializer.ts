@@ -16,6 +16,7 @@ import {
   ScalarEnum,
   Serializer,
   SerializerInterface,
+  SetSerializerOptions,
   some,
   StructToSerializerTuple,
   TupleSerializerOptions,
@@ -113,40 +114,48 @@ export class BeetSerializer implements SerializerInterface {
   }
 
   map<TK, TV, UK extends TK = TK, UV extends TV = TV>(
-    keySerializer: Serializer<TK, UK>,
-    valueSerializer: Serializer<TV, UV>,
+    key: Serializer<TK, UK>,
+    value: Serializer<TV, UV>,
     options: MapSerializerOptions = {}
   ): Serializer<Map<TK, TV>, Map<UK, UV>> {
-    const prefixSeralizer = prefix ?? u32();
+    const size = options.size ?? u32();
     return {
       description:
-        description ??
-        `map(${keySerializer.description}, ${valueSerializer.description})`,
-      fixedSize: null,
-      maxSize: null,
+        options.description ??
+        `map(${key.description}, ${value.description}; ${getSizeDescription(
+          size
+        )})`,
+      fixedSize: getSizeFromChildren(size, [key.fixedSize, value.fixedSize]),
+      maxSize: getSizeFromChildren(size, [key.maxSize, value.maxSize]),
       serialize: (map: Map<TK, TV>) => {
-        const lengthBytes = prefixSeralizer.serialize(map.size);
-        const itemBytes = Array.from(map, ([key, value]) =>
-          mergeBytes([
-            keySerializer.serialize(key),
-            valueSerializer.serialize(value),
-          ])
+        if (typeof size === 'number' && map.size !== size) {
+          throw new BeetSerializerError(
+            `Expected map to have ${size} items but got ${map.size}.`
+          );
+        }
+        const itemBytes = Array.from(map, ([k, v]) =>
+          mergeBytes([key.serialize(k), value.serialize(v)])
         );
-        return mergeBytes([lengthBytes, ...itemBytes]);
+        return mergeBytes([getSizePrefix(size, map.size), ...itemBytes]);
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
         const map: Map<UK, UV> = new Map();
-        if (bytes.length === 0) {
+        if (typeof size === 'object' && bytes.length === 0) {
           return this.handleEmptyBuffer('map', map, offset);
         }
-        const [length, newOffset] = prefixSeralizer.deserialize(bytes, offset);
+        const [resolvedSize, newOffset] = getResolvedSize(
+          size,
+          [key.fixedSize, value.fixedSize],
+          bytes,
+          offset
+        );
         offset = newOffset;
-        for (let i = 0; i < length; i += 1) {
-          const [key, kOffset] = keySerializer.deserialize(bytes, offset);
+        for (let i = 0; i < resolvedSize; i += 1) {
+          const [deserializedKey, kOffset] = key.deserialize(bytes, offset);
           offset = kOffset;
-          const [value, vOffset] = valueSerializer.deserialize(bytes, offset);
+          const [deserializedValue, vOffset] = value.deserialize(bytes, offset);
           offset = vOffset;
-          map.set(key, value);
+          map.set(deserializedKey, deserializedValue);
         }
         return [map, offset];
       },
@@ -154,31 +163,39 @@ export class BeetSerializer implements SerializerInterface {
   }
 
   set<T, U extends T = T>(
-    itemSerializer: Serializer<T, U>,
-    prefix?: NumberSerializer,
-    description?: string
+    item: Serializer<T, U>,
+    options: SetSerializerOptions = {}
   ): Serializer<Set<T>, Set<U>> {
-    const prefixSeralizer = prefix ?? u32();
+    const size = options.size ?? u32();
     return {
-      description: description ?? `set(${itemSerializer.description})`,
-      fixedSize: null,
-      maxSize: null,
+      description:
+        options.description ??
+        `set(${item.description}; ${getSizeDescription(size)})`,
+      fixedSize: getSizeFromChildren(size, [item.fixedSize]),
+      maxSize: getSizeFromChildren(size, [item.maxSize]),
       serialize: (set: Set<T>) => {
-        const lengthBytes = prefixSeralizer.serialize(set.size);
-        const itemBytes = Array.from(set, (value) =>
-          itemSerializer.serialize(value)
-        );
-        return mergeBytes([lengthBytes, ...itemBytes]);
+        if (typeof size === 'number' && set.size !== size) {
+          throw new BeetSerializerError(
+            `Expected set to have ${size} items but got ${set.size}.`
+          );
+        }
+        const itemBytes = Array.from(set, (value) => item.serialize(value));
+        return mergeBytes([getSizePrefix(size, set.size), ...itemBytes]);
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
         const set: Set<U> = new Set();
-        if (bytes.length === 0) {
+        if (typeof size === 'object' && bytes.length === 0) {
           return this.handleEmptyBuffer('set', set, offset);
         }
-        const [length, newOffset] = prefixSeralizer.deserialize(bytes, offset);
+        const [resolvedSize, newOffset] = getResolvedSize(
+          size,
+          [item.fixedSize],
+          bytes,
+          offset
+        );
         offset = newOffset;
-        for (let i = 0; i < length; i += 1) {
-          const [value, newOffset] = itemSerializer.deserialize(bytes, offset);
+        for (let i = 0; i < resolvedSize; i += 1) {
+          const [value, newOffset] = item.deserialize(bytes, offset);
           offset = newOffset;
           set.add(value);
         }
