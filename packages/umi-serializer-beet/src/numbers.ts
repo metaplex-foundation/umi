@@ -1,20 +1,29 @@
-import { Serializer } from '@metaplex-foundation/umi-core';
+import {
+  NumberSerializerOptions,
+  Serializer,
+} from '@metaplex-foundation/umi-core';
 import type { FixedSizeBeet } from '@metaplex-foundation/beet';
 import * as beet from '@metaplex-foundation/beet';
 import { Buffer } from 'buffer';
 import { DeserializingEmptyBufferError } from './errors';
 
 // Simple numbers.
-export const u8 = () => wrapBeet(beet.u8);
-export const u16 = () => wrapBeet(beet.u16);
-export const u32 = () => wrapBeet(beet.u32);
-export const i8 = () => wrapBeet(beet.i8);
-export const i16 = () => wrapBeet(beet.i16);
-export const i32 = () => wrapBeet(beet.i32);
+export const u8 = (options: NumberSerializerOptions = {}) =>
+  wrapBeet(beet.u8, options);
+export const u16 = (options: NumberSerializerOptions = {}) =>
+  wrapBeet(beet.u16, options);
+export const u32 = (options: NumberSerializerOptions = {}) =>
+  wrapBeet(beet.u32, options);
+export const i8 = (options: NumberSerializerOptions = {}) =>
+  wrapBeet(beet.i8, options);
+export const i16 = (options: NumberSerializerOptions = {}) =>
+  wrapBeet(beet.i16, options);
+export const i32 = (options: NumberSerializerOptions = {}) =>
+  wrapBeet(beet.i32, options);
 
 // Big numbers.
-export const u64 = () => {
-  const serializer = wrapBigintBeet(beet.u64);
+export const u64 = (options: NumberSerializerOptions = {}) => {
+  const serializer = wrapBigintBeet(beet.u64, options);
   return {
     ...serializer,
     serialize: (value: number | bigint) => {
@@ -23,8 +32,8 @@ export const u64 = () => {
     },
   };
 };
-export const u128 = () => {
-  const serializer = wrapBigintBeet(beet.u128);
+export const u128 = (options: NumberSerializerOptions = {}) => {
+  const serializer = wrapBigintBeet(beet.u128, options);
   return {
     ...serializer,
     serialize: (value: number | bigint) => {
@@ -33,8 +42,8 @@ export const u128 = () => {
     },
   };
 };
-export const i64 = () => {
-  const serializer = wrapBigintBeet(beet.i64);
+export const i64 = (options: NumberSerializerOptions = {}) => {
+  const serializer = wrapBigintBeet(beet.i64, options);
   return {
     ...serializer,
     serialize: (value: number | bigint) => {
@@ -48,8 +57,8 @@ export const i64 = () => {
     },
   };
 };
-export const i128 = () => {
-  const serializer = wrapBigintBeet(beet.i128);
+export const i128 = (options: NumberSerializerOptions = {}) => {
+  const serializer = wrapBigintBeet(beet.i128, options);
   return {
     ...serializer,
     serialize: (value: number | bigint) => {
@@ -65,9 +74,12 @@ export const i128 = () => {
 };
 
 // Helpers.
-function wrapBeet<T>(fixedBeet: FixedSizeBeet<T>): Serializer<T> {
+function wrapBeet<T>(
+  fixedBeet: FixedSizeBeet<T>,
+  options: NumberSerializerOptions = {}
+): Serializer<T> {
   return {
-    description: fixedBeet.description,
+    description: options.description ?? fixedBeet.description,
     fixedSize: fixedBeet.byteSize,
     maxSize: fixedBeet.byteSize,
     serialize: (value: T) => {
@@ -76,7 +88,7 @@ function wrapBeet<T>(fixedBeet: FixedSizeBeet<T>): Serializer<T> {
       return new Uint8Array(buffer);
     },
     deserialize: (bytes: Uint8Array, offset = 0) => {
-      if (bytes.length === 0) {
+      if (bytes.slice(offset).length === 0) {
         throw new DeserializingEmptyBufferError(fixedBeet.description);
       }
       const buffer = Buffer.from(bytes);
@@ -87,10 +99,11 @@ function wrapBeet<T>(fixedBeet: FixedSizeBeet<T>): Serializer<T> {
 }
 
 function wrapBigintBeet(
-  fixedBeet: FixedSizeBeet<beet.bignum>
+  fixedBeet: FixedSizeBeet<beet.bignum>,
+  options: NumberSerializerOptions = {}
 ): Serializer<number | bigint, bigint> {
   return {
-    description: fixedBeet.description,
+    description: options.description ?? fixedBeet.description,
     fixedSize: fixedBeet.byteSize,
     maxSize: fixedBeet.byteSize,
     serialize: (value: number | bigint) => {
@@ -99,7 +112,7 @@ function wrapBigintBeet(
       return new Uint8Array(buffer);
     },
     deserialize: (bytes: Uint8Array, offset = 0) => {
-      if (bytes.length === 0) {
+      if (bytes.slice(offset).length === 0) {
         throw new DeserializingEmptyBufferError(fixedBeet.description);
       }
       const buffer = Buffer.from(bytes);

@@ -1,6 +1,8 @@
 import {
   ArrayLikeSerializerSize,
   ArraySerializerOptions,
+  BoolSerializerOptions,
+  BytesSerializerOptions,
   DataEnum,
   DataEnumSerializerOptions,
   DataEnumToSerializerTuple,
@@ -11,12 +13,13 @@ import {
   none,
   Nullable,
   NullableSerializerOptions,
-  NumberSerializer,
+  NumberSerializerOptions,
   Option,
   OptionSerializerOptions,
   publicKey,
   PublicKey,
   PublicKeyInput,
+  PublicKeySerializerOptions,
   ScalarEnum,
   Serializer,
   SerializerInterface,
@@ -26,6 +29,7 @@ import {
   StructSerializerOptions,
   StructToSerializerTuple,
   TupleSerializerOptions,
+  UnitSerializerOptions,
   utf8,
   WrapInSerializer,
 } from '@metaplex-foundation/umi-core';
@@ -146,7 +150,7 @@ export class BeetSerializer implements SerializerInterface {
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
         const map: Map<UK, UV> = new Map();
-        if (typeof size === 'object' && bytes.length === 0) {
+        if (typeof size === 'object' && bytes.slice(offset).length === 0) {
           return this.handleEmptyBuffer('map', map, offset);
         }
         const [resolvedSize, newOffset] = getResolvedSize(
@@ -190,7 +194,7 @@ export class BeetSerializer implements SerializerInterface {
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
         const set: Set<U> = new Set();
-        if (typeof size === 'object' && bytes.length === 0) {
+        if (typeof size === 'object' && bytes.slice(offset).length === 0) {
           return this.handleEmptyBuffer('set', set, offset);
         }
         const [resolvedSize, newOffset] = getResolvedSize(
@@ -248,7 +252,7 @@ export class BeetSerializer implements SerializerInterface {
         return mergeBytes([prefixByte, itemBytes]);
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
-        if (bytes.length === 0) {
+        if (bytes.slice(offset).length === 0) {
           return this.handleEmptyBuffer<Option<U>>('option', none(), offset);
         }
         const fixedOffset =
@@ -303,7 +307,7 @@ export class BeetSerializer implements SerializerInterface {
         return mergeBytes([prefixByte, itemBytes]);
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
-        if (bytes.length === 0) {
+        if (bytes.slice(offset).length === 0) {
           return this.handleEmptyBuffer('nullable', null, offset);
         }
         const fixedOffset =
@@ -390,7 +394,7 @@ export class BeetSerializer implements SerializerInterface {
         return u8().serialize(variantValue);
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
-        if (bytes.length === 0) {
+        if (bytes.slice(offset).length === 0) {
           throw new DeserializingEmptyBufferError('enum');
         }
         const [value, newOffset] = u8().deserialize(bytes, offset);
@@ -450,7 +454,7 @@ export class BeetSerializer implements SerializerInterface {
         return mergeBytes([variantPrefix, variantBytes]);
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
-        if (bytes.length === 0) {
+        if (bytes.slice(offset).length === 0) {
           throw new DeserializingEmptyBufferError('dataEnum');
         }
         const [discriminator, dOffset] = prefix.deserialize(bytes, offset);
@@ -507,29 +511,29 @@ export class BeetSerializer implements SerializerInterface {
     };
   }
 
-  bool(size?: NumberSerializer, description?: string): Serializer<boolean> {
-    const serializer = size ?? u8();
-    if (serializer.fixedSize === null) {
+  bool(options: BoolSerializerOptions = {}): Serializer<boolean> {
+    const size = options.size ?? u8();
+    if (size.fixedSize === null) {
       throw new BeetSerializerError('Serializer [bool] requires a fixed size.');
     }
     return {
-      description: description ?? `bool(${serializer.description})`,
-      fixedSize: serializer.fixedSize,
-      maxSize: serializer.fixedSize,
-      serialize: (value: boolean) => serializer.serialize(value ? 1 : 0),
+      description: options.description ?? `bool(${size.description})`,
+      fixedSize: size.fixedSize,
+      maxSize: size.fixedSize,
+      serialize: (value: boolean) => size.serialize(value ? 1 : 0),
       deserialize: (bytes: Uint8Array, offset = 0) => {
-        if (bytes.length === 0) {
+        if (bytes.slice(offset).length === 0) {
           throw new DeserializingEmptyBufferError('bool');
         }
-        const [value, vOffset] = serializer.deserialize(bytes, offset);
+        const [value, vOffset] = size.deserialize(bytes, offset);
         return [value === 1, vOffset];
       },
     };
   }
 
-  get unit(): Serializer<void> {
+  unit(options: UnitSerializerOptions = {}): Serializer<void> {
     return {
-      description: 'unit',
+      description: options.description ?? 'unit',
       fixedSize: 0,
       maxSize: 0,
       serialize: () => new Uint8Array(),
@@ -537,47 +541,55 @@ export class BeetSerializer implements SerializerInterface {
     };
   }
 
-  get u8(): Serializer<number> {
-    return u8();
+  u8(options: NumberSerializerOptions = {}): Serializer<number> {
+    return u8(options);
   }
 
-  get u16(): Serializer<number> {
-    return u16();
+  u16(options: NumberSerializerOptions = {}): Serializer<number> {
+    return u16(options);
   }
 
-  get u32(): Serializer<number> {
-    return u32();
+  u32(options: NumberSerializerOptions = {}): Serializer<number> {
+    return u32(options);
   }
 
-  get u64(): Serializer<number | bigint, bigint> {
-    return u64();
+  u64(
+    options: NumberSerializerOptions = {}
+  ): Serializer<number | bigint, bigint> {
+    return u64(options);
   }
 
-  get u128(): Serializer<number | bigint, bigint> {
-    return u128();
+  u128(
+    options: NumberSerializerOptions = {}
+  ): Serializer<number | bigint, bigint> {
+    return u128(options);
   }
 
-  get i8(): Serializer<number> {
-    return i8();
+  i8(options: NumberSerializerOptions = {}): Serializer<number> {
+    return i8(options);
   }
 
-  get i16(): Serializer<number> {
-    return i16();
+  i16(options: NumberSerializerOptions = {}): Serializer<number> {
+    return i16(options);
   }
 
-  get i32(): Serializer<number> {
-    return i32();
+  i32(options: NumberSerializerOptions = {}): Serializer<number> {
+    return i32(options);
   }
 
-  get i64(): Serializer<number | bigint, bigint> {
-    return i64();
+  i64(
+    options: NumberSerializerOptions = {}
+  ): Serializer<number | bigint, bigint> {
+    return i64(options);
   }
 
-  get i128(): Serializer<number | bigint, bigint> {
-    return i128();
+  i128(
+    options: NumberSerializerOptions = {}
+  ): Serializer<number | bigint, bigint> {
+    return i128(options);
   }
 
-  get f32(): Serializer<number> {
+  f32(): Serializer<number> {
     return {
       description: 'f32 [not supported]',
       fixedSize: 4,
@@ -591,7 +603,7 @@ export class BeetSerializer implements SerializerInterface {
     };
   }
 
-  get f64(): Serializer<number> {
+  f64(): Serializer<number> {
     return {
       description: 'f64 [not supported]',
       fixedSize: 8,
@@ -605,9 +617,9 @@ export class BeetSerializer implements SerializerInterface {
     };
   }
 
-  get bytes(): Serializer<Uint8Array> {
+  bytes(options: BytesSerializerOptions = {}): Serializer<Uint8Array> {
     return {
-      description: 'bytes',
+      description: options.description ?? 'bytes',
       fixedSize: null,
       maxSize: null,
       serialize: (value: Uint8Array) => new Uint8Array(value),
@@ -618,14 +630,16 @@ export class BeetSerializer implements SerializerInterface {
     };
   }
 
-  get publicKey(): Serializer<PublicKeyInput, PublicKey> {
+  publicKey(
+    options: PublicKeySerializerOptions = {}
+  ): Serializer<PublicKeyInput, PublicKey> {
     return {
-      description: 'publicKey',
+      description: options.description ?? 'publicKey',
       fixedSize: 32,
       maxSize: 32,
       serialize: (value: PublicKeyInput) => publicKey(value).bytes,
       deserialize: (bytes: Uint8Array, offset = 0) => {
-        if (bytes.length === 0) {
+        if (bytes.slice(offset).length === 0) {
           throw new DeserializingEmptyBufferError('publicKey');
         }
         const pubkeyBytes = bytes.slice(offset, offset + 32);
