@@ -69,6 +69,22 @@ export function mapSerializer<
   };
 }
 
+/**
+ * Creates a fixed-size serializer from a given serializer.
+ *
+ * @param bytes - The fixed number of bytes to read.
+ * @param child - The serializer to wrap into a fixed-size serializer.
+ * @param description - A custom description for the serializer.
+ */
+// TODO
+// export const fixSerializer = <T, U extends T = T>(
+//   bytes: number,
+//   child: Serializer<T, U>,
+//   description?: string
+// ): Serializer<T, U> => {
+//   // TODO
+// };
+
 export const swapEndianness = (buffer: Uint8Array, bytes = 8): Uint8Array => {
   bytes = Math.max(bytes, 1);
   let newBuffer = new Uint8Array(0);
