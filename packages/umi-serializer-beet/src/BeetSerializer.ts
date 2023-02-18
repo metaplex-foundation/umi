@@ -7,6 +7,7 @@ import {
   DataEnumSerializerOptions,
   DataEnumToSerializerTuple,
   EnumSerializerOptions,
+  fixSerializer,
   isSome,
   MapSerializerOptions,
   mergeBytes,
@@ -485,7 +486,7 @@ export class BeetSerializer implements SerializerInterface {
     }
 
     if (typeof size === 'number') {
-      return fixed(size, encoding, description);
+      return fixSerializer(encoding, size, description);
     }
 
     return {
@@ -663,33 +664,6 @@ export class BeetSerializer implements SerializerInterface {
     }
     return [defaultValue, offset];
   }
-}
-
-function fixed<T, U extends T = T>(
-  bytes: number,
-  child: Serializer<T, U>,
-  description?: string
-): Serializer<T, U> {
-  return {
-    description: description ?? `fixed(${bytes}, ${child.description})`,
-    fixedSize: bytes,
-    maxSize: bytes,
-    serialize: (value: T) => {
-      const buffer = new Uint8Array(bytes).fill(0);
-      buffer.set(child.serialize(value).slice(0, bytes));
-      return buffer;
-    },
-    deserialize: (buffer: Uint8Array, offset = 0) => {
-      buffer = buffer.slice(offset, offset + bytes);
-      if (buffer.length < bytes) {
-        throw new BeetSerializerError(
-          `Serializer [fixed] expected ${bytes} bytes, got ${buffer.length}.`
-        );
-      }
-      const [value] = child.deserialize(buffer, offset);
-      return [value, offset + bytes];
-    },
-  };
 }
 
 function sumSerializerSizes(sizes: (number | null)[]): number | null {

@@ -1,6 +1,8 @@
 import {
+  Endianness,
   NumberSerializerOptions,
   Serializer,
+  swapSerializerEndianness,
 } from '@metaplex-foundation/umi-core';
 import type { FixedSizeBeet } from '@metaplex-foundation/beet';
 import * as beet from '@metaplex-foundation/beet';
@@ -78,7 +80,7 @@ function wrapBeet<T>(
   fixedBeet: FixedSizeBeet<T>,
   options: NumberSerializerOptions = {}
 ): Serializer<T> {
-  return {
+  const serializer = {
     description: options.description ?? fixedBeet.description,
     fixedSize: fixedBeet.byteSize,
     maxSize: fixedBeet.byteSize,
@@ -96,13 +98,19 @@ function wrapBeet<T>(
       return [value, offset + fixedBeet.byteSize];
     },
   };
+
+  if (options.endianness === Endianness.LittleEndian) {
+    return swapSerializerEndianness<T>(serializer, 8);
+  }
+
+  return serializer;
 }
 
 function wrapBigintBeet(
   fixedBeet: FixedSizeBeet<beet.bignum>,
   options: NumberSerializerOptions = {}
 ): Serializer<number | bigint, bigint> {
-  return {
+  const serializer = {
     description: options.description ?? fixedBeet.description,
     fixedSize: fixedBeet.byteSize,
     maxSize: fixedBeet.byteSize,
@@ -123,4 +131,10 @@ function wrapBigintBeet(
       return [value, offset + fixedBeet.byteSize];
     },
   };
+
+  if (options.endianness === Endianness.LittleEndian) {
+    return swapSerializerEndianness<T>(serializer, 8);
+  }
+
+  return serializer;
 }
