@@ -1,8 +1,10 @@
 import {
+  ArrayLikeSerializerSize,
   ArraySerializerOptions,
   DataEnum,
   DataEnumToSerializerTuple,
   isSome,
+  MapSerializerOptions,
   mergeBytes,
   none,
   Nullable,
@@ -71,57 +73,34 @@ export class BeetSerializer implements SerializerInterface {
     options: ArraySerializerOptions = {}
   ): Serializer<T[], U[]> {
     const size = options.size ?? u32();
-    const sizeDescription =
-      typeof size === 'object' ? size.description : `${size}`;
-    function getSize(childSize: number | null): number | null {
-      if (typeof size !== 'number') return null;
-      if (size === 0) return 0;
-      return childSize === null ? null : childSize * size;
-    }
     return {
       description:
-        options.description ?? `array(${item.description}; ${sizeDescription})`,
-      fixedSize: getSize(item.fixedSize),
-      maxSize: getSize(item.maxSize),
+        options.description ??
+        `array(${item.description}; ${getSizeDescription(size)})`,
+      fixedSize: getSizeFromChildren(size, [item.fixedSize]),
+      maxSize: getSizeFromChildren(size, [item.maxSize]),
       serialize: (value: T[]) => {
         if (typeof size === 'number' && value.length !== size) {
           throw new BeetSerializerError(
             `Expected array to have ${size} items but got ${value.length}.`
           );
         }
-        const itemBytes = mergeBytes(value.map((v) => item.serialize(v)));
-        if (typeof size === 'object') {
-          const lengthBytes = size.serialize(value.length);
-          return mergeBytes([lengthBytes, itemBytes]);
-        }
-        return itemBytes;
+        return mergeBytes([
+          getSizePrefix(size, value.length),
+          ...value.map((v) => item.serialize(v)),
+        ]);
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
-        let resolvedSize: number | bigint = 0;
-        if (typeof size === 'object') {
-          if (bytes.slice(offset).length === 0) {
-            return this.handleEmptyBuffer<U[]>('vec', [], offset);
-          }
-          const [length, newOffset] = size.deserialize(bytes, offset);
-          resolvedSize = length;
-          offset = newOffset;
-        } else if (size === 'remainder') {
-          if (item.fixedSize === null) {
-            throw new BeetSerializerError(
-              `Cannot deserialize array of 'remainder' size with variable-sized items.`
-            );
-          }
-          const remainder = bytes.slice(offset).length;
-          if (remainder % item.fixedSize !== 0) {
-            throw new BeetSerializerError(
-              `Cannot deserialize array of 'remainder' size with ${remainder} bytes remaining ` +
-                `and ${item.fixedSize} bytes per item.`
-            );
-          }
-          resolvedSize = remainder % item.fixedSize;
-        } else {
-          resolvedSize = size;
+        if (typeof size === 'object' && bytes.slice(offset).length === 0) {
+          return this.handleEmptyBuffer<U[]>('array', [], offset);
         }
+        const [resolvedSize, newOffset] = getResolvedSize(
+          size,
+          [item.fixedSize],
+          bytes,
+          offset
+        );
+        offset = newOffset;
         const values: U[] = [];
         for (let i = 0; i < resolvedSize; i += 1) {
           const [value, newOffset] = item.deserialize(bytes, offset);
@@ -136,8 +115,7 @@ export class BeetSerializer implements SerializerInterface {
   map<TK, TV, UK extends TK = TK, UV extends TV = TV>(
     keySerializer: Serializer<TK, UK>,
     valueSerializer: Serializer<TV, UV>,
-    prefix?: NumberSerializer,
-    description?: string
+    options: MapSerializerOptions = {}
   ): Serializer<Map<TK, TV>, Map<UK, UV>> {
     const prefixSeralizer = prefix ?? u32();
     return {
@@ -781,4 +759,59 @@ function maxSerializerSizes(sizes: (number | null)[]): number | null {
     (all, size) => (all === null || size === null ? null : Math.max(all, size)),
     0 as number | null
   );
+}
+
+function getSizeDescription(size: ArrayLikeSerializerSize): string {
+  return typeof size === 'object' ? size.description : `${size}`;
+}
+
+function getSizeFromChildren(
+  size: ArrayLikeSerializerSize,
+  childrenSizes: (number | null)[]
+): number | null {
+  if (typeof size !== 'number') return null;
+  if (size === 0) return 0;
+  const childrenSize = sumSerializerSizes(childrenSizes);
+  return childrenSize === null ? null : childrenSize * size;
+}
+
+function getSizePrefix(
+  size: ArrayLikeSerializerSize,
+  realSize: number
+): Uint8Array {
+  return typeof size === 'object' ? size.serialize(realSize) : new Uint8Array();
+}
+
+function getResolvedSize(
+  size: ArrayLikeSerializerSize,
+  childrenSizes: (number | null)[],
+  bytes: Uint8Array,
+  offset: number
+): [number | bigint, number] {
+  if (typeof size === 'number') {
+    return [size, offset];
+  }
+
+  if (typeof size === 'object') {
+    return size.deserialize(bytes, offset);
+  }
+
+  if (size === 'remainder') {
+    const childrenSize = sumSerializerSizes(childrenSizes);
+    if (childrenSize === null) {
+      throw new BeetSerializerError(
+        'Serializers of "remainder" size must have fixed-size items.'
+      );
+    }
+    const remainder = bytes.slice(offset).length;
+    if (remainder % childrenSize !== 0) {
+      throw new BeetSerializerError(
+        `Serializers of "remainder" size must have a remainder that is a multiple of its item size. ` +
+          `Got ${remainder} bytes remaining and ${childrenSize} bytes per item.`
+      );
+    }
+    return [remainder % childrenSize, offset];
+  }
+
+  throw new BeetSerializerError(`Unknown size type: ${JSON.stringify(size)}.`);
 }

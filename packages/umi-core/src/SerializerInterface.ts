@@ -262,6 +262,19 @@ export enum Endianness {
   BigEndian = 'bigEndian',
 }
 
+/**
+ * Represents all the size options for array-like serializers
+ * — i.e. `array`, `map` and `set`.
+ *
+ * It can be one of the following:
+ * - a {@link NumberSerializer} that prefixes its content with its size.
+ * - a fixed number of items.
+ * - or `'remainder'` to infer the number of items by dividing
+ *   the rest of the buffer by the fixed size of its item.
+ *   Note that this option is only available for fixed-size items.
+ */
+export type ArrayLikeSerializerSize = NumberSerializer | number | 'remainder';
+
 export type BaseSerializerOptions = {
   /** A custom description for the serializer. */
   description?: string;
@@ -271,38 +284,26 @@ export type TupleSerializerOptions = BaseSerializerOptions;
 
 export type ArraySerializerOptions = BaseSerializerOptions & {
   /**
-   * The size of the array. It can be one of the following:
-   * - a NumberSerializer that prefixes the array with its size.
-   * - a fixed number of items.
-   * - or `'remainder'` to infer the size of the array by dividing
-   *   the remainder of the buffer by the fixed size of the item.
+   * The size of the array.
    * @defaultValue `u32()`
    */
-  size?: NumberSerializer | number | 'remainder';
+  size?: ArrayLikeSerializerSize;
 };
 
 export type MapSerializerOptions = BaseSerializerOptions & {
   /**
-   * The size of the map. It can be one of the following:
-   * - a NumberSerializer that prefixes the map with its size.
-   * - a fixed number of items.
-   * - or `'remainder'` to infer the size of the map by dividing the
-   *   remainder of the buffer by the fixed size of its key and value.
+   * The size of the map.
    * @defaultValue `u32()`
    */
-  size?: NumberSerializer | number | 'remainder';
+  size?: ArrayLikeSerializerSize;
 };
 
 export type SetSerializerOptions = BaseSerializerOptions & {
   /**
-   * The size of the set. It can be one of the following:
-   * - a NumberSerializer that prefixes the set with its size.
-   * - a fixed number of items.
-   * - or `'remainder'` to infer the size of the set by dividing
-   *   the remainder of the buffer by the fixed size of the item.
+   * The size of the set.
    * @defaultValue `u32()`
    */
-  size?: NumberSerializer | number | 'remainder';
+  size?: ArrayLikeSerializerSize;
 };
 
 export type OptionSerializerOptions = BaseSerializerOptions & {
@@ -354,7 +355,7 @@ export type DataEnumSerializerOptions = BaseSerializerOptions & {
 export type StringSerializerOptions = BaseSerializerOptions & {
   /**
    * The size of the string. It can be one of the following:
-   * - a NumberSerializer that prefixes the string with its size.
+   * - a {@link NumberSerializer} that prefixes the string with its size.
    * - a fixed number of bytes.
    * - or `'variable'` to use the rest of the buffer.
    * @defaultValue `u32()`
