@@ -244,7 +244,7 @@ export class BeetSerializer implements SerializerInterface {
     if (fixed) {
       if (item.fixedSize === null || prefix.fixedSize === null) {
         throw new BeetSerializerError(
-          'fixed options can only be used with fixed-size serializers'
+          'Fixed options can only be used with fixed-size serializers'
         );
       }
       descriptionSuffix += '; fixed';
@@ -299,7 +299,7 @@ export class BeetSerializer implements SerializerInterface {
     if (fixed) {
       if (item.fixedSize === null || prefix.fixedSize === null) {
         throw new BeetSerializerError(
-          'fixed options can only be used with fixed-size serializers'
+          'Fixed nullables can only be used with fixed-size serializers'
         );
       }
       descriptionSuffix += '; fixed';
