@@ -1,4 +1,5 @@
 import { SdkError } from './errors';
+import { mergeBytes } from './utils';
 
 /**
  * An object that can serialize and deserialize a value to and from a `Uint8Array`.
@@ -115,10 +116,14 @@ export function reverseSerializer<T, U extends T = T>(
   return {
     ...serializer,
     serialize: (value: T) => serializer.serialize(value).reverse(),
-    deserialize: (bytes: Uint8Array, offset = 0) =>
-      serializer.deserialize(
-        bytes.slice(offset, serializer.fixedSize as number).reverse(),
-        offset
-      ),
+    deserialize: (bytes: Uint8Array, offset = 0) => {
+      const fixedSize = serializer.fixedSize as number;
+      const newBytes = mergeBytes([
+        bytes.slice(0, offset),
+        bytes.slice(offset, offset + fixedSize).reverse(),
+        bytes.slice(offset + fixedSize),
+      ]);
+      return serializer.deserialize(newBytes, offset);
+    },
   };
 }

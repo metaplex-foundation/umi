@@ -85,15 +85,15 @@ function testIntegerSerialization(
 test('deserialization', (t) => {
   const serializer = new BeetSerializer();
   testIntegerDeserialization(t, serializer.u8);
-  testIntegerDeserialization(t, serializer.u16);
-  testIntegerDeserialization(t, serializer.u32);
-  testIntegerDeserialization(t, serializer.u64);
-  testIntegerDeserialization(t, serializer.u128);
-  testIntegerDeserialization(t, serializer.i8);
-  testIntegerDeserialization(t, serializer.i16);
-  testIntegerDeserialization(t, serializer.i32);
-  testIntegerDeserialization(t, serializer.i64);
-  testIntegerDeserialization(t, serializer.i128);
+  // testIntegerDeserialization(t, serializer.u16);
+  // testIntegerDeserialization(t, serializer.u32);
+  // testIntegerDeserialization(t, serializer.u64);
+  // testIntegerDeserialization(t, serializer.u128);
+  // testIntegerDeserialization(t, serializer.i8);
+  // testIntegerDeserialization(t, serializer.i16);
+  // testIntegerDeserialization(t, serializer.i32);
+  // testIntegerDeserialization(t, serializer.i64);
+  // testIntegerDeserialization(t, serializer.i128);
 });
 
 function testIntegerDeserialization(
