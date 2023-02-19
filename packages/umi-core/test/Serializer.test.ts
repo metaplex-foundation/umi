@@ -160,27 +160,33 @@ test('it can loosen a tuple serializer', (t) => {
 });
 
 test('it can reverse the bytes of a fixed-size serializer', (t) => {
-  const reverse = (s: string, size: number) =>
-    base16.deserialize(
-      reverseSerializer(fixSerializer(base16, size)).serialize(s)
-    )[0];
+  const b = (s: string) => base16.serialize(s);
+  const s = (size: number) => reverseSerializer(fixSerializer(base16, size));
 
-  t.is(reverse('00', 1), '00');
-  t.is(reverse('ff', 1), 'ff');
-  t.is(reverse('0102', 2), '0201');
-  t.is(reverse('0201', 2), '0102');
-  t.is(reverse('00000001', 4), '01000000');
-  t.is(reverse('01000000', 4), '00000001');
-  t.is(reverse('0000000000000001', 8), '0100000000000000');
-  t.is(reverse('0100000000000000', 8), '0000000000000001');
-  t.is(
-    reverse('00000000000000000000000000000001', 16),
-    '01000000000000000000000000000000'
+  // Serialize.
+  t.deepEqual(s(1).serialize('00'), b('00'));
+  t.deepEqual(s(2).serialize('00ff'), b('ff00'));
+  t.deepEqual(s(2).serialize('ff00'), b('00ff'));
+  t.deepEqual(s(4).serialize('00000001'), b('01000000'));
+  t.deepEqual(s(4).serialize('01000000'), b('00000001'));
+  t.deepEqual(s(8).serialize('0000000000000001'), b('0100000000000000'));
+  t.deepEqual(s(8).serialize('0100000000000000'), b('0000000000000001'));
+  t.deepEqual(
+    s(32).serialize(`01${'00'.repeat(31)}`),
+    b(`${'00'.repeat(31)}01`)
   );
-  t.is(
-    reverse('01000000000000000000000000000000', 16),
-    '00000000000000000000000000000001'
+  t.deepEqual(
+    s(32).serialize(`${'00'.repeat(31)}01`),
+    b(`01${'00'.repeat(31)}`)
   );
+
+  // Deserialize.
+  t.deepEqual(s(2).deserialize(b('ff00')), ['00ff', 2]);
+  t.deepEqual(s(2).deserialize(b('00ff')), ['ff00', 2]);
+  t.deepEqual(s(4).deserialize(b('00000001')), ['01000000', 4]);
+  t.deepEqual(s(4).deserialize(b('01000000')), ['00000001', 4]);
+  t.deepEqual(s(4).deserialize(b('aaaa01000000bbbb'), 2), ['00000001', 6]);
+  t.deepEqual(s(4).deserialize(b('aaaa00000001bbbb'), 2), ['01000000', 6]);
 
   // Variable-size serializer.
   t.throws(() => reverseSerializer(base16), {
