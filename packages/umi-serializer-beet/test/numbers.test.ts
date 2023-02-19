@@ -5,7 +5,7 @@ import {
   Serializer,
 } from '@metaplex-foundation/umi-core';
 import test, { Assertions } from 'ava';
-import { BeetSerializer } from '../src';
+import { BeetSerializer, OperationNotSupportedError } from '../src';
 import { d as baseD, s as baseS } from './_helpers';
 
 test('serialization', (t) => {
@@ -211,6 +211,20 @@ test('sizes', (t) => {
   t.is(serializer.i64().maxSize, 8);
   t.is(serializer.i128().fixedSize, 16);
   t.is(serializer.i128().maxSize, 16);
+});
+
+test('it cannot serialize float numbers', (t) => {
+  const { f32, f64 } = new BeetSerializer();
+  const b = new Uint8Array([0]);
+  const e = { name: 'OperationNotSupportedError' };
+  t.throws<OperationNotSupportedError>(() => f32().serialize(1.5), e);
+  t.throws<OperationNotSupportedError>(() => f32().deserialize(b), e);
+  t.throws<OperationNotSupportedError>(() => f64().serialize(42.6), e);
+  t.throws<OperationNotSupportedError>(() => f64().deserialize(b), e);
+  t.is(f32().fixedSize, 4);
+  t.is(f32().maxSize, 4);
+  t.is(f64().fixedSize, 8);
+  t.is(f64().maxSize, 8);
 });
 
 function s(
