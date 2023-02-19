@@ -11,55 +11,6 @@ import { Keypair as Web3Keypair } from '@solana/web3.js';
 import test, { ThrowsExpectation } from 'ava';
 import { BeetSerializer, DeserializingEmptyBufferError } from './src';
 
-test('it can serialize maps', (t) => {
-  const { map, u8, u64, string } = new BeetSerializer();
-
-  // Description matches the vec definition.
-  t.is(map(u8, u8).description, 'map(u8, u8)');
-  t.is(map(string(), u8).description, 'map(string(u32, utf8), u8)');
-
-  // Description can be overridden.
-  t.is(map(string(), string(), undefined, 'my map').description, 'my map');
-
-  // Examples with numbers.
-  const numberMap = map(u8, u8);
-  t.is(numberMap.fixedSize, null);
-  t.is(numberMap.maxSize, null);
-  t.is(s(numberMap, new Map()), '00000000');
-  t.is(s(numberMap, new Map([[1, 2]])), '010000000102');
-  t.deepEqual(d(numberMap, '010000000102'), new Map([[1, 2]]));
-  t.deepEqual(sd(numberMap, new Map()), new Map());
-  t.deepEqual(sd(numberMap, new Map([[1, 2]])), new Map([[1, 2]]));
-  t.is(doffset(numberMap, '00000000'), 4);
-  t.is(doffset(numberMap, '010000000102'), 4 + 2);
-  t.is(doffset(numberMap, 'ff010000000102', 1), 1 + 4 + 2);
-
-  // Example with strings and numbers.
-  const letterMap = map(string(), u8);
-  t.is(s(letterMap, new Map()), '00000000');
-  const letters = new Map([
-    ['a', 1],
-    ['b', 2],
-  ]);
-  t.is(
-    s(letterMap, letters),
-    '02000000' + // 2 items.
-      '0100000061' + // String 'a'.
-      '01' + // Number 1.
-      '0100000062' + // String 'b'.
-      '02' // Number 2.
-  );
-  t.deepEqual(d(letterMap, 'ff00000000', 1), new Map());
-  t.deepEqual(sd(letterMap, new Map()), new Map());
-  t.deepEqual(sd(letterMap, letters), letters);
-  t.is(doffset(letterMap, '00000000'), 4);
-
-  // Example with different From and To types.
-  const mapU8U64 = map<number, number | bigint, number, bigint>(u8, u64);
-  t.deepEqual(s(mapU8U64, new Map().set(42, 2)), '010000002a0200000000000000');
-  t.deepEqual(d(mapU8U64, '010000002a0200000000000000'), new Map().set(42, 2n));
-});
-
 test('it can serialize sets', (t) => {
   const { set, u8, u64, string } = new BeetSerializer();
 

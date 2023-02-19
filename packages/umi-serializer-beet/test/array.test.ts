@@ -10,6 +10,10 @@ test('prefixed (de)serialization', (t) => {
   s(t, array(u8()), [], '00000000'); // 4-bytes prefix.
   d(t, array(u8()), '00000000', [], 4);
 
+  // Empty with custom prefix.
+  s(t, array(u8(), { size: u8() }), [], '00'); // 1-byte prefix.
+  d(t, array(u8(), { size: u8() }), '00', [], 1);
+
   // Numbers.
   s(t, array(u8()), [42, 1, 2], '030000002a0102');
   d(t, array(u8()), '030000002a0102', [42, 1, 2], 4 + 3);
@@ -23,8 +27,6 @@ test('prefixed (de)serialization', (t) => {
   const arrayU64 = array<number | bigint, bigint>(u64());
   s(t, arrayU64, [2], '010000000200000000000000');
   d(t, arrayU64, '010000000200000000000000', [2n], 4 + 8);
-
-  // TODO: throw tests.
 });
 
 test('fixed (de)serialization', (t) => {
@@ -97,6 +99,7 @@ test('description', (t) => {
     array(u8(), { size: 'remainder' }).description,
     'array(u8(be); remainder)'
   );
+  t.is(array(u8()).description, 'array(u8(be); u32(be))');
   t.is(array(u8(), { size: u8() }).description, 'array(u8(be); u8(be))');
   t.is(
     array(u8(), { size: u8({ endian: Endian.Little }) }).description,
