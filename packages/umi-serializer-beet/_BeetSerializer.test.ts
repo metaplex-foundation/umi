@@ -1,13 +1,10 @@
 import {
-  base16,
   DataEnumToSerializerTuple,
   none,
-  publicKey as toPublicKey,
   Serializer,
   some,
   utf8,
 } from '@metaplex-foundation/umi-core';
-import { Keypair as Web3Keypair } from '@solana/web3.js';
 import test, { ThrowsExpectation } from 'ava';
 import { BeetSerializer, DeserializingEmptyBufferError } from './src';
 
