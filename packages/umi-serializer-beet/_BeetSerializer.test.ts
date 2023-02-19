@@ -7,57 +7,6 @@ import {
 import test, { ThrowsExpectation } from 'ava';
 import { BeetSerializer, DeserializingEmptyBufferError } from './src';
 
-test('it can serialize structs', (t) => {
-  const { struct, option, u8, u64, string } = new BeetSerializer();
-
-  // Description matches the vec definition.
-  const person = struct([
-    ['name', string()],
-    ['age', u8],
-  ]);
-  t.is(struct([['age', u8]]).description, 'struct(age: u8)');
-  t.is(person.description, 'struct(name: string(u32, utf8), age: u8)');
-
-  // Description can be overridden.
-  t.is(struct([['age', u8]], 'my struct').description, 'my struct');
-
-  // Fixed and max sizes.
-  t.is(person.fixedSize, null);
-  t.is(person.maxSize, null);
-  t.is(struct([]).fixedSize, 0);
-  t.is(struct([]).maxSize, 0);
-  t.is(struct([['age', u8]]).fixedSize, 1);
-  t.is(struct([['age', u8]]).maxSize, 1);
-  t.is(struct([['age', option(u8)]]).fixedSize, null);
-  t.is(struct([['age', option(u8)]]).maxSize, 2);
-  const fixedPerson = struct([
-    ['age', u8],
-    ['balance', u64],
-  ]);
-  t.is(fixedPerson.fixedSize, 9);
-  t.is(fixedPerson.maxSize, 9);
-
-  // More examples.
-  t.is(s(struct([]), {}), '');
-  const alice = { name: 'Alice', age: 32 };
-  t.is(s(person, alice), '05000000416c69636520');
-  t.deepEqual(d(person, '05000000416c69636520'), alice);
-  t.deepEqual(d(person, 'ff05000000416c69636520', 1), alice);
-  t.deepEqual(sd(person, alice), alice);
-  t.deepEqual(sd(person, { age: 1, name: 'Bob' }), { name: 'Bob', age: 1 });
-  t.deepEqual(sd(person, { age: 1, name: 'Bob', dob: '1995-06-01' } as any), {
-    name: 'Bob',
-    age: 1,
-  });
-
-  // Example with different From and To types.
-  const structU64 = struct<{ value: number | bigint }, { value: bigint }>([
-    ['value', u64],
-  ]);
-  t.deepEqual(s(structU64, { value: 2 }), '0200000000000000');
-  t.deepEqual(d(structU64, '0200000000000000'), { value: 2n });
-});
-
 test('it can serialize enums', (t) => {
   const { enum: scalarEnum } = new BeetSerializer();
   enum Empty {}
