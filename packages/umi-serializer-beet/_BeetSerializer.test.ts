@@ -11,47 +11,6 @@ import { Keypair as Web3Keypair } from '@solana/web3.js';
 import test, { ThrowsExpectation } from 'ava';
 import { BeetSerializer, DeserializingEmptyBufferError } from './src';
 
-test('it can serialize sets', (t) => {
-  const { set, u8, u64, string } = new BeetSerializer();
-
-  // Description matches the vec definition.
-  t.is(set(u8).description, 'set(u8)');
-  t.is(set(string()).description, 'set(string(u32, utf8))');
-
-  // Description can be overridden.
-  t.is(set(string(), undefined, 'my set').description, 'my set');
-
-  // Examples with numbers.
-  t.is(set(u8).fixedSize, null);
-  t.is(set(u8).maxSize, null);
-  t.is(s(set(u8), new Set()), '00000000');
-  t.is(s(set(u8), new Set([1, 2, 3])), '03000000010203');
-  t.deepEqual(d(set(u8), '03000000010203'), new Set([1, 2, 3]));
-  t.deepEqual(sd(set(u8), new Set()), new Set());
-  t.deepEqual(sd(set(u8), new Set([1, 2, 3])), new Set([1, 2, 3]));
-  t.is(doffset(set(u8), '00000000'), 4);
-  t.is(doffset(set(u8), '03000000010203'), 4 + 3);
-  t.is(doffset(set(u8), 'ff03000000010203', 1), 1 + 4 + 3);
-
-  // Example with strings.
-  t.is(s(set(string()), new Set()), '00000000');
-  t.is(
-    s(set(string()), new Set(['a', 'b', 'c'])),
-    '03000000' + // 3 items.
-      '0100000061' + // String 'a'.
-      '0100000062' + // String 'b'.
-      '0100000063' // String 'b'.
-  );
-  t.deepEqual(d(set(string()), 'ff00000000', 1), new Set());
-  t.deepEqual(sd(set(string()), new Set()), new Set());
-  t.deepEqual(sd(set(string()), new Set(['語'])), new Set(['語']));
-
-  // Example with different From and To types.
-  const setU64 = set<number | bigint, bigint>(u64);
-  t.deepEqual(s(setU64, new Set([2])), '010000000200000000000000');
-  t.deepEqual(d(setU64, '010000000200000000000000'), new Set([2n]));
-});
-
 test('it can serialize options', (t) => {
   const { option, unit, u8, u32, u64, string } = new BeetSerializer();
 
