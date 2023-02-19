@@ -257,9 +257,9 @@ export type DataEnumToSerializerTuple<T extends DataEnum, U extends T> = Array<
     : never
 >;
 
-export enum Endianness {
-  LittleEndian = 'littleEndian',
-  BigEndian = 'bigEndian',
+export enum Endian {
+  Little = 'le',
+  Big = 'be',
 }
 
 /**
@@ -381,9 +381,9 @@ export type UnitSerializerOptions = BaseSerializerOptions;
 export type NumberSerializerOptions = BaseSerializerOptions & {
   /**
    * Whether the serializer should use little-endian or big-endian encoding.
-   * @defaultValue `Endianness.BigEndian`
+   * @defaultValue `Endian.Big`
    */
-  endianness?: Endianness;
+  endian?: Endian;
 };
 
 export type BytesSerializerOptions = BaseSerializerOptions;

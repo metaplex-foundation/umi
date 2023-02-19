@@ -1,4 +1,5 @@
 import test from 'ava';
+import { Endian } from '@metaplex-foundation/umi-core';
 import { BeetSerializer } from '../src';
 import { s, d } from './_helpers';
 
@@ -22,8 +23,12 @@ test('deserialization', (t) => {
 
 test('description', (t) => {
   const { bool, u32 } = new BeetSerializer();
-  t.is(bool().description, 'bool(u8)');
-  t.is(bool({ size: u32() }).description, 'bool(u32)');
+  t.is(bool().description, 'bool(u8(be))');
+  t.is(bool({ size: u32() }).description, 'bool(u32(be))');
+  t.is(
+    bool({ size: u32({ endian: Endian.Little }) }).description,
+    'bool(u32(le))'
+  );
   t.is(bool({ description: 'My bool' }).description, 'My bool');
 });
 

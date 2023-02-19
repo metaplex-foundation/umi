@@ -1,7 +1,7 @@
 import type { FixedSizeBeet } from '@metaplex-foundation/beet';
 import * as beet from '@metaplex-foundation/beet';
 import {
-  Endianness,
+  Endian,
   NumberSerializerOptions,
   reverseSerializer,
   Serializer,
@@ -13,8 +13,11 @@ import { DeserializingEmptyBufferError } from './errors';
 const wrapBeet =
   <T>(fixedBeet: FixedSizeBeet<T>) =>
   (options: NumberSerializerOptions = {}): Serializer<T> => {
+    const isLittleEndian = options.endian === Endian.Little;
     const serializer: Serializer<T> = {
-      description: options.description ?? fixedBeet.description,
+      description:
+        options.description ??
+        fixedBeet.description + (isLittleEndian ? '(le)' : '(be)'),
       fixedSize: fixedBeet.byteSize,
       maxSize: fixedBeet.byteSize,
       serialize: (value: T) => {
@@ -32,11 +35,7 @@ const wrapBeet =
       },
     };
 
-    if (options.endianness === Endianness.LittleEndian) {
-      return reverseSerializer(serializer);
-    }
-
-    return serializer;
+    return isLittleEndian ? reverseSerializer(serializer) : serializer;
   };
 
 const wrapBigintBeet =
@@ -44,8 +43,11 @@ const wrapBigintBeet =
   (
     options: NumberSerializerOptions = {}
   ): Serializer<number | bigint, bigint> => {
+    const isLittleEndian = options.endian === Endian.Little;
     const serializer: Serializer<number | bigint, bigint> = {
-      description: options.description ?? fixedBeet.description,
+      description:
+        options.description ??
+        fixedBeet.description + (isLittleEndian ? '(le)' : '(be)'),
       fixedSize: fixedBeet.byteSize,
       maxSize: fixedBeet.byteSize,
       serialize: (value: number | bigint) => {
@@ -66,11 +68,7 @@ const wrapBigintBeet =
       },
     };
 
-    if (options.endianness === Endianness.LittleEndian) {
-      return reverseSerializer(serializer);
-    }
-
-    return serializer;
+    return isLittleEndian ? reverseSerializer(serializer) : serializer;
   };
 
 // Simple numbers.
