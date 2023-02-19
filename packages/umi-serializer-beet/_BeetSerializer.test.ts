@@ -14,56 +14,7 @@ import {
   BeetSerializer,
   DeserializingEmptyBufferError,
   OperationNotSupportedError,
-} from '../src';
-
-test('it can serialize units', (t) => {
-  const { unit } = new BeetSerializer();
-  t.is(unit.description, 'unit');
-  t.is(unit.fixedSize, 0);
-  t.is(unit.maxSize, 0);
-  t.is(s(unit, undefined), '');
-  t.is(sd(unit, undefined), undefined);
-  // eslint-disable-next-line no-void
-  t.is(s(unit, void 0), '');
-  // eslint-disable-next-line no-void
-  t.is(sd(unit, void 0), void 0);
-  t.is(d(unit, ''), undefined);
-  t.is(d(unit, '00'), undefined);
-  t.is(doffset(unit, '00'), 0);
-  t.is(doffset(unit, '00', 1), 1);
-});
-
-test('it can serialize booleans', (t) => {
-  const { bool, u32 } = new BeetSerializer();
-  t.is(bool().description, 'bool(u8)');
-  t.is(bool().fixedSize, 1);
-  t.is(bool().maxSize, 1);
-  t.is(s(bool(), false), '00');
-  t.is(s(bool(), true), '01');
-  t.is(d(bool(), '00'), false);
-  t.is(d(bool(), '01'), true);
-  t.is(d(bool(), '0001', 0), false);
-  t.is(d(bool(), '0001', 1), true);
-  t.is(sd(bool(), false), false);
-  t.is(sd(bool(), true), true);
-  t.is(doffset(bool(), '01'), 1);
-  t.is(doffset(bool(), '0100'), 1);
-  t.is(doffset(bool(), '0100', 1), 2);
-
-  // Booleans with different sizes.
-  t.is(bool(u32).description, 'bool(u32)');
-  t.is(bool(u32).fixedSize, 4);
-  t.is(bool(u32).maxSize, 4);
-  t.is(s(bool(u32), false), '00000000');
-  t.is(d(bool(u32), '00000000', 0), false);
-  t.is(doffset(bool(u32), '00000000', 0), 4);
-  t.is(s(bool(u32), true), '01000000');
-  t.is(d(bool(u32), '01000000', 0), true);
-  t.is(doffset(bool(u32), '01000000', 0), 4);
-
-  // Booleans with custom descriptions.
-  t.is(bool(undefined, 'My boolean').description, 'My boolean');
-});
+} from './src';
 
 test('it can serialize u8 numbers', (t) => {
   const { u8 } = new BeetSerializer();
@@ -1214,39 +1165,3 @@ test('it can handle empty buffers', (t) => {
   t.deepEqual(empty(tolerant.bytes), new Uint8Array());
   t.deepEqual(empty(intolerant.bytes), new Uint8Array());
 });
-
-/** Serialize as a hex string. */
-function s<T, U extends T = T>(
-  serializer: Serializer<T, U>,
-  value: T extends T ? T : never
-): string {
-  return base16.deserialize(serializer.serialize(value))[0];
-}
-
-/** Deserialize from a hex string. */
-function d<T, U extends T = T>(
-  serializer: Serializer<T, U>,
-  value: string,
-  offset = 0
-): T {
-  const bytes = base16.serialize(value);
-  return serializer.deserialize(bytes, offset)[0];
-}
-
-/** Deserialize from a hex string and get the new offset. */
-function doffset<T, U extends T = T>(
-  serializer: Serializer<T, U>,
-  value: string,
-  offset = 0
-): number {
-  const bytes = base16.serialize(value);
-  return serializer.deserialize(bytes, offset)[1];
-}
-
-/** Serialize and deserialize. */
-function sd<T, U extends T = T>(
-  serializer: Serializer<T, U>,
-  value: T extends T ? T : never
-): U {
-  return d(serializer, s(serializer, value)) as U;
-}
