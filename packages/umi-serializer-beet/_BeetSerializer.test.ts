@@ -1,6 +1,5 @@
 import {
   base16,
-  base58,
   DataEnumToSerializerTuple,
   none,
   publicKey as toPublicKey,
@@ -10,81 +9,7 @@ import {
 } from '@metaplex-foundation/umi-core';
 import { Keypair as Web3Keypair } from '@solana/web3.js';
 import test, { ThrowsExpectation } from 'ava';
-import {
-  BeetSerializer,
-  DeserializingEmptyBufferError,
-  OperationNotSupportedError,
-} from './src';
-
-test('it can serialize strings', (t) => {
-  const { string, u32, u8 } = new BeetSerializer();
-  const getPrefix = (text: string) => d(u32, s(string(), text).slice(0, 8));
-  t.is(string().description, 'string(u32, utf8)');
-  t.is(string(undefined, undefined, 'My string').description, 'My string');
-  t.is(string().fixedSize, null);
-  t.is(string().maxSize, null);
-});
-
-test('it can serialize fixed strings', (t) => {
-  const { fixedString } = new BeetSerializer();
-  t.is(fixedString(42).description, 'fixedString(42, utf8)');
-  t.is(fixedString(42, undefined, 'My string').description, 'My string');
-  t.is(fixedString(42).fixedSize, 42);
-  t.is(fixedString(42).maxSize, 42);
-});
-
-test('it can serialize variable strings', (t) => {
-  const { variableString } = new BeetSerializer();
-  t.is(variableString().description, 'variableString(utf8)');
-  t.is(variableString(undefined, 'My string').description, 'My string');
-  t.is(variableString().fixedSize, null);
-  t.is(variableString().maxSize, null);
-
-  // It simply delegates to the content serializer.
-  t.is(s(variableString(), 'Hello World!'), '48656c6c6f20576f726c6421');
-  t.is(d(variableString(), '48656c6c6f20576f726c6421'), 'Hello World!');
-  t.is(doffset(variableString(), '48656c6c6f20576f726c6421'), 12);
-  t.is(sd(variableString(), 'Hello World!'), 'Hello World!');
-});
-
-test('it can serialize bytes', (t) => {
-  const { bytes } = new BeetSerializer();
-  t.is(bytes.description, 'bytes');
-  t.is(bytes.fixedSize, null);
-  t.is(s(bytes, new Uint8Array([0])), '00');
-  t.is(s(bytes, new Uint8Array([42, 255])), '2aff');
-  t.deepEqual(sd(bytes, new Uint8Array([42, 255])), new Uint8Array([42, 255]));
-  t.is(doffset(bytes, '2aff00'), 3);
-});
-
-test('it can serialize public keys', (t) => {
-  const { publicKey } = new BeetSerializer();
-  t.is(publicKey.description, 'publicKey');
-  t.is(publicKey.fixedSize, 32);
-  t.is(publicKey.maxSize, 32);
-  const generatedPubKey = toPublicKey(
-    Web3Keypair.generate().publicKey.toBytes()
-  );
-  const pubKeyString = '4HM9LW2rm3SR2ZdBiFK3D21ENmQWpqEJEhx1nfgcC3r9';
-  const pubKey = toPublicKey(pubKeyString);
-  const pubKeyHex = base16.deserialize(pubKey.bytes)[0];
-  t.is(
-    s(publicKey, generatedPubKey),
-    base16.deserialize(generatedPubKey.bytes)[0]
-  );
-  t.is(s(publicKey, pubKeyString), pubKeyHex);
-  t.is(s(publicKey, pubKey), pubKeyHex);
-  t.deepEqual(sd(publicKey, pubKeyString), pubKey);
-  t.deepEqual(sd(publicKey, pubKey), pubKey);
-  t.deepEqual(sd(publicKey, generatedPubKey), generatedPubKey);
-  const throwExpectation = {
-    message: (m: string) => m.includes('Invalid public key'),
-  };
-  t.throws(() => s(publicKey, ''), throwExpectation);
-  t.throws(() => s(publicKey, 'x'), throwExpectation);
-  t.throws(() => s(publicKey, 'x'.repeat(32)), throwExpectation);
-  t.is(doffset(publicKey, pubKeyHex), 32);
-});
+import { BeetSerializer, DeserializingEmptyBufferError } from './src';
 
 test('it can serialize tuples', (t) => {
   const { tuple, u8, u64, string, i16 } = new BeetSerializer();
