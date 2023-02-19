@@ -5,6 +5,7 @@ import {
   Serializer,
   reverseSerializer,
   fixSerializer,
+  utf8,
 } from '../src';
 
 const numberSerializer: Serializer<number> = {
@@ -157,6 +158,41 @@ test('it can loosen a tuple serializer', (t) => {
 
   const bufferC = mappedSerializer.serialize([42, 'Hello world']);
   t.deepEqual(mappedSerializer.deserialize(bufferC)[0], [42, 'xxxxxxxxxxx']);
+});
+
+test('it can fix a serializer to a given amount of bytes', (t) => {
+  const b = (s: string) => base16.serialize(s);
+  const s = (size: number) => fixSerializer(utf8, size);
+
+  // Description matches the fixed definition.
+  t.is(fixSerializer(utf8, 42).description, 'fixed(42, utf8)');
+
+  // Description can be overridden.
+  t.is(fixSerializer(utf8, 42, 'my fixed').description, 'my fixed');
+
+  // Fixed and max sizes.
+  t.is(fixSerializer(utf8, 12).fixedSize, 12);
+  t.is(fixSerializer(utf8, 12).maxSize, 12);
+  t.is(fixSerializer(utf8, 42).fixedSize, 42);
+  t.is(fixSerializer(utf8, 42).maxSize, 42);
+
+  // Buffer size === fixed size.
+  t.deepEqual(s(12).serialize('Hello world!'), b('48656c6c6f20776f726c6421'));
+  t.deepEqual(s(12).deserialize(b('48656c6c6f20776f726c6421')), [
+    'Hello world!',
+    12,
+  ]);
+
+  // Buffer size > fixed size => truncated.
+  t.deepEqual(s(5).serialize('Hello world!'), b('48656c6c6f'));
+  t.deepEqual(s(5).deserialize(b('48656c6c6f20776f726c6421')), ['Hello', 5]);
+
+  // Buffer size < fixed size => padded.
+  t.deepEqual(s(12).serialize('Hello'), b('48656c6c6f00000000000000'));
+  t.deepEqual(s(12).deserialize(b('48656c6c6f00000000000000')), ['Hello', 12]);
+  t.throws(() => s(12).deserialize(b('48656c6c6f')), {
+    message: (m) => m.includes('Fixed serializer expected 12 bytes, got 5.'),
+  });
 });
 
 test('it can reverse the bytes of a fixed-size serializer', (t) => {
