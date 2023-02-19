@@ -1,11 +1,11 @@
+import type { FixedSizeBeet } from '@metaplex-foundation/beet';
+import * as beet from '@metaplex-foundation/beet';
 import {
   Endianness,
   NumberSerializerOptions,
+  reverseSerializer,
   Serializer,
-  swapSerializerEndianness,
 } from '@metaplex-foundation/umi-core';
-import type { FixedSizeBeet } from '@metaplex-foundation/beet';
-import * as beet from '@metaplex-foundation/beet';
 import { Buffer } from 'buffer';
 import { DeserializingEmptyBufferError } from './errors';
 
@@ -33,7 +33,7 @@ const wrapBeet =
     };
 
     if (options.endianness === Endianness.LittleEndian) {
-      return swapSerializerEndianness(serializer, 8);
+      return reverseSerializer(serializer);
     }
 
     return serializer;
@@ -67,7 +67,7 @@ const wrapBigintBeet =
     };
 
     if (options.endianness === Endianness.LittleEndian) {
-      return swapSerializerEndianness(serializer, 8);
+      return reverseSerializer(serializer);
     }
 
     return serializer;

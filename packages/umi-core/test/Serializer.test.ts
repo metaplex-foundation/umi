@@ -1,5 +1,11 @@
 import test from 'ava';
-import { mapSerializer, Serializer } from '../src';
+import {
+  base16,
+  mapSerializer,
+  Serializer,
+  reverseSerializer,
+  fixSerializer,
+} from '../src';
 
 const numberSerializer: Serializer<number> = {
   description: 'number',
@@ -151,4 +157,33 @@ test('it can loosen a tuple serializer', (t) => {
 
   const bufferC = mappedSerializer.serialize([42, 'Hello world']);
   t.deepEqual(mappedSerializer.deserialize(bufferC)[0], [42, 'xxxxxxxxxxx']);
+});
+
+test('it can reverse the bytes of a fixed-size serializer', (t) => {
+  const reverse = (s: string, size: number) =>
+    base16.deserialize(
+      reverseSerializer(fixSerializer(base16, size)).serialize(s)
+    )[0];
+
+  t.is(reverse('00', 1), '00');
+  t.is(reverse('ff', 1), 'ff');
+  t.is(reverse('0102', 2), '0201');
+  t.is(reverse('0201', 2), '0102');
+  t.is(reverse('00000001', 4), '01000000');
+  t.is(reverse('01000000', 4), '00000001');
+  t.is(reverse('0000000000000001', 8), '0100000000000000');
+  t.is(reverse('0100000000000000', 8), '0000000000000001');
+  t.is(
+    reverse('00000000000000000000000000000001', 16),
+    '01000000000000000000000000000000'
+  );
+  t.is(
+    reverse('01000000000000000000000000000000', 16),
+    '00000000000000000000000000000001'
+  );
+
+  // Variable-size serializer.
+  t.throws(() => reverseSerializer(base16), {
+    message: (m) => m.includes('Cannot reverse a serializer of variable size'),
+  });
 });

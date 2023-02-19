@@ -106,30 +106,19 @@ export function fixSerializer<T, U extends T = T>(
   };
 }
 
-export function swapSerializerEndianness<T, U extends T = T>(
-  serializer: Serializer<T, U>,
-  bytesPerWord = 8
+export function reverseSerializer<T, U extends T = T>(
+  serializer: Serializer<T, U>
 ): Serializer<T, U> {
+  if (serializer.fixedSize === null) {
+    throw new SdkError('Cannot reverse a serializer of variable size.');
+  }
   return {
     ...serializer,
-    serialize: (value: T) =>
-      swapEndianness(serializer.serialize(value), bytesPerWord),
+    serialize: (value: T) => serializer.serialize(value).reverse(),
     deserialize: (bytes: Uint8Array, offset = 0) =>
-      serializer.deserialize(swapEndianness(bytes, bytesPerWord), offset),
+      serializer.deserialize(
+        bytes.slice(offset, serializer.fixedSize as number).reverse(),
+        offset
+      ),
   };
-}
-
-export function swapEndianness(
-  bytes: Uint8Array,
-  bytesPerWord = 8
-): Uint8Array {
-  bytesPerWord = Math.max(bytesPerWord, 1);
-  let newBytes = new Uint8Array(0);
-
-  for (let i = 0; i < bytes.length; i += bytesPerWord) {
-    const chunk = bytes.slice(i, i + bytesPerWord);
-    newBytes = new Uint8Array([...newBytes, ...chunk.reverse()]);
-  }
-
-  return newBytes;
 }
