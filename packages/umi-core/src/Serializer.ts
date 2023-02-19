@@ -1,3 +1,6 @@
+import { SdkError } from './errors';
+import { mergeBytes } from './utils';
+
 /**
  * An object that can serialize and deserialize a value to and from a `Uint8Array`.
  * It supports serializing looser types than it deserializes for convenience.
@@ -69,14 +72,58 @@ export function mapSerializer<
   };
 }
 
-export const swapEndianness = (buffer: Uint8Array, bytes = 8): Uint8Array => {
-  bytes = Math.max(bytes, 1);
-  let newBuffer = new Uint8Array(0);
+/**
+ * Creates a fixed-size serializer from a given serializer.
+ *
+ * @param serializer - The serializer to wrap into a fixed-size serializer.
+ * @param fixedBytes - The fixed number of bytes to read.
+ * @param description - A custom description for the serializer.
+ */
+export function fixSerializer<T, U extends T = T>(
+  serializer: Serializer<T, U>,
+  fixedBytes: number,
+  description?: string
+): Serializer<T, U> {
+  return {
+    description:
+      description ?? `fixed(${fixedBytes}, ${serializer.description})`,
+    fixedSize: fixedBytes,
+    maxSize: fixedBytes,
+    serialize: (value: T) => {
+      const buffer = new Uint8Array(fixedBytes).fill(0);
+      buffer.set(serializer.serialize(value).slice(0, fixedBytes));
+      return buffer;
+    },
+    deserialize: (bytes: Uint8Array, offset = 0) => {
+      bytes = bytes.slice(offset, offset + fixedBytes);
+      if (bytes.length < fixedBytes) {
+        throw new SdkError(
+          `Fixed serializer expected ${fixedBytes} bytes, got ${bytes.length}.`
+        );
+      }
+      const [value] = serializer.deserialize(bytes, 0);
+      return [value, offset + fixedBytes];
+    },
+  };
+}
 
-  for (let i = 0; i < buffer.length; i += bytes) {
-    const chunk = buffer.slice(i, i + bytes);
-    newBuffer = new Uint8Array([...newBuffer, ...chunk.reverse()]);
+export function reverseSerializer<T, U extends T = T>(
+  serializer: Serializer<T, U>
+): Serializer<T, U> {
+  if (serializer.fixedSize === null) {
+    throw new SdkError('Cannot reverse a serializer of variable size.');
   }
-
-  return newBuffer;
-};
+  return {
+    ...serializer,
+    serialize: (value: T) => serializer.serialize(value).reverse(),
+    deserialize: (bytes: Uint8Array, offset = 0) => {
+      const fixedSize = serializer.fixedSize as number;
+      const newBytes = mergeBytes([
+        bytes.slice(0, offset),
+        bytes.slice(offset, offset + fixedSize).reverse(),
+        bytes.slice(offset + fixedSize),
+      ]);
+      return serializer.deserialize(newBytes, offset);
+    },
+  };
+}

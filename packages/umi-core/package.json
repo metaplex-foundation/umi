@@ -25,7 +25,6 @@
     "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
     "test": "ava"
   },
-  "dependencies": {},
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
     "ava": "^5.1.0"
