@@ -13,6 +13,7 @@ test('prefixed (de)serialization', (t) => {
   // Numbers.
   s(t, array(u8()), [42, 1, 2], '030000002a0102');
   d(t, array(u8()), '030000002a0102', [42, 1, 2], 4 + 3);
+  d(t, array(u8()), ['ffff030000002a0102', 2], [42, 1, 2], 2 + 4 + 3);
 
   // Strings.
   s(t, array(string()), ['a', 'b'], '0200000001000000610100000062');
@@ -36,6 +37,7 @@ test('fixed (de)serialization', (t) => {
   // Numbers.
   s(t, array(u8(), { size: 3 }), [42, 1, 2], '2a0102');
   d(t, array(u8(), { size: 3 }), '2a0102', [42, 1, 2], 3);
+  d(t, array(u8(), { size: 3 }), ['ffff2a0102', 2], [42, 1, 2], 5);
 
   // Strings.
   s(t, array(string(), { size: 2 }), ['a', 'b'], '01000000610100000062');
@@ -46,7 +48,15 @@ test('fixed (de)serialization', (t) => {
   s(t, arrayU64, [2], '0200000000000000');
   d(t, arrayU64, '0200000000000000', [2n], 8);
 
-  // TODO: throw tests.
+  // It fails if the array has a different size.
+  t.throws(() => array(u8(), { size: 1 }).serialize([]), {
+    message: (m: string) =>
+      m.includes('Expected array to have 1 items but got 0.'),
+  });
+  t.throws(() => array(string(), { size: 2 }).serialize(['a', 'b', 'c']), {
+    message: (m: string) =>
+      m.includes('Expected array to have 2 items but got 3.'),
+  });
 });
 
 test('remainder (de)serialization', (t) => {
@@ -60,10 +70,11 @@ test('remainder (de)serialization', (t) => {
   // Numbers.
   s(t, array(u8(), remainder), [42, 1, 2], '2a0102');
   d(t, array(u8(), remainder), '2a0102', [42, 1, 2], 3);
+  d(t, array(u8(), remainder), ['ffff2a0102', 2], [42, 1, 2], 5);
 
   // Strings.
   s(t, array(string({ size: 1 }), remainder), ['a', 'b'], '6162');
-  d(t, array(string({ size: 1 }), remainder), '6162', ['a', 'b'], 10);
+  d(t, array(string({ size: 1 }), remainder), '6162', ['a', 'b'], 2);
 
   // Different From and To types.
   const arrayU64 = array<number | bigint, bigint>(u64(), remainder);
@@ -71,7 +82,10 @@ test('remainder (de)serialization', (t) => {
   d(t, arrayU64, '0200000000000000', [2n], 8);
 
   // It fails with variable size items.
-  t.throws(() => array(string(), remainder));
+  t.throws(() => array(string(), remainder), {
+    message: (m) =>
+      m.includes('Serializers of "remainder" size must have fixed-size items'),
+  });
 });
 
 test('description', (t) => {

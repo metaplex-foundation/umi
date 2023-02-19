@@ -85,6 +85,11 @@ export class BeetSerializer implements SerializerInterface {
     options: ArraySerializerOptions = {}
   ): Serializer<T[], U[]> {
     const size = options.size ?? u32();
+    if (size === 'remainder' && item.fixedSize === null) {
+      throw new BeetSerializerError(
+        'Serializers of "remainder" size must have fixed-size items.'
+      );
+    }
     return {
       description:
         options.description ??
@@ -130,6 +135,14 @@ export class BeetSerializer implements SerializerInterface {
     options: MapSerializerOptions = {}
   ): Serializer<Map<TK, TV>, Map<UK, UV>> {
     const size = options.size ?? u32();
+    if (
+      size === 'remainder' &&
+      (key.fixedSize === null || value.fixedSize === null)
+    ) {
+      throw new BeetSerializerError(
+        'Serializers of "remainder" size must have fixed-size items.'
+      );
+    }
     return {
       description:
         options.description ??
@@ -178,6 +191,11 @@ export class BeetSerializer implements SerializerInterface {
     options: SetSerializerOptions = {}
   ): Serializer<Set<T>, Set<U>> {
     const size = options.size ?? u32();
+    if (size === 'remainder' && item.fixedSize === null) {
+      throw new BeetSerializerError(
+        'Serializers of "remainder" size must have fixed-size items.'
+      );
+    }
     return {
       description:
         options.description ??
@@ -729,7 +747,7 @@ function getResolvedSize(
           `Got ${remainder} bytes remaining and ${childrenSize} bytes per item.`
       );
     }
-    return [remainder % childrenSize, offset];
+    return [remainder / childrenSize, offset];
   }
 
   throw new BeetSerializerError(`Unknown size type: ${JSON.stringify(size)}.`);

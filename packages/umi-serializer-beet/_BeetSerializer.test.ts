@@ -11,48 +11,6 @@ import { Keypair as Web3Keypair } from '@solana/web3.js';
 import test, { ThrowsExpectation } from 'ava';
 import { BeetSerializer, DeserializingEmptyBufferError } from './src';
 
-test('it can serialize arrays', (t) => {
-  const { array, u8, u64, string } = new BeetSerializer();
-
-  // Example with a single item.
-  const single = array(u8, 1);
-  t.is(single.fixedSize, 1);
-  t.is(single.maxSize, 1);
-  t.is(s(single, [1]), '01');
-  t.is(s(single, [42]), '2a');
-  t.deepEqual(d(single, 'ff2a', 1), [42]);
-  t.deepEqual(sd(single, [42]), [42]);
-  t.is(doffset(single, '2a'), 1);
-  t.is(doffset(single, 'ff2a', 1), 2);
-
-  // More examples.
-  t.deepEqual(sd(array(string(), 0), []), []);
-  t.deepEqual(sd(array(string(), 1), ['Hello']), ['Hello']);
-  t.deepEqual(sd(array(string(), 3), ['a', 'b', '語']), ['a', 'b', '語']);
-  t.deepEqual(sd(array(u8, 5), [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5]);
-  t.is(array(u8, 0).fixedSize, 0);
-  t.is(array(u8, 5).fixedSize, 5);
-  t.is(array(u64, 3).fixedSize, 24);
-  t.is(array(string(), 0).fixedSize, 0);
-  t.is(array(string(), 1).fixedSize, null);
-  t.is(array(string(), 5).fixedSize, null);
-
-  // Example with different From and To types.
-  const arrayU64 = array<number | bigint, bigint>(u64, 1);
-  t.deepEqual(s(arrayU64, [2]), '0200000000000000');
-  t.deepEqual(d(arrayU64, '0200000000000000'), [2n]);
-
-  // Invalid input.
-  t.throws(() => s(array(u8, 1), []), {
-    message: (m: string) =>
-      m.includes('Expected array to have 1 items but got 0.'),
-  });
-  t.throws(() => s(array(string(), 2), ['a', 'b', 'c']), {
-    message: (m: string) =>
-      m.includes('Expected array to have 2 items but got 3.'),
-  });
-});
-
 test('it can serialize maps', (t) => {
   const { map, u8, u64, string } = new BeetSerializer();
 
