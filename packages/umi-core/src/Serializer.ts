@@ -101,7 +101,7 @@ export function fixSerializer<T, U extends T = T>(
           `Fixed serializer expected ${fixedBytes} bytes, got ${bytes.length}.`
         );
       }
-      const [value] = serializer.deserialize(bytes, offset);
+      const [value] = serializer.deserialize(bytes, 0);
       return [value, offset + fixedBytes];
     },
   };
