@@ -1,4 +1,4 @@
-import { base58 } from './utils';
+import { base58, uniqueBy } from './utils';
 
 export const PUBLIC_KEY_LENGTH = 32;
 
@@ -69,6 +69,9 @@ export const samePublicKey = (
   right: PublicKeyInput
 ): boolean =>
   publicKey(left).bytes.toString() === publicKey(right).bytes.toString();
+
+export const uniquePublicKeys = (publicKeys: PublicKey[]): PublicKey[] =>
+  uniqueBy(publicKeys, samePublicKey);
 
 export const base58PublicKey = (key: PublicKeyInput): string =>
   base58.deserialize(publicKey(key).bytes)[0];

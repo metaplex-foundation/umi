@@ -1,5 +1,6 @@
 import { PublicKey, samePublicKey } from './PublicKey';
 import { Transaction } from './Transaction';
+import { uniqueBy } from './utils';
 
 export type Signer = {
   publicKey: PublicKey;
@@ -63,17 +64,8 @@ export const signAllTransactions = async (
 export const isSigner = (value: PublicKey | Signer): value is Signer =>
   'publicKey' in value;
 
-export const deduplicateSigners = (signers: Signer[]): Signer[] => {
-  const uniquePublicKeys: PublicKey[] = [];
-  return signers.reduce((all, one) => {
-    const isDuplicate = uniquePublicKeys.some((key) =>
-      samePublicKey(key, one.publicKey)
-    );
-    if (isDuplicate) return all;
-    uniquePublicKeys.push(one.publicKey);
-    return [...all, one];
-  }, [] as Signer[]);
-};
+export const uniqueSigners = (signers: Signer[]): Signer[] =>
+  uniqueBy(signers, samePublicKey);
 
 export const createNoopSigner = (publicKey: PublicKey): Signer => ({
   publicKey,

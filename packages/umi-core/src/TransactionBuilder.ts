@@ -7,7 +7,7 @@ import type {
   RpcConfirmTransactionStrategy,
   RpcSendTransactionOptions,
 } from './RpcInterface';
-import { deduplicateSigners, Signer, signTransaction } from './Signer';
+import { uniqueSigners, Signer, signTransaction } from './Signer';
 import type {
   Blockhash,
   Transaction,
@@ -73,7 +73,7 @@ export class TransactionBuilder {
   }
 
   getSigners(): Signer[] {
-    return deduplicateSigners([
+    return uniqueSigners([
       this.context.payer,
       ...this.items.flatMap((item) => item.signers),
     ]);
