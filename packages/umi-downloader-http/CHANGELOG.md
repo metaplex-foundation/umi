@@ -1,5 +1,12 @@
 # @metaplex-foundation/umi-downloader-http
 
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies [[`66a7d91`](https://github.com/metaplex-foundation/umi/commit/66a7d919146ee348739438f7b0e33cc746d5d1ba)]:
+  - @metaplex-foundation/umi-core@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes

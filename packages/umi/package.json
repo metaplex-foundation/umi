@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
