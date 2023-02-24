@@ -2,6 +2,8 @@ import { Amount, SolAmount } from './Amount';
 import type { Instruction } from './Instruction';
 import { samePublicKey, PublicKey } from './PublicKey';
 
+export const TRANSACTION_SIGNATURE_LENGTH = 64;
+
 export type TransactionVersion = 'legacy' | 0;
 export type SerializedTransaction = Uint8Array;
 export type SerializedTransactionMessage = Uint8Array;

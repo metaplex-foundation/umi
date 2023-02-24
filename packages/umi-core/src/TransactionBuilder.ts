@@ -16,7 +16,9 @@ import type {
   Transaction,
   TransactionInput,
   TransactionSignature,
+  TransactionVersion,
 } from './Transaction';
+import { TRANSACTION_SIGNATURE_LENGTH } from './Transaction';
 
 export type TransactionBuilderItemsInput =
   | WrappedInstruction
@@ -25,7 +27,7 @@ export type TransactionBuilderItemsInput =
   | TransactionBuilder[];
 
 export type TransactionBuilderOptions = {
-  version?: 'legacy' | 0;
+  version?: TransactionVersion;
   addressLookupTables?: AddressLookupTableInput[];
   blockhash?: Blockhash | BlockhashWithExpiryBlockHeight;
 };
@@ -77,36 +79,7 @@ export class TransactionBuilder {
     ];
   }
 
-  getInstructions(): Instruction[] {
-    return this.items.map((item) => item.instruction);
-  }
-
-  getSigners(): Signer[] {
-    return uniqueSigners([
-      this.context.payer,
-      ...this.items.flatMap((item) => item.signers),
-    ]);
-  }
-
-  getBytesCreatedOnChain(): number {
-    return this.items.reduce((sum, item) => sum + item.bytesCreatedOnChain, 0);
-  }
-
-  async getRentCreatedOnChain(): Promise<SolAmount> {
-    return this.context.rpc.getRent(this.getBytesCreatedOnChain(), {
-      includesHeaderBytes: true,
-    });
-  }
-
-  getTransactionSize(): number {
-    if (!this.getBlockhash()) this.setBlockhash('dummy-blockhash');
-    const tx = this.build();
-    return tx.serializedMessage.length + 64 * tx.signatures.length;
-  }
-
-  setVersion(
-    version: TransactionBuilderOptions['version']
-  ): TransactionBuilder {
+  setVersion(version: TransactionVersion): TransactionBuilder {
     return new TransactionBuilder(this.context, this.items, {
       ...this.options,
       version,
@@ -122,7 +95,7 @@ export class TransactionBuilder {
   }
 
   setAddressLookupTables(
-    addressLookupTables: TransactionBuilderOptions['addressLookupTables']
+    addressLookupTables: AddressLookupTableInput[]
   ): TransactionBuilder {
     return new TransactionBuilder(this.context, this.items, {
       ...this.options,
@@ -147,6 +120,39 @@ export class TransactionBuilder {
 
   async setLatestBlockhash(): Promise<TransactionBuilder> {
     return this.setBlockhash(await this.context.rpc.getLatestBlockhash());
+  }
+
+  getInstructions(): Instruction[] {
+    return this.items.map((item) => item.instruction);
+  }
+
+  getSigners(): Signer[] {
+    return uniqueSigners([
+      this.context.payer,
+      ...this.items.flatMap((item) => item.signers),
+    ]);
+  }
+
+  getBytesCreatedOnChain(): number {
+    return this.items.reduce((sum, item) => sum + item.bytesCreatedOnChain, 0);
+  }
+
+  async getRentCreatedOnChain(): Promise<SolAmount> {
+    return this.context.rpc.getRent(this.getBytesCreatedOnChain(), {
+      includesHeaderBytes: true,
+    });
+  }
+
+  getTransactionSize(): number {
+    // If not set, use a dummy blockhash to get the size of the transaction.
+    if (!this.options.blockhash) {
+      this.setBlockhash('EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N');
+    }
+    const tx = this.build();
+    return (
+      tx.serializedMessage.length +
+      TRANSACTION_SIGNATURE_LENGTH * tx.signatures.length
+    );
   }
 
   build(): Transaction {
