@@ -1,5 +1,19 @@
 # @metaplex-foundation/umi
 
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies [[`422dc73`](https://github.com/metaplex-foundation/umi/commit/422dc73b5a5d84e89665ef69972a90cc947a20e5)]:
+  - @metaplex-foundation/umi-core@0.3.3
+  - @metaplex-foundation/umi-downloader-http@0.3.3
+  - @metaplex-foundation/umi-eddsa-web3js@0.3.3
+  - @metaplex-foundation/umi-http-fetch@0.3.3
+  - @metaplex-foundation/umi-program-repository@0.3.3
+  - @metaplex-foundation/umi-rpc-web3js@0.3.3
+  - @metaplex-foundation/umi-serializer-beet@0.3.3
+  - @metaplex-foundation/umi-transaction-factory-web3js@0.3.3
+
 ## 0.3.2
 
 ### Patch Changes
