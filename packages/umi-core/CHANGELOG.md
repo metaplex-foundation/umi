@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 0.3.2
+
+### Patch Changes
+
+- [`66a7d91`](https://github.com/metaplex-foundation/umi/commit/66a7d919146ee348739438f7b0e33cc746d5d1ba) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Fix setBlockhash call
+
 ## 0.3.1
 
 ### Patch Changes
