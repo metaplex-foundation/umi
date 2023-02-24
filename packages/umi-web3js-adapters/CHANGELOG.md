@@ -1,5 +1,14 @@
 # @metaplex-foundation/umi-web3js-adapters
 
+## 0.3.1
+
+### Patch Changes
+
+- [#13](https://github.com/metaplex-foundation/umi/pull/13) [`acdc77a`](https://github.com/metaplex-foundation/umi/commit/acdc77af0f6c6e231b42b22e116497908043c57c) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Refactor TransactionBuilder to support Transaction sizes and LUTs
+
+- Updated dependencies [[`e566c1b`](https://github.com/metaplex-foundation/umi/commit/e566c1ba7232e1020234a750ec83607d50f60c56), [`acdc77a`](https://github.com/metaplex-foundation/umi/commit/acdc77af0f6c6e231b42b22e116497908043c57c)]:
+  - @metaplex-foundation/umi-core@0.3.1
+
 ## 0.3.0
 
 ### Patch Changes
