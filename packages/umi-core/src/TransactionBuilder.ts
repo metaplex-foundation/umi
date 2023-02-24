@@ -9,7 +9,7 @@ import type {
   RpcSendTransactionOptions,
 } from './RpcInterface';
 import { Signer, signTransaction, uniqueSigners } from './Signer';
-import type {
+import {
   AddressLookupTableInput,
   Blockhash,
   BlockhashWithExpiryBlockHeight,
@@ -17,8 +17,9 @@ import type {
   TransactionInput,
   TransactionSignature,
   TransactionVersion,
+  TRANSACTION_SIZE_LIMIT,
+  TRANSACTION_SIGNATURE_LENGTH,
 } from './Transaction';
-import { TRANSACTION_SIGNATURE_LENGTH } from './Transaction';
 
 export type TransactionBuilderItemsInput =
   | WrappedInstruction
@@ -153,6 +154,14 @@ export class TransactionBuilder {
       tx.serializedMessage.length +
       TRANSACTION_SIGNATURE_LENGTH * tx.signatures.length
     );
+  }
+
+  minimumTransactionsRequired(): number {
+    return Math.ceil(this.getTransactionSize() / TRANSACTION_SIZE_LIMIT);
+  }
+
+  fitsInOneTransaction(): boolean {
+    return this.minimumTransactionsRequired() === 1;
   }
 
   build(): Transaction {
