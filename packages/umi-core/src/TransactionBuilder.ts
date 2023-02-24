@@ -18,7 +18,6 @@ import {
   TransactionSignature,
   TransactionVersion,
   TRANSACTION_SIZE_LIMIT,
-  TRANSACTION_SIGNATURE_LENGTH,
 } from './Transaction';
 
 export type TransactionBuilderItemsInput =
@@ -145,18 +144,9 @@ export class TransactionBuilder {
   }
 
   getTransactionSize(): number {
-    let builder: TransactionBuilder = this;
-    // If not set, use a dummy blockhash to get the size of the transaction.
-    if (!this.options.blockhash) {
-      builder = this.setBlockhash(
-        'EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N'
-      );
-    }
-    const tx = builder.build();
-    return (
-      tx.serializedMessage.length +
-      TRANSACTION_SIGNATURE_LENGTH * tx.signatures.length
-    );
+    return this.context.transactions.serialize(
+      this.setBlockhash('11111111111111111111111111111111').build()
+    ).length;
   }
 
   minimumTransactionsRequired(): number {
