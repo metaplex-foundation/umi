@@ -85,11 +85,11 @@ export function toWeb3JsMessageFromInput(
         new Web3JsAddressLookupTableAccount({
           key: toWeb3JsPublicKey(account.publicKey),
           state: {
-            ...account,
-            authority: account.authority
-              ? toWeb3JsPublicKey(account.authority)
-              : undefined,
             addresses: account.addresses.map(toWeb3JsPublicKey),
+            authority: undefined,
+            deactivationSlot: BigInt(`0x${'ff'.repeat(8)}`),
+            lastExtendedSlot: 0,
+            lastExtendedSlotStartIndex: 0,
           },
         })
     ),

@@ -170,7 +170,9 @@ export class TransactionBuilder {
   }
 
   async buildWithLatestBlockhash(): Promise<Transaction> {
-    if (!this.getBlockhash()) await this.setLatestBlockhash();
+    if (!this.options.blockhash) {
+      await this.setLatestBlockhash();
+    }
     return this.build();
   }
 
@@ -194,6 +196,10 @@ export class TransactionBuilder {
     signature: TransactionSignature;
     result: RpcConfirmTransactionResult;
   }> {
+    if (!this.options.blockhash) {
+      await this.setLatestBlockhash();
+    }
+
     let strategy: RpcConfirmTransactionStrategy;
     if (options.confirm?.strategy) {
       strategy = options.confirm.strategy;
