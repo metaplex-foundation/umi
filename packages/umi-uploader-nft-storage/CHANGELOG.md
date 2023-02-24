@@ -1,5 +1,12 @@
 # @metaplex-foundation/umi-uploader-nft-storage
 
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies [[`422dc73`](https://github.com/metaplex-foundation/umi/commit/422dc73b5a5d84e89665ef69972a90cc947a20e5)]:
+  - @metaplex-foundation/umi-core@0.3.3
+
 ## 0.3.2
 
 ### Patch Changes
