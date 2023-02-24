@@ -6,6 +6,7 @@ import type { GenericAbortSignal } from './GenericAbortSignal';
 import type { PublicKey } from './PublicKey';
 import type {
   Blockhash,
+  BlockhashWithExpiryBlockHeight,
   Transaction,
   TransactionError,
   TransactionSignature,
@@ -65,11 +66,6 @@ export interface RpcInterface {
 }
 
 export type Commitment = 'processed' | 'confirmed' | 'finalized';
-export type BlockhashWithExpiryBlockHeight = {
-  blockhash: Blockhash;
-  lastValidBlockHeight: number;
-};
-
 export type RpcDataSlice = { offset: number; length: number };
 export type RpcDataFilter = RpcDataFilterSize | RpcDataFilterMemcmp;
 export type RpcDataFilterSize = { dataSize: number };

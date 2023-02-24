@@ -2,12 +2,19 @@ import { Amount, SolAmount } from './Amount';
 import type { Instruction } from './Instruction';
 import { samePublicKey, PublicKey } from './PublicKey';
 
+export const TRANSACTION_SIGNATURE_LENGTH = 64;
+export const TRANSACTION_SIZE_LIMIT = 1232;
+
 export type TransactionVersion = 'legacy' | 0;
 export type SerializedTransaction = Uint8Array;
 export type SerializedTransactionMessage = Uint8Array;
 export type TransactionSignature = Uint8Array;
 export type TransactionError = {} | string;
 export type Blockhash = string;
+export type BlockhashWithExpiryBlockHeight = {
+  blockhash: Blockhash;
+  lastValidBlockHeight: number;
+};
 
 export interface Transaction {
   readonly message: TransactionMessage;
@@ -97,10 +104,6 @@ export type TransactionInputBase = {
 export type AddressLookupTableInput = {
   publicKey: PublicKey;
   addresses: PublicKey[];
-  deactivationSlot: bigint;
-  lastExtendedSlot: number;
-  lastExtendedSlotStartIndex: number;
-  authority?: PublicKey;
 };
 
 export const addTransactionSignature = (

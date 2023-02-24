@@ -1,5 +1,6 @@
 import { SolAmount } from './Amount';
 import type { Context } from './Context';
+import { SdkError } from './errors';
 import type { Instruction, WrappedInstruction } from './Instruction';
 import type {
   RpcConfirmTransactionOptions,
@@ -7,12 +8,17 @@ import type {
   RpcConfirmTransactionStrategy,
   RpcSendTransactionOptions,
 } from './RpcInterface';
-import { uniqueSigners, Signer, signTransaction } from './Signer';
-import type {
+import { Signer, signTransaction, uniqueSigners } from './Signer';
+import {
+  AddressLookupTableInput,
   Blockhash,
+  BlockhashWithExpiryBlockHeight,
   Transaction,
   TransactionInput,
   TransactionSignature,
+  TransactionVersion,
+  TRANSACTION_SIZE_LIMIT,
+  TRANSACTION_SIGNATURE_LENGTH,
 } from './Transaction';
 
 export type TransactionBuilderItemsInput =
@@ -21,40 +27,38 @@ export type TransactionBuilderItemsInput =
   | TransactionBuilder
   | TransactionBuilder[];
 
-export type TransactionBuilderBuildOptions = Omit<
-  TransactionInput,
-  'payer' | 'instructions'
->;
+export type TransactionBuilderOptions = {
+  version?: TransactionVersion;
+  addressLookupTables?: AddressLookupTableInput[];
+  blockhash?: Blockhash | BlockhashWithExpiryBlockHeight;
+};
 
-export type TransactionBuilderSendOptions = {
-  build?: Partial<TransactionBuilderBuildOptions>;
+export type TransactionBuilderSendAndConfirmOptions = {
   send?: RpcSendTransactionOptions;
   confirm?: Partial<RpcConfirmTransactionOptions>;
 };
 
-export type TransactionBuilderSendAndConfirmOptions =
-  TransactionBuilderSendOptions & {
-    confirm?: Partial<RpcConfirmTransactionOptions>;
-  };
-
 export class TransactionBuilder {
   constructor(
     protected readonly context: Pick<Context, 'rpc' | 'transactions' | 'payer'>,
-    protected readonly items: WrappedInstruction[] = []
+    protected readonly items: WrappedInstruction[] = [],
+    protected readonly options: TransactionBuilderOptions = {}
   ) {}
 
   prepend(input: TransactionBuilderItemsInput): TransactionBuilder {
-    return new TransactionBuilder(this.context, [
-      ...this.parseItems(input),
-      ...this.items,
-    ]);
+    return new TransactionBuilder(
+      this.context,
+      [...this.parseItems(input), ...this.items],
+      this.options
+    );
   }
 
   append(input: TransactionBuilderItemsInput): TransactionBuilder {
-    return new TransactionBuilder(this.context, [
-      ...this.items,
-      ...this.parseItems(input),
-    ]);
+    return new TransactionBuilder(
+      this.context,
+      [...this.items, ...this.parseItems(input)],
+      this.options
+    );
   }
 
   add(input: TransactionBuilderItemsInput): TransactionBuilder {
@@ -63,9 +67,60 @@ export class TransactionBuilder {
 
   splitAtIndex(index: number): [TransactionBuilder, TransactionBuilder] {
     return [
-      new TransactionBuilder(this.context, this.items.slice(0, index)),
-      new TransactionBuilder(this.context, this.items.slice(index)),
+      new TransactionBuilder(
+        this.context,
+        this.items.slice(0, index),
+        this.options
+      ),
+      new TransactionBuilder(
+        this.context,
+        this.items.slice(index),
+        this.options
+      ),
     ];
+  }
+
+  setVersion(version: TransactionVersion): TransactionBuilder {
+    return new TransactionBuilder(this.context, this.items, {
+      ...this.options,
+      version,
+    });
+  }
+
+  useLegacyVersion(): TransactionBuilder {
+    return this.setVersion('legacy');
+  }
+
+  useV0(): TransactionBuilder {
+    return this.setVersion(0);
+  }
+
+  setAddressLookupTables(
+    addressLookupTables: AddressLookupTableInput[]
+  ): TransactionBuilder {
+    return new TransactionBuilder(this.context, this.items, {
+      ...this.options,
+      addressLookupTables,
+    });
+  }
+
+  getBlockhash(): Blockhash | undefined {
+    return typeof this.options.blockhash === 'object'
+      ? this.options.blockhash.blockhash
+      : this.options.blockhash;
+  }
+
+  setBlockhash(
+    blockhash: Blockhash | BlockhashWithExpiryBlockHeight
+  ): TransactionBuilder {
+    return new TransactionBuilder(this.context, this.items, {
+      ...this.options,
+      blockhash,
+    });
+  }
+
+  async setLatestBlockhash(): Promise<TransactionBuilder> {
+    return this.setBlockhash(await this.context.rpc.getLatestBlockhash());
   }
 
   getInstructions(): Instruction[] {
@@ -89,31 +144,65 @@ export class TransactionBuilder {
     });
   }
 
-  build(options: TransactionBuilderBuildOptions): Transaction {
-    return this.context.transactions.create({
-      payer: this.context.payer.publicKey,
-      instructions: this.getInstructions(),
-      ...options,
-    });
+  getTransactionSize(): number {
+    // If not set, use a dummy blockhash to get the size of the transaction.
+    if (!this.options.blockhash) {
+      this.setBlockhash('EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N');
+    }
+    const tx = this.build();
+    return (
+      tx.serializedMessage.length +
+      TRANSACTION_SIGNATURE_LENGTH * tx.signatures.length
+    );
   }
 
-  async buildAndSign(
-    options: TransactionBuilderBuildOptions
-  ): Promise<Transaction> {
-    return signTransaction(this.build(options), this.getSigners());
+  minimumTransactionsRequired(): number {
+    return Math.ceil(this.getTransactionSize() / TRANSACTION_SIZE_LIMIT);
+  }
+
+  fitsInOneTransaction(): boolean {
+    return this.minimumTransactionsRequired() === 1;
+  }
+
+  build(): Transaction {
+    const blockhash = this.getBlockhash();
+    if (!blockhash) {
+      throw new SdkError(
+        'Setting a blockhash is required to build a transaction. ' +
+          'Please use the `setBlockhash` or `setLatestBlockhash` methods.'
+      );
+    }
+    const input: TransactionInput = {
+      version: this.options.version ?? 0,
+      payer: this.context.payer.publicKey,
+      instructions: this.getInstructions(),
+      blockhash,
+    };
+    if (input.version === 0 && this.options.addressLookupTables) {
+      input.addressLookupTables = this.options.addressLookupTables;
+    }
+    return this.context.transactions.create(input);
+  }
+
+  async buildWithLatestBlockhash(): Promise<Transaction> {
+    if (!this.options.blockhash) {
+      await this.setLatestBlockhash();
+    }
+    return this.build();
+  }
+
+  async buildAndSign(): Promise<Transaction> {
+    return signTransaction(
+      await this.buildWithLatestBlockhash(),
+      this.getSigners()
+    );
   }
 
   async send(
-    options: TransactionBuilderSendOptions = {}
+    options: RpcSendTransactionOptions = {}
   ): Promise<TransactionSignature> {
-    const blockhash =
-      options.build?.blockhash ??
-      (await this.context.rpc.getLatestBlockhash()).blockhash;
-    const transaction = await this.buildAndSign({
-      blockhash,
-      ...options.build,
-    });
-    return this.context.rpc.sendTransaction(transaction, options.send);
+    const transaction = await this.buildAndSign();
+    return this.context.rpc.sendTransaction(transaction, options);
   }
 
   async sendAndConfirm(
@@ -122,27 +211,28 @@ export class TransactionBuilder {
     signature: TransactionSignature;
     result: RpcConfirmTransactionResult;
   }> {
-    let blockhash: Blockhash;
+    if (!this.options.blockhash) {
+      await this.setLatestBlockhash();
+    }
+
     let strategy: RpcConfirmTransactionStrategy;
-    if (options.confirm?.strategy && options.build?.blockhash) {
-      blockhash = options.build.blockhash;
+    if (options.confirm?.strategy) {
       strategy = options.confirm.strategy;
     } else {
-      const latestBlockhash = await this.context.rpc.getLatestBlockhash();
-      blockhash = latestBlockhash.blockhash;
+      const blockhash =
+        typeof this.options.blockhash === 'object'
+          ? this.options.blockhash
+          : await this.context.rpc.getLatestBlockhash();
       strategy = options.confirm?.strategy ?? {
         type: 'blockhash',
-        ...latestBlockhash,
+        ...blockhash,
       };
     }
 
-    const signature = await this.send({
-      ...options,
-      build: { blockhash, ...options.build },
-    });
+    const signature = await this.send(options.send);
     const result = await this.context.rpc.confirmTransaction(signature, {
-      strategy,
       ...options.confirm,
+      strategy,
     });
 
     return { signature, result };
