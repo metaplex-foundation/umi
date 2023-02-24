@@ -8,6 +8,10 @@ export type SerializedTransactionMessage = Uint8Array;
 export type TransactionSignature = Uint8Array;
 export type TransactionError = {} | string;
 export type Blockhash = string;
+export type BlockhashWithExpiryBlockHeight = {
+  blockhash: Blockhash;
+  lastValidBlockHeight: number;
+};
 
 export interface Transaction {
   readonly message: TransactionMessage;
@@ -97,10 +101,6 @@ export type TransactionInputBase = {
 export type AddressLookupTableInput = {
   publicKey: PublicKey;
   addresses: PublicKey[];
-  deactivationSlot: bigint;
-  lastExtendedSlot: number;
-  lastExtendedSlotStartIndex: number;
-  authority?: PublicKey;
 };
 
 export const addTransactionSignature = (
