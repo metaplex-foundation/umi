@@ -145,11 +145,14 @@ export class TransactionBuilder {
   }
 
   getTransactionSize(): number {
+    let builder: TransactionBuilder = this;
     // If not set, use a dummy blockhash to get the size of the transaction.
     if (!this.options.blockhash) {
-      this.setBlockhash('EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N');
+      builder = this.setBlockhash(
+        'EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N'
+      );
     }
-    const tx = this.build();
+    const tx = builder.build();
     return (
       tx.serializedMessage.length +
       TRANSACTION_SIGNATURE_LENGTH * tx.signatures.length
@@ -185,10 +188,11 @@ export class TransactionBuilder {
   }
 
   async buildWithLatestBlockhash(): Promise<Transaction> {
+    let builder: TransactionBuilder = this;
     if (!this.options.blockhash) {
-      await this.setLatestBlockhash();
+      builder = await this.setLatestBlockhash();
     }
-    return this.build();
+    return builder.build();
   }
 
   async buildAndSign(): Promise<Transaction> {
@@ -211,8 +215,9 @@ export class TransactionBuilder {
     signature: TransactionSignature;
     result: RpcConfirmTransactionResult;
   }> {
+    let builder: TransactionBuilder = this;
     if (!this.options.blockhash) {
-      await this.setLatestBlockhash();
+      builder = await this.setLatestBlockhash();
     }
 
     let strategy: RpcConfirmTransactionStrategy;
@@ -220,17 +225,17 @@ export class TransactionBuilder {
       strategy = options.confirm.strategy;
     } else {
       const blockhash =
-        typeof this.options.blockhash === 'object'
-          ? this.options.blockhash
-          : await this.context.rpc.getLatestBlockhash();
+        typeof builder.options.blockhash === 'object'
+          ? builder.options.blockhash
+          : await builder.context.rpc.getLatestBlockhash();
       strategy = options.confirm?.strategy ?? {
         type: 'blockhash',
         ...blockhash,
       };
     }
 
-    const signature = await this.send(options.send);
-    const result = await this.context.rpc.confirmTransaction(signature, {
+    const signature = await builder.send(options.send);
+    const result = await builder.context.rpc.confirmTransaction(signature, {
       ...options.confirm,
       strategy,
     });
