@@ -1,5 +1,5 @@
 import test from 'ava';
-import { base58, Endian } from '@metaplex-foundation/umi-core';
+import { base16, base58, Endian } from '@metaplex-foundation/umi-core';
 import { BeetSerializer } from '../src';
 import { s, d } from './_helpers';
 
@@ -16,11 +16,17 @@ test('prefixed (de)serialization', (t) => {
 
   // Characters with different byte lengths.
   s(t, string(), '語', '03000000e8aa9e');
-  d(t, string(), '03000000e8aa9e', '語', 4 + 3);
+  d(t, string(), '03000000e8aa9e', '語', 7);
+  d(t, string(), ['ff03000000e8aa9e', 1], '語', 8);
 
   // Different prefix lengths.
   s(t, string({ size: u8() }), 'ABC', '03414243');
   d(t, string({ size: u8() }), '03414243', 'ABC', 1 + 3);
+
+  // Not enough bytes.
+  t.throws(() => string({ size: u8() }).deserialize(base16.serialize('0341')), {
+    message: (m) => m.includes('Serializer [string] expected 3 bytes, got 1.'),
+  });
 });
 
 test('fixed (de)serialization', (t) => {
