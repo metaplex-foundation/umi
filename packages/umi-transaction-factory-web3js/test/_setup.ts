@@ -14,6 +14,7 @@ import {
   fromWeb3JsTransaction,
   toWeb3JsKeypair,
   toWeb3JsPublicKey,
+  toWeb3JsTransaction,
 } from '@metaplex-foundation/umi-web3js-adapters';
 import {
   AddressLookupTableAccount as Web3JsAddressLookupTableAccount,
@@ -91,4 +92,36 @@ export const createV0Transaction = (
   const web3JsTransaction = new Web3JsTransaction(web3JsV0Message);
   web3JsTransaction.sign(signers.map(toWeb3JsKeypair));
   return [fromWeb3JsTransaction(web3JsTransaction), web3JsTransaction];
+};
+
+export const createOversizedTransaction = (
+  umi: Umi
+): [Transaction, Web3JsTransaction] => {
+  const payer = generateSigner(umi);
+  const signers = [payer] as KeypairSigner[];
+  const createInstruction = () => {
+    const signer = generateSigner(umi);
+    signers.push(signer);
+    return SystemProgram.transfer({
+      fromPubkey: toWeb3JsPublicKey(signer.publicKey),
+      toPubkey: toWeb3JsPublicKey(generateSigner(umi).publicKey),
+      lamports: 1_000_000_000,
+    });
+  };
+  const web3JsV0Message = Web3JsV0Message.compile({
+    payerKey: toWeb3JsPublicKey(payer.publicKey),
+    instructions: Array.from({ length: 100 }, createInstruction),
+    recentBlockhash: '11111111111111111111111111111111',
+    addressLookupTableAccounts: [],
+  });
+  const message = fromWeb3JsMessage(web3JsV0Message);
+  const serializedMessage = umi.transactions.serializeMessage(message);
+  const transaction: Transaction = {
+    message,
+    serializedMessage,
+    signatures: signers.map((signer) =>
+      umi.eddsa.sign(serializedMessage, signer)
+    ),
+  };
+  return [transaction, toWeb3JsTransaction(transaction)];
 };
