@@ -22,7 +22,7 @@ export function fromWeb3JsMessage(
     instructions: message.compiledInstructions.map((instruction) => ({
       programIndex: instruction.programIdIndex,
       accountIndexes: instruction.accountKeyIndexes,
-      data: instruction.data,
+      data: new Uint8Array(instruction.data),
     })),
     addressLookupTables: message.addressTableLookups.map((lookup) => ({
       publicKey: fromWeb3JsPublicKey(lookup.accountKey),

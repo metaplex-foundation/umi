@@ -1,5 +1,5 @@
 import test from 'ava';
-import { createLegacyMessage, createUmi } from './_setup';
+import { createLegacyMessage, createUmi, createV0Message } from './_setup';
 
 test('it can serialize a legacy message', async (t) => {
   const umi = createUmi();
@@ -17,5 +17,18 @@ test('it can deserialize a legacy message', async (t) => {
   t.deepEqual(deserializedMessage, originalMessage);
 });
 
-// it can serialize a v0 message
-// it can deserialize a v0 message
+test('it can serialize a V0 message', async (t) => {
+  const umi = createUmi();
+  const [v0Message, web3JsV0Message] = createV0Message(umi);
+  const serialized = umi.transactions.serializeMessage(v0Message);
+  t.deepEqual(serialized, new Uint8Array(web3JsV0Message.serialize()));
+});
+
+test('it can deserialize a V0 message', async (t) => {
+  const umi = createUmi();
+  const [originalMessage, web3JsV0Message] = createV0Message(umi);
+  const serializedMessage = new Uint8Array(web3JsV0Message.serialize());
+  const deserializedMessage =
+    umi.transactions.deserializeMessage(serializedMessage);
+  t.deepEqual(deserializedMessage, originalMessage);
+});

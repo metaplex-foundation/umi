@@ -98,30 +98,6 @@ export class Web3JsTransactionFactory implements TransactionFactoryInterface {
   getTransactionMessageSerializerForVersion(
     version: TransactionVersion
   ): Serializer<TransactionMessage> {
-    switch (version) {
-      case 'legacy':
-        return this.getTransactionMessageLegacySerializer();
-      case 0:
-      default:
-        return this.getTransactionMessageV0Serializer();
-    }
-  }
-
-  getTransactionMessageLegacySerializer(): Serializer<TransactionMessage> {
-    const s = this.context.serializer;
-    return s.struct<TransactionMessage, TransactionMessage>([
-      ['version', this.getTransactionVersionSerializer()],
-      ['header', this.getTransactionMessageHeaderSerializer()],
-      ['accounts', s.array(s.publicKey(), { size: shortU16() })],
-      ['blockhash', s.string({ encoding: base58, size: 32 })],
-      [
-        'instructions',
-        s.array(this.getCompiledInstructionSerializer(), { size: shortU16() }),
-      ],
-    ]);
-  }
-
-  getTransactionMessageV0Serializer(): Serializer<TransactionMessage> {
     const s = this.context.serializer;
     return s.struct<TransactionMessage, TransactionMessage>([
       ['version', this.getTransactionVersionSerializer()],
@@ -135,7 +111,7 @@ export class Web3JsTransactionFactory implements TransactionFactoryInterface {
       [
         'addressLookupTables',
         s.array(this.getCompiledAddressLookupTableSerializer(), {
-          size: shortU16(),
+          size: version === 'legacy' ? 0 : shortU16(),
         }),
       ],
     ]);
