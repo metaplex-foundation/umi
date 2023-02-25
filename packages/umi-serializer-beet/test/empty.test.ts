@@ -111,4 +111,10 @@ test('it can handle empty buffers', (t) => {
   // Bytes.
   t.deepEqual(empty(tolerant.bytes()), new Uint8Array());
   t.deepEqual(empty(intolerant.bytes()), new Uint8Array());
+  t.deepEqual(empty(tolerant.bytes({ size: 'variable' })), new Uint8Array());
+  t.deepEqual(empty(intolerant.bytes({ size: 'variable' })), new Uint8Array());
+  t.throws(() => empty(tolerant.bytes({ size: u8() })), e);
+  t.throws(() => empty(intolerant.bytes({ size: u8() })), e);
+  t.throws(() => empty(tolerant.bytes({ size: 5 })), fixedError(5));
+  t.throws(() => empty(intolerant.bytes({ size: 5 })), fixedError(5));
 });
