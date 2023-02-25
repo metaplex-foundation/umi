@@ -10,6 +10,7 @@ import {
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { beetSerializer } from '@metaplex-foundation/umi-serializer-beet';
 import {
+  fromWeb3JsInstruction,
   fromWeb3JsMessage,
   fromWeb3JsTransaction,
   toWeb3JsKeypair,
@@ -102,25 +103,24 @@ export const createOversizedTransaction = (
   const createInstruction = () => {
     const signer = generateSigner(umi);
     signers.push(signer);
-    return SystemProgram.transfer({
-      fromPubkey: toWeb3JsPublicKey(signer.publicKey),
-      toPubkey: toWeb3JsPublicKey(generateSigner(umi).publicKey),
-      lamports: 1_000_000_000,
-    });
+    return fromWeb3JsInstruction(
+      SystemProgram.transfer({
+        fromPubkey: toWeb3JsPublicKey(signer.publicKey),
+        toPubkey: toWeb3JsPublicKey(generateSigner(umi).publicKey),
+        lamports: 1_000_000_000,
+      })
+    );
   };
-  const web3JsV0Message = Web3JsV0Message.compile({
-    payerKey: toWeb3JsPublicKey(payer.publicKey),
+  const unsignedTransaction: Transaction = umi.transactions.create({
+    version: 0,
+    payer: payer.publicKey,
     instructions: Array.from({ length: 100 }, createInstruction),
-    recentBlockhash: '11111111111111111111111111111111',
-    addressLookupTableAccounts: [],
+    blockhash: '11111111111111111111111111111111',
   });
-  const message = fromWeb3JsMessage(web3JsV0Message);
-  const serializedMessage = umi.transactions.serializeMessage(message);
   const transaction: Transaction = {
-    message,
-    serializedMessage,
+    ...unsignedTransaction,
     signatures: signers.map((signer) =>
-      umi.eddsa.sign(serializedMessage, signer)
+      umi.eddsa.sign(unsignedTransaction.serializedMessage, signer)
     ),
   };
   return [transaction, toWeb3JsTransaction(transaction)];
