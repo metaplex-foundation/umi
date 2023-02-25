@@ -2,6 +2,7 @@
 import {
   createUmi as baseCreateUmi,
   generateSigner,
+  Instruction,
   KeypairSigner,
   Transaction,
   TransactionMessage,
@@ -22,6 +23,7 @@ import {
   Message as Web3JsLegacyMessage,
   MessageV0 as Web3JsV0Message,
   SystemProgram,
+  TransactionInstruction as Web3JsInstruction,
   VersionedTransaction as Web3JsTransaction,
 } from '@solana/web3.js';
 import { web3JsTransactionFactory } from '../src';
@@ -32,37 +34,44 @@ export const createUmi = (): Umi =>
     .use(web3JsEddsa())
     .use(web3JsTransactionFactory());
 
+export const createTransferInstruction = (
+  umi: Umi
+): [Instruction, Web3JsInstruction, KeypairSigner[]] => {
+  const signer = generateSigner(umi);
+  const web3JsInstruction = SystemProgram.transfer({
+    fromPubkey: toWeb3JsPublicKey(signer.publicKey),
+    toPubkey: toWeb3JsPublicKey(generateSigner(umi).publicKey),
+    lamports: 1_000_000_000,
+  });
+  const instruction = fromWeb3JsInstruction(web3JsInstruction);
+  return [instruction, web3JsInstruction, [signer]];
+};
+
 export const createLegacyMessage = (
   umi: Umi
 ): [TransactionMessage, Web3JsLegacyMessage, KeypairSigner[]] => {
-  const fromPubkeySigner = generateSigner(umi);
-  const fromPubkey = toWeb3JsPublicKey(fromPubkeySigner.publicKey);
-  const toPubkey = toWeb3JsPublicKey(generateSigner(umi).publicKey);
+  const payer = generateSigner(umi);
+  const [, web3JsInstruction, signers] = createTransferInstruction(umi);
   const web3JsLegacyMessage = Web3JsLegacyMessage.compile({
-    payerKey: toWeb3JsPublicKey(generateSigner(umi).publicKey),
-    instructions: [
-      SystemProgram.transfer({ fromPubkey, toPubkey, lamports: 1_000_000_000 }),
-    ],
+    payerKey: toWeb3JsPublicKey(payer.publicKey),
+    instructions: [web3JsInstruction],
     recentBlockhash: '11111111111111111111111111111111',
   });
   return [
     fromWeb3JsMessage(web3JsLegacyMessage),
     web3JsLegacyMessage,
-    [fromPubkeySigner],
+    [payer, ...signers],
   ];
 };
 
 export const createV0Message = (
   umi: Umi
 ): [TransactionMessage, Web3JsV0Message, KeypairSigner[]] => {
-  const fromPubkeySigner = generateSigner(umi);
-  const fromPubkey = toWeb3JsPublicKey(fromPubkeySigner.publicKey);
-  const toPubkey = toWeb3JsPublicKey(generateSigner(umi).publicKey);
+  const payer = generateSigner(umi);
+  const [, web3JsInstruction, signers] = createTransferInstruction(umi);
   const web3JsV0Message = Web3JsV0Message.compile({
-    payerKey: toWeb3JsPublicKey(generateSigner(umi).publicKey),
-    instructions: [
-      SystemProgram.transfer({ fromPubkey, toPubkey, lamports: 1_000_000_000 }),
-    ],
+    payerKey: toWeb3JsPublicKey(payer.publicKey),
+    instructions: [web3JsInstruction],
     recentBlockhash: '11111111111111111111111111111111',
     addressLookupTableAccounts: [
       new Web3JsAddressLookupTableAccount({
@@ -72,7 +81,7 @@ export const createV0Message = (
           lastExtendedSlot: 0,
           lastExtendedSlotStartIndex: 0,
           addresses: [
-            toPubkey,
+            web3JsInstruction.keys[1].pubkey,
             toWeb3JsPublicKey(generateSigner(umi).publicKey),
           ],
         },
@@ -82,7 +91,7 @@ export const createV0Message = (
   return [
     fromWeb3JsMessage(web3JsV0Message),
     web3JsV0Message,
-    [fromPubkeySigner],
+    [payer, ...signers],
   ];
 };
 
@@ -101,15 +110,9 @@ export const createOversizedTransaction = (
   const payer = generateSigner(umi);
   const signers = [payer] as KeypairSigner[];
   const createInstruction = () => {
-    const signer = generateSigner(umi);
-    signers.push(signer);
-    return fromWeb3JsInstruction(
-      SystemProgram.transfer({
-        fromPubkey: toWeb3JsPublicKey(signer.publicKey),
-        toPubkey: toWeb3JsPublicKey(generateSigner(umi).publicKey),
-        lamports: 1_000_000_000,
-      })
-    );
+    const [instruction, , ixSigners] = createTransferInstruction(umi);
+    signers.push(...ixSigners);
+    return instruction;
   };
   const unsignedTransaction: Transaction = umi.transactions.create({
     version: 0,
