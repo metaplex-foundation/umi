@@ -4,6 +4,7 @@ import {
   CompiledAddressLookupTable,
   CompiledInstruction,
   Context,
+  SdkError,
   SerializedTransaction,
   SerializedTransactionMessage,
   Serializer,
@@ -12,6 +13,7 @@ import {
   TransactionInput,
   TransactionMessage,
   TransactionMessageHeader,
+  TransactionVersion,
 } from '@metaplex-foundation/umi-core';
 import {
   fromWeb3JsMessage,
@@ -20,6 +22,9 @@ import {
   toWeb3JsTransaction,
 } from '@metaplex-foundation/umi-web3js-adapters';
 import { VersionedTransaction as Web3JsTransaction } from '@solana/web3.js';
+
+const TRANSACTION_VERSION_FLAG = 0x80;
+const TRANSACTION_VERSION_MASK = 0x7f;
 
 export class Web3JsTransactionFactory implements TransactionFactoryInterface {
   protected readonly context: Pick<Context, 'serializer'>;
@@ -67,8 +72,7 @@ export class Web3JsTransactionFactory implements TransactionFactoryInterface {
   getTransactionMessageSerializer(): Serializer<TransactionMessage> {
     const s = this.context.serializer;
     return s.struct<TransactionMessage, TransactionMessage>([
-      // const MESSAGE_VERSION_0_PREFIX = 1 << 7;
-      ['version', s.u8()], // TODO
+      ['version', this.getTransactionVersionSerializer()],
       [
         'header',
         s.struct<TransactionMessageHeader, TransactionMessageHeader>([
@@ -90,6 +94,32 @@ export class Web3JsTransactionFactory implements TransactionFactoryInterface {
         }),
       ],
     ]);
+  }
+
+  getTransactionVersionSerializer(): Serializer<TransactionVersion> {
+    return {
+      description: 'TransactionVersion',
+      fixedSize: null,
+      maxSize: 1,
+      serialize: (value: TransactionVersion): Uint8Array => {
+        if (value === 'legacy') return new Uint8Array([]);
+        return new Uint8Array([TRANSACTION_VERSION_FLAG | value]);
+      },
+      deserialize: (
+        bytes: Uint8Array,
+        offset = 0
+      ): [TransactionVersion, number] => {
+        const slice = bytes.slice(offset);
+        if (slice.length === 0 || (slice[0] & TRANSACTION_VERSION_FLAG) === 0) {
+          return ['legacy', offset];
+        }
+        const version = slice[0] & TRANSACTION_VERSION_MASK;
+        if (version > 0) {
+          throw new SdkError(`Unsupported transaction version: ${version}.`);
+        }
+        return [version as TransactionVersion, offset + 1];
+      },
+    };
   }
 
   getCompiledInstructionSerializer(): Serializer<CompiledInstruction> {
