@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-signer-wallet-adapters",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
