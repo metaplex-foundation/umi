@@ -4,6 +4,7 @@ import {
   CompiledAddressLookupTable,
   CompiledInstruction,
   Context,
+  mapSerializer,
   SdkError,
   SerializedTransaction,
   SerializedTransactionMessage,
@@ -17,9 +18,7 @@ import {
 } from '@metaplex-foundation/umi-core';
 import {
   fromWeb3JsMessage,
-  fromWeb3JsTransaction,
   toWeb3JsMessageFromInput,
-  toWeb3JsTransaction,
 } from '@metaplex-foundation/umi-web3js-adapters';
 import { VersionedTransaction as Web3JsTransaction } from '@solana/web3.js';
 
@@ -48,13 +47,13 @@ export class Web3JsTransactionFactory implements TransactionFactoryInterface {
   }
 
   serialize(transaction: Transaction): SerializedTransaction {
-    return toWeb3JsTransaction(transaction).serialize();
+    return this.getTransactionSerializer().serialize(transaction);
   }
 
   deserialize(serializedTransaction: SerializedTransaction): Transaction {
-    return fromWeb3JsTransaction(
-      Web3JsTransaction.deserialize(serializedTransaction)
-    );
+    return this.getTransactionSerializer().deserialize(
+      serializedTransaction
+    )[0];
   }
 
   serializeMessage(message: TransactionMessage): SerializedTransactionMessage {
@@ -67,6 +66,24 @@ export class Web3JsTransactionFactory implements TransactionFactoryInterface {
     return this.getTransactionMessageSerializer().deserialize(
       serializedMessage
     )[0];
+  }
+
+  getTransactionSerializer(): Serializer<Transaction> {
+    const s = this.context.serializer;
+    return {
+      ...mapSerializer(
+        s.struct<Omit<Transaction, 'message'>>([
+          ['signatures', s.array(s.bytes({ size: 64 }), { size: shortU16() })],
+          ['serializedMessage', s.bytes()],
+        ]),
+        (value: Transaction): Omit<Transaction, 'message'> => value,
+        (value: Omit<Transaction, 'message'>): Transaction => ({
+          ...value,
+          message: this.deserializeMessage(value.serializedMessage),
+        })
+      ),
+      description: 'Transaction',
+    };
   }
 
   getTransactionMessageSerializer(): Serializer<TransactionMessage> {

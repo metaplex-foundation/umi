@@ -2,6 +2,8 @@
 import {
   createUmi as baseCreateUmi,
   generateSigner,
+  KeypairSigner,
+  Transaction,
   TransactionMessage,
   Umi,
 } from '@metaplex-foundation/umi-core';
@@ -9,6 +11,8 @@ import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { beetSerializer } from '@metaplex-foundation/umi-serializer-beet';
 import {
   fromWeb3JsMessage,
+  fromWeb3JsTransaction,
+  toWeb3JsKeypair,
   toWeb3JsPublicKey,
 } from '@metaplex-foundation/umi-web3js-adapters';
 import {
@@ -16,6 +20,7 @@ import {
   Message as Web3JsLegacyMessage,
   MessageV0 as Web3JsV0Message,
   SystemProgram,
+  VersionedTransaction as Web3JsTransaction,
 } from '@solana/web3.js';
 import { web3JsTransactionFactory } from '../src';
 
@@ -27,8 +32,9 @@ export const createUmi = (): Umi =>
 
 export const createLegacyMessage = (
   umi: Umi
-): [TransactionMessage, Web3JsLegacyMessage] => {
-  const fromPubkey = toWeb3JsPublicKey(generateSigner(umi).publicKey);
+): [TransactionMessage, Web3JsLegacyMessage, KeypairSigner[]] => {
+  const fromPubkeySigner = generateSigner(umi);
+  const fromPubkey = toWeb3JsPublicKey(fromPubkeySigner.publicKey);
   const toPubkey = toWeb3JsPublicKey(generateSigner(umi).publicKey);
   const web3JsLegacyMessage = Web3JsLegacyMessage.compile({
     payerKey: toWeb3JsPublicKey(generateSigner(umi).publicKey),
@@ -37,13 +43,18 @@ export const createLegacyMessage = (
     ],
     recentBlockhash: '11111111111111111111111111111111',
   });
-  return [fromWeb3JsMessage(web3JsLegacyMessage), web3JsLegacyMessage];
+  return [
+    fromWeb3JsMessage(web3JsLegacyMessage),
+    web3JsLegacyMessage,
+    [fromPubkeySigner],
+  ];
 };
 
 export const createV0Message = (
   umi: Umi
-): [TransactionMessage, Web3JsV0Message] => {
-  const fromPubkey = toWeb3JsPublicKey(generateSigner(umi).publicKey);
+): [TransactionMessage, Web3JsV0Message, KeypairSigner[]] => {
+  const fromPubkeySigner = generateSigner(umi);
+  const fromPubkey = toWeb3JsPublicKey(fromPubkeySigner.publicKey);
   const toPubkey = toWeb3JsPublicKey(generateSigner(umi).publicKey);
   const web3JsV0Message = Web3JsV0Message.compile({
     payerKey: toWeb3JsPublicKey(generateSigner(umi).publicKey),
@@ -66,5 +77,18 @@ export const createV0Message = (
       }),
     ],
   });
-  return [fromWeb3JsMessage(web3JsV0Message), web3JsV0Message];
+  return [
+    fromWeb3JsMessage(web3JsV0Message),
+    web3JsV0Message,
+    [fromPubkeySigner],
+  ];
+};
+
+export const createV0Transaction = (
+  umi: Umi
+): [Transaction, Web3JsTransaction] => {
+  const [, web3JsV0Message, signers] = createV0Message(umi);
+  const web3JsTransaction = new Web3JsTransaction(web3JsV0Message);
+  web3JsTransaction.sign(signers.map(toWeb3JsKeypair));
+  return [fromWeb3JsTransaction(web3JsTransaction), web3JsTransaction];
 };
