@@ -39,10 +39,22 @@ export type TransactionBuilderSendAndConfirmOptions = {
 
 export class TransactionBuilder {
   constructor(
-    protected readonly context: Pick<Context, 'rpc' | 'transactions' | 'payer'>,
-    protected readonly items: WrappedInstruction[] = [],
-    protected readonly options: TransactionBuilderOptions = {}
+    readonly context: Pick<Context, 'rpc' | 'transactions' | 'payer'>,
+    readonly items: WrappedInstruction[] = [],
+    readonly options: TransactionBuilderOptions = {}
   ) {}
+
+  empty(): TransactionBuilder {
+    return new TransactionBuilder(this.context, [], this.options);
+  }
+
+  setItems(input: TransactionBuilderItemsInput): TransactionBuilder {
+    return new TransactionBuilder(
+      this.context,
+      this.parseItems(input),
+      this.options
+    );
+  }
 
   prepend(input: TransactionBuilderItemsInput): TransactionBuilder {
     return new TransactionBuilder(
