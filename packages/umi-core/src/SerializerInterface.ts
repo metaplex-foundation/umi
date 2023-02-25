@@ -386,7 +386,16 @@ export type NumberSerializerOptions = BaseSerializerOptions & {
   endian?: Endian;
 };
 
-export type BytesSerializerOptions = BaseSerializerOptions;
+export type BytesSerializerOptions = BaseSerializerOptions & {
+  /**
+   * The size of the buffer. It can be one of the following:
+   * - a {@link NumberSerializer} that prefixes the buffer with its size.
+   * - a fixed number of bytes.
+   * - or `'variable'` to use the rest of the buffer.
+   * @defaultValue `'variable'`
+   */
+  size?: NumberSerializer | number | 'variable';
+};
 
 export type PublicKeySerializerOptions = BaseSerializerOptions;
 
