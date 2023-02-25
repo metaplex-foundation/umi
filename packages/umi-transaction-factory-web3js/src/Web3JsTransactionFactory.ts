@@ -70,17 +70,62 @@ export class Web3JsTransactionFactory implements TransactionFactoryInterface {
   }
 
   getTransactionMessageSerializer(): Serializer<TransactionMessage> {
+    return {
+      description: 'TransactionMessage',
+      fixedSize: null,
+      maxSize: null,
+      serialize: (value: TransactionMessage): Uint8Array => {
+        const serializer = this.getTransactionMessageSerializerForVersion(
+          value.version
+        );
+        return serializer.serialize(value);
+      },
+      deserialize: (
+        bytes: Uint8Array,
+        offset = 0
+      ): [TransactionMessage, number] => {
+        const [version] = this.getTransactionVersionSerializer().deserialize(
+          bytes,
+          offset
+        );
+        const serializer =
+          this.getTransactionMessageSerializerForVersion(version);
+        return serializer.deserialize(bytes, offset);
+      },
+    };
+  }
+
+  getTransactionMessageSerializerForVersion(
+    version: TransactionVersion
+  ): Serializer<TransactionMessage> {
+    switch (version) {
+      case 'legacy':
+        return this.getTransactionMessageLegacySerializer();
+      case 0:
+      default:
+        return this.getTransactionMessageV0Serializer();
+    }
+  }
+
+  getTransactionMessageLegacySerializer(): Serializer<TransactionMessage> {
     const s = this.context.serializer;
     return s.struct<TransactionMessage, TransactionMessage>([
       ['version', this.getTransactionVersionSerializer()],
+      ['header', this.getTransactionMessageHeaderSerializer()],
+      ['accounts', s.array(s.publicKey(), { size: shortU16() })],
+      ['blockhash', s.string({ encoding: base58, size: 32 })],
       [
-        'header',
-        s.struct<TransactionMessageHeader, TransactionMessageHeader>([
-          ['numRequiredSignatures', s.u8()],
-          ['numReadonlySignedAccounts', s.u8()],
-          ['numReadonlyUnsignedAccounts', s.u8()],
-        ]),
+        'instructions',
+        s.array(this.getCompiledInstructionSerializer(), { size: shortU16() }),
       ],
+    ]);
+  }
+
+  getTransactionMessageV0Serializer(): Serializer<TransactionMessage> {
+    const s = this.context.serializer;
+    return s.struct<TransactionMessage, TransactionMessage>([
+      ['version', this.getTransactionVersionSerializer()],
+      ['header', this.getTransactionMessageHeaderSerializer()],
       ['accounts', s.array(s.publicKey(), { size: shortU16() })],
       ['blockhash', s.string({ encoding: base58, size: 32 })],
       [
@@ -122,9 +167,18 @@ export class Web3JsTransactionFactory implements TransactionFactoryInterface {
     };
   }
 
+  getTransactionMessageHeaderSerializer(): Serializer<TransactionMessageHeader> {
+    const s = this.context.serializer;
+    return s.struct([
+      ['numRequiredSignatures', s.u8()],
+      ['numReadonlySignedAccounts', s.u8()],
+      ['numReadonlyUnsignedAccounts', s.u8()],
+    ]);
+  }
+
   getCompiledInstructionSerializer(): Serializer<CompiledInstruction> {
     const s = this.context.serializer;
-    return s.struct<CompiledInstruction>([
+    return s.struct([
       ['programIndex', s.u8()],
       ['accountIndexes', s.array(s.u8(), { size: shortU16() })],
       ['data', s.bytes({ size: shortU16() })],
@@ -133,7 +187,7 @@ export class Web3JsTransactionFactory implements TransactionFactoryInterface {
 
   getCompiledAddressLookupTableSerializer(): Serializer<CompiledAddressLookupTable> {
     const s = this.context.serializer;
-    return s.struct<CompiledAddressLookupTable>([
+    return s.struct([
       ['publicKey', s.publicKey()],
       ['writableIndexes', s.array(s.u8(), { size: shortU16() })],
       ['readonlyIndexes', s.array(s.u8(), { size: shortU16() })],
