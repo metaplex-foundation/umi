@@ -62,10 +62,10 @@ test('description', (t) => {
   t.is(bytes().description, 'bytes(variable)');
   t.is(bytes({ size: 42 }).description, 'bytes(42)');
   t.is(bytes({ size: 'variable' }).description, 'bytes(variable)');
-  t.is(bytes({ size: u8() }).description, 'bytes(u8(be))');
+  t.is(bytes({ size: u8() }).description, 'bytes(u8(le))');
   t.is(
-    bytes({ size: u8({ endian: Endian.Little }) }).description,
-    'bytes(u8(le))'
+    bytes({ size: u8({ endian: Endian.Big }) }).description,
+    'bytes(u8(be))'
   );
 
   // Custom.

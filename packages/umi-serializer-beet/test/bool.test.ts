@@ -23,11 +23,11 @@ test('deserialization', (t) => {
 
 test('description', (t) => {
   const { bool, u32 } = new BeetSerializer();
-  t.is(bool().description, 'bool(u8(be))');
-  t.is(bool({ size: u32() }).description, 'bool(u32(be))');
+  t.is(bool().description, 'bool(u8(le))');
+  t.is(bool({ size: u32() }).description, 'bool(u32(le))');
   t.is(
-    bool({ size: u32({ endian: Endian.Little }) }).description,
-    'bool(u32(le))'
+    bool({ size: u32({ endian: Endian.Big }) }).description,
+    'bool(u32(be))'
   );
   t.is(bool({ description: 'My bool' }).description, 'My bool');
 });

@@ -114,23 +114,23 @@ test('description', (t) => {
   const { map, u8, string } = new BeetSerializer();
 
   // Size.
-  t.is(map(u8(), u8(), { size: 42 }).description, 'map(u8(be), u8(be); 42)');
+  t.is(map(u8(), u8(), { size: 42 }).description, 'map(u8(le), u8(le); 42)');
   t.is(
     map(u8(), u8(), { size: 'remainder' }).description,
-    'map(u8(be), u8(be); remainder)'
+    'map(u8(le), u8(le); remainder)'
   );
-  t.is(map(u8(), u8()).description, 'map(u8(be), u8(be); u32(be))');
+  t.is(map(u8(), u8()).description, 'map(u8(le), u8(le); u32(le))');
   t.is(
     map(string(), u8()).description,
-    'map(string(utf8; u32(be)), u8(be); u32(be))'
+    'map(string(utf8; u32(le)), u8(le); u32(le))'
   );
   t.is(
     map(u8(), u8(), { size: u8() }).description,
-    'map(u8(be), u8(be); u8(be))'
+    'map(u8(le), u8(le); u8(le))'
   );
   t.is(
-    map(u8(), u8(), { size: u8({ endian: Endian.Little }) }).description,
-    'map(u8(be), u8(be); u8(le))'
+    map(u8(), u8(), { size: u8({ endian: Endian.Big }) }).description,
+    'map(u8(le), u8(le); u8(be))'
   );
 
   // Custom.

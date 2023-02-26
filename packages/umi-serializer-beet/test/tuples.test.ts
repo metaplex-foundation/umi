@@ -30,10 +30,10 @@ test('(de)serialization with different From and To types', (t) => {
 
 test('description', (t) => {
   const { tuple, u8, i16, string } = new BeetSerializer();
-  t.is(tuple([u8()]).description, 'tuple(u8(be))');
+  t.is(tuple([u8()]).description, 'tuple(u8(le))');
   t.is(
     tuple([u8(), string(), i16()]).description,
-    'tuple(u8(be), string(utf8; u32(be)), i16(be))'
+    'tuple(u8(le), string(utf8; u32(le)), i16(le))'
   );
   t.is(tuple([u8()], { description: 'my tuple' }).description, 'my tuple');
 });

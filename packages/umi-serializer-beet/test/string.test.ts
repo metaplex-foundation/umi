@@ -92,16 +92,16 @@ test('description', (t) => {
   const { string, u8 } = new BeetSerializer();
 
   // Encoding.
-  t.is(string().description, 'string(utf8; u32(be))');
-  t.is(string({ encoding: base58 }).description, 'string(base58; u32(be))');
+  t.is(string().description, 'string(utf8; u32(le))');
+  t.is(string({ encoding: base58 }).description, 'string(base58; u32(le))');
 
   // Size.
   t.is(string({ size: 42 }).description, 'string(utf8; 42)');
   t.is(string({ size: 'variable' }).description, 'string(utf8; variable)');
-  t.is(string({ size: u8() }).description, 'string(utf8; u8(be))');
+  t.is(string({ size: u8() }).description, 'string(utf8; u8(le))');
   t.is(
-    string({ size: u8({ endian: Endian.Little }) }).description,
-    'string(utf8; u8(le))'
+    string({ size: u8({ endian: Endian.Big }) }).description,
+    'string(utf8; u8(be))'
   );
 
   // Custom.
