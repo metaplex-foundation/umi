@@ -1,5 +1,17 @@
 # @metaplex-foundation/umi-core
 
+## 0.4.0
+
+### Minor Changes
+
+- [#17](https://github.com/metaplex-foundation/umi/pull/17) [`d6ae534`](https://github.com/metaplex-foundation/umi/commit/d6ae5345ef4b8b8abca1cef04fd64e95f517e656) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Add size to bytes serializer
+
+### Patch Changes
+
+- [#20](https://github.com/metaplex-foundation/umi/pull/20) [`9f86429`](https://github.com/metaplex-foundation/umi/commit/9f8642945f000d84b07005bebe479be9a562db87) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Add new DataViewSerializer with no extra dependencies
+
+- [#21](https://github.com/metaplex-foundation/umi/pull/21) [`8d09519`](https://github.com/metaplex-foundation/umi/commit/8d0951983756a8c147ac3f4f95bb7cfc86294aa4) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Split TransactionBuilders by transaction size
+
 ## 0.3.4
 
 ### Patch Changes
