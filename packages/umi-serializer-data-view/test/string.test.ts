@@ -89,7 +89,7 @@ test('base58 (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { string, u8 } = new DataViewSerializer();
+  const { string, u16 } = new DataViewSerializer();
 
   // Encoding.
   t.is(string().description, 'string(utf8; u32(le))');
@@ -98,10 +98,10 @@ test('description', (t) => {
   // Size.
   t.is(string({ size: 42 }).description, 'string(utf8; 42)');
   t.is(string({ size: 'variable' }).description, 'string(utf8; variable)');
-  t.is(string({ size: u8() }).description, 'string(utf8; u8(le))');
+  t.is(string({ size: u16() }).description, 'string(utf8; u16(le))');
   t.is(
-    string({ size: u8({ endian: Endian.Big }) }).description,
-    'string(utf8; u8(be))'
+    string({ size: u16({ endian: Endian.Big }) }).description,
+    'string(utf8; u16(be))'
   );
 
   // Custom.

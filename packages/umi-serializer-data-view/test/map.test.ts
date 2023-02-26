@@ -111,26 +111,23 @@ test('remainder (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { map, u8, string } = new DataViewSerializer();
+  const { map, u8, u16, string } = new DataViewSerializer();
 
   // Size.
-  t.is(map(u8(), u8(), { size: 42 }).description, 'map(u8(le), u8(le); 42)');
+  t.is(map(u8(), u8(), { size: 42 }).description, 'map(u8, u8; 42)');
   t.is(
     map(u8(), u8(), { size: 'remainder' }).description,
-    'map(u8(le), u8(le); remainder)'
+    'map(u8, u8; remainder)'
   );
-  t.is(map(u8(), u8()).description, 'map(u8(le), u8(le); u32(le))');
+  t.is(map(u8(), u8()).description, 'map(u8, u8; u32(le))');
   t.is(
     map(string(), u8()).description,
-    'map(string(utf8; u32(le)), u8(le); u32(le))'
+    'map(string(utf8; u32(le)), u8; u32(le))'
   );
+  t.is(map(u8(), u8(), { size: u16() }).description, 'map(u8, u8; u16(le))');
   t.is(
-    map(u8(), u8(), { size: u8() }).description,
-    'map(u8(le), u8(le); u8(le))'
-  );
-  t.is(
-    map(u8(), u8(), { size: u8({ endian: Endian.Big }) }).description,
-    'map(u8(le), u8(le); u8(be))'
+    map(u8(), u8(), { size: u16({ endian: Endian.Big }) }).description,
+    'map(u8, u8; u16(be))'
   );
 
   // Custom.

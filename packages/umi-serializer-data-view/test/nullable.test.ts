@@ -77,28 +77,19 @@ test('fixed (de)serialization', (t) => {
 
 test('description', (t) => {
   const { nullable, u8, u16, string } = new DataViewSerializer();
-  t.is(nullable(u8()).description, 'nullable(u8(le); u8(le))');
-  t.is(
-    nullable(string()).description,
-    'nullable(string(utf8; u32(le)); u8(le))'
-  );
-  t.is(
-    nullable(u8(), { prefix: u16() }).description,
-    'nullable(u8(le); u16(le))'
-  );
+  t.is(nullable(u8()).description, 'nullable(u8; u8)');
+  t.is(nullable(string()).description, 'nullable(string(utf8; u32(le)); u8)');
+  t.is(nullable(u8(), { prefix: u16() }).description, 'nullable(u8; u16(le))');
 
   // Fixed.
-  t.is(
-    nullable(u8(), { fixed: true }).description,
-    'nullable(u8(le); u8(le); fixed)'
-  );
+  t.is(nullable(u8(), { fixed: true }).description, 'nullable(u8; u8; fixed)');
   t.is(
     nullable(string({ size: 5 }), { fixed: true }).description,
-    'nullable(string(utf8; 5); u8(le); fixed)'
+    'nullable(string(utf8; 5); u8; fixed)'
   );
   t.is(
     nullable(u8(), { prefix: u16(), fixed: true }).description,
-    'nullable(u8(le); u16(le); fixed)'
+    'nullable(u8; u16(le); fixed)'
   );
 
   // Custom description.

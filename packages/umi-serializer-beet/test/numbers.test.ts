@@ -171,12 +171,12 @@ test('description', (t) => {
 
   // Big endian.
   const beOptions = { endian: Endian.Big };
-  t.is(serializer.u8(beOptions).description, 'u8');
+  t.is(serializer.u8().description, 'u8');
   t.is(serializer.u16(beOptions).description, 'u16(be)');
   t.is(serializer.u32(beOptions).description, 'u32(be)');
   t.is(serializer.u64(beOptions).description, 'u64(be)');
   t.is(serializer.u128(beOptions).description, 'u128(be)');
-  t.is(serializer.i8(beOptions).description, 'i8');
+  t.is(serializer.i8().description, 'i8');
   t.is(serializer.i16(beOptions).description, 'i16(be)');
   t.is(serializer.i32(beOptions).description, 'i32(be)');
   t.is(serializer.i64(beOptions).description, 'i64(be)');

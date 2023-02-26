@@ -25,6 +25,7 @@ import {
   Serializer,
   SerializerInterface,
   SetSerializerOptions,
+  SingleByteNumberSerializerOptions,
   some,
   StringSerializerOptions,
   StructSerializerOptions,
@@ -565,7 +566,7 @@ export class BeetSerializer implements SerializerInterface {
     };
   }
 
-  u8(options: NumberSerializerOptions = {}): Serializer<number> {
+  u8(options: SingleByteNumberSerializerOptions = {}): Serializer<number> {
     return u8(options);
   }
 
@@ -589,7 +590,7 @@ export class BeetSerializer implements SerializerInterface {
     return u128(options);
   }
 
-  i8(options: NumberSerializerOptions = {}): Serializer<number> {
+  i8(options: SingleByteNumberSerializerOptions = {}): Serializer<number> {
     return i8(options);
   }
 

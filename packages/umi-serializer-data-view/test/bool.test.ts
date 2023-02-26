@@ -23,7 +23,7 @@ test('deserialization', (t) => {
 
 test('description', (t) => {
   const { bool, u32 } = new DataViewSerializer();
-  t.is(bool().description, 'bool(u8(le))');
+  t.is(bool().description, 'bool(u8)');
   t.is(bool({ size: u32() }).description, 'bool(u32(le))');
   t.is(
     bool({ size: u32({ endian: Endian.Big }) }).description,

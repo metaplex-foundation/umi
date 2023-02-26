@@ -2,6 +2,7 @@ import {
   Endian,
   NumberSerializerOptions,
   Serializer,
+  SingleByteNumberSerializerOptions,
 } from '@metaplex-foundation/umi-core';
 import { NotEnoughBytesError, NumberOutOfRangeError } from './errors';
 
@@ -27,51 +28,43 @@ const assertEnoughBytes = (
 };
 
 export const u8 = (
-  options: NumberSerializerOptions = {}
-): Serializer<number> => {
-  const littleEndian = (options.endian ?? Endian.Little) === Endian.Little;
-  const defaultDescription = littleEndian ? 'u8(le)' : 'u8(be)';
-  return {
-    description: options.description ?? defaultDescription,
-    fixedSize: 1,
-    maxSize: 1,
-    serialize(value: number): Uint8Array {
-      assertRange('u8', 0, Number('0xff'), value);
-      const buffer = new ArrayBuffer(1);
-      new DataView(buffer).setUint8(0, value);
-      return new Uint8Array(buffer);
-    },
-    deserialize(bytes, offset = 0): [number, number] {
-      assertEnoughBytes('u8', bytes.slice(offset), 1);
-      const view = new DataView(bytes.slice(offset, offset + 1).buffer);
-      return [view.getUint8(0), offset + 1];
-    },
-  };
-};
+  options: SingleByteNumberSerializerOptions = {}
+): Serializer<number> => ({
+  description: options.description ?? 'u8',
+  fixedSize: 1,
+  maxSize: 1,
+  serialize(value: number): Uint8Array {
+    assertRange('u8', 0, Number('0xff'), value);
+    const buffer = new ArrayBuffer(1);
+    new DataView(buffer).setUint8(0, value);
+    return new Uint8Array(buffer);
+  },
+  deserialize(bytes, offset = 0): [number, number] {
+    assertEnoughBytes('u8', bytes.slice(offset), 1);
+    const view = new DataView(bytes.slice(offset, offset + 1).buffer);
+    return [view.getUint8(0), offset + 1];
+  },
+});
 
 export const i8 = (
-  options: NumberSerializerOptions = {}
-): Serializer<number> => {
-  const littleEndian = (options.endian ?? Endian.Little) === Endian.Little;
-  const defaultDescription = littleEndian ? 'i8(le)' : 'i8(be)';
-  return {
-    description: options.description ?? defaultDescription,
-    fixedSize: 1,
-    maxSize: 1,
-    serialize(value: number): Uint8Array {
-      const half = Number('0x7f');
-      assertRange('i8', -half, half - 1, value);
-      const buffer = new ArrayBuffer(1);
-      new DataView(buffer).setInt8(0, value);
-      return new Uint8Array(buffer);
-    },
-    deserialize(bytes, offset = 0): [number, number] {
-      assertEnoughBytes('i8', bytes.slice(offset), 1);
-      const view = new DataView(bytes.slice(offset, offset + 1).buffer);
-      return [view.getInt8(0), offset + 1];
-    },
-  };
-};
+  options: SingleByteNumberSerializerOptions = {}
+): Serializer<number> => ({
+  description: options.description ?? 'i8',
+  fixedSize: 1,
+  maxSize: 1,
+  serialize(value: number): Uint8Array {
+    const half = Number('0x7f');
+    assertRange('i8', -half, half - 1, value);
+    const buffer = new ArrayBuffer(1);
+    new DataView(buffer).setInt8(0, value);
+    return new Uint8Array(buffer);
+  },
+  deserialize(bytes, offset = 0): [number, number] {
+    assertEnoughBytes('i8', bytes.slice(offset), 1);
+    const view = new DataView(bytes.slice(offset, offset + 1).buffer);
+    return [view.getInt8(0), offset + 1];
+  },
+});
 
 export const u16 = (
   options: NumberSerializerOptions = {}
