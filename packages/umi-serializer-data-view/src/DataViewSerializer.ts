@@ -39,9 +39,21 @@ import {
   DataViewSerializerError,
   DeserializingEmptyBufferError,
   NotEnoughBytesError,
-  OperationNotSupportedError,
 } from './errors';
-import { i128, i16, i32, i64, i8, u128, u16, u32, u64, u8 } from './numbers';
+import {
+  i128,
+  i16,
+  i32,
+  i64,
+  i8,
+  u128,
+  u16,
+  u32,
+  u64,
+  u8,
+  f32,
+  f64,
+} from './numbers';
 
 export class DataViewSerializer implements SerializerInterface {
   constructor(
@@ -616,32 +628,12 @@ export class DataViewSerializer implements SerializerInterface {
     return i128(options);
   }
 
-  f32(): Serializer<number> {
-    return {
-      description: 'f32 [not supported]',
-      fixedSize: 4,
-      maxSize: 4,
-      serialize: () => {
-        throw new OperationNotSupportedError('f32');
-      },
-      deserialize: () => {
-        throw new OperationNotSupportedError('f32');
-      },
-    };
+  f32(options: NumberSerializerOptions = {}): Serializer<number> {
+    return f32(options);
   }
 
-  f64(): Serializer<number> {
-    return {
-      description: 'f64 [not supported]',
-      fixedSize: 8,
-      maxSize: 8,
-      serialize: () => {
-        throw new OperationNotSupportedError('f64');
-      },
-      deserialize: () => {
-        throw new OperationNotSupportedError('f64');
-      },
-    };
+  f64(options: NumberSerializerOptions = {}): Serializer<number> {
+    return f64(options);
   }
 
   bytes(options: BytesSerializerOptions = {}): Serializer<Uint8Array> {

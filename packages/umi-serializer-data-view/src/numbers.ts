@@ -284,3 +284,47 @@ export const i128 = (
     },
   };
 };
+
+export const f32 = (
+  options: NumberSerializerOptions = {}
+): Serializer<number> => {
+  const littleEndian = (options.endian ?? Endian.Little) === Endian.Little;
+  const defaultDescription = littleEndian ? 'f32(le)' : 'f32(be)';
+  return {
+    description: options.description ?? defaultDescription,
+    fixedSize: 4,
+    maxSize: 4,
+    serialize(value: number): Uint8Array {
+      const buffer = new ArrayBuffer(4);
+      new DataView(buffer).setFloat32(0, value, littleEndian);
+      return new Uint8Array(buffer);
+    },
+    deserialize(bytes, offset = 0): [number, number] {
+      assertEnoughBytes('f32', bytes.slice(offset), 4);
+      const view = new DataView(bytes.slice(offset, offset + 4).buffer);
+      return [view.getFloat32(0, littleEndian), offset + 4];
+    },
+  };
+};
+
+export const f64 = (
+  options: NumberSerializerOptions = {}
+): Serializer<number> => {
+  const littleEndian = (options.endian ?? Endian.Little) === Endian.Little;
+  const defaultDescription = littleEndian ? 'f64(le)' : 'f64(be)';
+  return {
+    description: options.description ?? defaultDescription,
+    fixedSize: 8,
+    maxSize: 8,
+    serialize(value: number): Uint8Array {
+      const buffer = new ArrayBuffer(8);
+      new DataView(buffer).setFloat64(0, value, littleEndian);
+      return new Uint8Array(buffer);
+    },
+    deserialize(bytes, offset = 0): [number, number] {
+      assertEnoughBytes('f64', bytes.slice(offset), 8);
+      const view = new DataView(bytes.slice(offset, offset + 8).buffer);
+      return [view.getFloat64(0, littleEndian), offset + 8];
+    },
+  };
+};
