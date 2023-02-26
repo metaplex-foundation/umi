@@ -6,6 +6,7 @@ import {
   base10,
   Context,
   createUmi as baseCreateUmi,
+  generatedSignerIdentity,
   generateSigner,
   PublicKey,
   publicKey,
@@ -18,7 +19,8 @@ export const createUmi = (): Umi =>
   baseCreateUmi()
     .use(web3JsEddsa())
     .use(web3JsTransactionFactory())
-    .use(dataViewSerializer());
+    .use(dataViewSerializer())
+    .use(generatedSignerIdentity());
 
 export const transferSol = (
   context: Pick<Context, 'eddsa'>,
