@@ -76,22 +76,22 @@ test('fixed (de)serialization', (t) => {
 
 test('description', (t) => {
   const { option, u8, u16, string } = new DataViewSerializer();
-  t.is(option(u8()).description, 'option(u8(be); u8(be))');
-  t.is(option(string()).description, 'option(string(utf8; u32(be)); u8(be))');
-  t.is(option(u8(), { prefix: u16() }).description, 'option(u8(be); u16(be))');
+  t.is(option(u8()).description, 'option(u8(le); u8(le))');
+  t.is(option(string()).description, 'option(string(utf8; u32(le)); u8(le))');
+  t.is(option(u8(), { prefix: u16() }).description, 'option(u8(le); u16(le))');
 
   // Fixed.
   t.is(
     option(u8(), { fixed: true }).description,
-    'option(u8(be); u8(be); fixed)'
+    'option(u8(le); u8(le); fixed)'
   );
   t.is(
     option(string({ size: 5 }), { fixed: true }).description,
-    'option(string(utf8; 5); u8(be); fixed)'
+    'option(string(utf8; 5); u8(le); fixed)'
   );
   t.is(
     option(u8(), { prefix: u16(), fixed: true }).description,
-    'option(u8(be); u16(be); fixed)'
+    'option(u8(le); u16(le); fixed)'
   );
 
   // Custom description.

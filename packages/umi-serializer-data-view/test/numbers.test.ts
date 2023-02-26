@@ -29,22 +29,22 @@ function testIntegerSerialization(
   t.true(typeof int().fixedSize === 'number');
   const bytes = int().fixedSize as number;
   const unsigned = int().description.startsWith('u');
-  const intBE = int();
-  const intLE = int({ endian: Endian.Little });
+  const intLE = int();
+  const intBE = int({ endian: Endian.Big });
 
-  s(t, intBE, 0n, '00'.repeat(bytes));
   s(t, intLE, 0n, '00'.repeat(bytes));
+  s(t, intBE, 0n, '00'.repeat(bytes));
 
-  s(t, intBE, 1n, `01${'00'.repeat(bytes - 1)}`);
-  s(t, intLE, 1n, `${'00'.repeat(bytes - 1)}01`);
+  s(t, intLE, 1n, `01${'00'.repeat(bytes - 1)}`);
+  s(t, intBE, 1n, `${'00'.repeat(bytes - 1)}01`);
 
-  s(t, intBE, 42n, `2a${'00'.repeat(bytes - 1)}`);
-  s(t, intLE, 42n, `${'00'.repeat(bytes - 1)}2a`);
+  s(t, intLE, 42n, `2a${'00'.repeat(bytes - 1)}`);
+  s(t, intBE, 42n, `${'00'.repeat(bytes - 1)}2a`);
 
   if (unsigned && bytes >= 2) {
     const half = BigInt(`0x${'ff'.repeat(bytes / 2)}`);
-    s(t, intBE, half, `${'ff'.repeat(bytes / 2)}${'00'.repeat(bytes / 2)}`);
-    s(t, intLE, half, `${'00'.repeat(bytes / 2)}${'ff'.repeat(bytes / 2)}`);
+    s(t, intLE, half, `${'ff'.repeat(bytes / 2)}${'00'.repeat(bytes / 2)}`);
+    s(t, intBE, half, `${'00'.repeat(bytes / 2)}${'ff'.repeat(bytes / 2)}`);
   }
 
   const maxBytes = BigInt(`0x${'ff'.repeat(bytes)}`);
@@ -52,34 +52,34 @@ function testIntegerSerialization(
   const max = unsigned ? maxBytes : maxBytes / 2n;
 
   if (!unsigned) {
-    s(t, intBE, min, `${'00'.repeat(bytes - 1)}80`);
-    s(t, intLE, min, `80${'00'.repeat(bytes - 1)}`);
+    s(t, intLE, min, `${'00'.repeat(bytes - 1)}80`);
+    s(t, intBE, min, `80${'00'.repeat(bytes - 1)}`);
 
     if (bytes >= 2) {
-      s(t, intBE, min + 1n, `01${'00'.repeat(bytes - 2)}80`);
-      s(t, intLE, min + 1n, `80${'00'.repeat(bytes - 2)}01`);
+      s(t, intLE, min + 1n, `01${'00'.repeat(bytes - 2)}80`);
+      s(t, intBE, min + 1n, `80${'00'.repeat(bytes - 2)}01`);
     } else {
-      s(t, intBE, min + 1n, '81');
       s(t, intLE, min + 1n, '81');
+      s(t, intBE, min + 1n, '81');
     }
   }
 
   const lastByte = unsigned ? 'ff' : '7f';
-  s(t, intBE, max, `${'ff'.repeat(bytes - 1)}${lastByte}`);
-  s(t, intLE, max, `${lastByte}${'ff'.repeat(bytes - 1)}`);
+  s(t, intLE, max, `${'ff'.repeat(bytes - 1)}${lastByte}`);
+  s(t, intBE, max, `${lastByte}${'ff'.repeat(bytes - 1)}`);
 
   if (bytes >= 2) {
-    s(t, intBE, max - 1n, `fe${'ff'.repeat(bytes - 2)}${lastByte}`);
-    s(t, intLE, max - 1n, `${lastByte}${'ff'.repeat(bytes - 2)}fe`);
+    s(t, intLE, max - 1n, `fe${'ff'.repeat(bytes - 2)}${lastByte}`);
+    s(t, intBE, max - 1n, `${lastByte}${'ff'.repeat(bytes - 2)}fe`);
   } else {
-    s(t, intBE, max - 1n, unsigned ? 'fe' : '7e');
     s(t, intLE, max - 1n, unsigned ? 'fe' : '7e');
+    s(t, intBE, max - 1n, unsigned ? 'fe' : '7e');
   }
 
-  sThrows<RangeError>(t, intBE, min - 1n);
   sThrows<RangeError>(t, intLE, min - 1n);
-  sThrows<RangeError>(t, intBE, max + 1n);
+  sThrows<RangeError>(t, intBE, min - 1n);
   sThrows<RangeError>(t, intLE, max + 1n);
+  sThrows<RangeError>(t, intBE, max + 1n);
 }
 
 test('deserialization', (t) => {
@@ -103,25 +103,25 @@ function testIntegerDeserialization(
   t.true(typeof int().fixedSize === 'number');
   const bytes = int().fixedSize as number;
   const unsigned = int().description.startsWith('u');
-  const intBE = int();
-  const intLE = int({ endian: Endian.Little });
+  const intLE = int();
+  const intBE = int({ endian: Endian.Big });
 
-  d(t, intBE, '00'.repeat(bytes), 0n, bytes);
   d(t, intLE, '00'.repeat(bytes), 0n, bytes);
+  d(t, intBE, '00'.repeat(bytes), 0n, bytes);
 
-  d(t, intBE, `01${'00'.repeat(bytes - 1)}`, 1n, bytes);
-  d(t, intLE, `${'00'.repeat(bytes - 1)}01`, 1n, bytes);
+  d(t, intLE, `01${'00'.repeat(bytes - 1)}`, 1n, bytes);
+  d(t, intBE, `${'00'.repeat(bytes - 1)}01`, 1n, bytes);
 
-  d(t, intBE, [`ffffff01${'00'.repeat(bytes - 1)}`, 3], 1n, bytes + 3);
-  d(t, intLE, [`ffffff${'00'.repeat(bytes - 1)}01`, 3], 1n, bytes + 3);
+  d(t, intLE, [`ffffff01${'00'.repeat(bytes - 1)}`, 3], 1n, bytes + 3);
+  d(t, intBE, [`ffffff${'00'.repeat(bytes - 1)}01`, 3], 1n, bytes + 3);
 
-  d(t, intBE, `2a${'00'.repeat(bytes - 1)}`, 42n, bytes);
-  d(t, intLE, `${'00'.repeat(bytes - 1)}2a`, 42n, bytes);
+  d(t, intLE, `2a${'00'.repeat(bytes - 1)}`, 42n, bytes);
+  d(t, intBE, `${'00'.repeat(bytes - 1)}2a`, 42n, bytes);
 
   if (unsigned && bytes >= 2) {
     const half = BigInt(`0x${'ff'.repeat(bytes / 2)}`);
-    d(t, intBE, `${'ff'.repeat(bytes / 2)}${'00'.repeat(bytes / 2)}`, half);
-    d(t, intLE, `${'00'.repeat(bytes / 2)}${'ff'.repeat(bytes / 2)}`, half);
+    d(t, intLE, `${'ff'.repeat(bytes / 2)}${'00'.repeat(bytes / 2)}`, half);
+    d(t, intBE, `${'00'.repeat(bytes / 2)}${'ff'.repeat(bytes / 2)}`, half);
   }
 
   const maxBytes = BigInt(`0x${'ff'.repeat(bytes)}`);
@@ -129,28 +129,28 @@ function testIntegerDeserialization(
   const max = unsigned ? maxBytes : maxBytes / 2n;
 
   if (!unsigned) {
-    d(t, intBE, `${'00'.repeat(bytes - 1)}80`, min);
-    d(t, intLE, `80${'00'.repeat(bytes - 1)}`, min);
+    d(t, intLE, `${'00'.repeat(bytes - 1)}80`, min);
+    d(t, intBE, `80${'00'.repeat(bytes - 1)}`, min);
 
     if (bytes >= 2) {
-      d(t, intBE, `01${'00'.repeat(bytes - 2)}80`, min + 1n);
-      d(t, intLE, `80${'00'.repeat(bytes - 2)}01`, min + 1n);
+      d(t, intLE, `01${'00'.repeat(bytes - 2)}80`, min + 1n);
+      d(t, intBE, `80${'00'.repeat(bytes - 2)}01`, min + 1n);
     } else {
-      d(t, intBE, '81', min + 1n);
       d(t, intLE, '81', min + 1n);
+      d(t, intBE, '81', min + 1n);
     }
   }
 
   const lastByte = unsigned ? 'ff' : '7f';
-  d(t, intBE, `${'ff'.repeat(bytes - 1)}${lastByte}`, max, bytes);
-  d(t, intLE, `${lastByte}${'ff'.repeat(bytes - 1)}`, max, bytes);
+  d(t, intLE, `${'ff'.repeat(bytes - 1)}${lastByte}`, max, bytes);
+  d(t, intBE, `${lastByte}${'ff'.repeat(bytes - 1)}`, max, bytes);
 
   if (bytes >= 2) {
-    d(t, intBE, `fe${'ff'.repeat(bytes - 2)}${lastByte}`, max - 1n);
-    d(t, intLE, `${lastByte}${'ff'.repeat(bytes - 2)}fe`, max - 1n);
+    d(t, intLE, `fe${'ff'.repeat(bytes - 2)}${lastByte}`, max - 1n);
+    d(t, intBE, `${lastByte}${'ff'.repeat(bytes - 2)}fe`, max - 1n);
   } else {
-    d(t, intBE, unsigned ? 'fe' : '7e', max - 1n);
     d(t, intLE, unsigned ? 'fe' : '7e', max - 1n);
+    d(t, intBE, unsigned ? 'fe' : '7e', max - 1n);
   }
 }
 

@@ -32,13 +32,13 @@ test('(de)serialization', (t) => {
 
 test('description', (t) => {
   const { struct, u8, string } = new DataViewSerializer();
-  t.is(struct([['age', u8()]]).description, 'struct(age: u8(be))');
+  t.is(struct([['age', u8()]]).description, 'struct(age: u8(le))');
   t.is(
     struct([
       ['name', string()],
       ['age', u8()],
     ]).description,
-    'struct(name: string(utf8; u32(be)), age: u8(be))'
+    'struct(name: string(utf8; u32(le)), age: u8(le))'
   );
   t.is(
     struct([['age', u8()]], { description: 'my struct' }).description,

@@ -137,26 +137,26 @@ test('description', (t) => {
     dataEnum(getWebEvent()).description,
     'dataEnum(' +
       'PageLoad: unit, ' +
-      'Click: struct(x: u8(be), y: u8(be)), ' +
-      'KeyPress: struct(fields: tuple(string(utf8; u32(be)))), ' +
+      'Click: struct(x: u8(le), y: u8(le)), ' +
+      'KeyPress: struct(fields: tuple(string(utf8; u32(le)))), ' +
       'PageUnload: struct()' +
-      '; u8(be))'
+      '; u8(le))'
   );
   t.is(
     dataEnum(getSameSizeVariants()).description,
     'dataEnum(' +
-      'A: struct(value: u16(be)), ' +
-      'B: struct(x: u8(be), y: u8(be)), ' +
-      'C: struct(items: array(bool(u8(be)); 2))' +
-      '; u8(be))'
+      'A: struct(value: u16(le)), ' +
+      'B: struct(x: u8(le), y: u8(le)), ' +
+      'C: struct(items: array(bool(u8(le)); 2))' +
+      '; u8(le))'
   );
   t.is(
     dataEnum(getU64Enum()).description,
-    'dataEnum(A: unit, B: struct(value: u64(be)); u8(be))'
+    'dataEnum(A: unit, B: struct(value: u64(le)); u8(le))'
   );
   t.is(
     dataEnum(getU64Enum(), { prefix: u32() }).description,
-    'dataEnum(A: unit, B: struct(value: u64(be)); u32(be))'
+    'dataEnum(A: unit, B: struct(value: u64(le)); u32(le))'
   );
   t.is(
     dataEnum(getWebEvent(), { description: 'my data enum' }).description,

@@ -94,16 +94,16 @@ test('description', (t) => {
   const { array, u8 } = new DataViewSerializer();
 
   // Size.
-  t.is(array(u8(), { size: 42 }).description, 'array(u8(be); 42)');
+  t.is(array(u8(), { size: 42 }).description, 'array(u8(le); 42)');
   t.is(
     array(u8(), { size: 'remainder' }).description,
-    'array(u8(be); remainder)'
+    'array(u8(le); remainder)'
   );
-  t.is(array(u8()).description, 'array(u8(be); u32(be))');
-  t.is(array(u8(), { size: u8() }).description, 'array(u8(be); u8(be))');
+  t.is(array(u8()).description, 'array(u8(le); u32(le))');
+  t.is(array(u8(), { size: u8() }).description, 'array(u8(le); u8(le))');
   t.is(
-    array(u8(), { size: u8({ endian: Endian.Little }) }).description,
-    'array(u8(be); u8(le))'
+    array(u8(), { size: u8({ endian: Endian.Big }) }).description,
+    'array(u8(le); u8(be))'
   );
 
   // Custom.
