@@ -76,7 +76,7 @@ export class TransactionBuilder {
     return this.append(input);
   }
 
-  splitAtIndex(index: number): [TransactionBuilder, TransactionBuilder] {
+  splitByIndex(index: number): [TransactionBuilder, TransactionBuilder] {
     return [
       new TransactionBuilder(
         this.context,
