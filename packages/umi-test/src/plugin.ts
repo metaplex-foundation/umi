@@ -9,7 +9,7 @@ import {
   web3JsRpc,
   Web3JsRpcOptions,
 } from '@metaplex-foundation/umi-rpc-web3js';
-import { beetSerializer } from '@metaplex-foundation/umi-serializer-beet';
+import { dataViewSerializer } from '@metaplex-foundation/umi-serializer-data-view';
 import { mockStorage } from '@metaplex-foundation/umi-storage-mock';
 import { web3JsTransactionFactory } from '@metaplex-foundation/umi-transaction-factory-web3js';
 
@@ -18,7 +18,7 @@ export const testPlugins = (
   rpcOptions: Web3JsRpcOptions = 'confirmed'
 ): UmiPlugin => ({
   install(umi) {
-    umi.use(beetSerializer());
+    umi.use(dataViewSerializer());
     umi.use(defaultProgramRepository());
     umi.use(fetchHttp());
     umi.use(web3JsEddsa());

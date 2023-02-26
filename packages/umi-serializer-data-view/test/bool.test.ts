@@ -1,10 +1,10 @@
 import test from 'ava';
 import { Endian } from '@metaplex-foundation/umi-core';
-import { BeetSerializer } from '../src';
+import { DataViewSerializer } from '../src';
 import { s, d } from './_helpers';
 
 test('serialization', (t) => {
-  const { bool, u32 } = new BeetSerializer();
+  const { bool, u32 } = new DataViewSerializer();
   s(t, bool(), true, '01');
   s(t, bool(), false, '00');
   s(t, bool({ size: u32() }), true, '01000000');
@@ -12,7 +12,7 @@ test('serialization', (t) => {
 });
 
 test('deserialization', (t) => {
-  const { bool, u32 } = new BeetSerializer();
+  const { bool, u32 } = new DataViewSerializer();
   d(t, bool(), '01', true, 1);
   d(t, bool(), '00', false, 1);
   d(t, bool(), ['000001', 2], true, 3);
@@ -22,7 +22,7 @@ test('deserialization', (t) => {
 });
 
 test('description', (t) => {
-  const { bool, u32 } = new BeetSerializer();
+  const { bool, u32 } = new DataViewSerializer();
   t.is(bool().description, 'bool(u8)');
   t.is(bool({ size: u32() }).description, 'bool(u32(le))');
   t.is(
@@ -33,7 +33,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { bool, u32 } = new BeetSerializer();
+  const { bool, u32 } = new DataViewSerializer();
   t.is(bool().fixedSize, 1);
   t.is(bool().maxSize, 1);
   t.is(bool({ size: u32() }).fixedSize, 4);

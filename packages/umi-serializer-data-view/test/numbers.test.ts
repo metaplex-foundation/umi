@@ -5,11 +5,11 @@ import {
   Serializer,
 } from '@metaplex-foundation/umi-core';
 import test, { Assertions } from 'ava';
-import { BeetSerializer, OperationNotSupportedError } from '../src';
+import { DataViewSerializer } from '../src';
 import { d as baseD, s as baseS } from './_helpers';
 
-test('serialization', (t) => {
-  const serializer = new BeetSerializer();
+test('integer serialization', (t) => {
+  const serializer = new DataViewSerializer();
   testIntegerSerialization(t, serializer.u8);
   testIntegerSerialization(t, serializer.u16);
   testIntegerSerialization(t, serializer.u32);
@@ -82,8 +82,8 @@ function testIntegerSerialization(
   sThrows<RangeError>(t, intBE, max + 1n);
 }
 
-test('deserialization', (t) => {
-  const serializer = new BeetSerializer();
+test('integer deserialization', (t) => {
+  const serializer = new DataViewSerializer();
   testIntegerDeserialization(t, serializer.u8);
   testIntegerDeserialization(t, serializer.u16);
   testIntegerDeserialization(t, serializer.u32);
@@ -155,7 +155,7 @@ function testIntegerDeserialization(
 }
 
 test('description', (t) => {
-  const serializer = new BeetSerializer();
+  const serializer = new DataViewSerializer();
 
   // Little endian.
   t.is(serializer.u8().description, 'u8');
@@ -168,6 +168,8 @@ test('description', (t) => {
   t.is(serializer.i32().description, 'i32(le)');
   t.is(serializer.i64().description, 'i64(le)');
   t.is(serializer.i128().description, 'i128(le)');
+  t.is(serializer.f32().description, 'f32(le)');
+  t.is(serializer.f64().description, 'f64(le)');
 
   // Big endian.
   const beOptions = { endian: Endian.Big };
@@ -181,6 +183,8 @@ test('description', (t) => {
   t.is(serializer.i32(beOptions).description, 'i32(be)');
   t.is(serializer.i64(beOptions).description, 'i64(be)');
   t.is(serializer.i128(beOptions).description, 'i128(be)');
+  t.is(serializer.f32(beOptions).description, 'f32(be)');
+  t.is(serializer.f64(beOptions).description, 'f64(be)');
 
   // Custom description.
   t.is(
@@ -190,7 +194,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const serializer = new BeetSerializer();
+  const serializer = new DataViewSerializer();
   t.is(serializer.u8().fixedSize, 1);
   t.is(serializer.u8().maxSize, 1);
   t.is(serializer.u16().fixedSize, 2);
@@ -211,20 +215,28 @@ test('sizes', (t) => {
   t.is(serializer.i64().maxSize, 8);
   t.is(serializer.i128().fixedSize, 16);
   t.is(serializer.i128().maxSize, 16);
+  t.is(serializer.f32().fixedSize, 4);
+  t.is(serializer.f32().maxSize, 4);
+  t.is(serializer.f64().fixedSize, 8);
+  t.is(serializer.f64().maxSize, 8);
 });
 
-test('it cannot serialize float numbers', (t) => {
-  const { f32, f64 } = new BeetSerializer();
-  const b = new Uint8Array([0]);
-  const e = { name: 'OperationNotSupportedError' };
-  t.throws<OperationNotSupportedError>(() => f32().serialize(1.5), e);
-  t.throws<OperationNotSupportedError>(() => f32().deserialize(b), e);
-  t.throws<OperationNotSupportedError>(() => f64().serialize(42.6), e);
-  t.throws<OperationNotSupportedError>(() => f64().deserialize(b), e);
-  t.is(f32().fixedSize, 4);
-  t.is(f32().maxSize, 4);
-  t.is(f64().fixedSize, 8);
-  t.is(f64().maxSize, 8);
+test.only('float (de)serialization', (t) => {
+  const { f32, f64 } = new DataViewSerializer();
+
+  // Zero.
+  baseS(t, f32(), 0, '00000000');
+  baseD(t, f32(), '00000000', 0, 4);
+  baseD(t, f32(), ['ff00000000', 1], 0, 5);
+  baseS(t, f64(), 0, '0000000000000000');
+  baseD(t, f64(), '0000000000000000', 0, 8);
+  baseD(t, f64(), ['ff0000000000000000', 1], 0, 9);
+
+  // PI.
+  baseS(t, f32(), 3.141592653589793, 'db0f4940');
+  baseD(t, f32(), 'db0f4940', 3.1415927410125732, 4);
+  baseS(t, f64(), 3.141592653589793, '182d4454fb210940');
+  baseD(t, f64(), '182d4454fb210940', 3.141592653589793, 8);
 });
 
 function s(

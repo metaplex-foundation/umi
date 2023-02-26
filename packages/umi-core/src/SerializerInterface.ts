@@ -136,7 +136,7 @@ export interface SerializerInterface {
    *
    * @param options - A set of options for the serializer.
    */
-  u8: (options?: NumberSerializerOptions) => Serializer<number>;
+  u8: (options?: SingleByteNumberSerializerOptions) => Serializer<number>;
 
   /**
    * Creates a serializer for 2-bytes unsigned integers.
@@ -175,7 +175,7 @@ export interface SerializerInterface {
    *
    * @param options - A set of options for the serializer.
    */
-  i8: (options?: NumberSerializerOptions) => Serializer<number>;
+  i8: (options?: SingleByteNumberSerializerOptions) => Serializer<number>;
 
   /**
    * Creates a serializer for 2-bytes signed integers.
@@ -377,6 +377,8 @@ export type BoolSerializerOptions = BaseSerializerOptions & {
 };
 
 export type UnitSerializerOptions = BaseSerializerOptions;
+
+export type SingleByteNumberSerializerOptions = BaseSerializerOptions;
 
 export type NumberSerializerOptions = BaseSerializerOptions & {
   /**

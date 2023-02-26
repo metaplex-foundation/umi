@@ -13,11 +13,13 @@ import { DeserializingEmptyBufferError } from './errors';
 const wrapBeet =
   <T>(fixedBeet: FixedSizeBeet<T>) =>
   (options: NumberSerializerOptions = {}): Serializer<T> => {
-    const isLittleEndian = options.endian === Endian.Little;
+    const isBigEndian = options.endian === Endian.Big;
+    let defaultDescription = fixedBeet.description;
+    if (fixedBeet.byteSize > 1) {
+      defaultDescription += isBigEndian ? '(be)' : '(le)';
+    }
     const serializer: Serializer<T> = {
-      description:
-        options.description ??
-        fixedBeet.description + (isLittleEndian ? '(le)' : '(be)'),
+      description: options.description ?? defaultDescription,
       fixedSize: fixedBeet.byteSize,
       maxSize: fixedBeet.byteSize,
       serialize: (value: T) => {
@@ -35,7 +37,7 @@ const wrapBeet =
       },
     };
 
-    return isLittleEndian ? reverseSerializer(serializer) : serializer;
+    return isBigEndian ? reverseSerializer(serializer) : serializer;
   };
 
 const wrapBigintBeet =
@@ -43,11 +45,11 @@ const wrapBigintBeet =
   (
     options: NumberSerializerOptions = {}
   ): Serializer<number | bigint, bigint> => {
-    const isLittleEndian = options.endian === Endian.Little;
+    const isBigEndian = options.endian === Endian.Big;
     const serializer: Serializer<number | bigint, bigint> = {
       description:
         options.description ??
-        fixedBeet.description + (isLittleEndian ? '(le)' : '(be)'),
+        fixedBeet.description + (isBigEndian ? '(be)' : '(le)'),
       fixedSize: fixedBeet.byteSize,
       maxSize: fixedBeet.byteSize,
       serialize: (value: number | bigint) => {
@@ -68,7 +70,7 @@ const wrapBigintBeet =
       },
     };
 
-    return isLittleEndian ? reverseSerializer(serializer) : serializer;
+    return isBigEndian ? reverseSerializer(serializer) : serializer;
   };
 
 // Simple numbers.
