@@ -91,6 +91,23 @@ export class TransactionBuilder {
     ];
   }
 
+  unsafeSplitByTransactionSize(): TransactionBuilder[] {
+    return this.items.reduce(
+      (builders, item) => {
+        const lastBuilder = builders.pop() as TransactionBuilder;
+        const lastBuilderWithItem = lastBuilder.add(item);
+        if (lastBuilderWithItem.fitsInOneTransaction()) {
+          builders.push(lastBuilderWithItem);
+        } else {
+          builders.push(lastBuilder);
+          builders.push(lastBuilder.empty().add(item));
+        }
+        return builders;
+      },
+      [this.empty()]
+    );
+  }
+
   setVersion(version: TransactionVersion): TransactionBuilder {
     return new TransactionBuilder(this.context, this.items, {
       ...this.options,
