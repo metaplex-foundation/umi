@@ -292,7 +292,7 @@ importers:
       '@ava/typescript': ^3.0.1
       '@metaplex-foundation/umi-core': workspace:^
       '@metaplex-foundation/umi-eddsa-web3js': workspace:^
-      '@metaplex-foundation/umi-serializer-beet': workspace:^
+      '@metaplex-foundation/umi-serializer-data-view': workspace:^
       '@metaplex-foundation/umi-web3js-adapters': workspace:^
       '@solana/web3.js': ^1.72.0
       ava: ^5.1.0
@@ -302,7 +302,7 @@ importers:
     devDependencies:
       '@ava/typescript': 3.0.1
       '@metaplex-foundation/umi-eddsa-web3js': link:../umi-eddsa-web3js
-      '@metaplex-foundation/umi-serializer-beet': link:../umi-serializer-beet
+      '@metaplex-foundation/umi-serializer-data-view': link:../umi-serializer-data-view
       '@solana/web3.js': 1.72.0
       ava: 5.1.0_@ava+typescript@3.0.1
 
