@@ -56,16 +56,16 @@ test('variable (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { bytes, u8 } = new BeetSerializer();
+  const { bytes, u16 } = new BeetSerializer();
 
   // Size.
   t.is(bytes().description, 'bytes(variable)');
   t.is(bytes({ size: 42 }).description, 'bytes(42)');
   t.is(bytes({ size: 'variable' }).description, 'bytes(variable)');
-  t.is(bytes({ size: u8() }).description, 'bytes(u8(le))');
+  t.is(bytes({ size: u16() }).description, 'bytes(u16(le))');
   t.is(
-    bytes({ size: u8({ endian: Endian.Big }) }).description,
-    'bytes(u8(be))'
+    bytes({ size: u16({ endian: Endian.Big }) }).description,
+    'bytes(u16(be))'
   );
 
   // Custom.

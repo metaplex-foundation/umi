@@ -14,10 +14,12 @@ const wrapBeet =
   <T>(fixedBeet: FixedSizeBeet<T>) =>
   (options: NumberSerializerOptions = {}): Serializer<T> => {
     const isBigEndian = options.endian === Endian.Big;
+    let defaultDescription = fixedBeet.description;
+    if (fixedBeet.byteSize > 1) {
+      defaultDescription += isBigEndian ? '(be)' : '(le)';
+    }
     const serializer: Serializer<T> = {
-      description:
-        options.description ??
-        fixedBeet.description + (isBigEndian ? '(be)' : '(le)'),
+      description: options.description ?? defaultDescription,
       fixedSize: fixedBeet.byteSize,
       maxSize: fixedBeet.byteSize,
       serialize: (value: T) => {

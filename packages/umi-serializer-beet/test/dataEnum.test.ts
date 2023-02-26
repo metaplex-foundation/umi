@@ -137,22 +137,22 @@ test('description', (t) => {
     dataEnum(getWebEvent()).description,
     'dataEnum(' +
       'PageLoad: unit, ' +
-      'Click: struct(x: u8(le), y: u8(le)), ' +
+      'Click: struct(x: u8, y: u8), ' +
       'KeyPress: struct(fields: tuple(string(utf8; u32(le)))), ' +
       'PageUnload: struct()' +
-      '; u8(le))'
+      '; u8)'
   );
   t.is(
     dataEnum(getSameSizeVariants()).description,
     'dataEnum(' +
       'A: struct(value: u16(le)), ' +
-      'B: struct(x: u8(le), y: u8(le)), ' +
-      'C: struct(items: array(bool(u8(le)); 2))' +
-      '; u8(le))'
+      'B: struct(x: u8, y: u8), ' +
+      'C: struct(items: array(bool(u8); 2))' +
+      '; u8)'
   );
   t.is(
     dataEnum(getU64Enum()).description,
-    'dataEnum(A: unit, B: struct(value: u64(le)); u8(le))'
+    'dataEnum(A: unit, B: struct(value: u64(le)); u8)'
   );
   t.is(
     dataEnum(getU64Enum(), { prefix: u32() }).description,

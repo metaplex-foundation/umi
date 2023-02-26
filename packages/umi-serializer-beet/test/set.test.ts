@@ -100,16 +100,16 @@ test('remainder (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { set, u8 } = new BeetSerializer();
+  const { set, u8, u16 } = new BeetSerializer();
 
   // Size.
-  t.is(set(u8(), { size: 42 }).description, 'set(u8(le); 42)');
-  t.is(set(u8(), { size: 'remainder' }).description, 'set(u8(le); remainder)');
-  t.is(set(u8()).description, 'set(u8(le); u32(le))');
-  t.is(set(u8(), { size: u8() }).description, 'set(u8(le); u8(le))');
+  t.is(set(u8(), { size: 42 }).description, 'set(u8; 42)');
+  t.is(set(u8(), { size: 'remainder' }).description, 'set(u8; remainder)');
+  t.is(set(u8()).description, 'set(u8; u32(le))');
+  t.is(set(u8(), { size: u16() }).description, 'set(u8; u16(le))');
   t.is(
-    set(u8(), { size: u8({ endian: Endian.Big }) }).description,
-    'set(u8(le); u8(be))'
+    set(u8(), { size: u16({ endian: Endian.Big }) }).description,
+    'set(u8; u16(be))'
   );
 
   // Custom.
