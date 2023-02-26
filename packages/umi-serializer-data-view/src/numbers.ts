@@ -1,10 +1,15 @@
+/* eslint-disable no-bitwise */
 import {
   Endian,
   NumberSerializerOptions,
   Serializer,
   SingleByteNumberSerializerOptions,
 } from '@metaplex-foundation/umi-core';
-import { NotEnoughBytesError, NumberOutOfRangeError } from './errors';
+import {
+  DeserializingEmptyBufferError,
+  NotEnoughBytesError,
+  NumberOutOfRangeError,
+} from './errors';
 
 const assertRange = (
   serializer: string,
@@ -22,6 +27,9 @@ const assertEnoughBytes = (
   bytes: Uint8Array,
   expected: number
 ) => {
+  if (bytes.length === 0) {
+    throw new DeserializingEmptyBufferError(serializer);
+  }
   if (bytes.length < expected) {
     throw new NotEnoughBytesError(serializer, expected, bytes.length);
   }
@@ -54,7 +62,7 @@ export const i8 = (
   maxSize: 1,
   serialize(value: number): Uint8Array {
     const half = Number('0x7f');
-    assertRange('i8', -half, half - 1, value);
+    assertRange('i8', -half - 1, half, value);
     const buffer = new ArrayBuffer(1);
     new DataView(buffer).setInt8(0, value);
     return new Uint8Array(buffer);
@@ -100,7 +108,7 @@ export const i16 = (
     maxSize: 2,
     serialize(value: number): Uint8Array {
       const half = Number('0x7fff');
-      assertRange('i16', -half, half - 1, value);
+      assertRange('i16', -half - 1, half, value);
       const buffer = new ArrayBuffer(2);
       new DataView(buffer).setInt16(0, value, littleEndian);
       return new Uint8Array(buffer);
@@ -147,7 +155,7 @@ export const i32 = (
     maxSize: 4,
     serialize(value: number): Uint8Array {
       const half = Number('0x7fffffff');
-      assertRange('i32', -half, half - 1, value);
+      assertRange('i32', -half - 1, half, value);
       const buffer = new ArrayBuffer(4);
       new DataView(buffer).setInt32(0, value, littleEndian);
       return new Uint8Array(buffer);
@@ -196,7 +204,7 @@ export const i64 = (
     serialize(value: number | bigint): Uint8Array {
       const valueBigInt = BigInt(value);
       const half = BigInt('0x7fffffffffffffff');
-      assertRange('i64', -half, half - 1n, valueBigInt);
+      assertRange('i64', -half - 1n, half, valueBigInt);
       const buffer = new ArrayBuffer(8);
       new DataView(buffer).setBigInt64(0, valueBigInt, littleEndian);
       return new Uint8Array(buffer);
@@ -223,13 +231,22 @@ export const u128 = (
       const max = BigInt('0xffffffffffffffffffffffffffffffff');
       assertRange('u128', 0, max, valueBigInt);
       const buffer = new ArrayBuffer(16);
-      new DataView(buffer).setBigUint64(0, valueBigInt, littleEndian);
+      const view = new DataView(buffer);
+      const leftOffset = littleEndian ? 8 : 0;
+      const rightOffset = littleEndian ? 0 : 8;
+      const rightMask = 0xffffffffffffffffn;
+      view.setBigUint64(leftOffset, valueBigInt >> 64n, littleEndian);
+      view.setBigUint64(rightOffset, valueBigInt & rightMask, littleEndian);
       return new Uint8Array(buffer);
     },
     deserialize(bytes, offset = 0): [bigint, number] {
       assertEnoughBytes('u128', bytes.slice(offset), 16);
       const view = new DataView(bytes.slice(offset, offset + 16).buffer);
-      return [view.getBigUint64(0, littleEndian), offset + 16];
+      const leftOffset = littleEndian ? 8 : 0;
+      const rightOffset = littleEndian ? 0 : 8;
+      const left = view.getBigUint64(leftOffset, littleEndian);
+      const right = view.getBigUint64(rightOffset, littleEndian);
+      return [(left << 64n) + right, offset + 16];
     },
   };
 };
@@ -246,15 +263,24 @@ export const i128 = (
     serialize(value: number | bigint): Uint8Array {
       const valueBigInt = BigInt(value);
       const half = BigInt('0x7fffffffffffffffffffffffffffffff');
-      assertRange('i128', -half, half - 1n, valueBigInt);
+      assertRange('i128', -half - 1n, half, valueBigInt);
       const buffer = new ArrayBuffer(16);
-      new DataView(buffer).setBigInt64(0, valueBigInt, littleEndian);
+      const view = new DataView(buffer);
+      const leftOffset = littleEndian ? 8 : 0;
+      const rightOffset = littleEndian ? 0 : 8;
+      const rightMask = 0xffffffffffffffffn;
+      view.setBigInt64(leftOffset, valueBigInt >> 64n, littleEndian);
+      view.setBigUint64(rightOffset, valueBigInt & rightMask, littleEndian);
       return new Uint8Array(buffer);
     },
     deserialize(bytes, offset = 0): [bigint, number] {
       assertEnoughBytes('i128', bytes.slice(offset), 16);
       const view = new DataView(bytes.slice(offset, offset + 16).buffer);
-      return [view.getBigInt64(0, littleEndian), offset + 16];
+      const leftOffset = littleEndian ? 8 : 0;
+      const rightOffset = littleEndian ? 0 : 8;
+      const left = view.getBigInt64(leftOffset, littleEndian);
+      const right = view.getBigUint64(rightOffset, littleEndian);
+      return [(left << 64n) + right, offset + 16];
     },
   };
 };
