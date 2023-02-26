@@ -195,6 +195,17 @@ importers:
       '@solana/web3.js': 1.72.0
       ava: 5.1.0_@ava+typescript@3.0.1
 
+  packages/umi-serializer-data-view:
+    specifiers:
+      '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/umi-core': workspace:^
+      ava: ^5.1.0
+    dependencies:
+      '@metaplex-foundation/umi-core': link:../umi-core
+    devDependencies:
+      '@ava/typescript': 3.0.1
+      ava: 5.1.0_@ava+typescript@3.0.1
+
   packages/umi-signer-derived:
     specifiers:
       '@ava/typescript': ^3.0.1

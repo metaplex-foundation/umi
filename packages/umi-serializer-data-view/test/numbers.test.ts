@@ -5,11 +5,11 @@ import {
   Serializer,
 } from '@metaplex-foundation/umi-core';
 import test, { Assertions } from 'ava';
-import { BeetSerializer, OperationNotSupportedError } from '../src';
+import { DataViewSerializer, OperationNotSupportedError } from '../src';
 import { d as baseD, s as baseS } from './_helpers';
 
 test('serialization', (t) => {
-  const serializer = new BeetSerializer();
+  const serializer = new DataViewSerializer();
   testIntegerSerialization(t, serializer.u8);
   testIntegerSerialization(t, serializer.u16);
   testIntegerSerialization(t, serializer.u32);
@@ -83,7 +83,7 @@ function testIntegerSerialization(
 }
 
 test('deserialization', (t) => {
-  const serializer = new BeetSerializer();
+  const serializer = new DataViewSerializer();
   testIntegerDeserialization(t, serializer.u8);
   testIntegerDeserialization(t, serializer.u16);
   testIntegerDeserialization(t, serializer.u32);
@@ -155,7 +155,7 @@ function testIntegerDeserialization(
 }
 
 test('description', (t) => {
-  const serializer = new BeetSerializer();
+  const serializer = new DataViewSerializer();
 
   // Little endian.
   t.is(serializer.u8().description, 'u8(le)');
@@ -190,7 +190,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const serializer = new BeetSerializer();
+  const serializer = new DataViewSerializer();
   t.is(serializer.u8().fixedSize, 1);
   t.is(serializer.u8().maxSize, 1);
   t.is(serializer.u16().fixedSize, 2);
@@ -214,7 +214,7 @@ test('sizes', (t) => {
 });
 
 test('it cannot serialize float numbers', (t) => {
-  const { f32, f64 } = new BeetSerializer();
+  const { f32, f64 } = new DataViewSerializer();
   const b = new Uint8Array([0]);
   const e = { name: 'OperationNotSupportedError' };
   t.throws<OperationNotSupportedError>(() => f32().serialize(1.5), e);
