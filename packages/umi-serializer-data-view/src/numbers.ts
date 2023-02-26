@@ -43,7 +43,7 @@ export const u8 = (
     },
     deserialize(bytes, offset = 0): [number, number] {
       assertEnoughBytes('u8', bytes.slice(offset), 1);
-      const view = new DataView(bytes.slice(offset, offset + 1));
+      const view = new DataView(bytes.slice(offset, offset + 1).buffer);
       return [view.getUint8(0), offset + 1];
     },
   };
@@ -67,7 +67,7 @@ export const i8 = (
     },
     deserialize(bytes, offset = 0): [number, number] {
       assertEnoughBytes('i8', bytes.slice(offset), 1);
-      const view = new DataView(bytes.slice(offset, offset + 1));
+      const view = new DataView(bytes.slice(offset, offset + 1).buffer);
       return [view.getInt8(0), offset + 1];
     },
   };
@@ -90,7 +90,7 @@ export const u16 = (
     },
     deserialize(bytes, offset = 0): [number, number] {
       assertEnoughBytes('u16', bytes.slice(offset), 2);
-      const view = new DataView(bytes.slice(offset, offset + 2));
+      const view = new DataView(bytes.slice(offset, offset + 2).buffer);
       return [view.getUint16(0, littleEndian), offset + 2];
     },
   };
@@ -114,7 +114,7 @@ export const i16 = (
     },
     deserialize(bytes, offset = 0): [number, number] {
       assertEnoughBytes('i16', bytes.slice(offset), 2);
-      const view = new DataView(bytes.slice(offset, offset + 2));
+      const view = new DataView(bytes.slice(offset, offset + 2).buffer);
       return [view.getInt16(0, littleEndian), offset + 2];
     },
   };
@@ -137,7 +137,7 @@ export const u32 = (
     },
     deserialize(bytes, offset = 0): [number, number] {
       assertEnoughBytes('u32', bytes.slice(offset), 4);
-      const view = new DataView(bytes.slice(offset, offset + 4));
+      const view = new DataView(bytes.slice(offset, offset + 4).buffer);
       return [view.getUint32(0, littleEndian), offset + 4];
     },
   };
@@ -161,7 +161,7 @@ export const i32 = (
     },
     deserialize(bytes, offset = 0): [number, number] {
       assertEnoughBytes('i32', bytes.slice(offset), 4);
-      const view = new DataView(bytes.slice(offset, offset + 4));
+      const view = new DataView(bytes.slice(offset, offset + 4).buffer);
       return [view.getInt32(0, littleEndian), offset + 4];
     },
   };
@@ -185,7 +185,7 @@ export const u64 = (
     },
     deserialize(bytes, offset = 0): [bigint, number] {
       assertEnoughBytes('u64', bytes.slice(offset), 8);
-      const view = new DataView(bytes.slice(offset, offset + 8));
+      const view = new DataView(bytes.slice(offset, offset + 8).buffer);
       return [view.getBigUint64(0, littleEndian), offset + 8];
     },
   };
@@ -210,7 +210,7 @@ export const i64 = (
     },
     deserialize(bytes, offset = 0): [bigint, number] {
       assertEnoughBytes('i64', bytes.slice(offset), 8);
-      const view = new DataView(bytes.slice(offset, offset + 8));
+      const view = new DataView(bytes.slice(offset, offset + 8).buffer);
       return [view.getBigInt64(0, littleEndian), offset + 8];
     },
   };
@@ -235,7 +235,7 @@ export const u128 = (
     },
     deserialize(bytes, offset = 0): [bigint, number] {
       assertEnoughBytes('u128', bytes.slice(offset), 16);
-      const view = new DataView(bytes.slice(offset, offset + 16));
+      const view = new DataView(bytes.slice(offset, offset + 16).buffer);
       return [view.getBigUint64(0, littleEndian), offset + 16];
     },
   };
@@ -260,7 +260,7 @@ export const i128 = (
     },
     deserialize(bytes, offset = 0): [bigint, number] {
       assertEnoughBytes('i128', bytes.slice(offset), 16);
-      const view = new DataView(bytes.slice(offset, offset + 16));
+      const view = new DataView(bytes.slice(offset, offset + 16).buffer);
       return [view.getBigInt64(0, littleEndian), offset + 16];
     },
   };
