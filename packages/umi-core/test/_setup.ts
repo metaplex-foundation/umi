@@ -1,5 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { testPlugins } from '@metaplex-foundation/umi-test';
+import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
+import { web3JsTransactionFactory } from '@metaplex-foundation/umi-transaction-factory-web3js';
+import { dataViewSerializer } from '@metaplex-foundation/umi-serializer-data-view';
 import {
   base10,
   Context,
@@ -12,7 +14,11 @@ import {
   WrappedInstruction,
 } from '../src';
 
-export const createUmi = (): Umi => baseCreateUmi().use(testPlugins());
+export const createUmi = (): Umi =>
+  baseCreateUmi()
+    .use(web3JsEddsa())
+    .use(web3JsTransactionFactory())
+    .use(dataViewSerializer());
 
 export const transferSol = (
   context: Pick<Context, 'eddsa'>,
