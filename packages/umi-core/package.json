@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
+    "@metaplex-foundation/umi-test": "workspace:^",
     "ava": "^5.1.0"
   },
   "publishConfig": {

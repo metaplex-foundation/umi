@@ -100,9 +100,11 @@ importers:
   packages/umi-core:
     specifiers:
       '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/umi-test': workspace:^
       ava: ^5.1.0
     devDependencies:
       '@ava/typescript': 3.0.1
+      '@metaplex-foundation/umi-test': link:../umi-test
       ava: 5.1.0_@ava+typescript@3.0.1
 
   packages/umi-downloader-http:

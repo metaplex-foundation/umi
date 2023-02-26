@@ -1,19 +1,26 @@
+/* eslint-disable import/no-extraneous-dependencies */
+import { testPlugins } from '@metaplex-foundation/umi-test';
 import {
+  base10,
   Context,
+  createUmi as baseCreateUmi,
   generateSigner,
   PublicKey,
   publicKey,
   Signer,
+  Umi,
   WrappedInstruction,
 } from '../src';
+
+export const createUmi = (): Umi => baseCreateUmi().use(testPlugins());
 
 export const transferSol = (
   context: Pick<Context, 'eddsa'>,
   params: {
-    from: Signer;
-    to: PublicKey;
-    lamports: number | bigint;
-  }
+    from?: Signer;
+    to?: PublicKey;
+    lamports?: number | bigint;
+  } = {}
 ): WrappedInstruction => {
   const from = params.from ?? generateSigner(context);
   const to = params.to ?? generateSigner(context).publicKey;
@@ -27,7 +34,7 @@ export const transferSol = (
     instruction: {
       programId: publicKey('11111111111111111111111111111111'),
       keys,
-      data: new Uint8Array(Number(lamports)), // TODO
+      data: base10.serialize(lamports.toString()),
     },
     bytesCreatedOnChain: 0,
     signers: [from],
