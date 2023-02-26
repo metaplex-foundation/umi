@@ -76,7 +76,7 @@ export class TransactionBuilder {
     return this.append(input);
   }
 
-  splitAtIndex(index: number): [TransactionBuilder, TransactionBuilder] {
+  splitByIndex(index: number): [TransactionBuilder, TransactionBuilder] {
     return [
       new TransactionBuilder(
         this.context,
@@ -89,6 +89,38 @@ export class TransactionBuilder {
         this.options
       ),
     ];
+  }
+
+  /**
+   * Split the builder into multiple builders, such that
+   * each of them should fit in a single transaction.
+   *
+   * This method is unsafe for several reasons:
+   * - Because transactions are atomic, splitting the builder
+   *   into multiple transactions may cause undesired side effects.
+   *   For example, if the first transaction succeeds but the second
+   *   one fails, you may end up with an inconsistent account state.
+   *   This is why it is recommended to manually split your transactions
+   *   such that each of them is valid on its own.
+   * - It can only split the instructions of the builder. Meaning that,
+   *   if the builder has a single instruction that is too big to fit in
+   *   a single transaction, it will not be able to split it.
+   */
+  unsafeSplitByTransactionSize(): TransactionBuilder[] {
+    return this.items.reduce(
+      (builders, item) => {
+        const lastBuilder = builders.pop() as TransactionBuilder;
+        const lastBuilderWithItem = lastBuilder.add(item);
+        if (lastBuilderWithItem.fitsInOneTransaction()) {
+          builders.push(lastBuilderWithItem);
+        } else {
+          builders.push(lastBuilder);
+          builders.push(lastBuilder.empty().add(item));
+        }
+        return builders;
+      },
+      [this.empty()]
+    );
   }
 
   setVersion(version: TransactionVersion): TransactionBuilder {
