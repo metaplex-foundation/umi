@@ -36,14 +36,26 @@ import {
   WrapInSerializer,
 } from '@metaplex-foundation/umi-core';
 import {
-  BeetSerializerError,
+  DataViewSerializerError,
   DeserializingEmptyBufferError,
   NotEnoughBytesError,
-  OperationNotSupportedError,
 } from './errors';
-import { i128, i16, i32, i64, i8, u128, u16, u32, u64, u8 } from './numbers';
+import {
+  i128,
+  i16,
+  i32,
+  i64,
+  i8,
+  u128,
+  u16,
+  u32,
+  u64,
+  u8,
+  f32,
+  f64,
+} from './numbers';
 
-export class BeetSerializer implements SerializerInterface {
+export class DataViewSerializer implements SerializerInterface {
   constructor(
     protected readonly options: {
       /** @defaultValue `true` */
@@ -62,7 +74,7 @@ export class BeetSerializer implements SerializerInterface {
       maxSize: sumSerializerSizes(items.map((item) => item.maxSize)),
       serialize: (value: T) => {
         if (value.length !== items.length) {
-          throw new BeetSerializerError(
+          throw new DataViewSerializerError(
             `Expected tuple to have ${items.length} items but got ${value.length}.`
           );
         }
@@ -88,7 +100,7 @@ export class BeetSerializer implements SerializerInterface {
   ): Serializer<T[], U[]> {
     const size = options.size ?? u32();
     if (size === 'remainder' && item.fixedSize === null) {
-      throw new BeetSerializerError(
+      throw new DataViewSerializerError(
         'Serializers of "remainder" size must have fixed-size items.'
       );
     }
@@ -100,7 +112,7 @@ export class BeetSerializer implements SerializerInterface {
       maxSize: getSizeFromChildren(size, [item.maxSize]),
       serialize: (value: T[]) => {
         if (typeof size === 'number' && value.length !== size) {
-          throw new BeetSerializerError(
+          throw new DataViewSerializerError(
             `Expected array to have ${size} items but got ${value.length}.`
           );
         }
@@ -141,7 +153,7 @@ export class BeetSerializer implements SerializerInterface {
       size === 'remainder' &&
       (key.fixedSize === null || value.fixedSize === null)
     ) {
-      throw new BeetSerializerError(
+      throw new DataViewSerializerError(
         'Serializers of "remainder" size must have fixed-size items.'
       );
     }
@@ -155,7 +167,7 @@ export class BeetSerializer implements SerializerInterface {
       maxSize: getSizeFromChildren(size, [key.maxSize, value.maxSize]),
       serialize: (map: Map<TK, TV>) => {
         if (typeof size === 'number' && map.size !== size) {
-          throw new BeetSerializerError(
+          throw new DataViewSerializerError(
             `Expected map to have ${size} items but got ${map.size}.`
           );
         }
@@ -194,7 +206,7 @@ export class BeetSerializer implements SerializerInterface {
   ): Serializer<Set<T>, Set<U>> {
     const size = options.size ?? u32();
     if (size === 'remainder' && item.fixedSize === null) {
-      throw new BeetSerializerError(
+      throw new DataViewSerializerError(
         'Serializers of "remainder" size must have fixed-size items.'
       );
     }
@@ -206,7 +218,7 @@ export class BeetSerializer implements SerializerInterface {
       maxSize: getSizeFromChildren(size, [item.maxSize]),
       serialize: (set: Set<T>) => {
         if (typeof size === 'number' && set.size !== size) {
-          throw new BeetSerializerError(
+          throw new DataViewSerializerError(
             `Expected set to have ${size} items but got ${set.size}.`
           );
         }
@@ -245,7 +257,7 @@ export class BeetSerializer implements SerializerInterface {
     let fixedSize = item.fixedSize === 0 ? prefix.fixedSize : null;
     if (fixed) {
       if (item.fixedSize === null || prefix.fixedSize === null) {
-        throw new BeetSerializerError(
+        throw new DataViewSerializerError(
           'Fixed options can only be used with fixed-size serializers'
         );
       }
@@ -300,7 +312,7 @@ export class BeetSerializer implements SerializerInterface {
     let fixedSize = item.fixedSize === 0 ? prefix.fixedSize : null;
     if (fixed) {
       if (item.fixedSize === null || prefix.fixedSize === null) {
-        throw new BeetSerializerError(
+        throw new DataViewSerializerError(
           'Fixed nullables can only be used with fixed-size serializers'
         );
       }
@@ -399,7 +411,7 @@ export class BeetSerializer implements SerializerInterface {
     }
     function checkVariantExists(variantKey: keyof ScalarEnum<T>): void {
       if (!enumValues.includes(variantKey)) {
-        throw new BeetSerializerError(
+        throw new DataViewSerializerError(
           `Invalid enum variant. Got "${variantKey}", expected one of ` +
             `[${enumValues.join(', ')}]`
         );
@@ -464,7 +476,7 @@ export class BeetSerializer implements SerializerInterface {
           ([key]) => variant.__kind === key
         );
         if (discriminator < 0) {
-          throw new BeetSerializerError(
+          throw new DataViewSerializerError(
             `Invalid data enum variant. Got "${variant.__kind}", expected one of ` +
               `[${variants.map(([key]) => key).join(', ')}]`
           );
@@ -482,7 +494,7 @@ export class BeetSerializer implements SerializerInterface {
         offset = dOffset;
         const variantField = variants[Number(discriminator)] ?? null;
         if (!variantField) {
-          throw new BeetSerializerError(
+          throw new DataViewSerializerError(
             `Data enum index "${discriminator}" is out of range. ` +
               `Index should be between 0 and ${variants.length - 1}.`
           );
@@ -539,7 +551,9 @@ export class BeetSerializer implements SerializerInterface {
   bool(options: BoolSerializerOptions = {}): Serializer<boolean> {
     const size = options.size ?? u8();
     if (size.fixedSize === null) {
-      throw new BeetSerializerError('Serializer [bool] requires a fixed size.');
+      throw new DataViewSerializerError(
+        'Serializer [bool] requires a fixed size.'
+      );
     }
     return {
       description: options.description ?? `bool(${size.description})`,
@@ -614,32 +628,12 @@ export class BeetSerializer implements SerializerInterface {
     return i128(options);
   }
 
-  f32(): Serializer<number> {
-    return {
-      description: 'f32 [not supported]',
-      fixedSize: 4,
-      maxSize: 4,
-      serialize: () => {
-        throw new OperationNotSupportedError('f32');
-      },
-      deserialize: () => {
-        throw new OperationNotSupportedError('f32');
-      },
-    };
+  f32(options: NumberSerializerOptions = {}): Serializer<number> {
+    return f32(options);
   }
 
-  f64(): Serializer<number> {
-    return {
-      description: 'f64 [not supported]',
-      fixedSize: 8,
-      maxSize: 8,
-      serialize: () => {
-        throw new OperationNotSupportedError('f64');
-      },
-      deserialize: () => {
-        throw new OperationNotSupportedError('f64');
-      },
-    };
+  f64(options: NumberSerializerOptions = {}): Serializer<number> {
+    return f64(options);
   }
 
   bytes(options: BytesSerializerOptions = {}): Serializer<Uint8Array> {
@@ -708,7 +702,7 @@ export class BeetSerializer implements SerializerInterface {
         }
         const pubkeyBytes = bytes.slice(offset, offset + 32);
         if (pubkeyBytes.length < 32) {
-          throw new BeetSerializerError(
+          throw new DataViewSerializerError(
             `Serializer [publicKey] expected 32 bytes, got ${pubkeyBytes.length}.`
           );
         }
@@ -781,13 +775,13 @@ function getResolvedSize(
   if (size === 'remainder') {
     const childrenSize = sumSerializerSizes(childrenSizes);
     if (childrenSize === null) {
-      throw new BeetSerializerError(
+      throw new DataViewSerializerError(
         'Serializers of "remainder" size must have fixed-size items.'
       );
     }
     const remainder = bytes.slice(offset).length;
     if (remainder % childrenSize !== 0) {
-      throw new BeetSerializerError(
+      throw new DataViewSerializerError(
         `Serializers of "remainder" size must have a remainder that is a multiple of its item size. ` +
           `Got ${remainder} bytes remaining and ${childrenSize} bytes per item.`
       );
@@ -795,5 +789,7 @@ function getResolvedSize(
     return [remainder / childrenSize, offset];
   }
 
-  throw new BeetSerializerError(`Unknown size type: ${JSON.stringify(size)}.`);
+  throw new DataViewSerializerError(
+    `Unknown size type: ${JSON.stringify(size)}.`
+  );
 }

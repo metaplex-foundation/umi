@@ -81,7 +81,7 @@ importers:
       '@metaplex-foundation/umi-http-fetch': workspace:^
       '@metaplex-foundation/umi-program-repository': workspace:^
       '@metaplex-foundation/umi-rpc-web3js': workspace:^
-      '@metaplex-foundation/umi-serializer-beet': workspace:^
+      '@metaplex-foundation/umi-serializer-data-view': workspace:^
       '@metaplex-foundation/umi-transaction-factory-web3js': workspace:^
       ava: ^5.1.0
     dependencies:
@@ -91,7 +91,7 @@ importers:
       '@metaplex-foundation/umi-http-fetch': link:../umi-http-fetch
       '@metaplex-foundation/umi-program-repository': link:../umi-program-repository
       '@metaplex-foundation/umi-rpc-web3js': link:../umi-rpc-web3js
-      '@metaplex-foundation/umi-serializer-beet': link:../umi-serializer-beet
+      '@metaplex-foundation/umi-serializer-data-view': link:../umi-serializer-data-view
       '@metaplex-foundation/umi-transaction-factory-web3js': link:../umi-transaction-factory-web3js
     devDependencies:
       '@ava/typescript': 3.0.1
@@ -195,6 +195,17 @@ importers:
       '@solana/web3.js': 1.72.0
       ava: 5.1.0_@ava+typescript@3.0.1
 
+  packages/umi-serializer-data-view:
+    specifiers:
+      '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/umi-core': workspace:^
+      ava: ^5.1.0
+    dependencies:
+      '@metaplex-foundation/umi-core': link:../umi-core
+    devDependencies:
+      '@ava/typescript': 3.0.1
+      ava: 5.1.0_@ava+typescript@3.0.1
+
   packages/umi-signer-derived:
     specifiers:
       '@ava/typescript': ^3.0.1
@@ -253,7 +264,7 @@ importers:
       '@metaplex-foundation/umi-http-fetch': workspace:^
       '@metaplex-foundation/umi-program-repository': workspace:^
       '@metaplex-foundation/umi-rpc-web3js': workspace:^
-      '@metaplex-foundation/umi-serializer-beet': workspace:^
+      '@metaplex-foundation/umi-serializer-data-view': workspace:^
       '@metaplex-foundation/umi-storage-mock': workspace:^
       '@metaplex-foundation/umi-transaction-factory-web3js': workspace:^
       ava: ^5.1.0
@@ -263,7 +274,7 @@ importers:
       '@metaplex-foundation/umi-http-fetch': link:../umi-http-fetch
       '@metaplex-foundation/umi-program-repository': link:../umi-program-repository
       '@metaplex-foundation/umi-rpc-web3js': link:../umi-rpc-web3js
-      '@metaplex-foundation/umi-serializer-beet': link:../umi-serializer-beet
+      '@metaplex-foundation/umi-serializer-data-view': link:../umi-serializer-data-view
       '@metaplex-foundation/umi-storage-mock': link:../umi-storage-mock
       '@metaplex-foundation/umi-transaction-factory-web3js': link:../umi-transaction-factory-web3js
     devDependencies:

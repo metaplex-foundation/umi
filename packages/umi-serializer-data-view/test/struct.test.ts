@@ -1,9 +1,9 @@
 import test from 'ava';
-import { BeetSerializer } from '../src';
+import { DataViewSerializer } from '../src';
 import { s, d } from './_helpers';
 
 test('(de)serialization', (t) => {
-  const { struct, u8, u64, string } = new BeetSerializer();
+  const { struct, u8, u64, string } = new DataViewSerializer();
 
   // Empty struct.
   s(t, struct([]), {}, '');
@@ -31,7 +31,7 @@ test('(de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { struct, u8, string } = new BeetSerializer();
+  const { struct, u8, string } = new DataViewSerializer();
   t.is(struct([['age', u8()]]).description, 'struct(age: u8)');
   t.is(
     struct([
@@ -47,7 +47,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { struct, option, u8, u64, string } = new BeetSerializer();
+  const { struct, option, u8, u64, string } = new DataViewSerializer();
   t.is(struct([]).fixedSize, 0);
   t.is(struct([]).maxSize, 0);
   t.is(struct([['age', u8()]]).fixedSize, 1);

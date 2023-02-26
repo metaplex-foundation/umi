@@ -1,5 +1,5 @@
 {
-  "name": "@metaplex-foundation/umi",
+  "name": "@metaplex-foundation/umi-serializer-data-view",
   "version": "0.3.4",
   "license": "MIT",
   "sideEffects": false,
@@ -26,17 +26,7 @@
     "test": "ava"
   },
   "dependencies": {
-    "@metaplex-foundation/umi-core": "workspace:^",
-    "@metaplex-foundation/umi-downloader-http": "workspace:^",
-    "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
-    "@metaplex-foundation/umi-http-fetch": "workspace:^",
-    "@metaplex-foundation/umi-program-repository": "workspace:^",
-    "@metaplex-foundation/umi-rpc-web3js": "workspace:^",
-    "@metaplex-foundation/umi-serializer-data-view": "workspace:^",
-    "@metaplex-foundation/umi-transaction-factory-web3js": "workspace:^"
-  },
-  "peerDependencies": {
-    "@solana/web3.js": "^1.72.0"
+    "@metaplex-foundation/umi-core": "workspace:^"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
@@ -53,7 +43,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "umi"
+    "displayName": "umi-serializer-data-view"
   },
   "ava": {
     "typescript": {
