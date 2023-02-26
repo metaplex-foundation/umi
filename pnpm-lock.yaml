@@ -100,15 +100,9 @@ importers:
   packages/umi-core:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/umi-eddsa-web3js': workspace:^
-      '@metaplex-foundation/umi-serializer-data-view': workspace:^
-      '@metaplex-foundation/umi-transaction-factory-web3js': workspace:^
       ava: ^5.1.0
     devDependencies:
       '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-eddsa-web3js': link:../umi-eddsa-web3js
-      '@metaplex-foundation/umi-serializer-data-view': link:../umi-serializer-data-view
-      '@metaplex-foundation/umi-transaction-factory-web3js': link:../umi-transaction-factory-web3js
       ava: 5.1.0_@ava+typescript@3.0.1
 
   packages/umi-downloader-http:

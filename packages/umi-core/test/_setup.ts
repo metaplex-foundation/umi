@@ -1,7 +1,4 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
-import { web3JsTransactionFactory } from '@metaplex-foundation/umi-transaction-factory-web3js';
-import { dataViewSerializer } from '@metaplex-foundation/umi-serializer-data-view';
 import {
   base10,
   Context,
@@ -16,11 +13,7 @@ import {
 } from '../src';
 
 export const createUmi = (): Umi =>
-  baseCreateUmi()
-    .use(web3JsEddsa())
-    .use(web3JsTransactionFactory())
-    .use(dataViewSerializer())
-    .use(generatedSignerIdentity());
+  baseCreateUmi().use(generatedSignerIdentity());
 
 export const transferSol = (
   context: Pick<Context, 'eddsa'>,

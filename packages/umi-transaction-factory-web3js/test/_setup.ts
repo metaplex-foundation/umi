@@ -9,7 +9,7 @@ import {
   Umi,
 } from '@metaplex-foundation/umi-core';
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
-import { beetSerializer } from '@metaplex-foundation/umi-serializer-beet';
+import { dataViewSerializer } from '@metaplex-foundation/umi-serializer-data-view';
 import {
   fromWeb3JsInstruction,
   fromWeb3JsMessage,
@@ -30,7 +30,7 @@ import { web3JsTransactionFactory } from '../src';
 
 export const createUmi = (): Umi =>
   baseCreateUmi()
-    .use(beetSerializer())
+    .use(dataViewSerializer())
     .use(web3JsEddsa())
     .use(web3JsTransactionFactory());
 

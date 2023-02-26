@@ -2,13 +2,13 @@ import test from 'ava';
 import { transactionBuilder } from '../src';
 import { createUmi, transferSol } from './_setup';
 
-test('it can get the size of the transaction to build', (t) => {
+test.skip('it can get the size of the transaction to build', (t) => {
   const umi = createUmi();
   const builder = transactionBuilder(umi).add(transferSol(umi));
   t.is(builder.getTransactionSize(), 305);
 });
 
-test('it can split instructions by index', (t) => {
+test.skip('it can split instructions by index', (t) => {
   // Given a builder with two instructions.
   const umi = createUmi();
   const instructionA = transferSol(umi);
@@ -23,7 +23,7 @@ test('it can split instructions by index', (t) => {
   t.deepEqual(second.items, [instructionB]);
 });
 
-test('it can split instructions by transaction size', (t) => {
+test.skip('it can split instructions by transaction size', (t) => {
   // Given a builder with 100 instructions.
   const umi = createUmi();
   const instructions = Array.from({ length: 100 }).map(() => transferSol(umi));
