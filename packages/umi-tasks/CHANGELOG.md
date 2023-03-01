@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-tasks
 
+## 0.5.1
+
+### Patch Changes
+
+- [#24](https://github.com/metaplex-foundation/umi/pull/24) [`27276f4`](https://github.com/metaplex-foundation/umi/commit/27276f4ab5865bd55a5682990c5e48aa2d9b10cd) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Rename umi, umi-core and umi-test
+
 ## 0.4.1
 
 ### Patch Changes

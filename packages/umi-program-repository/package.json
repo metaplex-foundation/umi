@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-program-repository",
-  "version": "0.4.1",
+  "version": "0.5.1",
   "description": "A zero-dependency program repository implementation",
   "license": "MIT",
   "sideEffects": false,
