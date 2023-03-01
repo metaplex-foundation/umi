@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-tasks
 
+## 0.4.1
+
+### Patch Changes
+
+- [#22](https://github.com/metaplex-foundation/umi/pull/22) [`807b469`](https://github.com/metaplex-foundation/umi/commit/807b4691ed843f6a4247317362d71b6457ad291d) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Use peer dependencies for umi-core
+
 ## 0.1.2
 
 ### Patch Changes

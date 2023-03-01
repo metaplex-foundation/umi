@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-tasks",
-  "version": "0.1.2",
+  "version": "0.4.1",
   "description": "A helper package to handle asynchronous tasks",
   "license": "MIT",
   "sideEffects": false,
