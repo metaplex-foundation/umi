@@ -31,12 +31,12 @@
     "@noble/ed25519": "^1.7.1"
   },
   "peerDependencies": {
-    "@metaplex-foundation/umi-core": "workspace:^",
+    "@metaplex-foundation/umi": "workspace:^",
     "@solana/web3.js": "^1.72.0"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
-    "@metaplex-foundation/umi-core": "workspace:^",
+    "@metaplex-foundation/umi": "workspace:^",
     "@solana/web3.js": "^1.72.0",
     "ava": "^5.1.0"
   },

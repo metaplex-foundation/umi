@@ -1,5 +1,5 @@
 import test from 'ava';
-import { Endian } from '@metaplex-foundation/umi-core';
+import { Endian } from '@metaplex-foundation/umi';
 import { DataViewSerializer } from '../src';
 import { s, d } from './_helpers';
 

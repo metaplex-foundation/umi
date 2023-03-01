@@ -1,6 +1,6 @@
 # umi
 
-A JS framework for Solana clients with default plugins.
+A JS framework for Solana clients defining core interfaces.
 
 ## Installation
 

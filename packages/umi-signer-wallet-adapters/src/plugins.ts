@@ -2,7 +2,7 @@ import {
   UmiPlugin,
   signerIdentity,
   signerPayer,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import {
   createSignerFromWalletAdapter,
   WalletAdapter,

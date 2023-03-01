@@ -1,5 +1,5 @@
 import test from 'ava';
-import { base16, base58, Endian } from '@metaplex-foundation/umi-core';
+import { base16, base58, Endian } from '@metaplex-foundation/umi';
 import { BeetSerializer } from '../src';
 import { s, d } from './_helpers';
 

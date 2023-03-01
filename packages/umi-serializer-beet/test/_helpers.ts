@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { base16, Serializer } from '@metaplex-foundation/umi-core';
+import { base16, Serializer } from '@metaplex-foundation/umi';
 import { Assertions } from 'ava';
 
 /** Assert serialization using a hex string. */

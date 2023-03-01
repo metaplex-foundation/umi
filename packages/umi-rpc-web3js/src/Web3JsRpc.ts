@@ -37,7 +37,7 @@ import {
   TransactionSignature,
   TransactionWithMeta,
   RpcGetSlotOptions,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import {
   fromWeb3JsMessage,
   fromWeb3JsPublicKey,

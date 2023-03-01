@@ -1,4 +1,4 @@
-import { PublicKey } from '@metaplex-foundation/umi-core';
+import { PublicKey } from '@metaplex-foundation/umi';
 import { PublicKey as Web3JsPublicKey } from '@solana/web3.js';
 
 export function fromWeb3JsPublicKey(publicKey: Web3JsPublicKey): PublicKey {

@@ -4,7 +4,7 @@ import {
   NumberSerializerOptions,
   Serializer,
   SingleByteNumberSerializerOptions,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import {
   DeserializingEmptyBufferError,
   NotEnoughBytesError,

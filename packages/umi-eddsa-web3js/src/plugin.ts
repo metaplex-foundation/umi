@@ -1,4 +1,4 @@
-import { UmiPlugin } from '@metaplex-foundation/umi-core';
+import { UmiPlugin } from '@metaplex-foundation/umi';
 import { Web3JsEddsa } from './Web3JsEddsa';
 
 export const web3JsEddsa = (): UmiPlugin => ({

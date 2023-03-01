@@ -75,7 +75,15 @@ importers:
   packages/umi:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/umi-core': workspace:^
+      ava: ^5.1.0
+    devDependencies:
+      '@ava/typescript': 3.0.1
+      ava: 5.1.0_@ava+typescript@3.0.1
+
+  packages/umi-bundle-defaults:
+    specifiers:
+      '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/umi': workspace:^
       '@metaplex-foundation/umi-downloader-http': workspace:^
       '@metaplex-foundation/umi-eddsa-web3js': workspace:^
       '@metaplex-foundation/umi-http-fetch': workspace:^
@@ -94,168 +102,13 @@ importers:
       '@metaplex-foundation/umi-transaction-factory-web3js': link:../umi-transaction-factory-web3js
     devDependencies:
       '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
+      '@metaplex-foundation/umi': link:../umi
       ava: 5.1.0_@ava+typescript@3.0.1
 
-  packages/umi-core:
+  packages/umi-bundle-tests:
     specifiers:
       '@ava/typescript': ^3.0.1
-      ava: ^5.1.0
-    devDependencies:
-      '@ava/typescript': 3.0.1
-      ava: 5.1.0_@ava+typescript@3.0.1
-
-  packages/umi-downloader-http:
-    specifiers:
-      '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/umi-core': workspace:^
-      ava: ^5.1.0
-    devDependencies:
-      '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
-      ava: 5.1.0_@ava+typescript@3.0.1
-
-  packages/umi-eddsa-web3js:
-    specifiers:
-      '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/umi-core': workspace:^
-      '@metaplex-foundation/umi-web3js-adapters': workspace:^
-      '@noble/ed25519': ^1.7.1
-      '@solana/web3.js': ^1.72.0
-      ava: ^5.1.0
-    dependencies:
-      '@metaplex-foundation/umi-web3js-adapters': link:../umi-web3js-adapters
-      '@noble/ed25519': 1.7.1
-    devDependencies:
-      '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
-      '@solana/web3.js': 1.72.0
-      ava: 5.1.0_@ava+typescript@3.0.1
-
-  packages/umi-http-fetch:
-    specifiers:
-      '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/umi-core': workspace:^
-      '@types/node-fetch': ^2.6.2
-      ava: ^5.1.0
-      json-server: ^0.17.1
-      node-fetch: ^2.6.7
-    dependencies:
-      node-fetch: 2.6.9
-    devDependencies:
-      '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
-      '@types/node-fetch': 2.6.2
-      ava: 5.1.0_@ava+typescript@3.0.1
-      json-server: 0.17.1
-
-  packages/umi-program-repository:
-    specifiers:
-      '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/umi-core': workspace:^
-      ava: ^5.1.0
-    devDependencies:
-      '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
-      ava: 5.1.0_@ava+typescript@3.0.1
-
-  packages/umi-rpc-web3js:
-    specifiers:
-      '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/umi-core': workspace:^
-      '@metaplex-foundation/umi-web3js-adapters': workspace:^
-      '@solana/web3.js': ^1.72.0
-      ava: ^5.1.0
-      jayson: ^3.4.4
-    dependencies:
-      '@metaplex-foundation/umi-web3js-adapters': link:../umi-web3js-adapters
-    devDependencies:
-      '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
-      '@solana/web3.js': 1.72.0
-      ava: 5.1.0_@ava+typescript@3.0.1
-      jayson: 3.7.0
-
-  packages/umi-serializer-beet:
-    specifiers:
-      '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/beet': ^0.7.1
-      '@metaplex-foundation/umi-core': workspace:^
-      '@solana/web3.js': ^1.72.0
-      ava: ^5.1.0
-      buffer: ^6.0.3
-    dependencies:
-      '@metaplex-foundation/beet': 0.7.1
-      buffer: 6.0.3
-    devDependencies:
-      '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
-      '@solana/web3.js': 1.72.0
-      ava: 5.1.0_@ava+typescript@3.0.1
-
-  packages/umi-serializer-data-view:
-    specifiers:
-      '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/umi-core': workspace:^
-      ava: ^5.1.0
-    devDependencies:
-      '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
-      ava: 5.1.0_@ava+typescript@3.0.1
-
-  packages/umi-signer-derived:
-    specifiers:
-      '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/umi-core': workspace:^
-      '@noble/hashes': ^1.2.0
-      ava: ^5.1.0
-    dependencies:
-      '@noble/hashes': 1.2.0
-    devDependencies:
-      '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
-      ava: 5.1.0_@ava+typescript@3.0.1
-
-  packages/umi-signer-wallet-adapters:
-    specifiers:
-      '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/umi-core': workspace:^
-      '@metaplex-foundation/umi-web3js-adapters': workspace:^
-      '@solana/web3.js': ^1.72.0
-      ava: ^5.1.0
-    dependencies:
-      '@metaplex-foundation/umi-web3js-adapters': link:../umi-web3js-adapters
-    devDependencies:
-      '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
-      '@solana/web3.js': 1.72.0
-      ava: 5.1.0_@ava+typescript@3.0.1
-
-  packages/umi-storage-mock:
-    specifiers:
-      '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/umi-core': workspace:^
-      ava: ^5.1.0
-    devDependencies:
-      '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
-      ava: 5.1.0_@ava+typescript@3.0.1
-
-  packages/umi-tasks:
-    specifiers:
-      '@ava/typescript': ^3.0.1
-      ava: ^5.1.0
-      eventemitter3: ^4.0.7
-    dependencies:
-      eventemitter3: 4.0.7
-    devDependencies:
-      '@ava/typescript': 3.0.1
-      ava: 5.1.0_@ava+typescript@3.0.1
-
-  packages/umi-test:
-    specifiers:
-      '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/umi-core': workspace:^
+      '@metaplex-foundation/umi': workspace:^
       '@metaplex-foundation/umi-eddsa-web3js': workspace:^
       '@metaplex-foundation/umi-http-fetch': workspace:^
       '@metaplex-foundation/umi-program-repository': workspace:^
@@ -275,14 +128,161 @@ importers:
       '@metaplex-foundation/umi-transaction-factory-web3js': link:../umi-transaction-factory-web3js
     devDependencies:
       '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
+      '@metaplex-foundation/umi': link:../umi
       '@solana/web3.js': 1.72.0
+      ava: 5.1.0_@ava+typescript@3.0.1
+
+  packages/umi-downloader-http:
+    specifiers:
+      '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/umi': workspace:^
+      ava: ^5.1.0
+    devDependencies:
+      '@ava/typescript': 3.0.1
+      '@metaplex-foundation/umi': link:../umi
+      ava: 5.1.0_@ava+typescript@3.0.1
+
+  packages/umi-eddsa-web3js:
+    specifiers:
+      '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/umi': workspace:^
+      '@metaplex-foundation/umi-web3js-adapters': workspace:^
+      '@noble/ed25519': ^1.7.1
+      '@solana/web3.js': ^1.72.0
+      ava: ^5.1.0
+    dependencies:
+      '@metaplex-foundation/umi-web3js-adapters': link:../umi-web3js-adapters
+      '@noble/ed25519': 1.7.1
+    devDependencies:
+      '@ava/typescript': 3.0.1
+      '@metaplex-foundation/umi': link:../umi
+      '@solana/web3.js': 1.72.0
+      ava: 5.1.0_@ava+typescript@3.0.1
+
+  packages/umi-http-fetch:
+    specifiers:
+      '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/umi': workspace:^
+      '@types/node-fetch': ^2.6.2
+      ava: ^5.1.0
+      json-server: ^0.17.1
+      node-fetch: ^2.6.7
+    dependencies:
+      node-fetch: 2.6.9
+    devDependencies:
+      '@ava/typescript': 3.0.1
+      '@metaplex-foundation/umi': link:../umi
+      '@types/node-fetch': 2.6.2
+      ava: 5.1.0_@ava+typescript@3.0.1
+      json-server: 0.17.1
+
+  packages/umi-program-repository:
+    specifiers:
+      '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/umi': workspace:^
+      ava: ^5.1.0
+    devDependencies:
+      '@ava/typescript': 3.0.1
+      '@metaplex-foundation/umi': link:../umi
+      ava: 5.1.0_@ava+typescript@3.0.1
+
+  packages/umi-rpc-web3js:
+    specifiers:
+      '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/umi': workspace:^
+      '@metaplex-foundation/umi-web3js-adapters': workspace:^
+      '@solana/web3.js': ^1.72.0
+      ava: ^5.1.0
+      jayson: ^3.4.4
+    dependencies:
+      '@metaplex-foundation/umi-web3js-adapters': link:../umi-web3js-adapters
+    devDependencies:
+      '@ava/typescript': 3.0.1
+      '@metaplex-foundation/umi': link:../umi
+      '@solana/web3.js': 1.72.0
+      ava: 5.1.0_@ava+typescript@3.0.1
+      jayson: 3.7.0
+
+  packages/umi-serializer-beet:
+    specifiers:
+      '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/beet': ^0.7.1
+      '@metaplex-foundation/umi': workspace:^
+      '@solana/web3.js': ^1.72.0
+      ava: ^5.1.0
+      buffer: ^6.0.3
+    dependencies:
+      '@metaplex-foundation/beet': 0.7.1
+      buffer: 6.0.3
+    devDependencies:
+      '@ava/typescript': 3.0.1
+      '@metaplex-foundation/umi': link:../umi
+      '@solana/web3.js': 1.72.0
+      ava: 5.1.0_@ava+typescript@3.0.1
+
+  packages/umi-serializer-data-view:
+    specifiers:
+      '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/umi': workspace:^
+      ava: ^5.1.0
+    devDependencies:
+      '@ava/typescript': 3.0.1
+      '@metaplex-foundation/umi': link:../umi
+      ava: 5.1.0_@ava+typescript@3.0.1
+
+  packages/umi-signer-derived:
+    specifiers:
+      '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/umi': workspace:^
+      '@noble/hashes': ^1.2.0
+      ava: ^5.1.0
+    dependencies:
+      '@noble/hashes': 1.2.0
+    devDependencies:
+      '@ava/typescript': 3.0.1
+      '@metaplex-foundation/umi': link:../umi
+      ava: 5.1.0_@ava+typescript@3.0.1
+
+  packages/umi-signer-wallet-adapters:
+    specifiers:
+      '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/umi': workspace:^
+      '@metaplex-foundation/umi-web3js-adapters': workspace:^
+      '@solana/web3.js': ^1.72.0
+      ava: ^5.1.0
+    dependencies:
+      '@metaplex-foundation/umi-web3js-adapters': link:../umi-web3js-adapters
+    devDependencies:
+      '@ava/typescript': 3.0.1
+      '@metaplex-foundation/umi': link:../umi
+      '@solana/web3.js': 1.72.0
+      ava: 5.1.0_@ava+typescript@3.0.1
+
+  packages/umi-storage-mock:
+    specifiers:
+      '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/umi': workspace:^
+      ava: ^5.1.0
+    devDependencies:
+      '@ava/typescript': 3.0.1
+      '@metaplex-foundation/umi': link:../umi
+      ava: 5.1.0_@ava+typescript@3.0.1
+
+  packages/umi-tasks:
+    specifiers:
+      '@ava/typescript': ^3.0.1
+      ava: ^5.1.0
+      eventemitter3: ^4.0.7
+    dependencies:
+      eventemitter3: 4.0.7
+    devDependencies:
+      '@ava/typescript': 3.0.1
       ava: 5.1.0_@ava+typescript@3.0.1
 
   packages/umi-transaction-factory-web3js:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/umi-core': workspace:^
+      '@metaplex-foundation/umi': workspace:^
       '@metaplex-foundation/umi-eddsa-web3js': workspace:^
       '@metaplex-foundation/umi-serializer-data-view': workspace:^
       '@metaplex-foundation/umi-web3js-adapters': workspace:^
@@ -292,7 +292,7 @@ importers:
       '@metaplex-foundation/umi-web3js-adapters': link:../umi-web3js-adapters
     devDependencies:
       '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
+      '@metaplex-foundation/umi': link:../umi
       '@metaplex-foundation/umi-eddsa-web3js': link:../umi-eddsa-web3js
       '@metaplex-foundation/umi-serializer-data-view': link:../umi-serializer-data-view
       '@solana/web3.js': 1.72.0
@@ -302,14 +302,14 @@ importers:
     specifiers:
       '@ava/typescript': ^3.0.1
       '@aws-sdk/client-s3': ^3.54.1
-      '@metaplex-foundation/umi-core': workspace:^
+      '@metaplex-foundation/umi': workspace:^
       '@types/sinon': ^10.0.13
       ava: ^5.1.0
       sinon: ^13.0.1
     devDependencies:
       '@ava/typescript': 3.0.1
       '@aws-sdk/client-s3': 3.264.0
-      '@metaplex-foundation/umi-core': link:../umi-core
+      '@metaplex-foundation/umi': link:../umi
       '@types/sinon': 10.0.13
       ava: 5.1.0_@ava+typescript@3.0.1
       sinon: 13.0.2
@@ -318,7 +318,7 @@ importers:
     specifiers:
       '@ava/typescript': ^3.0.1
       '@bundlr-network/client': ^0.8.8
-      '@metaplex-foundation/umi-core': workspace:^
+      '@metaplex-foundation/umi': workspace:^
       '@metaplex-foundation/umi-downloader-http': workspace:^
       '@metaplex-foundation/umi-eddsa-web3js': workspace:^
       '@metaplex-foundation/umi-http-fetch': workspace:^
@@ -335,7 +335,7 @@ importers:
       buffer: 6.0.3
     devDependencies:
       '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
+      '@metaplex-foundation/umi': link:../umi
       '@metaplex-foundation/umi-downloader-http': link:../umi-downloader-http
       '@metaplex-foundation/umi-eddsa-web3js': link:../umi-eddsa-web3js
       '@metaplex-foundation/umi-http-fetch': link:../umi-http-fetch
@@ -347,7 +347,7 @@ importers:
     specifiers:
       '@ava/typescript': ^3.0.1
       '@ipld/dag-pb': ^2.1.17
-      '@metaplex-foundation/umi-core': workspace:^
+      '@metaplex-foundation/umi': workspace:^
       '@metaplex-foundation/umi-downloader-http': workspace:^
       '@metaplex-foundation/umi-eddsa-web3js': workspace:^
       '@metaplex-foundation/umi-http-fetch': workspace:^
@@ -372,7 +372,7 @@ importers:
       tweetnacl: 1.0.3
     devDependencies:
       '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
+      '@metaplex-foundation/umi': link:../umi
       '@metaplex-foundation/umi-downloader-http': link:../umi-downloader-http
       '@metaplex-foundation/umi-eddsa-web3js': link:../umi-eddsa-web3js
       '@metaplex-foundation/umi-http-fetch': link:../umi-http-fetch
@@ -383,7 +383,7 @@ importers:
   packages/umi-web3js-adapters:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@metaplex-foundation/umi-core': workspace:^
+      '@metaplex-foundation/umi': workspace:^
       '@solana/web3.js': ^1.72.0
       ava: ^5.1.0
       buffer: ^6.0.3
@@ -391,7 +391,7 @@ importers:
       buffer: 6.0.3
     devDependencies:
       '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-core': link:../umi-core
+      '@metaplex-foundation/umi': link:../umi
       '@solana/web3.js': 1.72.0
       ava: 5.1.0_@ava+typescript@3.0.1
 
@@ -3666,7 +3666,7 @@ packages:
     dependencies:
       '@metaplex-foundation/cusper': 0.0.2
       '@solana/spl-token-registry': 0.2.4574
-      '@solana/web3.js': 1.70.0
+      '@solana/web3.js': 1.72.0
       bn.js: 5.2.1
       debug: 4.3.4
       js-sha3: 0.8.0
@@ -3685,7 +3685,7 @@ packages:
     dependencies:
       '@metaplex-foundation/amman-client': 0.2.4
       '@solana/spl-token': 0.2.0
-      '@solana/web3.js': 1.70.0
+      '@solana/web3.js': 1.72.0
       ansi-colors: 4.1.3
       bn.js: 5.2.1
       buffer-hexdump: 1.0.0
@@ -4210,31 +4210,6 @@ packages:
       '@solana/web3.js': 1.72.0
       eventemitter3: 4.0.7
     dev: false
-
-  /@solana/web3.js/1.70.0:
-    resolution: {integrity: sha512-HwdI9LaHaszfpzgxJI44iP68mJWUeqK1TeSheKQsGkH5zlVyGWGmim50MyDWu2vXiuL8Akf2xEMSrDYyLordgg==}
-    engines: {node: '>=12.20.0'}
-    dependencies:
-      '@babel/runtime': 7.20.6
-      '@noble/ed25519': 1.7.1
-      '@noble/hashes': 1.2.0
-      '@noble/secp256k1': 1.7.0
-      '@solana/buffer-layout': 4.0.0
-      bigint-buffer: 1.1.5
-      bn.js: 5.2.1
-      borsh: 0.7.0
-      bs58: 4.0.1
-      buffer: 6.0.1
-      fast-stable-stringify: 1.0.0
-      jayson: 3.7.0
-      node-fetch: 2.6.9
-      rpc-websockets: 7.5.0
-      superstruct: 0.14.2
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - utf-8-validate
-    dev: true
 
   /@solana/web3.js/1.72.0:
     resolution: {integrity: sha512-xMoCk0y/GpiQhHbRjMcrd5NpmkwhAA0c01id7lrr6nhNdz6Uc/CywPdBeZw3Qz6BVZ/qlUoerpKPWeiXqMUjwA==}

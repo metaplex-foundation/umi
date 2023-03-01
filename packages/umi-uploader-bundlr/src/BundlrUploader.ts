@@ -16,7 +16,7 @@ import {
   signTransaction,
   SolAmount,
   UploaderInterface,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import {
   fromWeb3JsKeypair,
   fromWeb3JsLegacyTransaction,

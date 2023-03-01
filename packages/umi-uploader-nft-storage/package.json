@@ -37,11 +37,11 @@
     "tweetnacl": "^1.0.3"
   },
   "peerDependencies": {
-    "@metaplex-foundation/umi-core": "workspace:^"
+    "@metaplex-foundation/umi": "workspace:^"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
-    "@metaplex-foundation/umi-core": "workspace:^",
+    "@metaplex-foundation/umi": "workspace:^",
     "@metaplex-foundation/umi-downloader-http": "workspace:^",
     "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
     "@metaplex-foundation/umi-http-fetch": "workspace:^",

@@ -3,7 +3,7 @@ const test = require('ava');
 const {
   createUmi,
   generatedSignerIdentity,
-} = require('@metaplex-foundation/umi-core');
+} = require('@metaplex-foundation/umi');
 const { web3JsRpc } = require('@metaplex-foundation/umi-rpc-web3js');
 const { web3JsEddsa } = require('@metaplex-foundation/umi-eddsa-web3js');
 const exported = require('../../dist/cjs/index.cjs');

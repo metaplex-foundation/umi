@@ -3,7 +3,7 @@ import {
   NumberSerializer,
   NumberSerializerOptions,
   Serializer,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import test, { Assertions } from 'ava';
 import { DataViewSerializer } from '../src';
 import { d as baseD, s as baseS } from './_helpers';

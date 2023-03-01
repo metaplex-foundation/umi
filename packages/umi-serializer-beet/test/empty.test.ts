@@ -1,5 +1,5 @@
 import test, { ThrowsExpectation } from 'ava';
-import { none, Serializer } from '@metaplex-foundation/umi-core';
+import { none, Serializer } from '@metaplex-foundation/umi';
 import { BeetSerializer, DeserializingEmptyBufferError } from '../src';
 
 test('it can handle empty buffers', (t) => {

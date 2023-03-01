@@ -1,5 +1,5 @@
 import { S3Client } from '@aws-sdk/client-s3';
-import { UmiPlugin } from '@metaplex-foundation/umi-core';
+import { UmiPlugin } from '@metaplex-foundation/umi';
 import { AwsUploader } from './AwsUploader';
 
 export const awsUploader = (

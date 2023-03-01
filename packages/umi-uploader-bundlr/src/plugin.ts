@@ -1,4 +1,4 @@
-import type { UmiPlugin } from '@metaplex-foundation/umi-core';
+import type { UmiPlugin } from '@metaplex-foundation/umi';
 import { BundlrUploaderOptions, BundlrUploader } from './BundlrUploader';
 
 export const bundlrUploader = (options?: BundlrUploaderOptions): UmiPlugin => ({

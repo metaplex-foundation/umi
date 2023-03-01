@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionMessage,
   Umi,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { dataViewSerializer } from '@metaplex-foundation/umi-serializer-data-view';
 import {

@@ -1,7 +1,7 @@
 {
   "name": "@metaplex-foundation/umi",
   "version": "0.4.1",
-  "description": "A JS framework for Solana clients with default plugins",
+  "description": "A JS framework for Solana clients defining core interfaces",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -26,22 +26,8 @@
     "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
     "test": "ava"
   },
-  "dependencies": {
-    "@metaplex-foundation/umi-downloader-http": "workspace:^",
-    "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
-    "@metaplex-foundation/umi-http-fetch": "workspace:^",
-    "@metaplex-foundation/umi-program-repository": "workspace:^",
-    "@metaplex-foundation/umi-rpc-web3js": "workspace:^",
-    "@metaplex-foundation/umi-serializer-data-view": "workspace:^",
-    "@metaplex-foundation/umi-transaction-factory-web3js": "workspace:^"
-  },
-  "peerDependencies": {
-    "@metaplex-foundation/umi-core": "workspace:^",
-    "@solana/web3.js": "^1.72.0"
-  },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
-    "@metaplex-foundation/umi-core": "workspace:^",
     "ava": "^5.1.0"
   },
   "publishConfig": {

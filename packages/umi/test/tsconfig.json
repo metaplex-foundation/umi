@@ -6,6 +6,6 @@
     "outDir": "../dist/test",
     "declarationDir": null,
     "declaration": false,
-    "emitDeclarationOnly": false
+    "emitDeclarationOnly": false,
   }
 }

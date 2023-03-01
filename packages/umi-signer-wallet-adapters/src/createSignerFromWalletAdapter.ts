@@ -1,8 +1,4 @@
-import type {
-  PublicKey,
-  Signer,
-  Transaction,
-} from '@metaplex-foundation/umi-core';
+import type { PublicKey, Signer, Transaction } from '@metaplex-foundation/umi';
 import {
   PublicKey as Web3JsPublicKey,
   Transaction as Web3JsTransaction,

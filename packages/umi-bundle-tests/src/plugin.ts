@@ -1,7 +1,4 @@
-import {
-  generatedSignerIdentity,
-  UmiPlugin,
-} from '@metaplex-foundation/umi-core';
+import { generatedSignerIdentity, UmiPlugin } from '@metaplex-foundation/umi';
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { fetchHttp } from '@metaplex-foundation/umi-http-fetch';
 import { defaultProgramRepository } from '@metaplex-foundation/umi-program-repository';

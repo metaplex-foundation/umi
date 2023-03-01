@@ -1,4 +1,4 @@
-import type { UmiPlugin } from '@metaplex-foundation/umi-core';
+import type { UmiPlugin } from '@metaplex-foundation/umi';
 import {
   NftStorageUploader,
   NftStorageUploaderOptions,

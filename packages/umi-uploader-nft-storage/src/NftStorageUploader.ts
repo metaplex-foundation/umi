@@ -10,7 +10,7 @@ import {
   SolAmount,
   UploaderInterface,
   UploaderUploadOptions,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import { NFTStorageMetaplexor } from '@nftstorage/metaplex-auth';
 import { MemoryBlockStore } from 'ipfs-car/blockstore/memory';
 import { Blob, NFTStorage } from 'nft.storage';

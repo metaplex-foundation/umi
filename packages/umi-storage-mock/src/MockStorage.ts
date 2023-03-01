@@ -6,7 +6,7 @@ import {
   sol,
   SolAmount,
   UploaderInterface,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import { AssetNotFoundError } from './errors';
 
 const DEFAULT_BASE_URL = 'https://mockstorage.example.com/';
