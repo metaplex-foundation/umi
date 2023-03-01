@@ -1,6 +1,6 @@
 # umi-tasks
 
-TODO
+A helper package to handle asynchronous tasks.
 
 ## Installation
 

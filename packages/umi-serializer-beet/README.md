@@ -1,6 +1,6 @@
 # umi-serializer-beet
 
-TODO
+A serializer implementation relying on Beet.
 
 ## Installation
 

@@ -1,6 +1,7 @@
 {
   "name": "@metaplex-foundation/umi-web3js-adapters",
   "version": "0.4.0",
+  "description": "A helper package to transform web3.js types to and from umi types",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -26,14 +27,15 @@
     "test": "ava"
   },
   "dependencies": {
-    "@metaplex-foundation/umi-core": "workspace:^",
     "buffer": "^6.0.3"
   },
   "peerDependencies": {
+    "@metaplex-foundation/umi-core": "workspace:^",
     "@solana/web3.js": "^1.72.0"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
+    "@metaplex-foundation/umi-core": "workspace:^",
     "@solana/web3.js": "^1.72.0",
     "ava": "^5.1.0"
   },

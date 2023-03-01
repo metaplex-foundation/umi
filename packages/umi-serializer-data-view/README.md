@@ -1,6 +1,6 @@
 # umi-serializer-data-view
 
-TODO
+A serializer implementation relying on the native DataView API.
 
 ## Installation
 

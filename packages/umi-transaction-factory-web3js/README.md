@@ -1,6 +1,6 @@
 # umi-transaction-factory-web3js
 
-TODO
+A transaction factory implementation relying on Solana's web3.js.
 
 ## Installation
 

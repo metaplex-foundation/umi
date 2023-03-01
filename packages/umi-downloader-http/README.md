@@ -1,6 +1,6 @@
 # umi-downloader-http
 
-TODO
+A downloader implementation relying on the HTTP interface.
 
 ## Installation
 

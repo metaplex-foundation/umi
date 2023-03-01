@@ -1,6 +1,6 @@
 # umi-uploader-bundlr
 
-TODO
+An uploader implementation relying on Bundlr.
 
 ## Installation
 

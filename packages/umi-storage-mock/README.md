@@ -1,6 +1,6 @@
 # umi-storage-mock
 
-TODO
+A mock implementation of the uploader and downloader interfaces for test purposes.
 
 ## Installation
 

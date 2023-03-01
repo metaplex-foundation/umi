@@ -1,6 +1,6 @@
 # umi-web3js-adapters
 
-TODO
+A helper package to transform web3.js types to and from umi types.
 
 ## Installation
 

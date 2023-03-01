@@ -1,6 +1,6 @@
 # umi-rpc-web3js
 
-TODO
+An RPC implementation relying on Solana's web3.js.
 
 ## Installation
 

@@ -1,6 +1,7 @@
 {
   "name": "@metaplex-foundation/umi-test",
   "version": "0.4.0",
+  "description": "A helper package that bundles useful plugins for test purposes",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -26,7 +27,6 @@
     "test": "ava"
   },
   "dependencies": {
-    "@metaplex-foundation/umi-core": "workspace:^",
     "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
     "@metaplex-foundation/umi-http-fetch": "workspace:^",
     "@metaplex-foundation/umi-program-repository": "workspace:^",
@@ -36,10 +36,13 @@
     "@metaplex-foundation/umi-transaction-factory-web3js": "workspace:^"
   },
   "peerDependencies": {
+    "@metaplex-foundation/umi-core": "workspace:^",
     "@solana/web3.js": "^1.72.0"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
+    "@metaplex-foundation/umi-core": "workspace:^",
+    "@solana/web3.js": "^1.72.0",
     "ava": "^5.1.0"
   },
   "publishConfig": {

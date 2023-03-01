@@ -1,6 +1,7 @@
 {
   "name": "@metaplex-foundation/umi-uploader-bundlr",
   "version": "0.4.0",
+  "description": "An uploader implementation relying on Bundlr",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -27,16 +28,17 @@
   },
   "dependencies": {
     "@bundlr-network/client": "^0.8.8",
-    "@metaplex-foundation/umi-core": "workspace:^",
     "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
     "bignumber.js": "^9.0.2",
     "buffer": "^6.0.3"
   },
   "peerDependencies": {
+    "@metaplex-foundation/umi-core": "workspace:^",
     "@solana/web3.js": "^1.72.0"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
+    "@metaplex-foundation/umi-core": "workspace:^",
     "@metaplex-foundation/umi-downloader-http": "workspace:^",
     "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
     "@metaplex-foundation/umi-http-fetch": "workspace:^",

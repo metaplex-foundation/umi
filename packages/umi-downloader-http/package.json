@@ -1,6 +1,7 @@
 {
   "name": "@metaplex-foundation/umi-downloader-http",
   "version": "0.4.0",
+  "description": "A downloader implementation relying on the HTTP interface",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -25,11 +26,12 @@
     "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
     "test": "ava"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@metaplex-foundation/umi-core": "workspace:^"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
+    "@metaplex-foundation/umi-core": "workspace:^",
     "ava": "^5.1.0"
   },
   "publishConfig": {

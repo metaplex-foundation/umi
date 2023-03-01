@@ -1,6 +1,6 @@
 # umi-core
 
-TODO
+Defines the core interfaces of a JS framework for Solana clients.
 
 ## Installation
 

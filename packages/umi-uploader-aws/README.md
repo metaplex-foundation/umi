@@ -1,6 +1,6 @@
 # umi-uploader-aws
 
-TODO
+An uploader implementation relying on AWS.
 
 ## Installation
 

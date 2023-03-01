@@ -1,6 +1,7 @@
 {
   "name": "@metaplex-foundation/umi-http-fetch",
   "version": "0.4.0",
+  "description": "An HTTP implementation relying on the fetch API",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -28,11 +29,14 @@
     "server:stop": "kill $(lsof -t -i:3000) 2> /dev/null || true"
   },
   "dependencies": {
-    "@metaplex-foundation/umi-core": "workspace:^",
     "node-fetch": "^2.6.7"
+  },
+  "peerDependencies": {
+    "@metaplex-foundation/umi-core": "workspace:^"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
+    "@metaplex-foundation/umi-core": "workspace:^",
     "@types/node-fetch": "^2.6.2",
     "ava": "^5.1.0",
     "json-server": "^0.17.1"
