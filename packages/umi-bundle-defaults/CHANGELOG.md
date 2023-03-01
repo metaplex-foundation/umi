@@ -1,5 +1,21 @@
 # @metaplex-foundation/umi-bundle-defaults
 
+## 0.5.1
+
+### Patch Changes
+
+- [#24](https://github.com/metaplex-foundation/umi/pull/24) [`27276f4`](https://github.com/metaplex-foundation/umi/commit/27276f4ab5865bd55a5682990c5e48aa2d9b10cd) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Rename umi, umi-core and umi-test
+
+- Updated dependencies [[`27276f4`](https://github.com/metaplex-foundation/umi/commit/27276f4ab5865bd55a5682990c5e48aa2d9b10cd)]:
+  - @metaplex-foundation/umi@0.5.1
+  - @metaplex-foundation/umi-downloader-http@0.5.1
+  - @metaplex-foundation/umi-eddsa-web3js@0.5.1
+  - @metaplex-foundation/umi-http-fetch@0.5.1
+  - @metaplex-foundation/umi-program-repository@0.5.1
+  - @metaplex-foundation/umi-rpc-web3js@0.5.1
+  - @metaplex-foundation/umi-serializer-data-view@0.5.1
+  - @metaplex-foundation/umi-transaction-factory-web3js@0.5.1
+
 ## 0.4.1
 
 ### Patch Changes
