@@ -1,7 +1,7 @@
 {
-  "name": "@metaplex-foundation/umi",
+  "name": "@metaplex-foundation/umi-bundle-defaults",
   "version": "0.4.1",
-  "description": "A JS framework for Solana clients defining core interfaces",
+  "description": "A bundle of default Umi plugins to get started",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -26,8 +26,22 @@
     "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
     "test": "ava"
   },
+  "dependencies": {
+    "@metaplex-foundation/umi-downloader-http": "workspace:^",
+    "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
+    "@metaplex-foundation/umi-http-fetch": "workspace:^",
+    "@metaplex-foundation/umi-program-repository": "workspace:^",
+    "@metaplex-foundation/umi-rpc-web3js": "workspace:^",
+    "@metaplex-foundation/umi-serializer-data-view": "workspace:^",
+    "@metaplex-foundation/umi-transaction-factory-web3js": "workspace:^"
+  },
+  "peerDependencies": {
+    "@metaplex-foundation/umi": "workspace:^",
+    "@solana/web3.js": "^1.72.0"
+  },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
+    "@metaplex-foundation/umi": "workspace:^",
     "ava": "^5.1.0"
   },
   "publishConfig": {
@@ -41,7 +55,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "umi"
+    "displayName": "umi-bundle-defaults"
   },
   "ava": {
     "typescript": {
