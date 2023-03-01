@@ -5,7 +5,7 @@ import {
   publicKey,
   PublicKey,
   PublicKeyInput,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import {
   fromWeb3JsKeypair,
   fromWeb3JsPublicKey,

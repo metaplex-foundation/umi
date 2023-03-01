@@ -34,7 +34,7 @@ import {
   UnitSerializerOptions,
   utf8,
   WrapInSerializer,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import {
   DataViewSerializerError,
   DeserializingEmptyBufferError,

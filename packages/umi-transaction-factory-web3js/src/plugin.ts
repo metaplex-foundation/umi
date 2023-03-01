@@ -1,4 +1,4 @@
-import { UmiPlugin } from '@metaplex-foundation/umi-core';
+import { UmiPlugin } from '@metaplex-foundation/umi';
 import { Web3JsTransactionFactory } from './Web3JsTransactionFactory';
 
 export const web3JsTransactionFactory = (): UmiPlugin => ({

@@ -1,4 +1,4 @@
-import { UmiPlugin } from '@metaplex-foundation/umi-core';
+import { UmiPlugin } from '@metaplex-foundation/umi';
 import { FetchHttp } from './FetchHttp';
 
 export const fetchHttp = (): UmiPlugin => ({

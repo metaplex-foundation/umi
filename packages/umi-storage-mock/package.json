@@ -27,11 +27,11 @@
     "test": "ava"
   },
   "peerDependencies": {
-    "@metaplex-foundation/umi-core": "workspace:^"
+    "@metaplex-foundation/umi": "workspace:^"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
-    "@metaplex-foundation/umi-core": "workspace:^",
+    "@metaplex-foundation/umi": "workspace:^",
     "ava": "^5.1.0"
   },
   "publishConfig": {

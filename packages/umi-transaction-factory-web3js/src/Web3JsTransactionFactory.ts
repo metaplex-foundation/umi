@@ -15,7 +15,7 @@ import {
   TransactionMessage,
   TransactionMessageHeader,
   TransactionVersion,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import {
   fromWeb3JsMessage,
   toWeb3JsMessageFromInput,

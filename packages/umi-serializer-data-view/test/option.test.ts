@@ -1,5 +1,5 @@
 import test from 'ava';
-import { none, some } from '@metaplex-foundation/umi-core';
+import { none, some } from '@metaplex-foundation/umi';
 import { DataViewSerializer } from '../src';
 import { s, d } from './_helpers';
 

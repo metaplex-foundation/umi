@@ -1,4 +1,4 @@
-import { SdkError } from '@metaplex-foundation/umi-core';
+import { SdkError } from '@metaplex-foundation/umi';
 
 /** @group Errors */
 export class AssetNotFoundError extends SdkError {

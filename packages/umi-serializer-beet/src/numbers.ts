@@ -5,7 +5,7 @@ import {
   NumberSerializerOptions,
   reverseSerializer,
   Serializer,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import { Buffer } from 'buffer';
 import { DeserializingEmptyBufferError } from './errors';
 

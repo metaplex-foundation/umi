@@ -1,4 +1,4 @@
-import { UmiPlugin } from '@metaplex-foundation/umi-core';
+import { UmiPlugin } from '@metaplex-foundation/umi';
 import { DataViewSerializer } from './DataViewSerializer';
 
 export const dataViewSerializer = (): UmiPlugin => ({

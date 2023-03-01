@@ -1,4 +1,4 @@
-import { Umi, createUmi as baseCreateUmi } from '@metaplex-foundation/umi-core';
+import { Umi, createUmi as baseCreateUmi } from '@metaplex-foundation/umi';
 import type { Web3JsRpcOptions } from '@metaplex-foundation/umi-rpc-web3js';
 import { defaultPlugins } from './plugin';
 

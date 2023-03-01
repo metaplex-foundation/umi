@@ -1,4 +1,4 @@
-import { UmiPlugin } from '@metaplex-foundation/umi-core';
+import { UmiPlugin } from '@metaplex-foundation/umi';
 import { HttpDownloader } from './HttpDownloader';
 
 export const httpDownloader = (): UmiPlugin => ({

@@ -1,4 +1,4 @@
-import { UmiError } from '@metaplex-foundation/umi-core';
+import { UmiError } from '@metaplex-foundation/umi';
 
 /** @group Errors */
 export class DataViewSerializerError extends UmiError {

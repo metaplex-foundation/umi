@@ -1,5 +1,5 @@
 {
-  "name": "@metaplex-foundation/umi-core",
+  "name": "@metaplex-foundation/umi",
   "version": "0.4.1",
   "description": "A JS framework for Solana clients defining core interfaces",
   "license": "MIT",
@@ -41,7 +41,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "umi-core"
+    "displayName": "umi"
   },
   "ava": {
     "typescript": {

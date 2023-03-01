@@ -1,5 +1,5 @@
 import test from 'ava';
-import { DataEnumToSerializerTuple } from '@metaplex-foundation/umi-core';
+import { DataEnumToSerializerTuple } from '@metaplex-foundation/umi';
 import { DataViewSerializer } from '../src';
 import { s, d } from './_helpers';
 

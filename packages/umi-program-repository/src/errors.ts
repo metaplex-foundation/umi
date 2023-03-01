@@ -6,7 +6,7 @@ import {
   PublicKey,
   SdkError,
   UnderlyingProgramError,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 
 export class ProgramNotRecognizedError extends SdkError {
   readonly name: string = 'ProgramNotRecognizedError';

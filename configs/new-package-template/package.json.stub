@@ -1,6 +1,7 @@
 {
   "name": "@metaplex-foundation/{{package-name}}",
   "version": "0.0.1",
+  "description": "TODO",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -25,11 +26,12 @@
     "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
     "test": "ava"
   },
-  "dependencies": {
-    "@metaplex-foundation/umi-core": "workspace:^"
+  "peerDependencies": {
+    "@metaplex-foundation/umi": "workspace:^"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
+    "@metaplex-foundation/umi": "workspace:^",
     "ava": "^5.1.0"
   },
   "publishConfig": {

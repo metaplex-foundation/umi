@@ -1,4 +1,4 @@
-import type { UmiPlugin } from '@metaplex-foundation/umi-core';
+import type { UmiPlugin } from '@metaplex-foundation/umi';
 import { httpDownloader } from '@metaplex-foundation/umi-downloader-http';
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { fetchHttp } from '@metaplex-foundation/umi-http-fetch';

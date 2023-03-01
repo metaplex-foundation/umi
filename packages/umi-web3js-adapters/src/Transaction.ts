@@ -1,4 +1,4 @@
-import { base58, Transaction } from '@metaplex-foundation/umi-core';
+import { base58, Transaction } from '@metaplex-foundation/umi';
 import {
   Message as Web3JsMessage,
   SIGNATURE_LENGTH_IN_BYTES,

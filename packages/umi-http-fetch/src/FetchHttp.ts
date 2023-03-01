@@ -2,7 +2,7 @@ import {
   HttpInterface,
   HttpRequest,
   HttpResponse,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import fetch, { BodyInit, RequestInit } from 'node-fetch';
 
 export class FetchHttp implements HttpInterface {
