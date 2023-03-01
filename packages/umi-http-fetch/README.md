@@ -1,6 +1,6 @@
 # umi-http-fetch
 
-TODO
+An HTTP implementation relying on the fetch API.
 
 ## Installation
 

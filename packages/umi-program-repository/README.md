@@ -1,6 +1,6 @@
 # umi-program-repository
 
-TODO
+A zero-dependency program repository implementation.
 
 ## Installation
 

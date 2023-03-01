@@ -1,6 +1,6 @@
 # umi-signer-derived
 
-TODO
+A Signer implementation using the derived identity pattern.
 
 ## Installation
 

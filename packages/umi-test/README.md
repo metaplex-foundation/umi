@@ -1,6 +1,6 @@
 # umi-test
 
-TODO
+A helper package that bundles useful plugins for test purposes.
 
 ## Installation
 

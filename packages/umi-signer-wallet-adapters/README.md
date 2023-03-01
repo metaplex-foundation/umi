@@ -1,6 +1,6 @@
 # umi-signer-wallet-adapters
 
-TODO
+A Signer implementation relying on Solana's wallet adapters.
 
 ## Installation
 

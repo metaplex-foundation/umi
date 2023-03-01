@@ -1,6 +1,6 @@
 # umi-uploader-nft-storage
 
-TODO
+An uploader implementation relying on NFT.Storage.
 
 ## Installation
 
