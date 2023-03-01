@@ -28,7 +28,6 @@
   },
   "dependencies": {
     "@ipld/dag-pb": "^2.1.17",
-    "@metaplex-foundation/umi-core": "workspace:^",
     "@nftstorage/metaplex-auth": "^1.2.0",
     "ipfs-car": "^0.7.0",
     "ipfs-unixfs": "^6.0.9",
@@ -37,8 +36,12 @@
     "node-fetch": "^2.6.7",
     "tweetnacl": "^1.0.3"
   },
+  "peerDependencies": {
+    "@metaplex-foundation/umi-core": "workspace:^"
+  },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
+    "@metaplex-foundation/umi-core": "workspace:^",
     "@metaplex-foundation/umi-downloader-http": "workspace:^",
     "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
     "@metaplex-foundation/umi-http-fetch": "workspace:^",

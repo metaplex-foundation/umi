@@ -27,14 +27,15 @@
     "test": "ava"
   },
   "dependencies": {
-    "@metaplex-foundation/umi-core": "workspace:^",
     "@metaplex-foundation/umi-web3js-adapters": "workspace:^"
   },
   "peerDependencies": {
+    "@metaplex-foundation/umi-core": "workspace:^",
     "@solana/web3.js": "^1.72.0"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
+    "@metaplex-foundation/umi-core": "workspace:^",
     "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
     "@metaplex-foundation/umi-serializer-data-view": "workspace:^",
     "@solana/web3.js": "^1.72.0",
