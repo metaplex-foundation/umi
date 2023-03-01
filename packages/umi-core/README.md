@@ -1,6 +1,6 @@
 # umi-core
 
-Defines the core interfaces of a JS framework for Solana clients.
+A JS framework for Solana clients defining core interfaces.
 
 ## Installation
 

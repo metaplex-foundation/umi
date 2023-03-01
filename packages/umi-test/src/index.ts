@@ -28,4 +28,3 @@ export const generateSignerWithSol = async (
 };
 
 export * from './plugin';
-export * from '@metaplex-foundation/umi-core';

@@ -1,7 +1,7 @@
 {
-  "name": "@metaplex-foundation/umi-test",
+  "name": "@metaplex-foundation/umi-bundle-tests",
   "version": "0.4.1",
-  "description": "A helper package that bundles useful plugins for test purposes",
+  "description": "A bundle of Umi plugins for test purposes",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -56,7 +56,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "umi-test"
+    "displayName": "umi-bundle-tests"
   },
   "ava": {
     "typescript": {

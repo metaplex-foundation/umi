@@ -1,4 +1,4 @@
-# @metaplex-foundation/umi-test
+# @metaplex-foundation/umi-bundle-tests
 
 ## 0.4.1
 

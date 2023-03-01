@@ -8,4 +8,3 @@ export const createUmi = (
 ): Umi => baseCreateUmi().use(defaultPlugins(endpoint, rpcOptions));
 
 export * from './plugin';
-export * from '@metaplex-foundation/umi-core';

@@ -1,9 +1,9 @@
-# umi-test
+# umi-bundle-tests
 
-A helper package that bundles useful plugins for test purposes.
+A bundle of Umi plugins for test purposes.
 
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/umi-test
+npm install @metaplex-foundation/umi-bundle-tests
 ```

@@ -1,7 +1,7 @@
 {
   "name": "@metaplex-foundation/umi-core",
   "version": "0.4.1",
-  "description": "Defines the core interfaces of a JS framework for Solana clients",
+  "description": "A JS framework for Solana clients defining core interfaces",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",

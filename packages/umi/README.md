@@ -1,9 +1,9 @@
-# umi
+# umi-bundle-defaults
 
-A JS framework for Solana clients with default plugins.
+A bundle of default Umi plugins to get started.
 
 ## Installation
 
 ```sh
-npm install @metaplex-foundation/umi
+npm install @metaplex-foundation/umi-bundle-defaults
 ```

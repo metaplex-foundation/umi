@@ -1,4 +1,4 @@
-# @metaplex-foundation/umi
+# @metaplex-foundation/umi-bundle-defaults
 
 ## 0.4.1
 
