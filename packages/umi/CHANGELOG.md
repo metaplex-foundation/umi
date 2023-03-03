@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 0.5.2
+
+### Patch Changes
+
+- [`3db36d1`](https://github.com/metaplex-foundation/umi/commit/3db36d13e281a171f407e9652e2404d54c2971bd) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Make GpaBuilder fields more flexible
+
 ## 0.5.1
 
 ### Patch Changes
