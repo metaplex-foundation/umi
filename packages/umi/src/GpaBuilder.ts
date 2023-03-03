@@ -18,6 +18,9 @@ import { base10, base58, base64 } from './utils';
 
 export type GpaBuilderSortCallback = (a: RpcAccount, b: RpcAccount) => number;
 export type GpaBuilderMapCallback<T> = (account: RpcAccount) => T;
+export type GpaBuilderFieldSerializers<T extends object, U extends T> = {
+  [K in keyof T]: [number | null, Serializer<T[K], U[K]>];
+};
 
 export class GpaBuilder<
   Account extends object = RpcAccount,
@@ -27,7 +30,7 @@ export class GpaBuilder<
     protected readonly context: Pick<Context, 'rpc'>,
     readonly programId: PublicKey,
     readonly options: {
-      readonly fields?: StructToSerializerTuple<Fields, Fields>;
+      readonly fields?: GpaBuilderFieldSerializers<Fields, Fields>;
       readonly deserializeCallback?: GpaBuilderMapCallback<Account>;
       readonly dataSlice?: RpcDataSlice;
       readonly filters?: RpcDataFilter[];
@@ -43,12 +46,27 @@ export class GpaBuilder<
   }
 
   registerFields<T extends object>(
-    fields: StructToSerializerTuple<T, T>
+    fields: GpaBuilderFieldSerializers<T, T>
   ): GpaBuilder<Account, T> {
     return new GpaBuilder<Account, T>(this.context, this.programId, {
       ...this.options,
       fields,
     });
+  }
+
+  registerFieldsFromStruct<T extends object>(
+    structFields: StructToSerializerTuple<T, T>
+  ): GpaBuilder<Account, T> {
+    let offset: number | null = 0;
+    const fields = structFields.reduce((acc, [field, serializer]) => {
+      acc[field] = [offset, serializer];
+      offset =
+        offset === null || serializer.fixedSize === null
+          ? null
+          : offset + serializer.fixedSize;
+      return acc;
+    }, {} as GpaBuilderFieldSerializers<T, T>);
+    return this.registerFields(fields);
   }
 
   deserializeUsing<T extends object>(
@@ -188,48 +206,37 @@ export class GpaBuilder<
   }
 
   protected getField<K extends keyof Fields>(
-    field: K,
-    offset?: number
+    fieldName: K,
+    forcedOffset?: number
   ): [number, Serializer<Fields[K]>] {
     if (!this.options.fields) {
       throw new SdkError('Fields are not defined in this GpaBuilder.');
     }
 
-    const fieldIndex = this.options.fields.findIndex(
-      ([name]) => name === field
-    );
-    if (fieldIndex < 0) {
+    const field = this.options.fields[fieldName];
+    if (!field) {
       throw new SdkError(
-        `Field [${field as string}] is not defined in this GpaBuilder.`
+        `Field [${fieldName as string}] is not defined in this GpaBuilder.`
       );
     }
 
-    const serializer = this.options.fields[
-      fieldIndex
-    ][1] as unknown as Serializer<Fields[K]>;
-
-    if (offset !== undefined) {
-      return [offset, serializer];
+    const [offset, serializer] = field;
+    if (forcedOffset !== undefined) {
+      return [forcedOffset, serializer];
     }
 
-    const computedOffset = this.options.fields
-      .slice(0, fieldIndex)
-      .reduce(
-        (acc, [, s]) =>
-          acc === null || s.fixedSize === null ? null : acc + s.fixedSize,
-        0 as number | null
-      );
-
-    if (computedOffset === null) {
+    if (offset === null) {
       throw new SdkError(
-        `Field [${field as string}] is not in the fixed part of ` +
+        `Field [${fieldName as string}] does not have a fixed offset. ` +
+          `This is likely because it is not in the fixed part of ` +
           `the account's data. In other words, it is located after ` +
           `a field of variable length which means we cannot find a ` +
-          `fixed offset for the filter.`
+          `fixed offset for the filter. You may go around this by ` +
+          `providing an offset explicitly.`
       );
     }
 
-    return [computedOffset, serializer];
+    return [offset, serializer];
   }
 }
 

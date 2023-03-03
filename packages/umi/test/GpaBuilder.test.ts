@@ -89,8 +89,7 @@ test('it can add memcmp filters from fields', (t) => {
 
   // ID (offset = null, identifier = 4).
   t.throws(() => builder.whereField('id', 999), {
-    message: (m) =>
-      m.includes("Field [id] is not in the fixed part of the account's data"),
+    message: (m) => m.includes('Field [id] does not have a fixed offset'),
   });
 
   // ID (offset = null, identifier = 4) with explicit offset.
@@ -122,8 +121,7 @@ test('it can add a data slice using a field', (t) => {
 
   // ID (offset = null, size = 8).
   t.throws(() => builder.sliceField('id'), {
-    message: (m) =>
-      m.includes("Field [id] is not in the fixed part of the account's data"),
+    message: (m) => m.includes('Field [id] does not have a fixed offset'),
   });
 
   // ID (offset = null, size = 8) with explicit offset.
@@ -138,7 +136,7 @@ function getTestGpaBuilder(): GpaBuilder {
 }
 
 function getPersonGpaBuilder(): GpaBuilder<RpcAccount, Person> {
-  return getTestGpaBuilder().registerFields<Person>([
+  return getTestGpaBuilder().registerFieldsFromStruct<Person>([
     ['age', getTestSerializer<number>(1, 1)],
     ['name', getTestSerializer<string>(2, 32)],
     ['balances', getTestSerializer<(number | bigint)[], bigint[]>(3, null)],
