@@ -1,7 +1,19 @@
 /* eslint-disable no-bitwise */
+import { SdkError } from '../errors/SdkError';
 import { InvalidBaseStringError } from '../errors/InvalidBaseStringError';
 import type { Serializer } from '../Serializer';
 import { removeNullCharacters } from './nullCharacters';
+
+export const mergeBytes = (bytesArr: Uint8Array[]): Uint8Array => {
+  const totalLength = bytesArr.reduce((total, arr) => total + arr.length, 0);
+  const result = new Uint8Array(totalLength);
+  let offset = 0;
+  bytesArr.forEach((arr) => {
+    result.set(arr, offset);
+    offset += arr.length;
+  });
+  return result;
+};
 
 export const utf8: Serializer<string> = {
   description: 'utf8',
@@ -111,13 +123,56 @@ export const base16: Serializer<string> = {
   },
 };
 
-export const mergeBytes = (bytesArr: Uint8Array[]): Uint8Array => {
-  const totalLength = bytesArr.reduce((total, arr) => total + arr.length, 0);
-  const result = new Uint8Array(totalLength);
-  let offset = 0;
-  bytesArr.forEach((arr) => {
-    result.set(arr, offset);
-    offset += arr.length;
-  });
-  return result;
+export const bitArray = (
+  size: number,
+  backward = false
+): Serializer<boolean[]> => {
+  const backwardSuffix = backward ? '; backward' : '';
+  return {
+    description: `bitArray(${size}${backwardSuffix})`,
+    fixedSize: size,
+    maxSize: size,
+    serialize(value: boolean[]) {
+      const bytes: number[] = [];
+
+      for (let i = 0; i < size; i += 1) {
+        let byte = 0;
+        for (let j = 0; j < 8; j += 1) {
+          const feature = Number(value[i * 8 + j] ?? 0);
+          byte |= feature << (backward ? j : 7 - j);
+        }
+        if (backward) {
+          bytes.unshift(byte);
+        } else {
+          bytes.push(byte);
+        }
+      }
+
+      return new Uint8Array(bytes);
+    },
+    deserialize(bytes, offset = 0) {
+      const booleans: boolean[] = [];
+      let slice = bytes.slice(offset, offset + size);
+      slice = backward ? slice.reverse() : slice;
+      if (slice.length !== size) {
+        throw new SdkError(
+          `Serializer [bitArray] expected ${size} bytes, got ${slice.length}.`
+        );
+      }
+
+      slice.forEach((byte) => {
+        for (let i = 0; i < 8; i += 1) {
+          if (backward) {
+            booleans.push(Boolean(byte & 1));
+            byte >>= 1;
+          } else {
+            booleans.push(Boolean(byte & 0b1000_0000));
+            byte <<= 1;
+          }
+        }
+      });
+
+      return [booleans, offset + size];
+    },
+  };
 };
