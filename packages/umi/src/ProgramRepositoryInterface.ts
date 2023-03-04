@@ -1,7 +1,7 @@
 import type { ClusterFilter } from './Cluster';
 import { InterfaceImplementationMissingError, ProgramError } from './errors';
 import type { ErrorWithLogs, Program } from './Program';
-import { PublicKey } from './PublicKey';
+import { PublicKey, PublicKeyInput } from './PublicKey';
 import { Transaction } from './Transaction';
 
 export interface ProgramRepositoryInterface {
@@ -25,6 +25,23 @@ export interface ProgramRepositoryInterface {
     identifier: string | PublicKey,
     clusterFilter?: ClusterFilter
   ): T;
+
+  /**
+   * Gets the public key of a program from the repository,
+   * with an optional fallback public key.
+   *
+   * Throws an error if the program is not found and no fallback is provided.
+   *
+   * @param identifier The name or public key of the program to retrieve.
+   * @param fallback The fallback public key to use if the program is not found.
+   * Defaults to not using a fallback public key.
+   * @param clusterFilter The cluster filter to apply. Defaults to `"current"`.
+   */
+  getPublicKey(
+    identifier: string | PublicKey,
+    fallback?: PublicKeyInput,
+    clusterFilter?: ClusterFilter
+  ): PublicKey;
 
   /**
    * Gets all programs from the repository matching the given cluster filter.
@@ -67,6 +84,10 @@ export class NullProgramRepository implements ProgramRepositoryInterface {
   }
 
   get<T extends Program = Program>(): T {
+    throw this.error;
+  }
+
+  getPublicKey(): PublicKey {
     throw this.error;
   }
 

@@ -6,7 +6,9 @@ import {
   Program,
   ProgramError,
   ProgramRepositoryInterface,
+  publicKey,
   PublicKey,
+  PublicKeyInput,
   samePublicKey,
   Transaction,
 } from '@metaplex-foundation/umi';
@@ -46,6 +48,19 @@ export class DefaultProgramRepository implements ProgramRepositoryInterface {
     }
 
     return program as T;
+  }
+
+  getPublicKey(
+    identifier: string | PublicKey,
+    fallback?: PublicKeyInput,
+    clusterFilter?: ClusterFilter
+  ): PublicKey {
+    try {
+      return this.get(identifier, clusterFilter).publicKey;
+    } catch (error) {
+      if (fallback === undefined) throw error;
+      return publicKey(fallback);
+    }
   }
 
   all(clusterFilter: ClusterFilter = 'current'): Program[] {
