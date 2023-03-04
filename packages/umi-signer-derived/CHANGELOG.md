@@ -1,5 +1,12 @@
 # @metaplex-foundation/umi-signer-derived
 
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies [[`c20d154`](https://github.com/metaplex-foundation/umi/commit/c20d15448537a93d7fe7a5f4765e0d3880ccc8cf), [`13acda9`](https://github.com/metaplex-foundation/umi/commit/13acda9d8c968716289e47b3e19b888f8ba11857)]:
+  - @metaplex-foundation/umi@0.5.3
+
 ## 0.5.2
 
 ### Patch Changes
