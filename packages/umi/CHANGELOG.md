@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 0.6.0
+
+### Minor Changes
+
+- [#28](https://github.com/metaplex-foundation/umi/pull/28) [`b1e898f`](https://github.com/metaplex-foundation/umi/commit/b1e898fb8f78eb3b7acedd6b77dcdfd161164b00) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Defer context in TransactionBuilder until needed
+
 ## 0.5.3
 
 ### Patch Changes
