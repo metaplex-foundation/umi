@@ -20,11 +20,12 @@ import {
   TRANSACTION_SIZE_LIMIT,
 } from './Transaction';
 
+export type HasWrappedInstructions = { items: WrappedInstruction[] };
 export type TransactionBuilderItemsInput =
   | WrappedInstruction
   | WrappedInstruction[]
-  | TransactionBuilder
-  | TransactionBuilder[];
+  | HasWrappedInstructions
+  | HasWrappedInstructions[];
 
 export type TransactionBuilderOptions = {
   version?: TransactionVersion;
@@ -37,7 +38,7 @@ export type TransactionBuilderSendAndConfirmOptions = {
   confirm?: Partial<RpcConfirmTransactionOptions>;
 };
 
-export class TransactionBuilder {
+export class TransactionBuilder implements HasWrappedInstructions {
   constructor(
     readonly context: Pick<Context, 'rpc' | 'transactions' | 'payer'>,
     readonly items: WrappedInstruction[] = [],
@@ -281,7 +282,7 @@ export class TransactionBuilder {
     input: TransactionBuilderItemsInput
   ): WrappedInstruction[] {
     return (Array.isArray(input) ? input : [input]).flatMap((item) =>
-      'instruction' in item ? [item] : item.items
+      'items' in item ? item.items : [item]
     );
   }
 }
