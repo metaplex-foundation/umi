@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-uploader-nft-storage",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "description": "An uploader implementation relying on NFT.Storage",
   "license": "MIT",
   "sideEffects": false,

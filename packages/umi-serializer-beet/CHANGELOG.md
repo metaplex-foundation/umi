@@ -1,5 +1,12 @@
 # @metaplex-foundation/umi-serializer-beet
 
+## 0.6.0
+
+### Patch Changes
+
+- Updated dependencies [[`b1e898f`](https://github.com/metaplex-foundation/umi/commit/b1e898fb8f78eb3b7acedd6b77dcdfd161164b00)]:
+  - @metaplex-foundation/umi@0.6.0
+
 ## 0.5.3
 
 ### Patch Changes
