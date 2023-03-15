@@ -20,13 +20,15 @@ import {
   TRANSACTION_SIZE_LIMIT,
 } from './Transaction';
 
+export type HasWrappedInstructions = { items: WrappedInstruction[] };
 export type TransactionBuilderItemsInput =
   | WrappedInstruction
   | WrappedInstruction[]
-  | TransactionBuilder
-  | TransactionBuilder[];
+  | HasWrappedInstructions
+  | HasWrappedInstructions[];
 
 export type TransactionBuilderOptions = {
+  feePayer?: Signer;
   version?: TransactionVersion;
   addressLookupTables?: AddressLookupTableInput[];
   blockhash?: Blockhash | BlockhashWithExpiryBlockHeight;
@@ -37,28 +39,22 @@ export type TransactionBuilderSendAndConfirmOptions = {
   confirm?: Partial<RpcConfirmTransactionOptions>;
 };
 
-export class TransactionBuilder {
+export class TransactionBuilder implements HasWrappedInstructions {
   constructor(
-    readonly context: Pick<Context, 'rpc' | 'transactions' | 'payer'>,
     readonly items: WrappedInstruction[] = [],
     readonly options: TransactionBuilderOptions = {}
   ) {}
 
   empty(): TransactionBuilder {
-    return new TransactionBuilder(this.context, [], this.options);
+    return new TransactionBuilder([], this.options);
   }
 
   setItems(input: TransactionBuilderItemsInput): TransactionBuilder {
-    return new TransactionBuilder(
-      this.context,
-      this.parseItems(input),
-      this.options
-    );
+    return new TransactionBuilder(this.parseItems(input), this.options);
   }
 
   prepend(input: TransactionBuilderItemsInput): TransactionBuilder {
     return new TransactionBuilder(
-      this.context,
       [...this.parseItems(input), ...this.items],
       this.options
     );
@@ -66,7 +62,6 @@ export class TransactionBuilder {
 
   append(input: TransactionBuilderItemsInput): TransactionBuilder {
     return new TransactionBuilder(
-      this.context,
       [...this.items, ...this.parseItems(input)],
       this.options
     );
@@ -78,16 +73,8 @@ export class TransactionBuilder {
 
   splitByIndex(index: number): [TransactionBuilder, TransactionBuilder] {
     return [
-      new TransactionBuilder(
-        this.context,
-        this.items.slice(0, index),
-        this.options
-      ),
-      new TransactionBuilder(
-        this.context,
-        this.items.slice(index),
-        this.options
-      ),
+      new TransactionBuilder(this.items.slice(0, index), this.options),
+      new TransactionBuilder(this.items.slice(index), this.options),
     ];
   }
 
@@ -106,12 +93,14 @@ export class TransactionBuilder {
    *   if the builder has a single instruction that is too big to fit in
    *   a single transaction, it will not be able to split it.
    */
-  unsafeSplitByTransactionSize(): TransactionBuilder[] {
+  unsafeSplitByTransactionSize(
+    context: Pick<Context, 'transactions' | 'payer'>
+  ): TransactionBuilder[] {
     return this.items.reduce(
       (builders, item) => {
         const lastBuilder = builders.pop() as TransactionBuilder;
         const lastBuilderWithItem = lastBuilder.add(item);
-        if (lastBuilderWithItem.fitsInOneTransaction()) {
+        if (lastBuilderWithItem.fitsInOneTransaction(context)) {
           builders.push(lastBuilderWithItem);
         } else {
           builders.push(lastBuilder);
@@ -123,11 +112,16 @@ export class TransactionBuilder {
     );
   }
 
+  setFeePayer(feePayer: Signer): TransactionBuilder {
+    return new TransactionBuilder(this.items, { ...this.options, feePayer });
+  }
+
+  getFeePayer(context: Pick<Context, 'payer'>): Signer {
+    return this.options.feePayer ?? context.payer;
+  }
+
   setVersion(version: TransactionVersion): TransactionBuilder {
-    return new TransactionBuilder(this.context, this.items, {
-      ...this.options,
-      version,
-    });
+    return new TransactionBuilder(this.items, { ...this.options, version });
   }
 
   useLegacyVersion(): TransactionBuilder {
@@ -141,7 +135,7 @@ export class TransactionBuilder {
   setAddressLookupTables(
     addressLookupTables: AddressLookupTableInput[]
   ): TransactionBuilder {
-    return new TransactionBuilder(this.context, this.items, {
+    return new TransactionBuilder(this.items, {
       ...this.options,
       addressLookupTables,
     });
@@ -156,23 +150,22 @@ export class TransactionBuilder {
   setBlockhash(
     blockhash: Blockhash | BlockhashWithExpiryBlockHeight
   ): TransactionBuilder {
-    return new TransactionBuilder(this.context, this.items, {
-      ...this.options,
-      blockhash,
-    });
+    return new TransactionBuilder(this.items, { ...this.options, blockhash });
   }
 
-  async setLatestBlockhash(): Promise<TransactionBuilder> {
-    return this.setBlockhash(await this.context.rpc.getLatestBlockhash());
+  async setLatestBlockhash(
+    context: Pick<Context, 'rpc'>
+  ): Promise<TransactionBuilder> {
+    return this.setBlockhash(await context.rpc.getLatestBlockhash());
   }
 
   getInstructions(): Instruction[] {
     return this.items.map((item) => item.instruction);
   }
 
-  getSigners(): Signer[] {
+  getSigners(context: Pick<Context, 'payer'>): Signer[] {
     return uniqueSigners([
-      this.context.payer,
+      this.getFeePayer(context),
       ...this.items.flatMap((item) => item.signers),
     ]);
   }
@@ -181,27 +174,33 @@ export class TransactionBuilder {
     return this.items.reduce((sum, item) => sum + item.bytesCreatedOnChain, 0);
   }
 
-  async getRentCreatedOnChain(): Promise<SolAmount> {
-    return this.context.rpc.getRent(this.getBytesCreatedOnChain(), {
+  async getRentCreatedOnChain(
+    context: Pick<Context, 'rpc'>
+  ): Promise<SolAmount> {
+    return context.rpc.getRent(this.getBytesCreatedOnChain(), {
       includesHeaderBytes: true,
     });
   }
 
-  getTransactionSize(): number {
-    return this.context.transactions.serialize(
-      this.setBlockhash('11111111111111111111111111111111').build()
+  getTransactionSize(context: Pick<Context, 'transactions' | 'payer'>): number {
+    return context.transactions.serialize(
+      this.setBlockhash('11111111111111111111111111111111').build(context)
     ).length;
   }
 
-  minimumTransactionsRequired(): number {
-    return Math.ceil(this.getTransactionSize() / TRANSACTION_SIZE_LIMIT);
+  minimumTransactionsRequired(
+    context: Pick<Context, 'transactions' | 'payer'>
+  ): number {
+    return Math.ceil(this.getTransactionSize(context) / TRANSACTION_SIZE_LIMIT);
   }
 
-  fitsInOneTransaction(): boolean {
-    return this.minimumTransactionsRequired() === 1;
+  fitsInOneTransaction(
+    context: Pick<Context, 'transactions' | 'payer'>
+  ): boolean {
+    return this.minimumTransactionsRequired(context) === 1;
   }
 
-  build(): Transaction {
+  build(context: Pick<Context, 'transactions' | 'payer'>): Transaction {
     const blockhash = this.getBlockhash();
     if (!blockhash) {
       throw new SdkError(
@@ -211,39 +210,45 @@ export class TransactionBuilder {
     }
     const input: TransactionInput = {
       version: this.options.version ?? 0,
-      payer: this.context.payer.publicKey,
+      payer: this.getFeePayer(context).publicKey,
       instructions: this.getInstructions(),
       blockhash,
     };
     if (input.version === 0 && this.options.addressLookupTables) {
       input.addressLookupTables = this.options.addressLookupTables;
     }
-    return this.context.transactions.create(input);
+    return context.transactions.create(input);
   }
 
-  async buildWithLatestBlockhash(): Promise<Transaction> {
+  async buildWithLatestBlockhash(
+    context: Pick<Context, 'transactions' | 'rpc' | 'payer'>
+  ): Promise<Transaction> {
     let builder: TransactionBuilder = this;
     if (!this.options.blockhash) {
-      builder = await this.setLatestBlockhash();
+      builder = await this.setLatestBlockhash(context);
     }
-    return builder.build();
+    return builder.build(context);
   }
 
-  async buildAndSign(): Promise<Transaction> {
+  async buildAndSign(
+    context: Pick<Context, 'transactions' | 'rpc' | 'payer'>
+  ): Promise<Transaction> {
     return signTransaction(
-      await this.buildWithLatestBlockhash(),
-      this.getSigners()
+      await this.buildWithLatestBlockhash(context),
+      this.getSigners(context)
     );
   }
 
   async send(
+    context: Pick<Context, 'transactions' | 'rpc' | 'payer'>,
     options: RpcSendTransactionOptions = {}
   ): Promise<TransactionSignature> {
-    const transaction = await this.buildAndSign();
-    return this.context.rpc.sendTransaction(transaction, options);
+    const transaction = await this.buildAndSign(context);
+    return context.rpc.sendTransaction(transaction, options);
   }
 
   async sendAndConfirm(
+    context: Pick<Context, 'transactions' | 'rpc' | 'payer'>,
     options: TransactionBuilderSendAndConfirmOptions = {}
   ): Promise<{
     signature: TransactionSignature;
@@ -251,7 +256,7 @@ export class TransactionBuilder {
   }> {
     let builder: TransactionBuilder = this;
     if (!this.options.blockhash) {
-      builder = await this.setLatestBlockhash();
+      builder = await this.setLatestBlockhash(context);
     }
 
     let strategy: RpcConfirmTransactionStrategy;
@@ -261,15 +266,15 @@ export class TransactionBuilder {
       const blockhash =
         typeof builder.options.blockhash === 'object'
           ? builder.options.blockhash
-          : await builder.context.rpc.getLatestBlockhash();
+          : await context.rpc.getLatestBlockhash();
       strategy = options.confirm?.strategy ?? {
         type: 'blockhash',
         ...blockhash,
       };
     }
 
-    const signature = await builder.send(options.send);
-    const result = await builder.context.rpc.confirmTransaction(signature, {
+    const signature = await builder.send(context, options.send);
+    const result = await context.rpc.confirmTransaction(signature, {
       ...options.confirm,
       strategy,
     });
@@ -281,12 +286,10 @@ export class TransactionBuilder {
     input: TransactionBuilderItemsInput
   ): WrappedInstruction[] {
     return (Array.isArray(input) ? input : [input]).flatMap((item) =>
-      'instruction' in item ? [item] : item.items
+      'items' in item ? item.items : [item]
     );
   }
 }
 
-export const transactionBuilder = (
-  context: Pick<Context, 'rpc' | 'transactions' | 'payer'>,
-  items: WrappedInstruction[] = []
-) => new TransactionBuilder(context, items);
+export const transactionBuilder = (items: WrappedInstruction[] = []) =>
+  new TransactionBuilder(items);

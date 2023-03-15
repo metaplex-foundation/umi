@@ -4,8 +4,8 @@ import { createUmi, transferSol } from './_setup';
 
 test.skip('it can get the size of the transaction to build', (t) => {
   const umi = createUmi();
-  const builder = transactionBuilder(umi).add(transferSol(umi));
-  t.is(builder.getTransactionSize(), 305);
+  const builder = transactionBuilder().add(transferSol(umi));
+  t.is(builder.getTransactionSize(umi), 305);
 });
 
 test.skip('it can split instructions by index', (t) => {
@@ -13,7 +13,7 @@ test.skip('it can split instructions by index', (t) => {
   const umi = createUmi();
   const instructionA = transferSol(umi);
   const instructionB = transferSol(umi);
-  const builder = transactionBuilder(umi).add(instructionA).add(instructionB);
+  const builder = transactionBuilder().add(instructionA).add(instructionB);
 
   // When we split the builder by index in the middle.
   const [first, second] = builder.splitByIndex(1);
@@ -27,12 +27,12 @@ test.skip('it can split instructions by transaction size', (t) => {
   // Given a builder with 100 instructions.
   const umi = createUmi();
   const instructions = Array.from({ length: 100 }).map(() => transferSol(umi));
-  const builder = transactionBuilder(umi).add(instructions);
+  const builder = transactionBuilder().add(instructions);
 
   // When we split the builder by transaction size.
-  const builders = builder.unsafeSplitByTransactionSize();
+  const builders = builder.unsafeSplitByTransactionSize(umi);
 
   // Then we get 15 builders such that each fit in one transaction.
   t.is(builders.length, 15);
-  builders.forEach((b) => t.true(b.fitsInOneTransaction()));
+  builders.forEach((b) => t.true(b.fitsInOneTransaction(umi)));
 });

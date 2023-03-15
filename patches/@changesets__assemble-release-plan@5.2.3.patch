@@ -1,0 +1,48 @@
+diff --git a/dist/assemble-release-plan.cjs.dev.js b/dist/assemble-release-plan.cjs.dev.js
+index 3a37c62c975518f975c22e1b4b3974d9b325a5da..df35ff7605edfd132a325057748b9edb10015e46 100644
+--- a/dist/assemble-release-plan.cjs.dev.js
++++ b/dist/assemble-release-plan.cjs.dev.js
+@@ -248,6 +248,7 @@ function shouldBumpMajor({
+   preInfo,
+   onlyUpdatePeerDependentsWhenOutOfRange
+ }) {
++  return false;
+   // we check if it is a peerDependency because if it is, our dependent bump type might need to be major.
+   return depType === "peerDependencies" && nextRelease.type !== "none" && nextRelease.type !== "patch" && ( // 1. If onlyUpdatePeerDependentsWhenOutOfRange set to true, bump major if the version is leaving the range.
+   // 2. If onlyUpdatePeerDependentsWhenOutOfRange set to false, bump major regardless whether or not the version is leaving the range.
+diff --git a/dist/assemble-release-plan.cjs.prod.js b/dist/assemble-release-plan.cjs.prod.js
+index 87b4c104bf3fa53ba498ced6f81eda0ed4c86436..a31b6bbc2b3f153dd930b696ae3d8580623f42ef 100644
+--- a/dist/assemble-release-plan.cjs.prod.js
++++ b/dist/assemble-release-plan.cjs.prod.js
+@@ -130,6 +130,7 @@ function getDependencyVersionRanges(dependentPkgJSON, dependencyRelease) {
+ }
+ 
+ function shouldBumpMajor({dependent: dependent, depType: depType, versionRange: versionRange, releases: releases, nextRelease: nextRelease, preInfo: preInfo, onlyUpdatePeerDependentsWhenOutOfRange: onlyUpdatePeerDependentsWhenOutOfRange}) {
++  return false;
+   return "peerDependencies" === depType && "none" !== nextRelease.type && "patch" !== nextRelease.type && (!onlyUpdatePeerDependentsWhenOutOfRange || !semver__default.default.satisfies(incrementVersion(nextRelease, preInfo), versionRange)) && (!releases.has(dependent) || releases.has(dependent) && "major" !== releases.get(dependent).type);
+ }
+ 
+diff --git a/dist/assemble-release-plan.esm.js b/dist/assemble-release-plan.esm.js
+index c29c008dd709f07cabcb07feff86012c35a01ce5..e72e1aceef141fce9619edc8c5df2af675b94257 100644
+--- a/dist/assemble-release-plan.esm.js
++++ b/dist/assemble-release-plan.esm.js
+@@ -240,6 +240,7 @@ function shouldBumpMajor({
+   preInfo,
+   onlyUpdatePeerDependentsWhenOutOfRange
+ }) {
++  return false;
+   // we check if it is a peerDependency because if it is, our dependent bump type might need to be major.
+   return depType === "peerDependencies" && nextRelease.type !== "none" && nextRelease.type !== "patch" && ( // 1. If onlyUpdatePeerDependentsWhenOutOfRange set to true, bump major if the version is leaving the range.
+   // 2. If onlyUpdatePeerDependentsWhenOutOfRange set to false, bump major regardless whether or not the version is leaving the range.
+diff --git a/src/determine-dependents.ts b/src/determine-dependents.ts
+index 97359614f16562adcb66c68011ad3b78b01a1936..756e231b52ae04b8516059f4c4e1a60b2db52146 100644
+--- a/src/determine-dependents.ts
++++ b/src/determine-dependents.ts
+@@ -223,6 +223,7 @@ function shouldBumpMajor({
+   preInfo: PreInfo | undefined;
+   onlyUpdatePeerDependentsWhenOutOfRange: boolean;
+ }) {
++  return false;
+   // we check if it is a peerDependency because if it is, our dependent bump type might need to be major.
+   return (
+     depType === "peerDependencies" &&
