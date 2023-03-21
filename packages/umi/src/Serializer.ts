@@ -9,6 +9,8 @@ import { mergeBytes } from './utils';
  *
  * @typeParam From - The type of the value to serialize.
  * @typeParam To - The type of the deserialized value. Defaults to `From`.
+ *
+ * @category Serializers
  */
 export type Serializer<From, To extends From = From> = {
   /** A description for the serializer. */
@@ -26,14 +28,26 @@ export type Serializer<From, To extends From = From> = {
   deserialize: (buffer: Uint8Array, offset?: number) => [To, number];
 };
 
+/**
+ * Defines a serializer for numbers and bigints.
+ * @category Serializers
+ */
 export type NumberSerializer =
   | Serializer<number>
   | Serializer<number | bigint, bigint>;
 
+/**
+ * Wraps all the attributes of an object in serializers.
+ * @category Serializers
+ */
 export type WrapInSerializer<T, U extends T = T> = {
   [P in keyof T]: Serializer<T[P], U[P]>;
 };
 
+/**
+ * Converts a serializer A to a serializer B by mapping their values.
+ * @category Serializers
+ */
 export function mapSerializer<NewFrom, OldFrom, To extends NewFrom & OldFrom>(
   serializer: Serializer<OldFrom, To>,
   unmap: (value: NewFrom) => OldFrom
@@ -78,6 +92,8 @@ export function mapSerializer<
  * @param serializer - The serializer to wrap into a fixed-size serializer.
  * @param fixedBytes - The fixed number of bytes to read.
  * @param description - A custom description for the serializer.
+ *
+ * @category Serializers
  */
 export function fixSerializer<T, U extends T = T>(
   serializer: Serializer<T, U>,
@@ -107,6 +123,10 @@ export function fixSerializer<T, U extends T = T>(
   };
 }
 
+/**
+ * Reverses the bytes of a fixed-size serializer.
+ * @category Serializers
+ */
 export function reverseSerializer<T, U extends T = T>(
   serializer: Serializer<T, U>
 ): Serializer<T, U> {
