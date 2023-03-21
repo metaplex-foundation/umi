@@ -4,12 +4,16 @@ import { uniqueBy } from './utils';
 
 /**
  * Defines a public key that can sign transactions and messages.
- * @category Interfaces — Signer
+ * @category Interfaces
  */
 export interface Signer {
+  /** The public key of the Signer. */
   publicKey: PublicKey;
+  /** Signs the given message. */
   signMessage(message: Uint8Array): Promise<Uint8Array>;
+  /** Signs the given transaction. */
   signTransaction(transaction: Transaction): Promise<Transaction>;
+  /** Signs all the given transactions at once. */
   signAllTransactions(transactions: Transaction[]): Promise<Transaction[]>;
 }
 
