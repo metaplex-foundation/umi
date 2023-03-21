@@ -4,6 +4,10 @@ import { InvalidBaseStringError } from '../errors/InvalidBaseStringError';
 import type { Serializer } from '../Serializer';
 import { removeNullCharacters } from './nullCharacters';
 
+/**
+ * Concatenates an array of `Uint8Array`s into a single `Uint8Array`.
+ * @category Utils
+ */
 export const mergeBytes = (bytesArr: Uint8Array[]): Uint8Array => {
   const totalLength = bytesArr.reduce((total, arr) => total + arr.length, 0);
   const result = new Uint8Array(totalLength);
@@ -15,6 +19,11 @@ export const mergeBytes = (bytesArr: Uint8Array[]): Uint8Array => {
   return result;
 };
 
+/**
+ * A string serializer that uses UTF-8 encoding
+ * using the native `TextEncoder` API.
+ * @category Serializers
+ */
 export const utf8: Serializer<string> = {
   description: 'utf8',
   fixedSize: null,
@@ -28,6 +37,11 @@ export const utf8: Serializer<string> = {
   },
 };
 
+/**
+ * A string serializer that uses a custom alphabet.
+ * This can be used to create serializers for base58, base64, etc.
+ * @category Serializers
+ */
 export const baseX = (alphabet: string): Serializer<string> => {
   const base = alphabet.length;
   const baseBigInt = BigInt(base);
@@ -93,14 +107,32 @@ export const baseX = (alphabet: string): Serializer<string> => {
   };
 };
 
+/**
+ * A string serializer that uses base10 encoding.
+ * @category Serializers
+ */
 export const base10: Serializer<string> = baseX('0123456789');
+
+/**
+ * A string serializer that uses base58 encoding.
+ * @category Serializers
+ */
 export const base58: Serializer<string> = baseX(
   '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 );
+
+/**
+ * A string serializer that uses base64 encoding.
+ * @category Serializers
+ */
 export const base64: Serializer<string> = baseX(
   'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 );
 
+/**
+ * A string serializer that uses base16 encoding.
+ * @category Serializers
+ */
 export const base16: Serializer<string> = {
   description: 'base16',
   fixedSize: null,
@@ -123,6 +155,11 @@ export const base16: Serializer<string> = {
   },
 };
 
+/**
+ * An array of boolean serializer that
+ * converts booleans to bits and vice versa.
+ * @category Serializers
+ */
 export const bitArray = (
   size: number,
   backward = false

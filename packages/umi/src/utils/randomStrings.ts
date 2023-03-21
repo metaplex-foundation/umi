@@ -1,3 +1,8 @@
+/**
+ * Generate a random string of the given length.
+ * Warning: This is not a cryptographically secure random string generator.
+ * @category Utils
+ */
 export const generateRandomString = (
   length = 20,
   alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
