@@ -5,7 +5,8 @@ import { PublicKey, PublicKeyInput } from './PublicKey';
 import { Transaction } from './Transaction';
 
 /**
- * TODO
+ * Defines the interface for a program repository.
+ * It allows us to register and retrieve programs when needed.
  *
  * @category Interfaces
  */
@@ -78,6 +79,10 @@ export interface ProgramRepositoryInterface {
   ): ProgramError | null;
 }
 
+/**
+ * An implementation of the {@link ProgramRepositoryInterface} that throws an error when called.
+ * @category Interfaces — Programs
+ */
 export class NullProgramRepository implements ProgramRepositoryInterface {
   private readonly error = new InterfaceImplementationMissingError(
     'ProgramRepositoryInterface',
