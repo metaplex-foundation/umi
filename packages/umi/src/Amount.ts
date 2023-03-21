@@ -1,9 +1,33 @@
 import { BigIntInput, createBigInt } from './BigInt';
 import { AmountMismatchError, UnexpectedAmountError } from './errors';
-import { mapSerializer, Serializer } from './Serializer';
+import { mapSerializer, NumberSerializer, Serializer } from './Serializer';
 
+/**
+ * The identifier of an amount.
+ * @category Amounts
+ */
 export type AmountIdentifier = 'SOL' | 'USD' | '%' | 'splToken' | string;
+
+/**
+ * The number of decimals in an amount represented using the lowest possible unit.
+ * @category Amounts
+ */
 export type AmountDecimals = number;
+
+/**
+ * Describes an amount of any type or currency using the lowest possible unit.
+ * It uses a BigInt to represent the basis points of the amount, a decimal number
+ * to know how to interpret the basis points, and an identifier to know what
+ * type of amount we are dealing with.
+ *
+ * Custom type parameters can be used to represent specific types of amounts.
+ * For example:
+ * - Amount<'SOL', 9> represents an amount of SOL in lamports.
+ * - Amount<'USD', 2> represents an amount of USD in cents.
+ * - Amount<'%', 2> represents a percentage with 2 decimals.
+ *
+ * @category Amounts
+ */
 export type Amount<
   I extends AmountIdentifier = AmountIdentifier,
   D extends AmountDecimals = AmountDecimals
@@ -16,10 +40,28 @@ export type Amount<
   decimals: D;
 };
 
+/**
+ * An amount of SOL represented using the lowest possible unit — i.e. lamports.
+ * @category Amounts
+ */
 export type SolAmount = Amount<'SOL', 9>;
+
+/**
+ * An amount of US dollars represented using the lowest possible unit — i.e. cents.
+ * @category Amounts
+ */
 export type UsdAmount = Amount<'USD', 2>;
+
+/**
+ * An percentage represented in basis points using a given number of decimals.
+ * @category Amounts
+ */
 export type PercentAmount<D extends AmountDecimals> = Amount<'%', D>;
 
+/**
+ * Creates an amount from the provided basis points, identifier, and decimals.
+ * @category Amounts
+ */
 export const createAmount = <
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -33,6 +75,11 @@ export const createAmount = <
   decimals,
 });
 
+/**
+ * Creates an amount from a decimal value which will be converted to the lowest
+ * possible unit using the provided decimals.
+ * @category Amounts
+ */
 export const createAmountFromDecimals = <
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -50,11 +97,19 @@ export const createAmountFromDecimals = <
   return multiplyAmount(exponentAmount, decimalAmount);
 };
 
+/**
+ * Creates a percentage amount from the provided decimal value.
+ * @category Amounts
+ */
 export const percentAmount = <D extends AmountDecimals>(
   percent: number,
   decimals: D = 2 as D
 ): Amount<'%', D> => createAmountFromDecimals(percent, '%', decimals);
 
+/**
+ * Creates an amount of SPL tokens from the provided decimal value.
+ * @category Amounts
+ */
 export const tokenAmount = <
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -69,15 +124,31 @@ export const tokenAmount = <
     (decimals ?? 0) as D
   );
 
+/**
+ * Creates a {@link SolAmount} from the provided lamports.
+ * @category Amounts
+ */
 export const lamports = (lamports: BigIntInput): SolAmount =>
   createAmount(lamports, 'SOL', 9);
 
+/**
+ * Creates a {@link SolAmount} from the provided decimal value in SOL.
+ * @category Amounts
+ */
 export const sol = (sol: number): SolAmount =>
   createAmountFromDecimals(sol, 'SOL', 9);
 
+/**
+ * Creates a {@link UsdAmount} from the provided decimal value in USD.
+ * @category Amounts
+ */
 export const usd = (usd: number): UsdAmount =>
   createAmountFromDecimals(usd, 'USD', 2);
 
+/**
+ * Determines whether a given amount has the provided identifier and decimals.
+ * @category Amounts
+ */
 export const isAmount = <I extends AmountIdentifier, D extends AmountDecimals>(
   amount: Amount,
   identifier: I,
@@ -85,12 +156,24 @@ export const isAmount = <I extends AmountIdentifier, D extends AmountDecimals>(
 ): amount is Amount<I, D> =>
   amount.identifier === identifier && amount.decimals === decimals;
 
+/**
+ * Determines whether a given amount is a {@link SolAmount}.
+ * @category Amounts
+ */
 export const isSolAmount = (amount: Amount): amount is SolAmount =>
   isAmount(amount, 'SOL', 9);
 
+/**
+ * Determines whether two amounts are of the same type.
+ * @category Amounts
+ */
 export const sameAmounts = (left: Amount, right: Amount): boolean =>
   isAmount(left, right.identifier, right.decimals);
 
+/**
+ * Ensures that a given amount has the provided identifier and decimals.
+ * @category Amounts
+ */
 export function assertAmount<
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -100,10 +183,18 @@ export function assertAmount<
   }
 }
 
+/**
+ * Ensures that a given amount is a {@link SolAmount}.
+ * @category Amounts
+ */
 export function assertSolAmount(actual: Amount): asserts actual is SolAmount {
   assertAmount(actual, 'SOL', 9);
 }
 
+/**
+ * Ensures that two amounts are of the same type.
+ * @category Amounts
+ */
 export function assertSameAmounts(
   left: Amount,
   right: Amount,
@@ -114,6 +205,10 @@ export function assertSameAmounts(
   }
 }
 
+/**
+ * Adds two amounts of the same type.
+ * @category Amounts
+ */
 export const addAmounts = <
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -129,6 +224,10 @@ export const addAmounts = <
   };
 };
 
+/**
+ * Subtracts two amounts of the same type.
+ * @category Amounts
+ */
 export const subtractAmounts = <
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -144,6 +243,10 @@ export const subtractAmounts = <
   };
 };
 
+/**
+ * Multiplies an amount by a given multiplier.
+ * @category Amounts
+ */
 export const multiplyAmount = <
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -166,6 +269,10 @@ export const multiplyAmount = <
   };
 };
 
+/**
+ * Divides an amount by a given divisor.
+ * @category Amounts
+ */
 export const divideAmount = <
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -187,6 +294,10 @@ export const divideAmount = <
   };
 };
 
+/**
+ * Returns the absolute value of an amount.
+ * @category Amounts
+ */
 export const absoluteAmount = <
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -197,6 +308,10 @@ export const absoluteAmount = <
   return { ...value, basisPoints: x < 0 ? -x : x };
 };
 
+/**
+ * Compares two amounts of the same type.
+ * @category Amounts
+ */
 export const compareAmounts = <
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -210,6 +325,12 @@ export const compareAmounts = <
   return 0;
 };
 
+/**
+ * Determines whether two amounts are equal.
+ * An optional tolerance can be provided to allow for small differences.
+ * When using {@link SolAmount}, this is usually due to transaction or small storage fees.
+ * @category Amounts
+ */
 export const isEqualToAmount = <
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -227,6 +348,10 @@ export const isEqualToAmount = <
   return isLessThanOrEqualToAmount(delta, tolerance);
 };
 
+/**
+ * Whether the left amount is less than the right amount.
+ * @category Amounts
+ */
 export const isLessThanAmount = <
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -235,6 +360,10 @@ export const isLessThanAmount = <
   right: Amount<I, D>
 ): boolean => compareAmounts(left, right) < 0;
 
+/**
+ * Whether the left amount is less than or equal to the right amount.
+ * @category Amounts
+ */
 export const isLessThanOrEqualToAmount = <
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -243,6 +372,10 @@ export const isLessThanOrEqualToAmount = <
   right: Amount<I, D>
 ): boolean => compareAmounts(left, right) <= 0;
 
+/**
+ * Whether the left amount is greater than the right amount.
+ * @category Amounts
+ */
 export const isGreaterThanAmount = <
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -251,6 +384,10 @@ export const isGreaterThanAmount = <
   right: Amount<I, D>
 ): boolean => compareAmounts(left, right) > 0;
 
+/**
+ * Whether the left amount is greater than or equal to the right amount.
+ * @category Amounts
+ */
 export const isGreaterThanOrEqualToAmount = <
   I extends AmountIdentifier,
   D extends AmountDecimals
@@ -259,15 +396,31 @@ export const isGreaterThanOrEqualToAmount = <
   right: Amount<I, D>
 ): boolean => compareAmounts(left, right) >= 0;
 
+/**
+ * Whether the amount is zero.
+ * @category Amounts
+ */
 export const isZeroAmount = (value: Amount): boolean =>
   value.basisPoints === BigInt(0);
 
+/**
+ * Whether the amount is positive.
+ * @category Amounts
+ */
 export const isPositiveAmount = (value: Amount): boolean =>
   value.basisPoints >= BigInt(0);
 
+/**
+ * Whether the amount is negative.
+ * @category Amounts
+ */
 export const isNegativeAmount = (value: Amount): boolean =>
   value.basisPoints < BigInt(0);
 
+/**
+ * Converts an amount to a string by using the amount's decimals.
+ * @category Amounts
+ */
 export const amountToString = (value: Amount, maxDecimals?: number): string => {
   let text = value.basisPoints.toString();
   if (value.decimals === 0) {
@@ -287,9 +440,18 @@ export const amountToString = (value: Amount, maxDecimals?: number): string => {
   return `${sign + units}.${decimals}`;
 };
 
+/**
+ * Converts an amount to a number by using the amount's decimals.
+ * Note that this may throw an error if the amount is too large to fit in a JavaScript number.
+ * @category Amounts
+ */
 export const amountToNumber = (value: Amount): number =>
   parseFloat(amountToString(value));
 
+/**
+ * Displays an amount as a string by using the amount's decimals and identifier.
+ * @category Amounts
+ */
 export const displayAmount = (value: Amount, maxDecimals?: number): string => {
   const amountAsString = amountToString(value, maxDecimals);
 
@@ -309,11 +471,16 @@ export const displayAmount = (value: Amount, maxDecimals?: number): string => {
   }
 };
 
+/**
+ * Converts a number serializer into an amount serializer
+ * by providing an amount identifier and decimals.
+ * @category Amounts
+ */
 export const mapAmountSerializer = <
   I extends AmountIdentifier = AmountIdentifier,
   D extends AmountDecimals = AmountDecimals
 >(
-  serializer: Serializer<number> | Serializer<number | bigint, bigint>,
+  serializer: NumberSerializer,
   identifier: I,
   decimals: D
 ): Serializer<Amount<I, D>> =>

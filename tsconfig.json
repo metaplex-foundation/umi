@@ -34,16 +34,14 @@
     "entryPointStrategy": "packages",
     "out": "docs",
     "readme": "README.md",
-    "name": "API References",
+    "name": "Umi — API References",
+    "sort": ["static-first", "required-first", "source-order"],
     "includeVersion": true,
     "excludeNotDocumented": false,
-    "sort": ["static-first", "required-first", "source-order"],
+    "categorizeByGroup": false,
+    "defaultCategory": "Other",
     "categoryOrder": [
-      "Constructors",
-      "Types",
-      "Inputs",
-      "Outputs",
-      "Contexts",
+      "Accounts",
       "*"
     ]
   }
