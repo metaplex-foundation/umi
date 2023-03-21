@@ -16,12 +16,30 @@ import type { Serializer } from './Serializer';
 import type { StructToSerializerTuple } from './SerializerInterface';
 import { base10, base58, base64 } from './utils';
 
+/**
+ * Callback for sorting raw accounts from `getProgramAccounts` RPC requests.
+ * @category GpaBuilder
+ */
 export type GpaBuilderSortCallback = (a: RpcAccount, b: RpcAccount) => number;
+
+/**
+ * Callback for mapping raw accounts into any type.
+ * @category GpaBuilder
+ */
 export type GpaBuilderMapCallback<T> = (account: RpcAccount) => T;
+
+/**
+ * Get the GPA field offsets and serializers from their object definition.
+ * @category GpaBuilder
+ */
 export type GpaBuilderFieldSerializers<T extends object, U extends T> = {
   [K in keyof T]: [number | null, Serializer<T[K], U[K]>];
 };
 
+/**
+ * Builder for `getProgramAccounts` RPC requests.
+ * @category GpaBuilder
+ */
 export class GpaBuilder<
   Account extends object = RpcAccount,
   Fields extends object = {}
@@ -240,6 +258,10 @@ export class GpaBuilder<
   }
 }
 
+/**
+ * Creates a new {@link GpaBuilder} instance.
+ * @category GpaBuilder
+ */
 export const gpaBuilder = (
   context: Pick<Context, 'rpc'>,
   programId: PublicKey

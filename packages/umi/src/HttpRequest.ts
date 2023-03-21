@@ -1,8 +1,13 @@
 import type { GenericAbortSignal } from './GenericAbortSignal';
 import type { HttpHeaderValue, HttpRequestHeaders } from './HttpHeaders';
 
+/** Defines a number in milliseconds. */
 type Milliseconds = number;
 
+/**
+ * Defines a HTTP Request with custom data.
+ * @category Interfaces — Http
+ */
 export type HttpRequest<D = any> = {
   method: HttpMethod;
   url: string;
@@ -13,6 +18,10 @@ export type HttpRequest<D = any> = {
   signal?: GenericAbortSignal;
 };
 
+/**
+ * Creates a new {@link HttpRequestBuilder} instance.
+ * @category Interfaces — Http
+ */
 export const request = () =>
   new HttpRequestBuilder<undefined>({
     method: 'get',
@@ -21,6 +30,10 @@ export const request = () =>
     url: '',
   });
 
+/**
+ * A builder for constructing {@link HttpRequest} instances.
+ * @category Interfaces — Http
+ */
 export class HttpRequestBuilder<D> implements HttpRequest<D> {
   protected readonly request: HttpRequest<D>;
 
@@ -157,6 +170,10 @@ export class HttpRequestBuilder<D> implements HttpRequest<D> {
   }
 }
 
+/**
+ * Defines a HTTP method as a string.
+ * @category Interfaces — Http
+ */
 export type HttpMethod =
   | 'get'
   | 'GET'

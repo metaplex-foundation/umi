@@ -29,8 +29,7 @@ export type DownloaderOptions = {
 };
 
 /**
- * TODO
- *
+ * An implementation of the {@link DownloaderInterface} that throws an error when called.
  * @category Interfaces — Downloader
  */
 export class NullDownloader implements DownloaderInterface {
