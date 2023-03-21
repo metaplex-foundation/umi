@@ -1,4 +1,4 @@
-/** @group Errors */
+/** @category Errors */
 export class UmiError extends Error {
   readonly name: string = 'UmiError';
 
@@ -43,5 +43,5 @@ export class UmiError extends Error {
   }
 }
 
-/** @group Errors */
+/** @category Errors */
 export type UmiErrorSource = 'sdk' | 'network' | 'rpc' | 'plugin' | 'program';

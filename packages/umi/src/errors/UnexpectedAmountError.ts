@@ -1,7 +1,7 @@
 import type { Amount, AmountDecimals, AmountIdentifier } from '../Amount';
 import { SdkError } from './SdkError';
 
-/** @group Errors */
+/** @category Errors */
 export class UnexpectedAmountError extends SdkError {
   readonly name: string = 'UnexpectedAmountError';
 

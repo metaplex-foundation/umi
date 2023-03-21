@@ -1,7 +1,7 @@
 import { base58PublicKey, PublicKey } from '../PublicKey';
 import { SdkError } from './SdkError';
 
-/** @group Errors */
+/** @category Errors */
 export class AccountNotFoundError extends SdkError {
   readonly name: string = 'AccountNotFoundError';
 

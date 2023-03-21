@@ -1,7 +1,7 @@
 import type { Amount } from '../Amount';
 import { SdkError } from './SdkError';
 
-/** @group Errors */
+/** @category Errors */
 export class AmountMismatchError extends SdkError {
   readonly name: string = 'AmountMismatchError';
 
