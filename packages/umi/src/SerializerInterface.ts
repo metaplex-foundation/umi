@@ -8,6 +8,11 @@ import type {
 } from './Serializer';
 import type { Nullable, Option } from './Option';
 
+/**
+ * TODO
+ *
+ * @category Interfaces
+ */
 export interface SerializerInterface {
   /**
    * Creates a serializer for a tuple-like array.

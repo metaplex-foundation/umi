@@ -3,6 +3,11 @@ import { InterfaceImplementationMissingError } from './errors';
 import type { GenericAbortSignal } from './GenericAbortSignal';
 import type { GenericFile } from './GenericFile';
 
+/**
+ * TODO
+ *
+ * @category Interfaces
+ */
 export interface UploaderInterface {
   upload: (
     files: GenericFile[],

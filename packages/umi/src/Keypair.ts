@@ -3,18 +3,34 @@ import type { PublicKey } from './PublicKey';
 import type { Signer } from './Signer';
 import { addTransactionSignature, Transaction } from './Transaction';
 
+/**
+ * Represents a keypair with a public key and a secret key.
+ * @category Interfaces — Signer
+ */
 export type Keypair = {
   publicKey: PublicKey;
   secretKey: Uint8Array;
 };
 
+/**
+ * Represent a {@link Signer} that can is aware of its secret key.
+ * @category Interfaces — Signer
+ */
 export type KeypairSigner = Signer & Keypair;
 
+/**
+ * Generate a new random {@link KeypairSigner} using the Eddsa interface.
+ * @category Interfaces — Signer
+ */
 export const generateSigner = (
   context: Pick<Context, 'eddsa'>
 ): KeypairSigner =>
   createSignerFromKeypair(context, context.eddsa.generateKeypair());
 
+/**
+ * Creates a {@link KeypairSigner} from a {@link Keypair} object.
+ * @category Interfaces — Signer
+ */
 export const createSignerFromKeypair = (
   context: Pick<Context, 'eddsa'>,
   keypair: Keypair
@@ -38,6 +54,10 @@ export const createSignerFromKeypair = (
   },
 });
 
+/**
+ * Whether the given signer is a {@link KeypairSigner}.
+ * @category Interfaces — Signer
+ */
 export const isKeypairSigner = (
   signer: Signer & { secretKey?: Uint8Array }
 ): signer is KeypairSigner => signer.secretKey !== undefined;

@@ -2,6 +2,11 @@ import { InterfaceImplementationMissingError } from './errors';
 import type { Keypair } from './Keypair';
 import type { Pda, PublicKey } from './PublicKey';
 
+/**
+ * TODO
+ *
+ * @category Interfaces
+ */
 export interface EddsaInterface {
   generateKeypair: () => Keypair;
   createKeypairFromSecretKey: (secretKey: Uint8Array) => Keypair;

@@ -14,6 +14,13 @@ import {
 } from './TransactionFactoryInterface';
 import { NullUploader, UploaderInterface } from './UploaderInterface';
 
+/**
+ * A Umi context object that uses all of the interfaces provided by Umi.
+ * Once created, the end-user can pass this object to any function that
+ * requires some or all of these interfaces.
+ *
+ * @category Interfaces
+ */
 export interface Context {
   downloader: DownloaderInterface;
   eddsa: EddsaInterface;
@@ -27,6 +34,14 @@ export interface Context {
   uploader: UploaderInterface;
 }
 
+/**
+ * A helper method that creates a Umi context object using only
+ * Null implementations of the interfaces. This can be useful to
+ * create a full Umi context object when only a few of the interfaces
+ * are needed.
+ *
+ * @category Interfaces
+ */
 export const createNullContext = (): Context => ({
   downloader: new NullDownloader(),
   eddsa: new NullEddsa(),

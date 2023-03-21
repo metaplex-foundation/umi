@@ -2,6 +2,11 @@ import { InterfaceImplementationMissingError } from './errors';
 import { HttpRequest } from './HttpRequest';
 import { HttpResponse } from './HttpResponse';
 
+/**
+ * TODO
+ *
+ * @category Interfaces
+ */
 export interface HttpInterface {
   send: <ResponseData, RequestData = any>(
     request: HttpRequest<RequestData>

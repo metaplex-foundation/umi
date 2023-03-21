@@ -41,6 +41,16 @@
     "categorizeByGroup": false,
     "defaultCategory": "Other",
     "categoryOrder": [
+      "Interfaces",
+      "Interfaces — Signer",
+      "Interfaces — Eddsa",
+      "Interfaces — Serializer",
+      "Interfaces — Transaction Factory",
+      "Interfaces — Rpc",
+      "Interfaces — Http",
+      "Interfaces — Uploader",
+      "Interfaces — Downloader",
+      "Interfaces — Programs",
       "Accounts",
       "*"
     ]

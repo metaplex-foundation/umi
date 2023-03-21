@@ -7,6 +7,11 @@ import type {
   TransactionMessage,
 } from './Transaction';
 
+/**
+ * TODO
+ *
+ * @category Interfaces
+ */
 export interface TransactionFactoryInterface {
   create(input: TransactionInput): Transaction;
   serialize(transaction: Transaction): SerializedTransaction;

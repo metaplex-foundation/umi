@@ -4,6 +4,11 @@ import type { ErrorWithLogs, Program } from './Program';
 import { PublicKey, PublicKeyInput } from './PublicKey';
 import { Transaction } from './Transaction';
 
+/**
+ * TODO
+ *
+ * @category Interfaces
+ */
 export interface ProgramRepositoryInterface {
   /**
    * Whether a given program is registered in the repository.
