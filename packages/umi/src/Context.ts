@@ -22,15 +22,25 @@ import { NullUploader, UploaderInterface } from './UploaderInterface';
  * @category Interfaces
  */
 export interface Context {
+  /** An interface for downloading files from URIs. */
   downloader: DownloaderInterface;
+  /** An interface for managing public and private keys. */
   eddsa: EddsaInterface;
+  /** An interface for sending HTTP requests. */
   http: HttpInterface;
+  /** The signer using your app. */
   identity: Signer;
+  /** The signer paying for things, usually the same as the `identity`. */
   payer: Signer;
+  /** An interface for registering and retrieving programs. */
   programs: ProgramRepositoryInterface;
+  /** An interface for sending RPC requests. */
   rpc: RpcInterface;
+  /** An interface for serializing various types. */
   serializer: SerializerInterface;
+  /** An interface for managing transactions. */
   transactions: TransactionFactoryInterface;
+  /** An interface for uploading files and getting their URIs. */
   uploader: UploaderInterface;
 }
 

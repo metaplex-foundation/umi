@@ -8,6 +8,7 @@ import { HttpResponse } from './HttpResponse';
  * @category Interfaces
  */
 export interface HttpInterface {
+  /** Sends a HTTP request and returns its response. */
   send: <ResponseData, RequestData = any>(
     request: HttpRequest<RequestData>
   ) => Promise<HttpResponse<ResponseData>>;
