@@ -1,6 +1,6 @@
 /**
  * Defines a type `T` that can also be `null`.
- * @category Options
+ * @category Utils — Options
  */
 export type Nullable<T> = T | null;
 
@@ -10,7 +10,7 @@ export type Nullable<T> = T | null;
  * - <code>{@link Some}<T></code>: Meaning there is a value of type T.
  * - <code>{@link None}</code>: Meaning there is no value.
  *
- * @category Options
+ * @category Utils — Options
  */
 export type Option<T> = Some<T> | None;
 
@@ -18,7 +18,7 @@ export type Option<T> = Some<T> | None;
  * Represents an option of type `T` that has a value.
  *
  * @see {@link Option}
- * @category Options
+ * @category Utils — Options
  */
 export type Some<T> = { __option: 'Some'; value: T };
 
@@ -26,7 +26,7 @@ export type Some<T> = { __option: 'Some'; value: T };
  * Represents an option of type `T` that has no value.
  *
  * @see {@link Option}
- * @category Options
+ * @category Utils — Options
  */
 export type None = { __option: 'None' };
 
@@ -34,7 +34,7 @@ export type None = { __option: 'None' };
  * Creates a new {@link Option} of type `T` that has a value.
  *
  * @see {@link Option}
- * @category Options
+ * @category Utils — Options
  */
 export const some = <T>(value: T): Option<T> => ({ __option: 'Some', value });
 
@@ -42,20 +42,20 @@ export const some = <T>(value: T): Option<T> => ({ __option: 'Some', value });
  * Creates a new {@link Option} of type `T` that has no value.
  *
  * @see {@link Option}
- * @category Options
+ * @category Utils — Options
  */
 export const none = <T>(): Option<T> => ({ __option: 'None' });
 
 /**
  * Whether the given {@link Option} is a {@link Some}.
- * @category Options
+ * @category Utils — Options
  */
 export const isSome = <T>(option: Option<T>): option is Some<T> =>
   option.__option === 'Some';
 
 /**
  * Whether the given {@link Option} is a {@link None}.
- * @category Options
+ * @category Utils — Options
  */
 export const isNone = <T>(option: Option<T>): option is None =>
   option.__option === 'None';
@@ -65,7 +65,7 @@ export const isNone = <T>(option: Option<T>): option is None =>
  * If the option is a {@link Some}, it returns its value,
  * Otherwise, it returns `null`.
  *
- * @category Options
+ * @category Utils — Options
  */
 export const unwrapSome = <T>(option: Option<T>): Nullable<T> =>
   isSome(option) ? option.value : null;
@@ -76,7 +76,7 @@ export const unwrapSome = <T>(option: Option<T>): Nullable<T> =>
  * If the option is a {@link Some}, it returns its value,
  * Otherwise, it returns the return value of the provided fallback callback.
  *
- * @category Options
+ * @category Utils — Options
  */
 export const unwrapSomeOrElse = <T, U>(
   option: Option<T>,

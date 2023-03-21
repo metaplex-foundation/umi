@@ -6,7 +6,7 @@ import type { Pda, PublicKey } from './PublicKey';
  * Defines the interface for the EdDSA cryptography algorithm.
  * It allows us to create, find and use public keys and keypairs.
  *
- * @category Interfaces
+ * @category Context and Interfaces
  */
 export interface EddsaInterface {
   /** Generates a new keypair. */
@@ -31,7 +31,7 @@ export interface EddsaInterface {
 
 /**
  * An implementation of the {@link EddsaInterface} that throws an error when called.
- * @category Interfaces — Eddsa
+ * @category Signers and PublicKeys
  */
 export class NullEddsa implements EddsaInterface {
   generateKeypair(): Keypair {

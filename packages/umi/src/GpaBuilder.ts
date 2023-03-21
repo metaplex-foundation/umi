@@ -18,19 +18,19 @@ import { base10, base58, base64 } from './utils';
 
 /**
  * Callback for sorting raw accounts from `getProgramAccounts` RPC requests.
- * @category GpaBuilder
+ * @category Utils — GpaBuilder
  */
 export type GpaBuilderSortCallback = (a: RpcAccount, b: RpcAccount) => number;
 
 /**
  * Callback for mapping raw accounts into any type.
- * @category GpaBuilder
+ * @category Utils — GpaBuilder
  */
 export type GpaBuilderMapCallback<T> = (account: RpcAccount) => T;
 
 /**
  * Get the GPA field offsets and serializers from their object definition.
- * @category GpaBuilder
+ * @category Utils — GpaBuilder
  */
 export type GpaBuilderFieldSerializers<T extends object, U extends T> = {
   [K in keyof T]: [number | null, Serializer<T[K], U[K]>];
@@ -38,7 +38,7 @@ export type GpaBuilderFieldSerializers<T extends object, U extends T> = {
 
 /**
  * Builder for `getProgramAccounts` RPC requests.
- * @category GpaBuilder
+ * @category Utils — GpaBuilder
  */
 export class GpaBuilder<
   Account extends object = RpcAccount,
@@ -260,7 +260,7 @@ export class GpaBuilder<
 
 /**
  * Creates a new {@link GpaBuilder} instance.
- * @category GpaBuilder
+ * @category Utils — GpaBuilder
  */
 export const gpaBuilder = (
   context: Pick<Context, 'rpc'>,

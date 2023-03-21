@@ -7,7 +7,7 @@
  * type DirectionType = ScalarEnum<Direction>;
  * ```
  *
- * @category Enums
+ * @category Utils
  */
 export type ScalarEnum<T> =
   | { [key: number | string]: string | number | T }
@@ -24,7 +24,7 @@ export type ScalarEnum<T> =
  *   | { __kind: 'click', x: number, y: number };
  * ```
  *
- * @category Enums
+ * @category Utils
  */
 export type DataEnum = { __kind: string };
 
@@ -40,7 +40,7 @@ export type DataEnum = { __kind: string };
  * // -> { __kind: 'click', x: number, y: number }
  * ```
  *
- * @category Enums
+ * @category Utils
  */
 export type GetDataEnumKind<
   T extends DataEnum,
@@ -59,7 +59,7 @@ export type GetDataEnumKind<
  * // -> { x: number, y: number }
  * ```
  *
- * @category Enums
+ * @category Utils
  */
 export type GetDataEnumKindContent<
   T extends DataEnum,

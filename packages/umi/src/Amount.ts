@@ -4,13 +4,13 @@ import { mapSerializer, NumberSerializer, Serializer } from './Serializer';
 
 /**
  * The identifier of an amount.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export type AmountIdentifier = 'SOL' | 'USD' | '%' | 'splToken' | string;
 
 /**
  * The number of decimals in an amount represented using the lowest possible unit.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export type AmountDecimals = number;
 
@@ -26,7 +26,7 @@ export type AmountDecimals = number;
  * - Amount<'USD', 2> represents an amount of USD in cents.
  * - Amount<'%', 2> represents a percentage with 2 decimals.
  *
- * @category Amounts
+ * @category Utils — Amounts
  */
 export type Amount<
   I extends AmountIdentifier = AmountIdentifier,
@@ -42,25 +42,25 @@ export type Amount<
 
 /**
  * An amount of SOL represented using the lowest possible unit — i.e. lamports.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export type SolAmount = Amount<'SOL', 9>;
 
 /**
  * An amount of US dollars represented using the lowest possible unit — i.e. cents.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export type UsdAmount = Amount<'USD', 2>;
 
 /**
  * An percentage represented in basis points using a given number of decimals.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export type PercentAmount<D extends AmountDecimals> = Amount<'%', D>;
 
 /**
  * Creates an amount from the provided basis points, identifier, and decimals.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const createAmount = <
   I extends AmountIdentifier,
@@ -78,7 +78,7 @@ export const createAmount = <
 /**
  * Creates an amount from a decimal value which will be converted to the lowest
  * possible unit using the provided decimals.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const createAmountFromDecimals = <
   I extends AmountIdentifier,
@@ -99,7 +99,7 @@ export const createAmountFromDecimals = <
 
 /**
  * Creates a percentage amount from the provided decimal value.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const percentAmount = <D extends AmountDecimals>(
   percent: number,
@@ -108,7 +108,7 @@ export const percentAmount = <D extends AmountDecimals>(
 
 /**
  * Creates an amount of SPL tokens from the provided decimal value.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const tokenAmount = <
   I extends AmountIdentifier,
@@ -126,28 +126,28 @@ export const tokenAmount = <
 
 /**
  * Creates a {@link SolAmount} from the provided lamports.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const lamports = (lamports: BigIntInput): SolAmount =>
   createAmount(lamports, 'SOL', 9);
 
 /**
  * Creates a {@link SolAmount} from the provided decimal value in SOL.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const sol = (sol: number): SolAmount =>
   createAmountFromDecimals(sol, 'SOL', 9);
 
 /**
  * Creates a {@link UsdAmount} from the provided decimal value in USD.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const usd = (usd: number): UsdAmount =>
   createAmountFromDecimals(usd, 'USD', 2);
 
 /**
  * Determines whether a given amount has the provided identifier and decimals.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const isAmount = <I extends AmountIdentifier, D extends AmountDecimals>(
   amount: Amount,
@@ -158,21 +158,21 @@ export const isAmount = <I extends AmountIdentifier, D extends AmountDecimals>(
 
 /**
  * Determines whether a given amount is a {@link SolAmount}.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const isSolAmount = (amount: Amount): amount is SolAmount =>
   isAmount(amount, 'SOL', 9);
 
 /**
  * Determines whether two amounts are of the same type.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const sameAmounts = (left: Amount, right: Amount): boolean =>
   isAmount(left, right.identifier, right.decimals);
 
 /**
  * Ensures that a given amount has the provided identifier and decimals.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export function assertAmount<
   I extends AmountIdentifier,
@@ -185,7 +185,7 @@ export function assertAmount<
 
 /**
  * Ensures that a given amount is a {@link SolAmount}.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export function assertSolAmount(actual: Amount): asserts actual is SolAmount {
   assertAmount(actual, 'SOL', 9);
@@ -193,7 +193,7 @@ export function assertSolAmount(actual: Amount): asserts actual is SolAmount {
 
 /**
  * Ensures that two amounts are of the same type.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export function assertSameAmounts(
   left: Amount,
@@ -207,7 +207,7 @@ export function assertSameAmounts(
 
 /**
  * Adds two amounts of the same type.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const addAmounts = <
   I extends AmountIdentifier,
@@ -226,7 +226,7 @@ export const addAmounts = <
 
 /**
  * Subtracts two amounts of the same type.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const subtractAmounts = <
   I extends AmountIdentifier,
@@ -245,7 +245,7 @@ export const subtractAmounts = <
 
 /**
  * Multiplies an amount by a given multiplier.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const multiplyAmount = <
   I extends AmountIdentifier,
@@ -271,7 +271,7 @@ export const multiplyAmount = <
 
 /**
  * Divides an amount by a given divisor.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const divideAmount = <
   I extends AmountIdentifier,
@@ -296,7 +296,7 @@ export const divideAmount = <
 
 /**
  * Returns the absolute value of an amount.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const absoluteAmount = <
   I extends AmountIdentifier,
@@ -310,7 +310,7 @@ export const absoluteAmount = <
 
 /**
  * Compares two amounts of the same type.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const compareAmounts = <
   I extends AmountIdentifier,
@@ -329,7 +329,7 @@ export const compareAmounts = <
  * Determines whether two amounts are equal.
  * An optional tolerance can be provided to allow for small differences.
  * When using {@link SolAmount}, this is usually due to transaction or small storage fees.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const isEqualToAmount = <
   I extends AmountIdentifier,
@@ -350,7 +350,7 @@ export const isEqualToAmount = <
 
 /**
  * Whether the left amount is less than the right amount.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const isLessThanAmount = <
   I extends AmountIdentifier,
@@ -362,7 +362,7 @@ export const isLessThanAmount = <
 
 /**
  * Whether the left amount is less than or equal to the right amount.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const isLessThanOrEqualToAmount = <
   I extends AmountIdentifier,
@@ -374,7 +374,7 @@ export const isLessThanOrEqualToAmount = <
 
 /**
  * Whether the left amount is greater than the right amount.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const isGreaterThanAmount = <
   I extends AmountIdentifier,
@@ -386,7 +386,7 @@ export const isGreaterThanAmount = <
 
 /**
  * Whether the left amount is greater than or equal to the right amount.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const isGreaterThanOrEqualToAmount = <
   I extends AmountIdentifier,
@@ -398,28 +398,28 @@ export const isGreaterThanOrEqualToAmount = <
 
 /**
  * Whether the amount is zero.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const isZeroAmount = (value: Amount): boolean =>
   value.basisPoints === BigInt(0);
 
 /**
  * Whether the amount is positive.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const isPositiveAmount = (value: Amount): boolean =>
   value.basisPoints >= BigInt(0);
 
 /**
  * Whether the amount is negative.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const isNegativeAmount = (value: Amount): boolean =>
   value.basisPoints < BigInt(0);
 
 /**
  * Converts an amount to a string by using the amount's decimals.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const amountToString = (value: Amount, maxDecimals?: number): string => {
   let text = value.basisPoints.toString();
@@ -443,14 +443,14 @@ export const amountToString = (value: Amount, maxDecimals?: number): string => {
 /**
  * Converts an amount to a number by using the amount's decimals.
  * Note that this may throw an error if the amount is too large to fit in a JavaScript number.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const amountToNumber = (value: Amount): number =>
   parseFloat(amountToString(value));
 
 /**
  * Displays an amount as a string by using the amount's decimals and identifier.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const displayAmount = (value: Amount, maxDecimals?: number): string => {
   const amountAsString = amountToString(value, maxDecimals);
@@ -474,7 +474,7 @@ export const displayAmount = (value: Amount, maxDecimals?: number): string => {
 /**
  * Converts a number serializer into an amount serializer
  * by providing an amount identifier and decimals.
- * @category Amounts
+ * @category Utils — Amounts
  */
 export const mapAmountSerializer = <
   I extends AmountIdentifier = AmountIdentifier,

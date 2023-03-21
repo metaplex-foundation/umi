@@ -4,25 +4,25 @@ import { mapSerializer, NumberSerializer, Serializer } from './Serializer';
 /**
  * Defines a string that can be parsed into a Date object.
  * For instance, `"2020-01-01T00:00:00.000Z"`.
- * @category DateTime
+ * @category Utils — DateTime
  */
 export type DateTimeString = string;
 
 /**
  * Defines all the types that can be used to create a DateTime.
- * @category DateTime
+ * @category Utils — DateTime
  */
 export type DateTimeInput = DateTimeString | BigIntInput | Date;
 
 /**
  * Defines a point in time via a Unix timestamp represented as a BigInt.
- * @category DateTime
+ * @category Utils — DateTime
  */
 export type DateTime = bigint;
 
 /**
  * Creates a {@link DateTime} from a {@link DateTimeInput}.
- * @category DateTime
+ * @category Utils — DateTime
  */
 export const dateTime = (value: DateTimeInput): DateTime => {
   if (typeof value === 'string' || isDateObject(value)) {
@@ -36,20 +36,20 @@ export const dateTime = (value: DateTimeInput): DateTime => {
 
 /**
  * Helper function to get the current time as a {@link DateTime}.
- * @category DateTime
+ * @category Utils — DateTime
  */
 export const now = (): DateTime => dateTime(new Date(Date.now()));
 
 /**
  * Whether the given value is a Date object.
- * @category DateTime
+ * @category Utils — DateTime
  */
 const isDateObject = (value: any): value is Date =>
   Object.prototype.toString.call(value) === '[object Date]';
 
 /**
  * Formats a {@link DateTime} as a string.
- * @category DateTime
+ * @category Utils — DateTime
  */
 export const formatDateTime = (
   value: DateTime,
@@ -69,7 +69,7 @@ export const formatDateTime = (
 
 /**
  * Converts a number serializer into a DateTime serializer.
- * @category DateTime
+ * @category Utils — DateTime
  */
 export const mapDateTimeSerializer = (
   serializer: NumberSerializer

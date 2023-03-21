@@ -9,7 +9,7 @@ import type { UmiPlugin } from './UmiPlugin';
  * It implements the {@link Context} interface and adds a `use` method
  * that allows plugins to be installed.
  *
- * @category Interfaces
+ * @category Context and Interfaces
  */
 export interface Umi extends Context {
   /** Installs a Umi plugin. */
@@ -21,7 +21,7 @@ export interface Umi extends Context {
  * The `use` method can then be used to install plugins and replace the
  * Null implementations with real implementations.
  *
- * @category Interfaces
+ * @category Context and Interfaces
  */
 export const createUmi = (): Umi => ({
   ...createNullContext(),

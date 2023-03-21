@@ -8,7 +8,7 @@ import { Transaction } from './Transaction';
  * Defines the interface for a program repository.
  * It allows us to register and retrieve programs when needed.
  *
- * @category Interfaces
+ * @category Context and Interfaces
  */
 export interface ProgramRepositoryInterface {
   /**
@@ -81,7 +81,7 @@ export interface ProgramRepositoryInterface {
 
 /**
  * An implementation of the {@link ProgramRepositoryInterface} that throws an error when called.
- * @category Interfaces — Programs
+ * @category Programs
  */
 export class NullProgramRepository implements ProgramRepositoryInterface {
   private readonly error = new InterfaceImplementationMissingError(

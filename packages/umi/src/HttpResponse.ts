@@ -2,7 +2,7 @@ import type { HttpResponseHeaders } from './HttpHeaders';
 
 /**
  * Defines a HTTP Response with custom data.
- * @category Interfaces — Http
+ * @category Http
  */
 export type HttpResponse<D = any> = {
   data: D;

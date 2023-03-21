@@ -1,6 +1,6 @@
 /**
  * Defines the available Solana clusters.
- * @category Cluster
+ * @category Utils — Cluster
  */
 export type Cluster =
   | 'mainnet-beta'
@@ -14,7 +14,7 @@ export type Cluster =
  * They can either provide a specific cluster or use the
  * special values 'current' or '*' to select the current
  * cluster or all clusters respectively.
- * @category Cluster
+ * @category Utils — Cluster
  */
 export type ClusterFilter = Cluster | 'current' | '*';
 
@@ -31,7 +31,7 @@ const LOCALNET_DOMAINS = ['localhost', '127.0.0.1'];
 
 /**
  * Helper method that tries its best to resolve a cluster from a given endpoint.
- * @category Cluster
+ * @category Utils — Cluster
  */
 export const resolveClusterFromEndpoint = (endpoint: string): Cluster => {
   const domain = new URL(endpoint).hostname;

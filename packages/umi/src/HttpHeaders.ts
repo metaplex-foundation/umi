@@ -1,12 +1,12 @@
 /**
  * Represents a HTTP header value.
- * @category Interfaces — Http
+ * @category Http
  */
 export type HttpHeaderValue = string | string[];
 
 /**
  * Represents the value of the Content-Type header.
- * @category Interfaces — Http
+ * @category Http
  */
 export type HttpHeaderContentTypeValue =
   | HttpHeaderValue
@@ -19,13 +19,13 @@ export type HttpHeaderContentTypeValue =
 
 /**
  * Represents a set of HTTP headers.
- * @category Interfaces — Http
+ * @category Http
  */
 export type HttpHeaders = Record<string, HttpHeaderValue>;
 
 /**
  * Represents a set of HTTP Request headers.
- * @category Interfaces — Http
+ * @category Http
  */
 export type HttpRequestHeaders = HttpHeaders & {
   accept?: HttpHeaderValue;
@@ -38,7 +38,7 @@ export type HttpRequestHeaders = HttpHeaders & {
 
 /**
  * Represents a set of HTTP Response headers.
- * @category Interfaces — Http
+ * @category Http
  */
 export type HttpResponseHeaders = HttpHeaders & {
   server?: HttpHeaderValue;

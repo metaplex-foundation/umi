@@ -11,7 +11,7 @@ import type {
  * Defines the interface for a transaction factory.
  * It allows us to create, serialize and deserialize transactions and their messages.
  *
- * @category Interfaces
+ * @category Context and Interfaces
  */
 export interface TransactionFactoryInterface {
   /** Creates a new transaction from a given input. */

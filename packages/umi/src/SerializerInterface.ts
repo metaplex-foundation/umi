@@ -12,7 +12,7 @@ import type { Nullable, Option } from './Option';
  * Defines the interface for a set of serializers
  * that can be used to serialize/deserialize any Serde types.
  *
- * @category Interfaces
+ * @category Context and Interfaces
  */
 export interface SerializerInterface {
   /**

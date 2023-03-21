@@ -6,7 +6,7 @@ type Milliseconds = number;
 
 /**
  * Defines a HTTP Request with custom data.
- * @category Interfaces — Http
+ * @category Http
  */
 export type HttpRequest<D = any> = {
   method: HttpMethod;
@@ -20,7 +20,7 @@ export type HttpRequest<D = any> = {
 
 /**
  * Creates a new {@link HttpRequestBuilder} instance.
- * @category Interfaces — Http
+ * @category Http
  */
 export const request = () =>
   new HttpRequestBuilder<undefined>({
@@ -32,7 +32,7 @@ export const request = () =>
 
 /**
  * A builder for constructing {@link HttpRequest} instances.
- * @category Interfaces — Http
+ * @category Http
  */
 export class HttpRequestBuilder<D> implements HttpRequest<D> {
   protected readonly request: HttpRequest<D>;
@@ -172,7 +172,7 @@ export class HttpRequestBuilder<D> implements HttpRequest<D> {
 
 /**
  * Defines a HTTP method as a string.
- * @category Interfaces — Http
+ * @category Http
  */
 export type HttpMethod =
   | 'get'

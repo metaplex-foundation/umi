@@ -5,7 +5,7 @@ import { addTransactionSignature, Transaction } from './Transaction';
 
 /**
  * Represents a keypair with a public key and a secret key.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export type Keypair = {
   publicKey: PublicKey;
@@ -14,13 +14,13 @@ export type Keypair = {
 
 /**
  * Represent a {@link Signer} that can is aware of its secret key.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export type KeypairSigner = Signer & Keypair;
 
 /**
  * Generate a new random {@link KeypairSigner} using the Eddsa interface.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const generateSigner = (
   context: Pick<Context, 'eddsa'>
@@ -29,7 +29,7 @@ export const generateSigner = (
 
 /**
  * Creates a {@link KeypairSigner} from a {@link Keypair} object.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const createSignerFromKeypair = (
   context: Pick<Context, 'eddsa'>,
@@ -56,7 +56,7 @@ export const createSignerFromKeypair = (
 
 /**
  * Whether the given signer is a {@link KeypairSigner}.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const isKeypairSigner = (
   signer: Signer & { secretKey?: Uint8Array }

@@ -19,7 +19,7 @@ import { NullUploader, UploaderInterface } from './UploaderInterface';
  * Once created, the end-user can pass this object to any function that
  * requires some or all of these interfaces.
  *
- * @category Interfaces
+ * @category Context and Interfaces
  */
 export interface Context {
   /** An interface for downloading files from URIs. */
@@ -50,7 +50,7 @@ export interface Context {
  * create a full Umi context object when only a few of the interfaces
  * are needed.
  *
- * @category Interfaces
+ * @category Context and Interfaces
  */
 export const createNullContext = (): Context => ({
   downloader: new NullDownloader(),

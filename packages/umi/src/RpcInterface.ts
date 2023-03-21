@@ -17,7 +17,7 @@ import type {
  * Defines the interface for an RPC client.
  * It allows us to interact with the Solana blockchain.
  *
- * @category Interfaces
+ * @category Context and Interfaces
  */
 export interface RpcInterface {
   /** The RPC endpoint used by the client. */

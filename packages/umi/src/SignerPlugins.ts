@@ -4,7 +4,7 @@ import type { Signer } from './Signer';
 
 /**
  * Umi plugin that sets the identity and the payer to the given signer.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const signerIdentity = (signer: Signer, setPayer = true): UmiPlugin => ({
   install(umi) {
@@ -17,7 +17,7 @@ export const signerIdentity = (signer: Signer, setPayer = true): UmiPlugin => ({
 
 /**
  * Umi plugin that only sets the payer to the given signer.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const signerPayer = (signer: Signer): UmiPlugin => ({
   install(umi) {
@@ -27,7 +27,7 @@ export const signerPayer = (signer: Signer): UmiPlugin => ({
 
 /**
  * Umi plugin that sets the identity and the payer to a randomly generated signer.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const generatedSignerIdentity = (setPayer = true): UmiPlugin => ({
   install(umi) {
@@ -38,7 +38,7 @@ export const generatedSignerIdentity = (setPayer = true): UmiPlugin => ({
 
 /**
  * Umi plugin that only sets the payer to a randomly generated signer.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const generatedSignerPayer = (): UmiPlugin => ({
   install(umi) {
@@ -49,7 +49,7 @@ export const generatedSignerPayer = (): UmiPlugin => ({
 
 /**
  * Umi plugin that sets the identity and the payer to a provided keypair.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const keypairIdentity = (
   keypair: Keypair,
@@ -63,7 +63,7 @@ export const keypairIdentity = (
 
 /**
  * Umi plugin that only sets the payer to a provided keypair.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const keypairPayer = (keypair: Keypair): UmiPlugin => ({
   install(umi) {

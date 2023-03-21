@@ -2,31 +2,31 @@ import { base58, uniqueBy } from './utils';
 
 /**
  * The amount of bytes in a public key.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export const PUBLIC_KEY_LENGTH = 32;
 
 /**
  * Defines an object that has a public key.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export type HasPublicKey = { publicKey: PublicKey };
 
 /**
  * A base58 string that represents a public key.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export type PublicKeyBase58 = string;
 
 /**
  * A Uint8Array that represents a public key.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export type PublicKeyBytes = Uint8Array;
 
 /**
  * Defines all the possible inputs for creating a public key.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export type PublicKeyInput =
   | HasPublicKey
@@ -36,7 +36,7 @@ export type PublicKeyInput =
 
 /**
  * Defines a public key.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export type PublicKey = {
   readonly bytes: PublicKeyBytes;
@@ -48,7 +48,7 @@ export type PublicKey = {
  * It is a public key with the bump number that was used
  * to ensure the address is not on the ed25519 curve.
  *
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export type Pda = PublicKey & {
   readonly bump: number;
@@ -56,7 +56,7 @@ export type Pda = PublicKey & {
 
 /**
  * Creates a new public key from the given input.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export const publicKey = (input: PublicKeyInput): PublicKey => {
   let key: PublicKey;
@@ -83,14 +83,14 @@ export const publicKey = (input: PublicKeyInput): PublicKey => {
 
 /**
  * Creates the default public key which is composed of all zero bytes.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export const defaultPublicKey = (): PublicKey =>
   publicKey('11111111111111111111111111111111');
 
 /**
  * Whether the given value is a valid public key.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export const isPublicKey = (value: any): value is PublicKey =>
   typeof value === 'object' &&
@@ -102,7 +102,7 @@ export const isPublicKey = (value: any): value is PublicKey =>
 
 /**
  * Whether the given value is a valid program-derived address.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export const isPda = (value: any): value is Pda =>
   typeof value === 'object' &&
@@ -111,7 +111,7 @@ export const isPda = (value: any): value is Pda =>
 
 /**
  * Ensures the given value is a valid public key.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export function assertPublicKey(value: any): asserts value is PublicKey {
   if (!isPublicKey(value)) {
@@ -121,7 +121,7 @@ export function assertPublicKey(value: any): asserts value is PublicKey {
 
 /**
  * Whether the given public keys are the same.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export const samePublicKey = (
   left: PublicKeyInput,
@@ -131,14 +131,14 @@ export const samePublicKey = (
 
 /**
  * Deduplicates the given array of public keys.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export const uniquePublicKeys = (publicKeys: PublicKey[]): PublicKey[] =>
   uniqueBy(publicKeys, samePublicKey);
 
 /**
  * Converts the given public key to a base58 string.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export const base58PublicKey = (key: PublicKeyInput): string =>
   base58.deserialize(publicKey(key).bytes)[0];
@@ -146,7 +146,7 @@ export const base58PublicKey = (key: PublicKeyInput): string =>
 /**
  * Helper function that enables public keys and signers
  * to override the `isWritable` property of an account meta.
- * @category PublicKeys
+ * @category Signers and PublicKeys
  */
 export const checkForIsWritableOverride = (
   account: (PublicKey | HasPublicKey) & { isWritable?: boolean },

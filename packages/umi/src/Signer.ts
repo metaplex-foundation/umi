@@ -4,7 +4,7 @@ import { uniqueBy } from './utils';
 
 /**
  * Defines a public key that can sign transactions and messages.
- * @category Interfaces
+ * @category Context and Interfaces
  */
 export interface Signer {
   /** The public key of the Signer. */
@@ -19,7 +19,7 @@ export interface Signer {
 
 /**
  * Signs a transaction using the provided signers.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const signTransaction = async (
   transaction: Transaction,
@@ -35,7 +35,7 @@ export const signTransaction = async (
  * such that signers that need to sign multiple transactions
  * sign them all at once using the `signAllTransactions` method.
  *
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const signAllTransactions = async (
   transactionsWithSigners: {
@@ -82,14 +82,14 @@ export const signAllTransactions = async (
 
 /**
  * Whether the provided value is a `Signer`.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const isSigner = (value: PublicKey | Signer): value is Signer =>
   'publicKey' in value;
 
 /**
  * Deduplicates the provided signers by public key.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const uniqueSigners = (signers: Signer[]): Signer[] =>
   uniqueBy(signers, samePublicKey);
@@ -100,7 +100,7 @@ export const uniqueSigners = (signers: Signer[]): Signer[] =>
  * we don't have one in the current environment. For example,
  * if the transaction will then be signed in a backend server.
  *
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const createNoopSigner = (publicKey: PublicKey): Signer => ({
   publicKey,
@@ -119,13 +119,13 @@ export const createNoopSigner = (publicKey: PublicKey): Signer => ({
 
 /**
  * Creates a `Signer` that, when required to sign, throws an error.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export const createNullSigner = (): Signer => new NullSigner();
 
 /**
  * Creates a `Signer` that, when required to sign, throws an error.
- * @category Interfaces — Signer
+ * @category Signers and PublicKeys
  */
 export class NullSigner implements Signer {
   // TODO(loris): Custom errors.

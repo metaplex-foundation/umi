@@ -6,7 +6,7 @@ import type { Umi } from './Umi';
  * It contains an `install` method that takes a {@link Umi} instance
  * and extends it with new functionality.
  *
- * @category Interfaces
+ * @category Context and Interfaces
  */
 export type UmiPlugin = {
   install(umi: Umi): void;

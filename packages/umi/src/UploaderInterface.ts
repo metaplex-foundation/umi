@@ -7,7 +7,7 @@ import type { GenericFile } from './GenericFile';
  * Defines the interface for an uploader.
  * It allows us to upload files and get their URIs.
  *
- * @category Interfaces
+ * @category Context and Interfaces
  */
 export interface UploaderInterface {
   /** Uploads multiple files and returns their URIs. */
@@ -28,7 +28,7 @@ export interface UploaderInterface {
 
 /**
  * The options that can be passed when fetching the upload price.
- * @category Uploader
+ * @category Storage
  */
 export type UploaderGetUploadPriceOptions = {
   signal?: GenericAbortSignal;
@@ -36,7 +36,7 @@ export type UploaderGetUploadPriceOptions = {
 
 /**
  * The options that can be passed when uploading files.
- * @category Uploader
+ * @category Storage
  */
 export type UploaderUploadOptions = {
   onProgress?: (percent: number, ...args: any) => void;
@@ -45,7 +45,7 @@ export type UploaderUploadOptions = {
 
 /**
  * An implementation of the {@link UploaderInterface} that throws an error when called.
- * @category Uploader
+ * @category Storage
  */
 export class NullUploader implements UploaderInterface {
   private readonly error = new InterfaceImplementationMissingError(

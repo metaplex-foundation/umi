@@ -5,7 +5,7 @@
  * This allows the end-user to prematurely abort
  * a (potentially long-running) request.
  *
- * @category Helpers
+ * @category Utils
  */
 export interface GenericAbortSignal {
   readonly aborted: boolean;

@@ -6,7 +6,7 @@ import type { GenericFile } from './GenericFile';
  * Defines the interface for a downloader.
  * It allows us to fetch files from given URIs.
  *
- * @category Interfaces
+ * @category Context and Interfaces
  */
 export interface DownloaderInterface {
   /** Downloads multiple files from a list of URIs. */
@@ -21,7 +21,7 @@ export interface DownloaderInterface {
 
 /**
  * Defines the options that can be passed when downloading files. *
- * @category Interfaces — Downloader
+ * @category Storage
  */
 export type DownloaderOptions = {
   /** An abort signal to cancel the download. */
@@ -30,7 +30,7 @@ export type DownloaderOptions = {
 
 /**
  * An implementation of the {@link DownloaderInterface} that throws an error when called.
- * @category Interfaces — Downloader
+ * @category Storage
  */
 export class NullDownloader implements DownloaderInterface {
   private readonly error = new InterfaceImplementationMissingError(

@@ -5,7 +5,7 @@ import { HttpResponse } from './HttpResponse';
 /**
  * Defines the interface for an HTTP client.
  *
- * @category Interfaces
+ * @category Context and Interfaces
  */
 export interface HttpInterface {
   /** Sends a HTTP request and returns its response. */
@@ -16,7 +16,7 @@ export interface HttpInterface {
 
 /**
  * An implementation of the {@link HttpInterface} that throws an error when called.
- * @category Interfaces — Http
+ * @category Http
  */
 export class NullHttp implements HttpInterface {
   send<ResponseData>(): Promise<HttpResponse<ResponseData>> {
