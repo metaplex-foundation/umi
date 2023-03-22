@@ -32,7 +32,7 @@
   "typedocOptions": {
     "entryPoints": ".",
     "entryPointStrategy": "packages",
-    "out": "docs",
+    "out": "typedoc",
     "readme": "README.md",
     "name": "Umi — API References",
     "includeVersion": true,
