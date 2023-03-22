@@ -1,3 +1,3 @@
-# Umi Plugins
+# Umi plugins
 
 TODO

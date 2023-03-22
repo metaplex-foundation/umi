@@ -17,6 +17,6 @@ Umi is a modular framework for building and using JavaScript clients for Solana 
 - [Downloading assets](./docs/downloader.md)
 - [Sending Http requests](./docs/http.md)
 - [Registering programs](./docs/programs.md)
-- [Umi Plugins](./docs/plugins.md)
+- [Umi plugins](./docs/plugins.md)
 - [Generating Umi clients via Kinobi](./docs/kinobi.md)
-- [Umi Helpers](./docs/helpers.md)
+- [Umi helpers](./docs/helpers.md)

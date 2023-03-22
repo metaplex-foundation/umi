@@ -1,3 +1,3 @@
-# Umi Helpers
+# Umi helpers
 
 TODO
