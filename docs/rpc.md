@@ -37,42 +37,84 @@ type Cluster = "mainnet-beta" | "devnet" | "testnet" | "localnet" | "custom"
 
 ## Fetching accounts
 
-TODO?
-- accountExists
-- getAccount
-- getAccounts
-- getProgramAccounts
+The following methods can be used to fetch accounts or check for their existence:
+
+```ts
+const accountExists = await umi.rpc.accountExists(myPublicKey);
+const maybeAccount = await umi.rpc.getAccount(myPublicKey);
+const maybeAccounts = await umi.rpc.getAccounts(myPublicKeys);
+const accounts = await umi.rpc.getProgramAccounts(myProgramId, { filters });
+```
+
+Since fetching accounts is one of the most common operations, we discuss it in more detail on the [Fetching accounts](./accounts.md) documentation page.
 
 ## Sending transactions
 
-TODO?
-- sendTransaction
-- confirmTransaction
+The following methods can be used to send, confirm and fetch transactions:
 
-## Fetching transactions
+```ts
+const signature = await umi.rpc.sendTransaction(myTransaction);
+const confirmResult = await umi.rpc.confirmTransaction(signature, { strategy });
+const transaction = await umi.rpc.getTransaction(signature);
+```
 
-TODO?: getTransaction
+Since transactions are an important component of Solana clients, we discuss them in more detail on the [Sending transactions](./transactions.md) documentation page.
 
 ## Airdropping SOL on supported clusters
 
-TODO: airdrop
+If the used cluster supports airdrops, you can use the following method to send SOL to an account and confirm the request.
+
+```ts
+// Send 1.5 SOL to "myPublicKey" and wait for the transaction to be confirmed.
+await umi.rpc.airdrop(myPublicKey, sol(1.5));
+```
 
 ## Getting the balance of an account
 
-TODO: getBalance
+You may use the following method to get the SOL balance of any account. This will return a `SolAmount` object [as documented here](./helpers.md#amounts).
+
+```ts
+const balance = await umi.rpc.getBalance(myPublicKey);
+```
 
 ## Getting the latest blockhash
 
-TODO: getLatestBlockhash
+You may get the latest blockhash with its expiry block height via the following method:
+
+```ts
+const { blockhash, lastValidBlockHeight } = await umi.rpc.getLatestBlockhash();
+```
 
 ## Getting the most recent slot
 
-TODO: getSlot
+You may get the most recent slot as a number via the following method:
+
+```ts
+const recentSlot = await umi.rpc.getSlot();
+```
 
 ## Getting the rent exemption
 
-TODO: getRent
+If you need to figure out the storage fees for an account, you may use the `getRent` method and pass in the amount bytes that the account's data will require. This will return the rent-exemption fee — a.k.a storage fee — as a `SolAmount`.
+  
+  ```ts
+const rent = await umi.rpc.getRent(100);
+```
+
+Note that this will automatically take the size of the account header into consideration so you only need to pass in the bytes of the account's data.
+
+Say you now wanted to get the rent-exemption fee for 3 accounts with 100 bytes of data each. Running `umi.rpc.getRent(100 * 3)` will not provide an accurate response since it will only add the account header for one account and not three. This is why Umi allows you to pass in the account header size explicitly by setting the `includesHeaderBytes` option to `true`.
+
+```ts
+const rent = await umi.rpc.getRent((ACCOUNT_HEADER_SIZE + 100) * 3, {
+  includesHeaderBytes: true
+});
+```
 
 ## Sending custom RPC requests
 
-TODO: call
+Because each RPC endpoint may provide their own custom methods, Umi allows you to send custom requests to the RPC via the `call` method. It takes the method name as the first argument and an optional array of parameters as the second argument.
+
+```ts
+const rpcResult = await umi.rpc.call("myCustomMethod", [myFirstParam, mySecondParam]);
+```
