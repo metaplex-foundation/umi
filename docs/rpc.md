@@ -60,7 +60,7 @@ const transaction = await umi.rpc.getTransaction(signature);
 
 Since transactions are an important component of Solana clients, we discuss them in more detail on the [Sending transactions](./transactions.md) documentation page.
 
-## Airdropping SOL on supported clusters
+## Airdropping SOL on supported clusters
 
 If the used cluster supports airdrops, you can use the following method to send SOL to an account and confirm the request.
 
@@ -69,7 +69,7 @@ If the used cluster supports airdrops, you can use the following method to send 
 await umi.rpc.airdrop(myPublicKey, sol(1.5));
 ```
 
-## Getting the balance of an account
+## Getting the balance of an account
 
 You may use the following method to get the SOL balance of any account. This will return a `SolAmount` object [as documented here](./helpers.md#amounts).
 
@@ -77,7 +77,7 @@ You may use the following method to get the SOL balance of any account. This wil
 const balance = await umi.rpc.getBalance(myPublicKey);
 ```
 
-## Getting the latest blockhash
+## Getting the latest blockhash
 
 You may get the latest blockhash with its expiry block height via the following method:
 
@@ -85,7 +85,7 @@ You may get the latest blockhash with its expiry block height via the following 
 const { blockhash, lastValidBlockHeight } = await umi.rpc.getLatestBlockhash();
 ```
 
-## Getting the most recent slot
+## Getting the most recent slot
 
 You may get the most recent slot as a number via the following method:
 
@@ -93,7 +93,7 @@ You may get the most recent slot as a number via the following method:
 const recentSlot = await umi.rpc.getSlot();
 ```
 
-## Getting the rent exemption
+## Getting the rent exemption
 
 If you need to figure out the storage fees for an account, you may use the `getRent` method and pass in the amount bytes that the account's data will require. This will return the rent-exemption fee — a.k.a storage fee — as a `SolAmount`.
   
@@ -111,7 +111,7 @@ const rent = await umi.rpc.getRent((ACCOUNT_HEADER_SIZE + 100) * 3, {
 });
 ```
 
-## Sending custom RPC requests
+## Sending custom RPC requests
 
 Because each RPC endpoint may provide their own custom methods, Umi allows you to send custom requests to the RPC via the `call` method. It takes the method name as the first argument and an optional array of parameters as the second argument.
 
