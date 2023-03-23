@@ -207,3 +207,45 @@ umi.use(keypairIdentity(myKeypair));
 // Register a new keypair as the payer only.
 umi.use(keypairPayer(myKeypair));
 ```
+
+## Signing messages
+
+The `Signer` object and the EdDSA interface can be used together to sign and verify messages like so.
+
+```ts
+const myMessage = utf8.serialize('Hello, world!');
+const mySignature = await mySigner.signMessage(myMessage)
+const mySignatureIsCorrect = umi.eddsa.verify(myMessage, mySignature, mySigner.publicKey);
+```
+
+## Signing transactions
+
+Once we have a `Signer` instance, signing a transaction or a set of transactions is as simple as calling the `signTransaction` or `signAllTransactions` methods.
+
+```ts
+const mySignedTransaction = await mySigner.signTransaction(myTransaction);
+const mySignedTransactions = await mySigner.signAllTransactions(myTransactions);
+```
+
+If you need multiple signers to all sign the same transaction, you may use the `signTransaction` helper method like so.
+
+```ts
+const mySignedTransaction = await signTransaction(myTransaction, mySigners);
+```
+
+Going one step further, if you have multiple transactions that each need to be signed by one or more signers, the `signAllTransactions` function can help you with that. It will even ensure that, if a signer is required to sign more than one transaction, it will use the `signer.signAllTransactions` method on all of them at once.
+
+```ts
+// In this example, mySigner2 will sign both transactions
+// using the signAllTransactions method.
+const mySignedTransactions = await signAllTransactions([
+  { transaction: myFirstTransaction, signers: [mySigner1, mySigner2] },
+  { transaction: mySecondTransaction, signers: [mySigner2, mySigner3] }
+]);
+```
+
+If you are creating a `Signer` manually and therefore implementing its `signTransaction` method, you may want to use the `addTransactionSignature` helper function to add the signature to the transaction. This will ensure the provided signature is required by the transaction and pushed at the right index of the transaction's `signatures` array.
+
+```ts
+const mySignedTransaction = addTransactionSignature(myTransaction, mySignature, myPublicKey);
+```
