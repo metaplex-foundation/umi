@@ -1,6 +1,6 @@
 # Public keys and signers
 
-In this page, we'll see how to manage public keys and signers in Umi which is partially made possible by the EdDSA interface.
+On this page, we'll see how to manage public keys and signers in Umi which is partially made possible by the EdDSA interface.
 
 The [EdDSA interface](https://umi-docs.vercel.app/interfaces/umi.EddsaInterface.html) is used to create keypairs, find PDAs and sign/verify messages using the EdDSA algorithm. We can either use this interface directly and/or use helper methods that delegate to this interface to provide a better developer experience.
 
@@ -22,7 +22,7 @@ We can create a new valid public key from a variety of inputs using the `publicK
 // From a base58 string.
 publicKey('LorisCg1FTs89a32VSrFskYDgiRbNQzct1WxyZb7nuA');
 
-// From a 32-bytes buffer.
+// From a 32-byte buffer.
 publicKey(new Uint8Array(32));
 
 // From a PublicKey or Signer type.
@@ -59,7 +59,7 @@ defaultPublicKey();
 
 A PDA — or Program-Derived Address — is a public key that is derived from a program ID and an array of predefined seeds. A `bump` number ranging from 0 to 255 is required to ensure the PDA does not live on the EdDSA elliptic curve and therefore does not conflict with cryptographically generated public keys.
 
-In Umi, PDAs are public keys with an extra `bump` attribute. This ensure that PDA objects can be used anywhere a public key is expected.
+In Umi, PDAs are public keys with an extra `bump` attribute. This ensures that PDA objects can be used anywhere a public key is expected.
 
 ```ts
 type Pda = PublicKey & {
@@ -73,7 +73,7 @@ To derive a new PDA, we can use the `findPda` method of the EdDSA interface.
 const pda = umi.eddsa.findPda(programId, seeds);
 ```
 
-Each seed must be serialized as a `Uint8Array`. You can learn more about serializers in [the Serializers page](./serializers.md) but here is a quick example showing how to find the metadata PDA of a given mint address.
+Each seed must be serialized as a `Uint8Array`. You can learn more about serializers on [the Serializers page](./serializers.md) but here is a quick example showing how to find the metadata PDA of a given mint address.
 
 ```ts
 const tokenMetadataProgramId = publicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
@@ -84,7 +84,7 @@ const metadata = umi.eddsa.findPda(tokenMetadataProgramId, [
 ]);
 ```
 
-Note that in most cases, programs will provide helper methods to find specific PDAs. For instance the code snippet above can be simplified to the following using the `findMetadataPda` method of the [`@metaplex-foundation/mpl-token-metadata`](https://github.com/metaplex-foundation/mpl-token-metadata) [Kinobi](./kinobi.md)-generated library.
+Note that in most cases, programs will provide helper methods to find specific PDAs. For instance, the code snippet above can be simplified to the following using the `findMetadataPda` method of the [`@metaplex-foundation/mpl-token-metadata`](https://github.com/metaplex-foundation/mpl-token-metadata) [Kinobi](./kinobi.md)-generated library.
 
 ```ts
 import { findMetadataPda } from '@metaplex-foundation/mpl-token-metadata';
@@ -155,7 +155,7 @@ umi.use(generatedSignerIdentity());
 umi.use(generatedSignerPayer());
 ```
 
-In some case, a library may require a `Signer` to be provided but the current environment does not have access to this wallet as a signer. For instance, this can happen if a transaction is being created on the client but will be later on signed on a private server. It's for that reason that Umi provides a `createNoopSigner` helper that creates a new signer from the given public key and simply ignores any signing request. It is then your responsibility to ensure that the transaction is signed before being sent to the blockchain.
+In some cases, a library may require a `Signer` to be provided but the current environment does not have access to this wallet as a signer. For instance, this can happen if a transaction is being created on the client but will be later on signed on a private server. It's for that reason that Umi provides a `createNoopSigner` helper that creates a new signer from the given public key and simply ignores any signing request. It is then your responsibility to ensure that the transaction is signed before being sent to the blockchain.
 
 ```ts
 const mySigner = createNoopSigner(myPublicKey);
