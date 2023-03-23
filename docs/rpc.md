@@ -35,6 +35,18 @@ Where `cluster` is one of the following:
 type Cluster = "mainnet-beta" | "devnet" | "testnet" | "localnet" | "custom"
 ```
 
+## Sending transactions
+
+The following methods can be used to send, confirm and fetch transactions:
+
+```ts
+const signature = await umi.rpc.sendTransaction(myTransaction);
+const confirmResult = await umi.rpc.confirmTransaction(signature, { strategy });
+const transaction = await umi.rpc.getTransaction(signature);
+```
+
+Since transactions are an important component of Solana clients, we discuss them in more detail on the [Sending transactions](./transactions.md) documentation page.
+
 ## Fetching accounts
 
 The following methods can be used to fetch accounts or check for their existence:
@@ -47,18 +59,6 @@ const accounts = await umi.rpc.getProgramAccounts(myProgramId, { filters });
 ```
 
 Since fetching accounts is one of the most common operations, we discuss it in more detail on the [Fetching accounts](./accounts.md) documentation page.
-
-## Sending transactions
-
-The following methods can be used to send, confirm and fetch transactions:
-
-```ts
-const signature = await umi.rpc.sendTransaction(myTransaction);
-const confirmResult = await umi.rpc.confirmTransaction(signature, { strategy });
-const transaction = await umi.rpc.getTransaction(signature);
-```
-
-Since transactions are an important component of Solana clients, we discuss them in more detail on the [Sending transactions](./transactions.md) documentation page.
 
 ## Airdropping SOL on supported clusters
 
