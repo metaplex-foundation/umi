@@ -104,8 +104,106 @@ umi.eddsa.isOnCurve(myPublicKey);
 
 ## Signers
 
-TODO
+A signer is a public key that can sign transactions and messages. This enables transactions to be signed by the required accounts and wallets to prove their identity by signing messages. In Umi, it is represented by the following interface.
+
+```ts
+interface Signer {
+  publicKey: PublicKey;
+  signMessage(message: Uint8Array): Promise<Uint8Array>;
+  signTransaction(transaction: Transaction): Promise<Transaction>;
+  signAllTransactions(transactions: Transaction[]): Promise<Transaction[]>;
+}
+```
+
+You may generate a new signer cryptographically using the `generateSigner` helper method. Under the hood, this method uses the `generateKeypair` method of the EdDSA interface as described in the next section.
+
+```ts
+const mySigner = generateSigner(umi);
+```
+
+The following helper functions can also be used to manage signers.
+
+```ts
+// Check if the provided value is a Signer object.
+isSigner(mySigner);
+
+// Deduplicate an array of signers by public key.
+uniqueSigners(mySigners);
+```
+
+As mentioned in [the Umi interfaces page](./interfaces.md), the `Umi` interface stores two instances of `Signer`: The `identity` using the app and the `payer` paying for transaction and storage fees. Umi provides plugins to quickly assign new signers to these attributes. The `signerIdentity` and `signerPayer` plugins are available for this purpose. Note that, by default, the `signerIdentity` method will also update the `payer` attribute since, in most cases, the identity is also the payer.
+
+```ts
+umi.use(signerIdentity(mySigner));
+// Is equivalent to:
+umi.identity = mySigner;
+umi.payer = mySigner;
+
+umi.use(signerIdentity(mySigner, false));
+// Is equivalent to:
+umi.identity = mySigner;
+
+umi.use(signerPayer(mySigner));
+// Is equivalent to:
+umi.payer = mySigner;
+```
+
+You may also use the `generatedSignerIdentity` and `generatedSignerPayer` plugins to generate a new signer and immediately assign it to the `identity` and/or `payer` attributes.
+
+```ts
+umi.use(generatedSignerIdentity());
+umi.use(generatedSignerPayer());
+```
+
+In some case, a library may require a `Signer` to be provided but the current environment does not have access to this wallet as a signer. For instance, this can happen if a transaction is being created on the client but will be later on signed on a private server. It's for that reason that Umi provides a `createNoopSigner` helper that creates a new signer from the given public key and simply ignores any signing request. It is then your responsibility to ensure that the transaction is signed before being sent to the blockchain.
+
+```ts
+const mySigner = createNoopSigner(myPublicKey);
+```
 
 ## Keypairs
 
-TODO
+Whilst Umi only relies on the `Signer` interface to request signatures from a wallet, it also defines a `Keypair` type and a `KeypairSigner` type that are explicitly aware of their secret key.
+
+```ts
+type KeypairSigner = Signer & Keypair;
+type Keypair = {
+  publicKey: PublicKey;
+  secretKey: Uint8Array;
+};
+```
+
+The `generateKeypair`, `createKeypairFromSeed` and `createKeypairFromSecretKey` methods of the EdDSA interface can be used to generate new `Keypair` objects.
+
+```ts
+// Generate a new random keypair.
+const myKeypair = umi.eddsa.generateKeypair();
+
+// Restore a keypair using a seed.
+const myKeypair = umi.eddsa.createKeypairFromSeed(mySeed);
+
+// Restore a keypair using its secret key.
+const myKeypair = umi.eddsa.createKeypairFromSecretKey(mySecretKey);
+```
+
+In order to use these keypairs as signers throughout your application, you can use the `createSignerFromKeypair` helper method. This method will return an instance of `KeypairSigner` to ensure that we can access the secret key when needed.
+
+```ts
+const myKeypair = umi.eddsa.generateKeypair();
+const myKeypairSigner = createSignerFromKeypair(myKeypair);
+```
+
+Note that the code snippet above is equivalent to using the `generateSigner` helper method described in the previous section.
+
+Helper functions and plugins also exist to manage keypairs.
+
+```ts
+// Check if the provided signer is a KeypairSigner object.
+isKeypairSigner(mySigner);
+
+// Register a new keypair as the identity and payer.
+umi.use(keypairIdentity(myKeypair));
+
+// Register a new keypair as the payer only.
+umi.use(keypairPayer(myKeypair));
+```
