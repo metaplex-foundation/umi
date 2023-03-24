@@ -84,8 +84,40 @@ Note that when fetching program accounts, you might be interested in [`GpaBuilde
 
 ## Deserializing accounts
 
-TODO
+In order to turn a `RpcAccount` into an deserialized `Account<T>`, we simply need the `deserializeAccount` function and a `Serializer` that knows how to deserialize the account's data. You can read more about `Serializer`s in the [Serializers page](./serializers.md) but here's a quick example assuming the data is composed of two public keys and one `u64` number.
 
-## Fetching deserialized accounts
+```ts
+// Given an existing RPC account.
+const myRpcAccount = await umi.rpc.getAccount(myPublicKey);
+assertAccountExists(myRpcAccount);
 
-TODO
+// And an account data serializer.
+const myDataSerializer = umi.serializer.struct([
+  ['source', umi.serializer.publicKey()],
+  ['destination', umi.serializer.publicKey()],
+  ['amount', umi.serializer.u64()],
+]);
+
+// We can deserialize the account like so.
+const myAccount = deserializeAccount(rawAccount, myDataSerializer);
+// myAccount.source -> PublicKey
+// myAccount.destination -> PublicKey
+// myAccount.amount -> bigint
+// myAccount.publicKey -> PublicKey
+// myAccount.header -> AccountHeader
+```
+
+Note that, in practice, program libraries should provide account data serializers and helpers for you. Here's an example using a [Kinobi-generated library](./kinobi.md).
+
+```ts
+import { Metadata, deserializeMetadata, fetchMetadata, safeFetchMetadata } from '@metaplex-foundation/mpl-token-metadata';
+
+// Deserializes a metadata account.
+const metadata: Metadata = deserializeMetadata(umi, unparsedMetadataAccount);
+
+// Fetch and deserialize a metadata account, fail if the account does not exist.
+const metadata: Metadata = await fetchMetadata(umi, metadataPublicKey);
+
+// Fetch and deserialize a metadata account, return null if the account does not exist.
+const metadata: Metadata | null = await safeFetchMetadata(umi, metadataPublicKey);
+```
