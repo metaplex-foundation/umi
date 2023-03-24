@@ -43,7 +43,7 @@ Transaction builders are immutable objects that can be used to gradually build t
 - A `bytesCreatedOnChain` attribute that, if the instruction ends up creating accounts, tells us how many bytes they will take on chain (including the account headers).
 - and a `signers` array so that we know which signers are required for this particular instruction as opposed to the whole transaction. This enables us to split the transaction builder into two without losing any information as we will see later.
 
-We can create a new transaction builder using the `transactionBuilder` function and add instructions to it using its `add` method. You may also use the `prepend` method to push an instruction at the beginning of the transaction. Note that either of these methods also accept other transaction builders and will merge them into the current one.
+We can create a new transaction builder using the `transactionBuilder` function and add instructions to it using its `add` method. You may also use the `prepend` method to push an instruction at the beginning of the transaction.
 
 ```ts
 let builder = transactionBuilder()
@@ -57,6 +57,18 @@ Since transaction builders are immutable, we must be careful to always assign th
 ```ts
 builder = builder.add(myWrappedInstruction);
 builder = builder.prepend(myWrappedInstruction);
+```
+
+Note that either of these methods also accept other transaction builders and will merge them into the current one. In practice, this means program libraries can write (or [auto-generate](./kinobi.md)) their own helper methods that return transaction builders so they can be composed together by the end-user.
+
+```ts
+import { transferSol, addMemo } from '@metaplex-foundation/mpl-essentials';
+import { createNft } from '@metaplex-foundation/mpl-token-metadata';
+
+let builder = transactionBuilder()
+  .add(addMemo(umi, { ... }))
+  .add(createNft(umi, { ... }))
+  .add(transferSol(umi, { ... }))
 ```
 
 You may also split a transaction builder into two if, for instance, the transaction that would be created from the original builder would be too big to be sent to the blockchain. To do so, you may use the [`splitByIndex`](https://umi-docs.vercel.app/classes/umi.TransactionBuilder.html#splitByIndex) method or the more dangerous [`unsafeSplitByTransactionSize`](https://umi-docs.vercel.app/classes/umi.TransactionBuilder.html#unsafeSplitByTransactionSize) method. Make sure to ready the comment on the API reference for the latter.
@@ -92,37 +104,118 @@ const bytes = builder.getBytesCreatedOnChain(); // Return the total number of by
 const solAmount = await builder.getRentCreatedOnChain(umi); // Return the total number of bytes that would be created on chain.
 ```
 
+Notice that we are passing an instance of `Umi` to some of them. This is because they will need to access some of Umi's core interfaces to perform their task.
+
 Now that we have our transaction builder ready, let's see how we can use it to build, sign and send transactions.
 
 ## Building and signing transactions
 
-TODO
+When you're ready to build your transaction, you may simply use the `build` method. This method will return a `Transaction` object that you can then sign and send to the blockchain.
 
 ```ts
-TODO
+const transaction = builder.build(umi);
 ```
+
+Note that the `build` method will throw an error if no blockhash was set on the builder. If you wish to build the transaction using the latest blockhash, you may use the `buildWithLatestBlockhash` method instead.
+
+```ts
+const transaction = await builder.buildWithLatestBlockhash(umi);
+```
+
+At this point, you could use the built transaction and get all deduplicated signers from the builder via the `getSigners` method to sign it (See [Signing transactions](./publickeys-signers.md#signing-transactions) for more details). However, Umi provides a `buildAndSign` method that can do that for you. When using `buildAndSign`, the latest blockhash will be used if and only if it was not set on the builder.
+
+```ts
+const signedTransaction = await builder.buildAndSign(umi);
+``` 
 
 ## Sending transactions
 
-TODO
+Now that we have a signed transaction, let's see how we can send it to the blockchain.
+
+One way to do this is to use the `sendTransaction` and `confirmTransaction` methods of the `RpcInterface` like so. When confirming the transaction, we have to provide a confirm strategy which can be of type `blockhash` or `durableNonce`, each of them requiring a different set of parameters. Here's how we would send and confirm a transaction using the `blockhash` strategy.
 
 ```ts
-TODO
+const signedTransaction = await builder.buildAndSign(umi);
+const signature = await umi.rpc.sendTransaction(signedTransaction);
+const confirmResult = await umi.rpc.confirmTransaction(signature, {
+  strategy: { type: 'blockhash', ...(await umi.rpc.getLatestBlockhash()) }
+});
+```
+
+Since this is a very common task, Umi provides helper methods on the transaction builder to do this for us. That way, the code above can be rewritten as follows.
+
+```ts
+const confirmResult = await builder.sendAndConfirm(umi);
+```
+
+This will build and sign the transaction using the `buildAndSign` method before sending and confirming the transaction using the `blockhash` strategy by default. It will reuse the transaction blockhash for the confirm strategy to avoid the extra Http request when applicable. That being said, you may still explicitly provide a confirm strategy or set any options like so.
+
+```ts
+const confirmResult = await builder.sendAndConfirm(umi, {
+  // Send options.
+  send: {
+    skipPreflight: true,
+  },
+
+  // Confirm options.
+  confirm: {
+    strategy: { type: 'durableNonce', minContextSlot, nonceAccountPubkey, nonceValue },
+  }
+});
+```
+
+Also note that you may send a transaction without waiting for it to be confirmed via the `send` method of the transaction builder.
+
+```ts
+const signature = await builder.send(umi);
 ```
 
 ## Using address lookup tables
 
-TODO
-- Mention mpl-essentials for creating LUTs
+Starting from version 0 transactions, you may use address lookup tables to reduce the size of transactions.
 
 ```ts
-TODO
+const myLut: AddressLookupTableInput = {
+  publicKey: publicKey('...') // The address of the lookup table account.
+  addresses: [ // The addresses registered in the lookup table.
+    publicKey('...'),
+    publicKey('...'),
+    publicKey('...'),
+  ]
+}
+
+builder = builder.setAddressLookupTables([myLut]);
+```
+
+To create an address lookup table, you might be intersted in the `@metaplex-foundation/mpl-essentials` package which provides helpers for creating them.
+
+```ts
+import { createLut } from '@metaplex-foundation/mpl-essentials';
+
+// Create a lookup table.
+const [lutBuilder, lut] = createLut(umi, {
+  recentSlot: await umi.rpc.getSlot({ commitment: 'finalized' }),
+  addresses: [myAddressA, myAddressB, myAddressC],
+});
+await lutBuilder.sendAndConfirm(umi);
+
+// Later on, use the created lookup table.
+myBuilder = myBuilder.setAddressLookupTables([lut]);
 ```
 
 ## Fetching sent transactions
 
-TODO
+Let's now take a look at how to fetch a transaction that was sent to the blockchain.
+
+For that, we can use the `getTransaction` method of the `RpcInterface` and provide the signature of the transaction we want to fetch.
 
 ```ts
-TODO
+const transaction = await umi.rpc.getTransaction(signature);
+```
+
+This will return an instance of [`TransactionWithMeta`](https://umi-docs.vercel.app/types/umi.TransactionWithMeta.html) which is a superset of `Transaction` and contains an extra `meta` property that provides additional information on the transaction. For instance, you could access the logs of a sent transaction like so.
+
+```ts
+const transaction = await umi.rpc.getTransaction(signature);
+const logs: string[] = transaction.meta.logs;
 ```
