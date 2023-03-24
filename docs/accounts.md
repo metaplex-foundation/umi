@@ -1,6 +1,6 @@
 # Fetching accounts
 
-Let's see how we can fetch account data from the Solana blockchain using Umi. For that we will need to the [`RpcInterface`](https://umi-docs.vercel.app/interfaces/umi.RpcInterface.html) to fetch accounts with serialized data and the [`SerializerInterface`](https://umi-docs.vercel.app/interfaces/umi.SerializerInterface.html) to help deserialize them.
+Let's see how we can fetch account data from the Solana blockchain using Umi. For that, we will need the [`RpcInterface`](https://umi-docs.vercel.app/interfaces/umi.RpcInterface.html) to fetch accounts with serialized data and the [`SerializerInterface`](https://umi-docs.vercel.app/interfaces/umi.SerializerInterface.html) to help deserialize them.
 
 ## Account definitions
 
@@ -13,7 +13,7 @@ type RpcAccount = AccountHeader & {
 };
 ```
 
-It also defines a `MaybeRpcAccount` type that represents an `RpcAccount` that may or may exists. When the account does not exist, it keeps track of its public key so that, in a list of accounts, we know which public key was not found.
+It also defines a `MaybeRpcAccount` type that represents an `RpcAccount` that may or may exist. When the account does not exist, it keeps track of its public key so that, in a list of accounts, we know which public key was not found.
 
 ```ts
 type MaybeRpcAccount =
@@ -71,7 +71,7 @@ const slicedProgramAccounts = await umi.rpc.getProgramAccounts(myProgramId, {
   dataSlice: { offset: 32, length: 8 },
 });
 
-// Fetch some accounts from a program that match a given set of filters.
+// Fetch some accounts from a program that matches a given set of filters.
 const filteredProgramAccounts = await umi.rpc.getProgramAccounts(myProgramId, {
   filters: [
     { dataSize: 42 },
@@ -84,7 +84,7 @@ Note that when fetching program accounts, you might be interested in [`GpaBuilde
 
 ## Deserializing accounts
 
-In order to turn a `RpcAccount` into an deserialized `Account<T>`, we simply need the `deserializeAccount` function and a `Serializer` that knows how to deserialize the account's data. You can read more about `Serializer`s in the [Serializers page](./serializers.md) but here's a quick example assuming the data is composed of two public keys and one `u64` number.
+In order to turn a `RpcAccount` into a deserialized `Account<T>`, we simply need the `deserializeAccount` function and a `Serializer` that knows how to deserialize the account's data. You can read more about `Serializer`s in the [Serializers page](./serializers.md) but here's a quick example assuming the data is composed of two public keys and one `u64` number.
 
 ```ts
 // Given an existing RPC account.

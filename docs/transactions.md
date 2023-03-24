@@ -59,7 +59,7 @@ builder = builder.add(myWrappedInstruction);
 builder = builder.prepend(myWrappedInstruction);
 ```
 
-Note that either of these methods also accept other transaction builders and will merge them into the current one. In practice, this means program libraries can write (or [auto-generate](./kinobi.md)) their own helper methods that return transaction builders so they can be composed together by the end-user.
+Note that either of these methods also accepts other transaction builders and will merge them into the current one. In practice, this means program libraries can write (or [auto-generate](./kinobi.md)) their own helper methods that return transaction builders so they can be composed together by the end-user.
 
 ```ts
 import { transferSol, addMemo } from '@metaplex-foundation/mpl-essentials';
@@ -71,7 +71,7 @@ let builder = transactionBuilder()
   .add(transferSol(umi, { ... }))
 ```
 
-You may also split a transaction builder into two if, for instance, the transaction that would be created from the original builder would be too big to be sent to the blockchain. To do so, you may use the [`splitByIndex`](https://umi-docs.vercel.app/classes/umi.TransactionBuilder.html#splitByIndex) method or the more dangerous [`unsafeSplitByTransactionSize`](https://umi-docs.vercel.app/classes/umi.TransactionBuilder.html#unsafeSplitByTransactionSize) method. Make sure to ready the comment on the API reference for the latter.
+You may also split a transaction builder into two if, for instance, the transaction that would be created from the original builder would be too big to be sent to the blockchain. To do so, you may use the [`splitByIndex`](https://umi-docs.vercel.app/classes/umi.TransactionBuilder.html#splitByIndex) method or the more dangerous [`unsafeSplitByTransactionSize`](https://umi-docs.vercel.app/classes/umi.TransactionBuilder.html#unsafeSplitByTransactionSize) method. Make sure to read the comment on the API reference for the latter.
 
 ```ts
 const [builderA, builderB] = builder.splitByIndex(2);
@@ -187,7 +187,7 @@ const myLut: AddressLookupTableInput = {
 builder = builder.setAddressLookupTables([myLut]);
 ```
 
-To create an address lookup table, you might be intersted in the `@metaplex-foundation/mpl-essentials` package which provides helpers for creating them.
+To create an address lookup table, you might be interested in the `@metaplex-foundation/mpl-essentials` package which provides helpers for creating them.
 
 ```ts
 import { createLut } from '@metaplex-foundation/mpl-essentials';
