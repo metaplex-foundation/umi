@@ -141,13 +141,82 @@ bitArray(1).deserialize(Uint8Array.from([0b10101010])); // -> [booleans, 1];
 
 ## The Serializer interface
 
+We've seen how serializers are defined, how they can be transformed and listed a few built-in serializers provided by Umi. However, we've not yet seen how we can build our own serializers by using a set of primitives provided by the `SerializerInterface`.
+
+The `SerializerInterface` offers a large set of methods that can be used to create serializers for any type. These can be used to compose more complex serializers from simpler ones. For instance, here's an object serializer that is composed of a string, a public key and a set of numbers.
+
+```ts
+type MyObject = {
+  name: string;
+  publicKey: PublicKey;
+  numbers: number[];
+};
+
+const mySerializer: Serializer<MyObject> = umi.serializer.struct([
+  ['name', umi.serializer.string()],
+  ['publicKey', umi.serializer.publicKey()],
+  ['numbers', umi.serializer.array(umi.serializer.u32())],
+]);
+```
+
+Each of the methods provided by the `SerializerInterface` define their own arguments — i.e. the `array` method requires the item serializer as a first argument — but all of them have an optional `options` argument at the end that can be used to tweak the behaviour of the serializer. The attributes inside the `options` argument may vary from one method to the other but they all share one common attribute: `description`. This can be used to provide a specific description of the created serializer. Notice that, if omitted, a good-enough description will be created for you.
+
+```ts
+umi.serializer.string().description; // -> 'string(utf8; u32(le))'.
+umi.serializer.string({ description: 'My custom string description' });
+```
+
+Now that we know how they work, let's have a look at the methods provided by the `SerializerInterface`.
+
 ### Numbers
 
-TODO
+The `SerializerInterface` ships with 12 number serializers: 5 unsigned integers, 5 signed integers and 2 floating point numbers. These can be used to serialize and deserialize numbers of different sizes. When the size of the number is greater than 32 bits, the serializer returned is a `Serializer<number | bigint, bigint>` instead of a `Serializer<number>` since JavaScript's native `number` type does not support numbers larger than 2^53.
+
+```ts
+// Unsigned integers.
+umi.serializer.u8(); // -> Serializer<number>
+umi.serializer.u16(); // -> Serializer<number>
+umi.serializer.u32(); // -> Serializer<number>
+umi.serializer.u64(); // -> Serializer<number | bigint, bigint>
+umi.serializer.u128(); // -> Serializer<number | bigint, bigint>
+
+// Signed integers.
+umi.serializer.i8(); // -> Serializer<number>
+umi.serializer.i16(); // -> Serializer<number>
+umi.serializer.i32(); // -> Serializer<number>
+umi.serializer.i64(); // -> Serializer<number | bigint, bigint>
+umi.serializer.i128(); // -> Serializer<number | bigint, bigint>
+
+// Floating point numbers.
+umi.serializer.f32(); // -> Serializer<number>
+umi.serializer.f64(); // -> Serializer<number>
+```
+
+Aside from the `u8` and `i8` methods that create 1-byte serializers, all other number serializers are represented in little-endian by default and can be configured to use a different endianness. This can be done by passing the `endian` option to the serializer.
+
+```ts
+umi.serializer.u64(); // Little-endian.
+umi.serializer.u64({ endian: Endian.Little }); // Little-endian.
+umi.serializer.u64({ endian: Endian.Big }); // Big-endian.
+```
+
+Note that, since number serializers are often reused in other serializers, Umi defines the following `NumberSerializer` type to include both `number` and `bigint` types.
+
+```ts
+type NumberSerializer =
+  | Serializer<number>
+  | Serializer<number | bigint, bigint>;
+```
 
 ### Booleans
 
-TODO
+The `bool` method can be used to create a `Serializer<boolean>`. By default it uses a `u8` number to store the boolean value but this can be changed by passing the `size` option.
+
+```ts
+umi.serializer.bool(); // -> Uses a u8.
+umi.serializer.bool({ size: umi.serializer.u32() }); // -> Uses a u32.
+umi.serializer.bool({ size: umi.serializer.u32({ endian: Endian.Big }) }); // -> Uses a big-endian u32.
+```
 
 ### Strings
 
