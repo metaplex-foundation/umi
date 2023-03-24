@@ -14,10 +14,6 @@ TODO
 
 TODO
 
-## Baked-in serializers
-
-TODO
-
 ## GpaBuilders
 
 TODO
