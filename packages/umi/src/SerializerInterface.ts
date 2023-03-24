@@ -463,7 +463,7 @@ export type SingleByteNumberSerializerOptions = BaseSerializerOptions;
 export type NumberSerializerOptions = BaseSerializerOptions & {
   /**
    * Whether the serializer should use little-endian or big-endian encoding.
-   * @defaultValue `Endian.Big`
+   * @defaultValue `Endian.Little`
    */
   endian?: Endian;
 };

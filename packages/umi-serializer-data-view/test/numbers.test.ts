@@ -221,7 +221,7 @@ test('sizes', (t) => {
   t.is(serializer.f64().maxSize, 8);
 });
 
-test.only('float (de)serialization', (t) => {
+test('float (de)serialization', (t) => {
   const { f32, f64 } = new DataViewSerializer();
 
   // Zero.
