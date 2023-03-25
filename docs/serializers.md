@@ -321,7 +321,24 @@ umi.serializer.map(umi.serializer.u8(), umi.serializer.u8(), { size: 'remainder'
 
 ### Options and Nullables
 
-TODO
+The `SerializerInterface` provides two methods to serialize optional values:
+- `option`: Serializes an `Option` instance ([See documentation](./helpers.md#options)). It accepts a `Serializer<T>` as an argument and returns a `Serializer<Option<T>>`.
+- `nullable`: Serializes a value that can be null. It accepts a `Serializer<T>` as an argument and returns a `Serializer<T | null>`.
+
+Both methods serialize optional values by prefixing them with a boolean value that indicates whether the value is present or not. If the prefixed boolean is `false`, the value is `null` (for nullables) or `None` (for options) and we can skip deserializing the actual value. Otherwise, the value is deserialized using the provided serializer and returned.
+
+They both offer the same options to configure the behaviour of the created serializer:
+- `prefix`: The `NumberSerializer` to use to serialize and deserialize the boolean prefix. By default, it uses a `u8` prefix in little-endian.
+- `fixed`: When this is `true`, it returns a fixed-size serializer by changing the serialization logic when the value is empty. In this case, the serialized value will be padded with zero such that empty values and filled values are serialized using the same amount of bytes. Note that this only works if the item serializer is of fixed size.
+
+```ts
+// Options.
+umi.serializer.option(umi.serializer.publicKey()) // Option<PublicKey> with a u8 prefix.
+umi.serializer.option(umi.serializer.publicKey(), { prefix: umi.serializer.u16() }) // Option<PublicKey> with a u16 prefix.
+umi.serializer.option(umi.serializer.publicKey(), { fixed: true }) // Option<PublicKey> with a fixed size.
+
+// TODO: Nullable.
+```
 
 ### Structs
 
