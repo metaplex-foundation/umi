@@ -252,15 +252,43 @@ umi.serializer.string({ size: 'variable' }).serialize('Hi'); // -> 0x4869
 
 ### Bytes
 
-TODO
+The `bytes` method returns a `Serializer<Uint8Array>` which deserializes a `Uint8Array` into a... `Uint8Array`. Whilst this might seem a bit useless, it can be useful when composed into other serializers. For example, you could use it in a `struct` serializer to say that a particular field should be left unserialized.
+
+Very similarly to the `string` method, the `bytes` method contains a `size` option that configures how the size of the byte array is stored and restored. The same size strategies are supported as for the `string` method except that the default size here is the `"variable"` strategy. To recap:
+- `NumberSerializer`: Uses a prefixed number serializer to store and restore the size of the byte array.
+- `number`: Uses a fixed size to store the byte array.
+- `"variable"`: Passes the buffer as-is when serializing and returns the remaining of the buffer when deserializing. Defaults behaviour.
+
+```ts
+// Default behaviour: variable size.
+umi.serializer.bytes().serialize(new Uint8Array([42])); // -> 0x2a
+
+// Custom size: u16 (little-endian) size.
+umi.serializer.bytes({ size: umi.serializer.u16() }).serialize(new Uint8Array([42])); // -> 0x01002a
+
+// Custom size: 5 bytes.
+umi.serializer.bytes({ size: 5 }).serialize(new Uint8Array([42])); // -> 0x2a00000000
+```
 
 ### PublicKeys
 
-TODO
+The `publicKey` method returns a `Serializer<PublicKey>` that can be used to serialize and deserialize public keys. Here's an example serializing and deserializing the same public key.
+
+```ts
+const myPublicKey = publicKey('...');
+const buffer = umi.serializer.publicKey().serialize(myPublicKey);
+const [myDeserializedPublicKey, offset] = umi.serializer.publicKey().deserialize(buffer);
+samePublicKey(myPublicKey, myDeserializedPublicKey); // -> true
+```
 
 ### Units
 
-TODO
+The `unit` method returns a `Serializer<void>` that serializes `undefined` into an empty `Uint8Array` and returns `undefined` without consuming any bytes when deserializing. This is more of an low-level serializer that can be used internally by other serializers. For instance, this is how `dataEnum` serializes describe empty variants internally.
+
+```ts
+umi.serializer.unit().serialize(undefined); // -> new Uint8Array([])
+umi.serializer.unit().deserialize(new Uint8Array([42])); // -> [undefined, 0]
+```
 
 ### Arrays, Maps and Sets
 
