@@ -290,9 +290,34 @@ umi.serializer.unit().serialize(undefined); // -> new Uint8Array([])
 umi.serializer.unit().deserialize(new Uint8Array([42])); // -> [undefined, 0]
 ```
 
-### Arrays, Maps and Sets
+### Arrays, Sets and Maps
 
-TODO
+The `SerializerInterface` provides three methods to serialize lists and maps:
+- `array`: Serializes an array of items. It accepts a `Serializer<T>` as an argument and returns a `Serializer<T[]>`.
+- `set`: Serializes a set of unique items. It accepts a `Serializer<T>` as an argument and returns a `Serializer<Set<T>>`.
+- `map`: Serializes a map of key-value pairs. It accepts a `Serializer<K>` for the keys and a `Serializer<V>` for the values as arguments and returns a `Serializer<Map<K, V>>`.
+
+All three methods accepts the same `size` option that configures how the lenght of the array, set or map is stored and restored. This is very similar to how the `string` and `bytes` methods work. Here are the supported strategies:
+- `NumberSerializer`: Uses a number serializer that prefixes the content with its size. By default, the size is stored using a `u32` prefix in little-endian.
+- `number`: Returns a array, set or map serializer with a fixed number of items.
+- `"remainder"`: Returns a array, set or map serializer that infers the number of items by dividing the rest of the buffer by the fixed size of its item. For instance, if a buffer as 64 bytes remaining and each item of an array is 16 bytes long, the array will be deserialized with 4 items. Note that this option is only available for fixed-size items. For maps, both the key serializer and the value serializer must have a fixed size.
+
+```ts
+// Arrays.
+umi.serializer.array(umi.serializer.u8()) // Array of u8 items with a u32 size prefix.
+umi.serializer.array(umi.serializer.u8(), { size: 5 }) // Array of 5 u8 items.
+umi.serializer.array(umi.serializer.u8(), { size: 'remainder' }) // Array of u8 items with a variable size.
+
+// Sets.
+umi.serializer.set(umi.serializer.u8()) // Set of u8 items with a u32 size prefix.
+umi.serializer.set(umi.serializer.u8(), { size: 5 }) // Set of 5 u8 items.
+umi.serializer.set(umi.serializer.u8(), { size: 'remainder' }) // Set of u8 items with a variable size.
+
+// Maps.
+umi.serializer.map(umi.serializer.u8(), umi.serializer.u8()) // Map of (u8, u8) entries with a u32 size prefix.
+umi.serializer.map(umi.serializer.u8(), umi.serializer.u8(), { size: 5 }) // Map of 5 (u8, u8) entries.
+umi.serializer.map(umi.serializer.u8(), umi.serializer.u8(), { size: 'remainder' }) // Map of (u8, u8) entries with a variable size.
+```
 
 ### Options and Nullables
 
