@@ -220,13 +220,41 @@ umi.serializer.bool({ size: umi.serializer.u32({ endian: Endian.Big }) }); // ->
 
 ### Strings
 
+The `string` method returns a `Serializer<string>` that can be used to serialize strings using various encodings and size strategies. It contains the following options:
+- `encoding`: A `Serializer<string>` that represents the encoding to use when serializing and deserializing the string. Defaults to the `utf8` built-in serializer. You might be wondering, why do we need to pass a `Serializer<string>` to create a `Serializer<string>`? This is because the purpose of the `encoding` serializer is only to convert some text to and from a byte array without worrying about anything else such as storing the size of the string. This allows us to plug-in any encoding we want, whilst being able to leverage all other options provided by this `string` method.
+- `size`: In order to know how long the string goes on for in a given buffer, we need to knows its size in bytes. To that end, one of the following size strategies can be used:
+  - `NumberSerializer`: When a number serializer is passed, it will be used as a prefix to store and restore the size of the string. By default, the size is stored using a `u32` prefix in little-endian — which is the default behaviour for borsh serialization.
+  - `number`: The byte size can also be provided explicitly as a number. This will create a fixed-size serializer that does not use any size prefix and will always use the same number of bytes to store the string.
+  - `"variable"`: When the string `"variable"` is passed as a size, it will create a variable-size serializer that simply uses all the remaining bytes in the buffer when deserializing. When serializing, it will simply return the result of the `encoding` serializer without storing the size of the serialized string.
+
+
+```ts
+// Serialized values using different encodings for reference.
+utf8.serialize('Hi'); // -> 0x4869
+base58.serialize('Hi'); // -> 0x03c9
+
+// Default behaviour: utf8 encoding and u32 (litte-endian) size.
+umi.serializer.string().serialize('Hi'); // -> 0x020000004869
+
+// Custom encoding: base58.
+umi.serializer.string({ encoding: base58 }).serialize('Hi'); // -> 0x0200000003c9
+
+// Custom size: u16 (big-endian) size.
+const u16BE = umi.serializer.u16({ endian: Endian.Big });
+umi.serializer.string({ size: u16BE }).serialize('Hi'); // -> 0x00024869
+
+// Custom size: 5 bytes.
+umi.serializer.string({ size: 5 }).serialize('Hi'); // -> 0x4869000000
+
+// Custom size: variable.
+umi.serializer.string({ size: 'variable' }).serialize('Hi'); // -> 0x4869
+```
+
+### Bytes
+
 TODO
 
 ### PublicKeys
-
-TODO
-
-### Bytes
 
 TODO
 
