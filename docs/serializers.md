@@ -382,12 +382,113 @@ umi.serializer.struct<PersonArgs, Person>([
 
 ### Tuples
 
-TODO
+The `SerializerInterface` offers a `tuple` method that can be used to create tuple serializers. Whilst tuples are not native in JavaScript, they can be represented in TypeScript using an array such that each item has its own defined type. For instance, a `(String, u8)` tuple in Rust can be represented as a `[string, number]` in TypeScript.
+
+The `tuple` method accepts an array of serializers as its first argument that should match the items of the tuple in the same order. Here are a few examples.
+
+```ts
+umi.serializer.tuple([umi.serializer.bool()]); // Serializer<[bool]>
+umi.serializer.tuple([umi.serializer.string(), umi.serializer.u8()]); // Serializer<[string, number]>
+umi.serializer.tuple([umi.serializer.publicKey(), umi.serializer.u64()]); // Serializer<[PublicKey, number | bigint], [PublicKey, bigint]>
+```
 
 ### Scalar Enums
 
-TODO
+The `enum` method can be used to create serializers for scalar enums by storing the value (or index) of the variant as a `u8` number.
+
+It requires the enum constructor as its first argument. For instance, if an enum is defined as `enum Direction { Left }`, then the constructor `Direction` should be passed as the first argument. The serializer created will accept any variant of the enum as input, as well as its value or its name. Here is an example.
+
+```ts
+enum Direction { Left, Right, Up, Down };
+
+const directionSerializer = umi.serializer.enum(Direction); // Serializer<Direction>
+directionSerializer.serialize(Direction.Left); // -> 0x00
+directionSerializer.serialize(Direction.Right); // -> 0x01
+directionSerializer.serialize('Left'); // -> 0x00
+directionSerializer.serialize('Right'); // -> 0x01
+directionSerializer.serialize(0); // -> 0x00
+directionSerializer.serialize(1); // -> 0x01
+
+// The deserialized value is always an instance of the enum.
+directionSerializer.deserialize(new Uint8Array([1])); // -> [Direction.Right, 1]
+```
+
+Note that this only works with scalar enum whose values are numbers. If you use the `enum` method with a string enum — e.g. `enum Direction { Left = 'LEFT' }` — it will ignore the text value and only use the index of the variant.
+
+```ts
+enum Direction { Left = 'LEFT', Right = 'RIGHT', Up = 'UP', Down = 'DOWN' };
+
+const directionSerializer = umi.serializer.enum(Direction); // Serializer<Direction>
+directionSerializer.serialize(Direction.Left); // -> 0x00
+directionSerializer.serialize('Left'); // -> 0x00
+
+// Note that the enum string value can be used as input.
+directionSerializer.serialize('LEFT'); // -> 0x00
+```
 
 ### Data Enums
 
-TODO
+In Rust, enums are powerful data types whose variants can be one of the following:
+- An empty variant — e.g. `enum Message { Quit }`.
+- A tuple variant — e.g. `enum Message { Write(String) }`.
+- A struct variant — e.g. `enum Message { Move { x: i32, y: i32 } }`.
+
+Whilst we do not have such powerful enums in JavaScript, we can emulate them in TypeScript using a union of objects such that each object is differenciated by a specific field. We call this a data enum.
+
+In Umi, we use the `__kind` field to distinguish between the different variants of a data enum. Additionally, since all variants are objects, we use the `fields` property to wrap the array of tuple variants. Here is an example.
+
+```ts
+type Message = 
+  | { __kind: 'Quit' } // Empty variant.
+  | { __kind: 'Write'; fields: [string] } // Tuple variant.
+  | { __kind: 'Move'; x: number; y: number }; // Struct variant.
+```
+
+The `dataEnum` method of the `SerializerInterface` allows us to create serializers for data enums. It requires the name and serializer of each variant as a first argument. Similarly to the `struct` method, these are defined as an array of variant tuples where the first item is the name of the variant and the second item is the serializer of the variant. Since empty variants do not have data to serialize, they simply use the `unit` serializer. Here is how we can create a data enum serializer for our previous example.
+
+```ts
+const messageSerializer = umi.serializer.dataEnum<Message>([
+  // Empty variant.
+  ['Quit', umi.serializer.unit()],
+  // Tuple variant.
+  ['Write', umi.serializer.struct<{ fields: [string] }>([
+    ['fields', umi.serializer.tuple([umi.serializer.string()])]
+  ])],
+  // Struct variant.
+  ['Move', umi.serializer.struct<{ x: number; y: number }>([
+    ['x', umi.serializer.i32()],
+    ['y', umi.serializer.i32()]
+  ])],
+]);
+```
+
+Note that this serialization is compatible with the borsh serialization of Rust enums. First, it uses a `u32` number in little-endiant to store the index of the variant. If the selected variant is an empty variant, it stops there. Otherwise, it uses the serializer of the variant to serialize its data.
+
+```ts
+messageSerializer.serialize({ __kind: 'Quit' }); // -> 0x00000000
+messageSerializer.serialize({ __kind: 'Write', fields: ['Hi'] }); // -> 0x01000000020000004869
+messageSerializer.serialize({ __kind: 'Move', x: 5, y: 6 }); // -> 0x020000000500000006000000
+```
+
+The `dataEnum` method also accepts a `prefix` option that allows us to select a custom number serializer for the variant index — instead of the default `u32` as mentioned above. Here's an example using a `u8` instead of a `u32`.
+
+```ts
+const messageSerializer = umi.serializer.dataEnum<Message>([...], {
+  prefix: umi.serializer.u8()
+});
+
+messageSerializer.serialize({ __kind: 'Quit' }); // -> 0x00
+messageSerializer.serialize({ __kind: 'Write', fields: ['Hi'] }); // -> 0x01020000004869
+messageSerializer.serialize({ __kind: 'Move', x: 5, y: 6 }); // -> 0x020500000006000000
+```
+
+Note that, when dealing with data enums, you may want to offer some helper methods to improve the developer experience so that it feels closer to the Rust-way of handling enums. This is something that [Kinobi](./kinobi.md) offers to generated JavaScript clients out of the box.
+
+```ts
+// Example of helper methods.
+message('Quit'); // -> { __kind: 'Quit' }
+message('Write', ['Hi']); // -> { __kind: 'Write', fields: ['Hi'] }
+message('Move', { x: 5, y: 6 }); // -> { __kind: 'Move', x: 5, y: 6 }
+isMessage('Quit', message('Quit')); // -> true
+isMessage('Write', message('Quit')); // -> false
+```
