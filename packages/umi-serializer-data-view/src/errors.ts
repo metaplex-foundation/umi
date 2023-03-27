@@ -1,6 +1,6 @@
 import { UmiError } from '@metaplex-foundation/umi';
 
-/** @category Errors*/
+/** @category Errors */
 export class DataViewSerializerError extends UmiError {
   readonly name: string = 'DataViewSerializerError';
 

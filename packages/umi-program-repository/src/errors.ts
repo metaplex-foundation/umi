@@ -30,7 +30,7 @@ export class ProgramNotRecognizedError extends SdkError {
   }
 }
 
-/** @category Errors*/
+/** @category Errors */
 export class ProgramErrorNotRecognizedError extends ProgramError {
   readonly name: string = 'ProgramErrorNotRecognizedError';
 
