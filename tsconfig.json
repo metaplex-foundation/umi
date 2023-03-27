@@ -32,18 +32,23 @@
   "typedocOptions": {
     "entryPoints": ".",
     "entryPointStrategy": "packages",
-    "out": "docs",
+    "out": "typedoc",
     "readme": "README.md",
-    "name": "API References",
+    "name": "Umi — API References",
     "includeVersion": true,
     "excludeNotDocumented": false,
-    "sort": ["static-first", "required-first", "source-order"],
+    "categorizeByGroup": false,
+    "defaultCategory": "Other",
     "categoryOrder": [
-      "Constructors",
-      "Types",
-      "Inputs",
-      "Outputs",
-      "Contexts",
+      "Context and Interfaces",
+      "Signers and PublicKeys",
+      "Serializers",
+      "Transactions",
+      "Rpc",
+      "Http",
+      "Storage",
+      "Programs",
+      "Accounts",
       "*"
     ]
   }

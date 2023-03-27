@@ -4,6 +4,12 @@ import type { ErrorWithLogs, Program } from './Program';
 import { PublicKey, PublicKeyInput } from './PublicKey';
 import { Transaction } from './Transaction';
 
+/**
+ * Defines the interface for a program repository.
+ * It allows us to register and retrieve programs when needed.
+ *
+ * @category Context and Interfaces
+ */
 export interface ProgramRepositoryInterface {
   /**
    * Whether a given program is registered in the repository.
@@ -73,6 +79,10 @@ export interface ProgramRepositoryInterface {
   ): ProgramError | null;
 }
 
+/**
+ * An implementation of the {@link ProgramRepositoryInterface} that throws an error when called.
+ * @category Programs
+ */
 export class NullProgramRepository implements ProgramRepositoryInterface {
   private readonly error = new InterfaceImplementationMissingError(
     'ProgramRepositoryInterface',

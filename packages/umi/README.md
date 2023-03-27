@@ -1,9 +1,5 @@
 # umi
 
-A JS framework for Solana clients defining core interfaces.
+_A Solana Framework for JavaScript clients._
 
-## Installation
-
-```sh
-npm install @metaplex-foundation/umi
-```
+See the [main documentation](https://github.com/metaplex-foundation/umi#readme) for more information.

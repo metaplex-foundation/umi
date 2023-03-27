@@ -2,9 +2,10 @@ import type { Program } from '../Program';
 import { base58PublicKey } from '../PublicKey';
 import { UmiError } from './UmiError';
 
+/** @category Errors */
 export type UnderlyingProgramError = Error & { code?: number; logs?: string[] };
 
-/** @group Errors */
+/** @category Errors */
 export class ProgramError extends UmiError {
   readonly name: string = 'ProgramError';
 

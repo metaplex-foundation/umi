@@ -1,9 +1,9 @@
-/** @group Errors */
+/** @category Errors */
 export class TaskError extends Error {
   readonly name: string = 'TaskError';
 }
 
-/** @group Errors */
+/** @category Errors */
 export class TaskIsAlreadyRunningError extends TaskError {
   readonly name: string = 'TaskIsAlreadyRunningError';
 

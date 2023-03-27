@@ -1,6 +1,6 @@
 import { UmiError } from './UmiError';
 
-/** @group Errors */
+/** @category Errors */
 export class SdkError extends UmiError {
   readonly name: string = 'SdkError';
 

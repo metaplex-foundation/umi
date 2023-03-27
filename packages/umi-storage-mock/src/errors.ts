@@ -1,6 +1,6 @@
 import { SdkError } from '@metaplex-foundation/umi';
 
-/** @group Errors */
+/** @category Errors */
 export class AssetNotFoundError extends SdkError {
   readonly name: string = 'AssetNotFoundError';
 

@@ -2,13 +2,25 @@ import { PublicKey, samePublicKey } from './PublicKey';
 import { Transaction } from './Transaction';
 import { uniqueBy } from './utils';
 
-export type Signer = {
+/**
+ * Defines a public key that can sign transactions and messages.
+ * @category Context and Interfaces
+ */
+export interface Signer {
+  /** The public key of the Signer. */
   publicKey: PublicKey;
+  /** Signs the given message. */
   signMessage(message: Uint8Array): Promise<Uint8Array>;
+  /** Signs the given transaction. */
   signTransaction(transaction: Transaction): Promise<Transaction>;
+  /** Signs all the given transactions at once. */
   signAllTransactions(transactions: Transaction[]): Promise<Transaction[]>;
-};
+}
 
+/**
+ * Signs a transaction using the provided signers.
+ * @category Signers and PublicKeys
+ */
 export const signTransaction = async (
   transaction: Transaction,
   signers: Signer[]
@@ -18,6 +30,13 @@ export const signTransaction = async (
     return signer.signTransaction(unsigned);
   }, Promise.resolve(transaction));
 
+/**
+ * Signs multiple transactions using the provided signers
+ * such that signers that need to sign multiple transactions
+ * sign them all at once using the `signAllTransactions` method.
+ *
+ * @category Signers and PublicKeys
+ */
 export const signAllTransactions = async (
   transactionsWithSigners: {
     transaction: Transaction;
@@ -61,12 +80,28 @@ export const signAllTransactions = async (
   );
 };
 
+/**
+ * Whether the provided value is a `Signer`.
+ * @category Signers and PublicKeys
+ */
 export const isSigner = (value: PublicKey | Signer): value is Signer =>
   'publicKey' in value;
 
+/**
+ * Deduplicates the provided signers by public key.
+ * @category Signers and PublicKeys
+ */
 export const uniqueSigners = (signers: Signer[]): Signer[] =>
   uniqueBy(signers, samePublicKey);
 
+/**
+ * Creates a `Signer` that, when required to sign, does nothing.
+ * This can be useful when libraries require a `Signer` but
+ * we don't have one in the current environment. For example,
+ * if the transaction will then be signed in a backend server.
+ *
+ * @category Signers and PublicKeys
+ */
 export const createNoopSigner = (publicKey: PublicKey): Signer => ({
   publicKey,
   async signMessage(message: Uint8Array): Promise<Uint8Array> {
@@ -82,8 +117,16 @@ export const createNoopSigner = (publicKey: PublicKey): Signer => ({
   },
 });
 
+/**
+ * Creates a `Signer` that, when required to sign, throws an error.
+ * @category Signers and PublicKeys
+ */
 export const createNullSigner = (): Signer => new NullSigner();
 
+/**
+ * Creates a `Signer` that, when required to sign, throws an error.
+ * @category Signers and PublicKeys
+ */
 export class NullSigner implements Signer {
   // TODO(loris): Custom errors.
   get publicKey(): PublicKey {

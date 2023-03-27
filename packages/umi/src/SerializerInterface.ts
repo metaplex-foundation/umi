@@ -8,6 +8,12 @@ import type {
 } from './Serializer';
 import type { Nullable, Option } from './Option';
 
+/**
+ * Defines the interface for a set of serializers
+ * that can be used to serialize/deserialize any Serde types.
+ *
+ * @category Context and Interfaces
+ */
 export interface SerializerInterface {
   /**
    * Creates a serializer for a tuple-like array.
@@ -240,12 +246,20 @@ export interface SerializerInterface {
   ) => Serializer<PublicKey | PublicKeyInput, PublicKey>;
 }
 
+/**
+ * Get the name and serializer of each field in a struct.
+ * @category Serializers
+ */
 export type StructToSerializerTuple<T extends object, U extends T> = Array<
   {
     [K in keyof T]: [K, Serializer<T[K], U[K]>];
   }[keyof T]
 >;
 
+/**
+ * Get the name and serializer of each variant in a data enum.
+ * @category Serializers
+ */
 export type DataEnumToSerializerTuple<T extends DataEnum, U extends T> = Array<
   T extends any
     ? [
@@ -257,6 +271,10 @@ export type DataEnumToSerializerTuple<T extends DataEnum, U extends T> = Array<
     : never
 >;
 
+/**
+ * Defines the endianness of a number serializer.
+ * @category Serializers
+ */
 export enum Endian {
   Little = 'le',
   Big = 'be',
@@ -272,16 +290,30 @@ export enum Endian {
  * - or `'remainder'` to infer the number of items by dividing
  *   the rest of the buffer by the fixed size of its item.
  *   Note that this option is only available for fixed-size items.
+ *
+ * @category Serializers
  */
 export type ArrayLikeSerializerSize = NumberSerializer | number | 'remainder';
 
+/**
+ * Defines the common options for all methods in the serializer interface.
+ * @category Serializers
+ */
 export type BaseSerializerOptions = {
   /** A custom description for the serializer. */
   description?: string;
 };
 
+/**
+ * Defines the options for tuple serializers.
+ * @category Serializers
+ */
 export type TupleSerializerOptions = BaseSerializerOptions;
 
+/**
+ * Defines the options for array serializers.
+ * @category Serializers
+ */
 export type ArraySerializerOptions = BaseSerializerOptions & {
   /**
    * The size of the array.
@@ -290,6 +322,10 @@ export type ArraySerializerOptions = BaseSerializerOptions & {
   size?: ArrayLikeSerializerSize;
 };
 
+/**
+ * Defines the options for `Map` serializers.
+ * @category Serializers
+ */
 export type MapSerializerOptions = BaseSerializerOptions & {
   /**
    * The size of the map.
@@ -298,6 +334,10 @@ export type MapSerializerOptions = BaseSerializerOptions & {
   size?: ArrayLikeSerializerSize;
 };
 
+/**
+ * Defines the options for `Set` serializers.
+ * @category Serializers
+ */
 export type SetSerializerOptions = BaseSerializerOptions & {
   /**
    * The size of the set.
@@ -306,6 +346,10 @@ export type SetSerializerOptions = BaseSerializerOptions & {
   size?: ArrayLikeSerializerSize;
 };
 
+/**
+ * Defines the options for `Option` serializers.
+ * @category Serializers
+ */
 export type OptionSerializerOptions = BaseSerializerOptions & {
   /**
    * The serializer to use for the boolean prefix.
@@ -323,6 +367,10 @@ export type OptionSerializerOptions = BaseSerializerOptions & {
   fixed?: boolean;
 };
 
+/**
+ * Defines the options for `Nullable` serializers.
+ * @category Serializers
+ */
 export type NullableSerializerOptions = BaseSerializerOptions & {
   /**
    * The serializer to use for the boolean prefix.
@@ -340,10 +388,22 @@ export type NullableSerializerOptions = BaseSerializerOptions & {
   fixed?: boolean;
 };
 
+/**
+ * Defines the options for struct serializers.
+ * @category Serializers
+ */
 export type StructSerializerOptions = BaseSerializerOptions;
 
+/**
+ * Defines the options for scalar enum serializers.
+ * @category Serializers
+ */
 export type EnumSerializerOptions = BaseSerializerOptions;
 
+/**
+ * Defines the options for data enum serializers.
+ * @category Serializers
+ */
 export type DataEnumSerializerOptions = BaseSerializerOptions & {
   /**
    * The serializer to use for the length prefix
@@ -352,6 +412,10 @@ export type DataEnumSerializerOptions = BaseSerializerOptions & {
   prefix?: NumberSerializer;
 };
 
+/**
+ * Defines the options for string serializers.
+ * @category Serializers
+ */
 export type StringSerializerOptions = BaseSerializerOptions & {
   /**
    * The size of the string. It can be one of the following:
@@ -368,6 +432,10 @@ export type StringSerializerOptions = BaseSerializerOptions & {
   encoding?: Serializer<string>;
 };
 
+/**
+ * Defines the options for boolean serializers.
+ * @category Serializers
+ */
 export type BoolSerializerOptions = BaseSerializerOptions & {
   /**
    * The number serializer to delegate to.
@@ -376,18 +444,34 @@ export type BoolSerializerOptions = BaseSerializerOptions & {
   size?: NumberSerializer;
 };
 
+/**
+ * Defines the options for unit serializers.
+ * @category Serializers
+ */
 export type UnitSerializerOptions = BaseSerializerOptions;
 
+/**
+ * Defines the options for u8 and i8 serializers.
+ * @category Serializers
+ */
 export type SingleByteNumberSerializerOptions = BaseSerializerOptions;
 
+/**
+ * Defines the options for number serializers that use more than one byte.
+ * @category Serializers
+ */
 export type NumberSerializerOptions = BaseSerializerOptions & {
   /**
    * Whether the serializer should use little-endian or big-endian encoding.
-   * @defaultValue `Endian.Big`
+   * @defaultValue `Endian.Little`
    */
   endian?: Endian;
 };
 
+/**
+ * Defines the options for bytes serializers.
+ * @category Serializers
+ */
 export type BytesSerializerOptions = BaseSerializerOptions & {
   /**
    * The size of the buffer. It can be one of the following:
@@ -399,8 +483,16 @@ export type BytesSerializerOptions = BaseSerializerOptions & {
   size?: NumberSerializer | number | 'variable';
 };
 
+/**
+ * Defines the options for `PublicKey` serializers.
+ * @category Serializers
+ */
 export type PublicKeySerializerOptions = BaseSerializerOptions;
 
+/**
+ * An implementation of the {@link SerializerInterface} that throws an error when called.
+ * @category Serializers
+ */
 export class NullSerializer implements SerializerInterface {
   private readonly error = new InterfaceImplementationMissingError(
     'SerializerInterface',

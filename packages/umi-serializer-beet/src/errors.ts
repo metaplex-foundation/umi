@@ -1,6 +1,6 @@
 import { UmiError } from '@metaplex-foundation/umi';
 
-/** @group Errors */
+/** @category Errors */
 export class BeetSerializerError extends UmiError {
   readonly name: string = 'BeetSerializerError';
 

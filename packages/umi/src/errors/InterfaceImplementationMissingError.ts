@@ -1,6 +1,6 @@
 import { SdkError } from './SdkError';
 
-/** @group Errors */
+/** @category Errors */
 export class InterfaceImplementationMissingError extends SdkError {
   readonly name: string = 'InterfaceImplementationMissingError';
 

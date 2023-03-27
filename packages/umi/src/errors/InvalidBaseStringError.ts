@@ -1,6 +1,6 @@
 import { SdkError } from './SdkError';
 
-/** @group Errors */
+/** @category Errors */
 export class InvalidBaseStringError extends SdkError {
   readonly name: string = 'InvalidBaseStringError';
 

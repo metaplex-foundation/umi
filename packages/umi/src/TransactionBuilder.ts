@@ -20,25 +20,52 @@ import {
   TRANSACTION_SIZE_LIMIT,
 } from './Transaction';
 
+/**
+ * Defines an generic object with wrapped instructions,
+ * such as a {@link TransactionBuilder}.
+ * @category Transactions
+ */
 export type HasWrappedInstructions = { items: WrappedInstruction[] };
+
+/**
+ * Defines all the possible inputs for adding items to a transaction builder.
+ * @category Transactions
+ */
 export type TransactionBuilderItemsInput =
   | WrappedInstruction
   | WrappedInstruction[]
   | HasWrappedInstructions
   | HasWrappedInstructions[];
 
+/**
+ * The available options of a transaction builder.
+ * @category Transactions
+ */
 export type TransactionBuilderOptions = {
+  /** The signer paying for the transaction fee. */
   feePayer?: Signer;
+  /** The version of the transaction to build. */
   version?: TransactionVersion;
+  /** The address lookup tables to attach to the built transaction. */
   addressLookupTables?: AddressLookupTableInput[];
+  /** The blockhash that should be associated with the built transaction. */
   blockhash?: Blockhash | BlockhashWithExpiryBlockHeight;
 };
 
+/**
+ * A set of options to use when sending and confirming
+ * a transaction directly from a transaction builder.
+ * @category Transactions
+ */
 export type TransactionBuilderSendAndConfirmOptions = {
   send?: RpcSendTransactionOptions;
   confirm?: Partial<RpcConfirmTransactionOptions>;
 };
 
+/**
+ * A builder that helps construct transactions.
+ * @category Transactions
+ */
 export class TransactionBuilder implements HasWrappedInstructions {
   constructor(
     readonly items: WrappedInstruction[] = [],
@@ -291,5 +318,9 @@ export class TransactionBuilder implements HasWrappedInstructions {
   }
 }
 
+/**
+ * Creates a new transaction builder.
+ * @category Transactions
+ */
 export const transactionBuilder = (items: WrappedInstruction[] = []) =>
   new TransactionBuilder(items);
