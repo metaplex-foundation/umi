@@ -4,7 +4,7 @@ Umi enables us to upload and download any file via the [`UploaderInterface`](htt
 
 ## Generic files
 
-Because the definition of a file varies between libraries and whether we are in the browser or in a Node server, Umi defines a type called `GenericFile` to so we can agree on a common type for files.
+Because the definition of a file varies between libraries and whether we are in the browser or a Node server, Umi defines a type called `GenericFile` so we can agree on a common type for files.
 
 ```ts
 type GenericFile = {
@@ -37,13 +37,13 @@ parseJsonFromGenericFile(myGenericFile);
 
 ## The uploader interface
 
-First and foremost, the `UploaderInterface` provides an `upload` method that can be used to upload one or several files at once. It returns an array of URIs that represent the uploaded files in the order in which they were passed in.
+First and foremost, the `UploaderInterface` provides an `upload` method that can be used to upload one or several files at once. It returns an array of URIs that represent the uploaded files in the order in which they were passed.
 
 ```ts
 const [myUri, myOtherUri] = await umi.uploader.upload([myFile, myOtherFile]);
 ```
 
- The `upload` method also accepts some options to configure the upload process such as an abort `signal` to cancel the upload or a `onProgress` callback to track the upload progress. Note that these may not be supported by all uploaders.
+ The `upload` method also accepts some options to configure the upload process such as an abort `signal` to cancel the upload or an `onProgress` callback to track the upload progress. Note that these may not be supported by all uploaders.
 
 ```ts
 const myUris = await umi.uploader.upload(myFiles, {
@@ -54,7 +54,7 @@ const myUris = await umi.uploader.upload(myFiles, {
 })
 ```
 
-The `UploaderInterface` also provides an `uploadJson` method that converts a JSON object into a file and uploads it.
+The `UploaderInterface` also provides a `uploadJson` method that converts a JSON object into a file and uploads it.
 
 ```ts
 const myUri = await umi.uploader.uploadJson({ name: 'John', age: 42 });
@@ -84,7 +84,7 @@ const myJsonObject = await umi.downloader.downloadJson<Person>(myUri);
 
 ## The mock storage
 
-Umi provides a mock storage helper class that acts as both a uploader and downloader. It can be used to test your application without having to setup a real storage service. Anything that is uploaded to the mock storage will be cached in memory such that it can be downloaded later on.
+Umi provides a mock storage helper class that acts as both an uploader and a downloader. It can be used to test your application without having to set up a real storage service. Anything that is uploaded to the mock storage will be cached in memory such that it can be downloaded later on.
 
 The mock storage helper is available as a [standalone package](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-storage-mock) and must be installed separately.
 
