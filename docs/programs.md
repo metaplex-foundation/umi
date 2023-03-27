@@ -26,7 +26,17 @@ You can [learn more about the attributes of the `Program` type via its API refer
 
 ## Adding Programs
 
-_Coming soon..._
+To register a new program to the program repository, you may use the `add` method of the `ProgramRepositoryInterface` like so.
+
+```ts
+umi.programs.add(myProgram);
+```
+
+If this program already exists in the repository — i.e. it has the same name or public key for at least one conflicting cluster — it will be overridden by the newly added program. To change this behavior, you may set the second argument `override` to `false`. In the example below, this program will only the retrieved if no other registered program matches the user's query.
+
+```ts
+umi.programs.add(myProgram, false);
+```
 
 ## Fetching Programs
 
