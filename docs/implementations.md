@@ -33,29 +33,30 @@ The page aims to list all the available implementations of [the interfaces defin
 
 | Description | Maintainer | Links |
 | --- | --- | --- |
-| TODO | Metaplex | [GitHub](TODO) / [NPM](TODO) |
-| TODO | Metaplex | [GitHub](TODO) / [NPM](TODO) |
+| Use Solana's web3.js | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-transaction-factory-web3js) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-transaction-factory-web3js) |
 
 ## Serializer Interface
 
 | Description | Maintainer | Links |
 | --- | --- | --- |
-| TODO | Metaplex | [GitHub](TODO) / [NPM](TODO) |
-| TODO | Metaplex | [GitHub](TODO) / [NPM](TODO) |
+| Uses JavaScript's native `DataView` API | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-serializer-data-view) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-serializer-data-view) |
+| Uses Metaplex's Beet library | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-serializer-beet) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-serializer-beet) |
 
 ## Uploader Interface
 
 | Description | Maintainer | Links |
 | --- | --- | --- |
-| TODO | Metaplex | [GitHub](TODO) / [NPM](TODO) |
-| TODO | Metaplex | [GitHub](TODO) / [NPM](TODO) |
+| Uses AWS | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-uploader-aws) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-uploader-aws) |
+| Uses Bundlr Network | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-uploader-bundlr) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-uploader-bundlr) |
+| Uses NFT.Storage | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-uploader-nft-storage) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-uploader-nft-storage) |
+| Uses a local cache to mock uploads and downloads | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-storage-mock) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-storage-mock) |
 
 ## Downloader Interface
 
 | Description | Maintainer | Links |
 | --- | --- | --- |
-| TODO | Metaplex | [GitHub](TODO) / [NPM](TODO) |
-| TODO | Metaplex | [GitHub](TODO) / [NPM](TODO) |
+| Uses the Http interface | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-downloader-http) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-downloader-http) |
+| Uses a local cache to mock uploads and downloads | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-storage-mock) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-storage-mock) |
 
 ## Http Interface
 
