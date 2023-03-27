@@ -1,3 +1,0 @@
-# Downloading assets
-
-TODO
