@@ -62,12 +62,10 @@ The page aims to list all the available implementations of [the interfaces defin
 
 | Description | Maintainer | Links |
 | --- | --- | --- |
-| TODO | Metaplex | [GitHub](TODO) / [NPM](TODO) |
-| TODO | Metaplex | [GitHub](TODO) / [NPM](TODO) |
+| Uses the fetch API via the `node-fetch` library | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-http-fetch) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-http-fetch) |
 
 ## Program Repository Interface
 
 | Description | Maintainer | Links |
 | --- | --- | --- |
-| TODO | Metaplex | [GitHub](TODO) / [NPM](TODO) |
-| TODO | Metaplex | [GitHub](TODO) / [NPM](TODO) |
+| Default implementation with no extra dependencies | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-program-repository) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-program-repository) |
