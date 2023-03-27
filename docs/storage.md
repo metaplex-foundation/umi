@@ -35,15 +35,70 @@ createGenericFileFromJson(myJson);
 parseJsonFromGenericFile(myGenericFile);
 ```
 
-
 ## The uploader interface
 
-_Coming soon..._
+First and foremost, the `UploaderInterface` provides an `upload` method that can be used to upload one or several files at once. It returns an array of URIs that represent the uploaded files in the order in which they were passed in.
+
+```ts
+const [myUri, myOtherUri] = await umi.uploader.upload([myFile, myOtherFile]);
+```
+
+ The `upload` method also accepts some options to configure the upload process such as an abort `signal` to cancel the upload or a `onProgress` callback to track the upload progress. Note that these may not be supported by all uploaders.
+
+```ts
+const myUris = await umi.uploader.upload(myFiles, {
+  signal: myAbortSignal,
+  onProgress: (percent) => {
+    console.log(`${percent * 100}% uploaded...`);
+  },
+})
+```
+
+The `UploaderInterface` also provides an `uploadJson` method that converts a JSON object into a file and uploads it.
+
+```ts
+const myUri = await umi.uploader.uploadJson({ name: 'John', age: 42 });
+```
+
+Finally, if an uploader charges an amount to store a set of files, you may find out how much it will cost by using the `getUploadPrice` method. It will return a custom `Amount` object which can be in any currency and unit.
+
+```ts
+const price = await umi.uploader.getUploadPrice(myFiles);
+```
 
 ## The downloader interface
 
-_Coming soon..._
+Reciprocally, the `DownloaderInterface` provides a `download` method that can be used to download one or several files at once and a `downloadJson` method that can be used to download a parsed JSON file. Both of these methods can be cancelled via an abort `signal`.
+
+```ts
+// Download one or several files.
+const [myFile, myOtherFile] = await umi.downloader.download([myUri, myOtherUri]);
+
+// Download using an abort signal.
+const myFiles = await umi.downloader.download(myUris, { signal: myAbortSignal });
+
+// Download a JSON file.
+type Person = { name: string; age: number; };
+const myJsonObject = await umi.downloader.downloadJson<Person>(myUri);
+```
 
 ## The mock storage
 
-_Coming soon..._
+Umi provides a mock storage helper class that acts as both a uploader and downloader. It can be used to test your application without having to setup a real storage service. Anything that is uploaded to the mock storage will be cached in memory such that it can be downloaded later on.
+
+The mock storage helper is available as a [standalone package](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-storage-mock) and must be installed separately.
+
+```sh
+npm install @metaplex-foundation/umi-storage-mock
+```
+
+Then, we can register the plugin it provides to our Umi instance and start using it.
+
+```ts
+import { mockStorage } from '@metaplex-foundation/umi-storage-mock';
+
+umi.use(mockStorage());
+const [myUri] = await umi.uploader.upload([myFile]);
+const [myDownloadedFile] = await umi.downloader.download([myUri]);
+// myFile and myDownloadedFile are identical.
+```
