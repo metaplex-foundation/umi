@@ -2,8 +2,8 @@
 
 Whether we are sending data to the blockchain or reading from it, serialization is a big part of the process. The serialization logic may vary from one program to another and, whilst Borsh serialization is the most popular choice for Solana programs, it is not the only one.
 
-Umi helps with this by providing a flexible and extensible serialization framework that allows you to build your own serializers. Namely it includes:
-- A generic `Serializer<From, To = From>` type that represents a object that can serialize `From` into a `Uint8Array` and deserialize a `Uint8Array` into a `To` which defaults to `From`.
+Umi helps with this by providing a flexible and extensible serialization framework that allows you to build your own serializers. Namely, it includes:
+- A generic `Serializer<From, To = From>` type that represents an object that can serialize `From` into a `Uint8Array` and deserialize a `Uint8Array` into a `To` which defaults to `From`.
 - A bunch of serializer helpers that map and transform serializers into new serializers.
 - A set of baked-in serializers that can be used to serialize common types.
 - Last but not least, a `SerializerInterface` that provides a set of primitive serializers that can be used to build more complex ones.
@@ -14,7 +14,7 @@ Let's see how all of this works.
 
 The `Serializer` type is the central piece of Umi's serialization framework. With a `Serializer` instance on a type `T`, you should have all you need to serialize and deserialize instances of `T`. For instance, a `Serializer<{ name: string, age: number }>` instance can be used to serialize and deserialize instances of `{ name: string, age: number }`.
 
-In some case, the data we want to serialize might be slightly looser than the data we get when deserializing. For that reason, the `Serializer<From, To>` type allows a second type parameter `To` that extends `From` and defaults to `From`. Using our previous example, imagine the `age` attribute is optional and will default to `42` when not provided. In that case, we can define a `Serializer<{ name: string, age?: number }, { name: string, age: number }>` instance that serializes `{ name: string, age?: number }` into a `Uint8Array` but deserializes a `Uint8Array` into `{ name: string, age: number }`.
+In some cases, the data we want to serialize might be slightly looser than the data we get when deserializing. For that reason, the `Serializer<From, To>` type allows a second type parameter `To` that extends `From` and defaults to `From`. Using our previous example, imagine the `age` attribute is optional and will default to `42` when not provided. In that case, we can define a `Serializer<{ name: string, age?: number }, { name: string, age: number }>` instance that serializes `{ name: string, age?: number }` into a `Uint8Array` but deserializes a `Uint8Array` into `{ name: string, age: number }`.
 
 Here's how the `Serializer` type is defined.
 
@@ -38,7 +38,7 @@ type Serializer<From, To extends From = From> = {
 
 On top of the non-surprising `serialize` and `deserialize` functions, the `Serializer` type also includes a `description`, a `fixedSize` and a `maxSize`.
 - The `description` is a quick human-readable string that describes the serializer.
-- The `fixedSize` attribute gives us the size of the serialized value in bytes if and only if we are dealing with a fixed-size serializer. For instance an `u32` serializer will always have a `fixedSize` of `4` bytes.
+- The `fixedSize` attribute gives us the size of the serialized value in bytes if and only if we are dealing with a fixed-size serializer. For instance, an `u32` serializer will always have a `fixedSize` of `4` bytes.
 - The `maxSize` attribute can be helpful when we are dealing with variable-size serializers that have a bound on the maximum size they can take. For instance a borsh `Option<PublicKey>` serializer can either be of size `1` or `33` and therefore will have a `maxSize` of `33` bytes.
 
 ## Serializer helpers
@@ -60,7 +60,7 @@ const serializerB: Serializer<number> = mapSerializer(
 );
 ```
 
-The `mapSerializer` can also be used to transform serializers that have different `From` and `To` types. Heres a similar example to the one above but with a different `To` type.
+The `mapSerializer` can also be used to transform serializers that have different `From` and `To` types. Here's a similar example to the one above but with a different `To` type.
 
 ```ts
 const serializerA: Serializer<string | null, string> = ...;
@@ -91,7 +91,7 @@ Mapping serializers is a very powerful technique and some built-in helpers like 
 
 ### Fixing serializers
 
-The `fixSerializer` function is another helper that can make transform any variable-size serializer into a fixed-size one by requesting a fix size in bytes. It does so by padding or truncating the `Uint8Array` buffer to the requested size when necessary. The returned serializer will have the same `From` and `To` types as the original serializer.
+The `fixSerializer` function is another helper that can make transform any variable-size serializer into a fixed-size one by requesting a fixed size in bytes. It does so by padding or truncating the `Uint8Array` buffer to the requested size when necessary. The returned serializer will have the same `From` and `To` types as the original serializer.
 
 ```ts
 const myFixedSerializer = fixSerializer(myVariableSerializer, 42);
@@ -141,9 +141,9 @@ bitArray(1).deserialize(Uint8Array.from([0b10101010])); // -> [booleans, 1];
 
 ## The Serializer interface
 
-We've seen how serializers are defined, how they can be transformed and listed a few built-in serializers provided by Umi. However, we've not yet seen how we can build our own serializers by using a set of primitives provided by the `SerializerInterface`.
+We've seen how serializers are defined, learned how they can be transformed and listed a few built-in serializers provided by Umi. However, we've not yet seen how we can build our own serializers by using a set of primitives provided by the `SerializerInterface`.
 
-The `SerializerInterface` offers a large set of methods that can be used to create serializers for any type. These can be used to compose more complex serializers from simpler ones. For instance, here's an object serializer that is composed of a string, a public key and a set of numbers.
+The `SerializerInterface` offers a large set of methods that can be used to create serializers of any type. These can be used to compose more complex serializers from simpler ones. For instance, here's an object serializer that is composed of a string, a public key and a set of numbers.
 
 ```ts
 type MyObject = {
@@ -159,7 +159,7 @@ const mySerializer: Serializer<MyObject> = umi.serializer.struct([
 ]);
 ```
 
-Each of the methods provided by the `SerializerInterface` define their own arguments — i.e. the `array` method requires the item serializer as a first argument — but all of them have an optional `options` argument at the end that can be used to tweak the behaviour of the serializer. The attributes inside the `options` argument may vary from one method to the other but they all share one common attribute: `description`. This can be used to provide a specific description of the created serializer. Notice that, if omitted, a good-enough description will be created for you.
+Each of the methods provided by the `SerializerInterface` defines its own arguments — i.e. the `array` method requires the item serializer as a first argument — but all of them have an optional `options` argument at the end that can be used to tweak the behaviour of the serializer. The attributes inside the `options` argument may vary from one method to the other but they all share one common attribute: `description`. This can be used to provide a specific description of the created serializer. Notice that, if omitted, a good-enough description will be created for you.
 
 ```ts
 umi.serializer.string().description; // -> 'string(utf8; u32(le))'.
@@ -210,7 +210,7 @@ type NumberSerializer =
 
 ### Booleans
 
-The `bool` method can be used to create a `Serializer<boolean>`. By default it uses a `u8` number to store the boolean value but this can be changed by passing the `size` option.
+The `bool` method can be used to create a `Serializer<boolean>`. By default, it uses a `u8` number to store the boolean value but this can be changed by passing the `size` option.
 
 ```ts
 umi.serializer.bool(); // -> Uses a u8.
@@ -221,8 +221,8 @@ umi.serializer.bool({ size: umi.serializer.u32({ endian: Endian.Big }) }); // ->
 ### Strings
 
 The `string` method returns a `Serializer<string>` that can be used to serialize strings using various encodings and size strategies. It contains the following options:
-- `encoding`: A `Serializer<string>` that represents the encoding to use when serializing and deserializing the string. Defaults to the `utf8` built-in serializer. You might be wondering, why do we need to pass a `Serializer<string>` to create a `Serializer<string>`? This is because the purpose of the `encoding` serializer is only to convert some text to and from a byte array without worrying about anything else such as storing the size of the string. This allows us to plug-in any encoding we want, whilst being able to leverage all other options provided by this `string` method.
-- `size`: In order to know how long the string goes on for in a given buffer, we need to knows its size in bytes. To that end, one of the following size strategies can be used:
+- `encoding`: A `Serializer<string>` that represents the encoding to use when serializing and deserializing the string. Defaults to the `utf8` built-in serializer. You might be wondering, why do we need to pass a `Serializer<string>` to create a `Serializer<string>`? This is because the purpose of the `encoding` serializer is only to convert some text to and from a byte array without worrying about anything else such as storing the size of the string. This allows us to plug in any encoding we want, whilst being able to leverage all other options provided by this `string` method.
+- `size`: In order to know how long the string goes on for in a given buffer, we need to know its size in bytes. To that end, one of the following size strategies can be used:
   - `NumberSerializer`: When a number serializer is passed, it will be used as a prefix to store and restore the size of the string. By default, the size is stored using a `u32` prefix in little-endian — which is the default behaviour for borsh serialization.
   - `number`: The byte size can also be provided explicitly as a number. This will create a fixed-size serializer that does not use any size prefix and will always use the same number of bytes to store the string.
   - `"variable"`: When the string `"variable"` is passed as a size, it will create a variable-size serializer that simply uses all the remaining bytes in the buffer when deserializing. When serializing, it will simply return the result of the `encoding` serializer without storing the size of the serialized string.
@@ -254,7 +254,7 @@ umi.serializer.string({ size: 'variable' }).serialize('Hi'); // -> 0x4869
 
 The `bytes` method returns a `Serializer<Uint8Array>` which deserializes a `Uint8Array` into a... `Uint8Array`. Whilst this might seem a bit useless, it can be useful when composed into other serializers. For example, you could use it in a `struct` serializer to say that a particular field should be left unserialized.
 
-Very similarly to the `string` method, the `bytes` method contains a `size` option that configures how the size of the byte array is stored and restored. The same size strategies are supported as for the `string` method except that the default size here is the `"variable"` strategy. To recap:
+Very similar to the `string` method, the `bytes` method contains a `size` option that configures how the size of the byte array is stored and restored. The same size strategies are supported as for the `string` method except that the default size here is the `"variable"` strategy. To recap:
 - `NumberSerializer`: Uses a prefixed number serializer to store and restore the size of the byte array.
 - `number`: Uses a fixed size to store the byte array.
 - `"variable"`: Passes the buffer as-is when serializing and returns the remaining of the buffer when deserializing. Defaults behaviour.
@@ -272,7 +272,7 @@ umi.serializer.bytes({ size: 5 }).serialize(new Uint8Array([42])); // -> 0x2a000
 
 ### PublicKeys
 
-The `publicKey` method returns a `Serializer<PublicKey>` that can be used to serialize and deserialize public keys. Here's an example serializing and deserializing the same public key.
+The `publicKey` method returns a `Serializer<PublicKey>` that can be used to serialize and deserialize public keys. Here's an example of serializing and deserializing the same public key.
 
 ```ts
 const myPublicKey = publicKey('...');
@@ -283,7 +283,7 @@ samePublicKey(myPublicKey, myDeserializedPublicKey); // -> true
 
 ### Units
 
-The `unit` method returns a `Serializer<void>` that serializes `undefined` into an empty `Uint8Array` and returns `undefined` without consuming any bytes when deserializing. This is more of an low-level serializer that can be used internally by other serializers. For instance, this is how `dataEnum` serializes describe empty variants internally.
+The `unit` method returns a `Serializer<void>` that serializes `undefined` into an empty `Uint8Array` and returns `undefined` without consuming any bytes when deserializing. This is more of a low-level serializer that can be used internally by other serializers. For instance, this is how `dataEnum` serializers describe empty variants internally.
 
 ```ts
 umi.serializer.unit().serialize(undefined); // -> new Uint8Array([])
@@ -297,10 +297,10 @@ The `SerializerInterface` provides three methods to serialize lists and maps:
 - `set`: Serializes a set of unique items. It accepts a `Serializer<T>` as an argument and returns a `Serializer<Set<T>>`.
 - `map`: Serializes a map of key-value pairs. It accepts a `Serializer<K>` for the keys and a `Serializer<V>` for the values as arguments and returns a `Serializer<Map<K, V>>`.
 
-All three methods accepts the same `size` option that configures how the lenght of the array, set or map is stored and restored. This is very similar to how the `string` and `bytes` methods work. Here are the supported strategies:
+All three methods accept the same `size` option that configures how the length of the array, set or map is stored and restored. This is very similar to how the `string` and `bytes` methods work. Here are the supported strategies:
 - `NumberSerializer`: Uses a number serializer that prefixes the content with its size. By default, the size is stored using a `u32` prefix in little-endian.
-- `number`: Returns a array, set or map serializer with a fixed number of items.
-- `"remainder"`: Returns a array, set or map serializer that infers the number of items by dividing the rest of the buffer by the fixed size of its item. For instance, if a buffer as 64 bytes remaining and each item of an array is 16 bytes long, the array will be deserialized with 4 items. Note that this option is only available for fixed-size items. For maps, both the key serializer and the value serializer must have a fixed size.
+- `number`: Returns an array, set or map serializer with a fixed number of items.
+- `"remainder"`: Returns an array, set or map serializer that infers the number of items by dividing the rest of the buffer by the fixed size of its item. For instance, if a buffer has 64 bytes remaining and each item of an array is 16 bytes long, the array will be deserialized with 4 items. Note that this option is only available for fixed-size items. For maps, both the key serializer and the value serializer must have a fixed size.
 
 ```ts
 // Arrays.
@@ -329,7 +329,7 @@ Both methods serialize optional values by prefixing them with a boolean value th
 
 They both offer the same options to configure the behaviour of the created serializer:
 - `prefix`: The `NumberSerializer` to use to serialize and deserialize the boolean prefix. By default, it uses a `u8` prefix in little-endian.
-- `fixed`: When this is `true`, it returns a fixed-size serializer by changing the serialization logic when the value is empty. In this case, the serialized value will be padded with zero such that empty values and filled values are serialized using the same amount of bytes. Note that this only works if the item serializer is of fixed size.
+- `fixed`: When this is `true`, it returns a fixed-size serializer by changing the serialization logic when the value is empty. In this case, the serialized value will be padded with zero such that empty values and filled values are serialized using the same amount of bytes. Note that this only works if the item serializer is of a fixed size.
 
 ```ts
 // Options.
@@ -429,11 +429,11 @@ directionSerializer.serialize('LEFT'); // -> 0x00
 ### Data Enums
 
 In Rust, enums are powerful data types whose variants can be one of the following:
-- An empty variant — e.g. `enum Message { Quit }`.
+- An empty variant — e.g. `enum Message { Quit }`.
 - A tuple variant — e.g. `enum Message { Write(String) }`.
 - A struct variant — e.g. `enum Message { Move { x: i32, y: i32 } }`.
 
-Whilst we do not have such powerful enums in JavaScript, we can emulate them in TypeScript using a union of objects such that each object is differenciated by a specific field. We call this a data enum.
+Whilst we do not have such powerful enums in JavaScript, we can emulate them in TypeScript using a union of objects such that each object is differentiated by a specific field. We call this a data enum.
 
 In Umi, we use the `__kind` field to distinguish between the different variants of a data enum. Additionally, since all variants are objects, we use the `fields` property to wrap the array of tuple variants. Here is an example.
 
@@ -462,7 +462,7 @@ const messageSerializer = umi.serializer.dataEnum<Message>([
 ]);
 ```
 
-Note that this serialization is compatible with the borsh serialization of Rust enums. First, it uses a `u32` number in little-endiant to store the index of the variant. If the selected variant is an empty variant, it stops there. Otherwise, it uses the serializer of the variant to serialize its data.
+Note that this serialization is compatible with the borsh serialization of Rust enums. First, it uses a `u32` number in little-endian to store the index of the variant. If the selected variant is an empty variant, it stops there. Otherwise, it uses the serializer of the variant to serialize its data.
 
 ```ts
 messageSerializer.serialize({ __kind: 'Quit' }); // -> 0x00000000
@@ -482,7 +482,7 @@ messageSerializer.serialize({ __kind: 'Write', fields: ['Hi'] }); // -> 0x010200
 messageSerializer.serialize({ __kind: 'Move', x: 5, y: 6 }); // -> 0x020500000006000000
 ```
 
-Note that, when dealing with data enums, you may want to offer some helper methods to improve the developer experience so that it feels closer to the Rust-way of handling enums. This is something that [Kinobi](./kinobi.md) offers to generated JavaScript clients out of the box.
+Note that, when dealing with data enums, you may want to offer some helper methods to improve the developer experience so that it feels closer to the Rust way of handling enums. This is something that [Kinobi](./kinobi.md) offers to generated JavaScript clients out of the box.
 
 ```ts
 // Example of helper methods.
