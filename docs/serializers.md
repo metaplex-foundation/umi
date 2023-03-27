@@ -337,12 +337,48 @@ umi.serializer.option(umi.serializer.publicKey()) // Option<PublicKey> with a u8
 umi.serializer.option(umi.serializer.publicKey(), { prefix: umi.serializer.u16() }) // Option<PublicKey> with a u16 prefix.
 umi.serializer.option(umi.serializer.publicKey(), { fixed: true }) // Option<PublicKey> with a fixed size.
 
-// TODO: Nullable.
+// Nullables.
+umi.serializer.nullable(umi.serializer.publicKey()) // PublicKey | null with a u8 prefix.
+umi.serializer.nullable(umi.serializer.publicKey(), { prefix: umi.serializer.u16() }) // PublicKey | null with a u16 prefix.
+umi.serializer.nullable(umi.serializer.publicKey(), { fixed: true }) // PublicKey | null with a fixed size.
 ```
 
 ### Structs
 
-TODO
+The `struct` method is likely the most used method of the `SerializerInterface`. It allows us to serialize and deserialize a JavaScript object of generic type `T`.
+
+It requires the name and the serializer of each field to be passed as an array on the first argument. This `fields` array is structured such that each field is a tuple where the first item is the name of the field and the second item is the serializer of the field. The order of the fields is important because it determines the order in which the fields are serialized and deserialized. Here's an example.
+
+```ts
+type Person = {
+  name: string;
+  age: number;
+}
+
+umi.serializer.struct<Person>([
+  ['name', umi.serializer.string()],
+  ['age', umi.serializer.u32()],
+]);
+```
+
+The `struct` method also accepts a second type parameter `U` in case some fields have different `From` and `To` type parameters. This allows us to create serializers of type `Serializer<T, U>`.
+
+For instance, this is how we could create a struct serializer that offers a default value for the `age` field of the `Person` type.
+
+```ts
+type Person = { name: string; age: number; }
+type PersonArgs = { name: string; age?: number; }
+
+const ageOr42 = mapSerializer(
+  umi.serializer.u32(),
+  (age: number | undefined): number => age ?? 42,
+);
+
+umi.serializer.struct<PersonArgs, Person>([
+  ['name', umi.serializer.string()],
+  ['age', ageOr42],
+]);
+```
 
 ### Tuples
 
