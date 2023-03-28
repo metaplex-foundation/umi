@@ -48,11 +48,32 @@ The first time you are generating your JS client, make sure to prepare the libra
 
 ## Features of Kinobi-generated clients
 
-TODO
+Now that we know how to generate Umi-compatible libraries via Kinobi, let's take a look at what they can do.
 
 ### Types and serializers
 
-TODO
+Kinobi-generated libraries provide a serializer for each type, account and instruction defined on the program. It also exports the two TypeScript types required to create the serializer. For instance, if you have a `MyType` type defined in your IDL, you can use the following code to serialize and deserialize it.
+
+```ts
+const serializer: Serializer<MyTypeArgs, MyType> = getMyTypeSerializer(umi);
+serializer.serialize(myType);
+serializer.deserialize(myBuffer);
+```
+
+For instructions, the name of the type is suffixed with `InstructionData` and, for accounts, it is suffixed with `AccountData`. This allows the unsuffixed account name to be used as a `Account<T>` type. For example, if you have a `Token` account and a `Transfer` instruction on your program, you will get the following types and serializers.
+
+```ts
+// For accounts.
+type Token = Account<TokenAccountData>;
+type TokenAccountData = {...};
+type TokenAccountDataArgs = {...};
+const tokenDataSerializer = getTokenAccountDataSerializer(umi);
+
+// For instructions.
+type TransferInstructionData = {...};
+type TransferInstructionDataArgs = {...};
+const transferDataSerializer = getTransferInstructionDataSerializer(umi);
+```
 
 ### Data enum helpers
 
