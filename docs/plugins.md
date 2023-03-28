@@ -1,10 +1,10 @@
 # Umi plugins
 
-Whilst Umi is a small zero-dependency framework, it is designed to be extended with plugins. Plugins allows us to not only interact with its interfaces or swap out its interface implementations, but also to add new features to Umi itself.
+Whilst Umi is a small zero-dependency framework, it is designed to be extended with plugins. Plugins allow us to not only interact with its interfaces or swap out its interface implementations but also to add new features to Umi itself.
 
 ## Using plugins
 
-In order to install a Umi plugin, you may simply call the `use` method on the Umi instance. This `use` method returns the Umi instance so they can be chained together.
+To install a Umi plugin, you may simply call the `use` method on the Umi instance. This `use` method returns the Umi instance so they can be chained together.
 
 ```ts
 import { somePlugin } from 'some-umi-library';
@@ -47,7 +47,7 @@ export const myPlugin: UmiPlugin = {
 }
 ```
 
-As mentioned above, it is recommended to export plugin functions so we can request any argument that might be needed from the end-user.
+As mentioned above, it is recommended to export plugin functions so we can request any argument that might be needed from the end user.
 
 ```ts
 export const myPlugin = (myPluginOptions?: MyPluginOptions): UmiPlugin => ({
@@ -63,7 +63,7 @@ Now that we know how to create a plugin, let's have a look at some examples of w
 
 ### Setting interface implementations
 
-One of the most common use cases for plugins is to assign an implementation to one or several Umi interfaces. Here's an example setting a fictional `MyRpc` implementation to the `rpc` interface. Notice how we can pass the Umi instance to the `MyRpc` implementation so it can rely on other interfaces if needed.
+One of the most common use cases for plugins is to assign an implementation to one or several Umi interfaces. Here's an example of setting a fictional `MyRpc` implementation to the `rpc` interface. Notice how we can pass the Umi instance to the `MyRpc` implementation so it can rely on other interfaces if needed.
 
 ```ts
 export const myRpc = (endpoint: string): UmiPlugin => ({
@@ -124,9 +124,9 @@ export const mplTokenMetadata = (): UmiPlugin => ({
 
 ### Extending the Umi instance
 
-Last but not least, plugins can also extend the feature set of the Umi instance. This allows libraries to provide their own interfaces, extends existing ones, etc.
+Last but not least, plugins can also extend the feature set of the Umi instance. This allows libraries to provide their own interfaces, extend existing ones, etc.
 
-A good example of that is the Candy Machine library which stores all candy guards in a repository — much like the program repository. This allows end-users to register their own guards so they can be recognised when creating, fetching and mint from candy machines with associated candy guards. In order to make this work, the library adds a new `guards` property to the Umi instance and assigns a new guard repository to it.
+A good example of that is the Candy Machine library which stores all candy guards in a repository — much like the program repository. This allows end-users to register their own guards so they can be recognised when creating, fetching and minting from candy machines with associated candy guards. To make this work, the library adds a new `guards` property to the Umi instance and assigns a new guard repository to it.
 
 ```ts
 export const mplCandyMachine = (): UmiPlugin => ({
@@ -140,7 +140,7 @@ export const mplCandyMachine = (): UmiPlugin => ({
 });
 ```
 
-The slight issue with the code above is that the `Umi` type no longer reflect the actual instance. That is, TypeScript will complain that the `guards` property doesn't exist on the `Umi` type. To fix this, we can use TypeScript's [Module Augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation) to extend the `Umi` type so it includes the new property like so
+The slight issue with the code above is that the `Umi` type no longer reflects the actual instance. That is, TypeScript will complain that the `guards` property doesn't exist on the `Umi` type. To fix this, we can use TypeScript's [Module Augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation) to extend the `Umi` type so it includes the new property like so
 
 ```ts
 declare module '@metaplex-foundation/umi' {
