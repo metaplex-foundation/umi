@@ -12,7 +12,39 @@ Here's a quick overview of how to use Kinobi and Umi to create JavaScript client
 
 ## Getting started with Kinobi
 
-TODO
+You may want to check the [Kinobi documentation](https://github.com/metaplex-foundation/kinobi) for more details but here's a quick overview on how to get started with Kinobi.
+
+First, you need to install Kinobi:
+
+```sh
+npm install @metaplex-foundation/kinobi
+```
+
+Then, you need to create a JavaScript file — e.g. `kinobi.js` — that creates and renders a Kinobi tree. This is done by creating a `Kinobi` instance and passing it an array of paths to IDL files. You may want to check the [Shank JS library](https://github.com/metaplex-foundation/shank-js) to generate your IDL files. You can then use visitors to update the tree and render it as a Umi-compatible library via the `RenderJavaScriptVisitor`. Here's an example.
+
+```ts
+import { Kinobi, RenderJavaScriptVisitor } from "@metaplex-foundation/kinobi";
+
+// Instanciate Kinobi.
+const kinobi = new Kinobi([
+  path.join(__dirname, "idls", "my_idl.json"),
+  path.join(__dirname, "idls", "my_other_idl.json"),
+]);
+
+// Update the Kinobi tree using visitors...
+
+// Render JavaScript.
+const jsDir = path.join(__dirname, "clients", "js", "src", "generated");
+kinobi.accept(new RenderJavaScriptVisitor(jsDir));
+```
+
+Now, all you need to do is run this file with Node.js like so.
+
+```sh
+node ./kinobi.js
+```
+
+The first time you are generating your JS client, make sure to prepare the library as needed. You'll need to at least create its `package.json` file, install its dependencies and provide a top-level `index.ts` file that imports the generated folder.
 
 ## Features of Kinobi-generated clients
 
