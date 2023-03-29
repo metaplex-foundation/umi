@@ -1,6 +1,6 @@
 # Generating Umi clients via Kinobi
 
-The Umi framework provides the basis for building Solana clients in JavaScript. It becomes a lot more powerful when programs offer Umi-compatible libraries as it allows end-users to simply plug their Umi instance to whichever helper functions they provide. In order to simplify and automate the process of creating Umi-compatible libraries, Umi provides a powerful code generator called Kinobi.
+The Umi framework provides the basis for building Solana clients in JavaScript. It becomes a lot more powerful when programs offer Umi-compatible libraries as it allows end-users to simply plug their Umi instance into whichever helper functions they provide. To simplify and automate the process of creating Umi-compatible libraries, Umi provides a powerful code generator called Kinobi.
 
 [Kinobi](https://github.com/metaplex-foundation/kinobi) introduces a language-agnostic representation of Solana clients which can be composed of one or several programs. It does this by using a tree of nodes that can be visited by `Visitor` classes. Visitors can be used to update any aspect of the tree allowing developers to tailor the client to their needs. Once the tree is to the developer's liking, language-specific visitors can be used to generate the code for the target language or framework.
 
@@ -12,7 +12,7 @@ Here's a quick overview of how to use Kinobi and Umi to create JavaScript client
 
 ## Getting started with Kinobi
 
-You may want to check the [Kinobi documentation](https://github.com/metaplex-foundation/kinobi) for more details but here's a quick overview on how to get started with Kinobi.
+You may want to check the [Kinobi documentation](https://github.com/metaplex-foundation/kinobi) for more details but here's a quick overview of how to get started with Kinobi.
 
 First, you need to install Kinobi:
 
@@ -135,7 +135,7 @@ Each generated instruction will also have its own function that can be used to c
 await transfer(umi, { from, to, amount }).sendAndConfirm();
 ```
 
-Because transaction builders can be combined together, this allows us to easily create transactions that contains multiple instructions like so.
+Because transaction builders can be combined together, this allows us to easily create transactions that contain multiple instructions like so.
 
 ```ts
 await transfer(umi, { from, to: destinationA, amount })
@@ -162,7 +162,7 @@ getMplTokenMetadataProgram(umi); // -> Program
 getMplTokenMetadataProgramId(umi); // -> PublicKey
 ```
 
-Note that Kinobi does not auto-generate a Umi plugin for your client allowing you to customize it however you want. That means you'll need to create a plugin yourself and, at the very least, register the programs defined in your client. Here's an example using the `MplTokenMetadata` program.
+Note that Kinobi does not auto-generate a Umi plugin for your client allowing you to customize it however you want. That means you'll need to create a plugin yourself and, at the very least, register the programs defined by your client. Here's an example using the `MplTokenMetadata` program.
 
 ```ts
 export const mplTokenMetadata = (): UmiPlugin => ({
@@ -172,7 +172,7 @@ export const mplTokenMetadata = (): UmiPlugin => ({
 });
 ```
 
-Additionally, each program generates a custom `ProgramError` for each error it may throw. For instance, if your program defines an `UpdateAuthorityIncorrect` error, it will generate the following class.
+Additionally, each program generates a custom `ProgramError` for each error it may throw. For instance, if your program defines a `UpdateAuthorityIncorrect` error, it will generate the following class.
 
 ```ts
 export class UpdateAuthorityIncorrectError extends ProgramError {
