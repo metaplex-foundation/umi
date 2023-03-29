@@ -165,3 +165,7 @@ declare module '@metaplex-foundation/umi' {
   }
 }
 ```
+
+<p align="center">
+<strong>Next: <a href="./kinobi.md">Generating Umi clients via Kinobi ≫</a></strong>
+</p>

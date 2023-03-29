@@ -48,3 +48,7 @@ Also note that Umi comes with a testing bundle that can help both end-users and 
 ```sh
 npm install @metaplex-foundation/umi @metaplex-foundation/umi-bundle-tests
 ```
+
+<p align="center">
+<strong>Next: <a href="./interfaces.md">Umi's interfaces ≫</a></strong>
+</p>

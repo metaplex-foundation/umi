@@ -109,3 +109,7 @@ The `ProgramRepositoryInterface` provides a `resolveError` method that can be us
 ```ts
 umi.programs.resolveError(error, transaction);
 ```
+
+<p align="center">
+<strong>Next: <a href="./plugins.md">Umi plugins ≫</a></strong>
+</p>

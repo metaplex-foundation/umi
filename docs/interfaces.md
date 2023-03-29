@@ -61,3 +61,7 @@ const umi = createUmi('https://api.mainnet-beta.solana.com')
 ```
 
 You can [learn more about Umi plugins and how to create them here](./plugins.md).
+
+<p align="center">
+<strong>Next: <a href="./implementations.md">Interface implementations ≫</a></strong>
+</p>

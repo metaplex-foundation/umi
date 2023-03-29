@@ -194,3 +194,7 @@ getMplTokenMetadataErrorFromName('UpdateAuthorityIncorrect', program); // -> Upd
 ```
 
 Note that these methods are used by the `createMplTokenMetadataProgram` function to fill the `getErrorFromCode` and `getErrorFromName` functions of the `Program` object.
+
+<p align="center">
+<strong>Next: <a href="./helpers.md">Umi helpers ≫</a></strong>
+</p>

@@ -219,3 +219,7 @@ This will return an instance of [`TransactionWithMeta`](https://umi-docs.vercel.
 const transaction = await umi.rpc.getTransaction(signature);
 const logs: string[] = transaction.meta.logs;
 ```
+
+<p align="center">
+<strong>Next: <a href="./accounts.md">Fetching accounts ≫</a></strong>
+</p>

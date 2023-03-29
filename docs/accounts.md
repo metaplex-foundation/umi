@@ -121,3 +121,7 @@ const metadata: Metadata = await fetchMetadata(umi, metadataPublicKey);
 // Fetch and deserialize a metadata account, return null if the account does not exist.
 const metadata: Metadata | null = await safeFetchMetadata(umi, metadataPublicKey);
 ```
+
+<p align="center">
+<strong>Next: <a href="./serializers.md">Serializers ≫</a></strong>
+</p>

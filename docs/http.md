@@ -20,3 +20,7 @@ await umi.http.send(request().put('https://example.com/users/1').withToken('my-t
 // GET request with abort signal
 await umi.http.send(request().get('https://example.com/users').withAbortSignal(mySignal));
 ```
+
+<p align="center">
+<strong>Next: <a href="./programs.md">Registering programs ≫</a></strong>
+</p>

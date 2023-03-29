@@ -102,3 +102,7 @@ const [myUri] = await umi.uploader.upload([myFile]);
 const [myDownloadedFile] = await umi.downloader.download([myUri]);
 // myFile and myDownloadedFile are identical.
 ```
+
+<p align="center">
+<strong>Next: <a href="./http.md">Sending Http requests ≫</a></strong>
+</p>

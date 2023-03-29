@@ -179,3 +179,7 @@ await myGpaBuilderWithFields
   .sliceField('name')
   .get();
 ```
+
+<p align="center">
+<strong>Next: <a href="./web3js-adapters.md">Web3.js adapters ≫</a></strong>
+</p>

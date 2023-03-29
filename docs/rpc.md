@@ -118,3 +118,7 @@ Because each RPC endpoint may provide their own custom methods, Umi allows you t
 ```ts
 const rpcResult = await umi.rpc.call("myCustomMethod", [myFirstParam, mySecondParam]);
 ```
+
+<p align="center">
+<strong>Next: <a href="./transactions.md">Sending transactions ≫</a></strong>
+</p>

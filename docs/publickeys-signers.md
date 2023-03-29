@@ -249,3 +249,7 @@ If you are creating a `Signer` manually and therefore implementing its `signTran
 ```ts
 const mySignedTransaction = addTransactionSignature(myTransaction, mySignature, myPublicKey);
 ```
+
+<p align="center">
+<strong>Next: <a href="./rpc.md">Connecting with an RPC ≫</a></strong>
+</p>

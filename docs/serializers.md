@@ -492,3 +492,7 @@ message('Move', { x: 5, y: 6 }); // -> { __kind: 'Move', x: 5, y: 6 }
 isMessage('Quit', message('Quit')); // -> true
 isMessage('Write', message('Quit')); // -> false
 ```
+
+<p align="center">
+<strong>Next: <a href="./storage.md">Uploading and downloading assets ≫</a></strong>
+</p>
