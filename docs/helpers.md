@@ -122,4 +122,60 @@ formatDateTime(now(), 'fr-FR', myFormatOptions);
 
 ## GpaBuilders
 
-[_Coming soon..._](https://umi-docs.vercel.app/classes/umi.GpaBuilder.html)
+To help preparing `getProgramAccounts` RPC requests, Umi provide [an immutable `GpaBuilder` helper class](https://umi-docs.vercel.app/classes/umi.GpaBuilder.html). It can be used to add filters, slice data and fetch the raw accounts whilst mapping them to whatever we want. Here are some examples.
+
+```ts
+// Get all accounts for a program.
+await gpaBuilder(umi, programId).get();
+
+// Get the first 32 bytes of accounts that are 500-bytes long.
+await gpaBuilder(umi, programId)
+  .slice(0, 32)
+  .whereSize(500)
+  .get();
+
+// Get the public keys of accounts that have a given public key at offset 32.
+await gpaBuilder(umi, programId)
+  .withoutData()
+  .where(32, myPublicKey)
+  .getPublicKey();
+
+// Get the first 32 bytes of the account data as public keys.
+await gpaBuilder(umi, programId)
+  .slice(0, 32)
+  .getDataAsPublicKey();
+
+// Get the second byte of the account data and multiply it by 2.
+await gpaBuilder(umi, programId)
+  .slice(1, 1)
+  .getAndMap((n) => n * 2);
+```
+
+`GpaBuilder`s can also be told how to deserialize a raw account into a deserialized account via the `deserializeUsing` method. Once a deserialization callback was provided, the `getDeserialized` method can be used to fetch the deserialized accounts.
+
+```ts
+const metadataGpaBuilder = gpaBuilder(umi, programId)
+  .deserializeUsing<Metadata>((account) => deserializeMetadata(umi, account));
+
+const accounts: Metadata[] = await metadataGpaBuilder.getDeserialized();
+```
+
+Additionally, we can pass a set of fields with their offsets to a `GpaBuilder` to improve the developer experience around filtering and slicing data. To do so, we can use the `registerFields` method. For instance, say we know that, starting from byte 16, the next 32 bytes represent a `name` via a fixed size string and the next 4 bytes after that represent an `age`. Here's how we could register those fields.
+
+```ts
+const myGpaBuilderWithFields = gpaBuilder(umi, programId)
+  .registerFields<{ name: string; age: number; }>({
+    name: [16, umi.serializer.string({ size: 32 })],
+    age: [48, umi.serializer.u32()],
+  })
+```
+
+Once the fields are registered, we can use the `whereField` and `sliceField` methods to filter and slice data using fields. Not only it will know which offset to use but how to serialize its value.
+
+```ts
+// Get the name of accounts that have an age of 42.
+await myGpaBuilderWithFields
+  .whereField('age', 42)
+  .sliceField('name')
+  .get();
+```
