@@ -104,7 +104,21 @@ unwrapSomeOrElse(none(), () => 'Default'); // -> 'Default'
 
 ## DateTimes
 
-[_Coming soon..._](https://umi-docs.vercel.app/types/umi.DateTime.html)
+Umi provides a `DateTime` type that can be used to represent a date and time using a timestamp in seconds. It is simply defined as a `bigint` number and offers a set of helper functions to create and format date times.
+
+```ts
+// Create a new DateTime.
+dateTime(1680097346);
+dateTime(new Date(Date.now()));
+dateTime("2021-12-31T23:59:59.000Z");
+
+// Create a new DateTime for the current time.
+now();
+
+// Format a DateTime.
+formatDateTime(now());
+formatDateTime(now(), 'fr-FR', myFormatOptions);
+```
 
 ## GpaBuilders
 
