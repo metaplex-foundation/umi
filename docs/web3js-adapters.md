@@ -39,7 +39,7 @@ fromWeb3JsInstruction(myWeb3JsInstruction);
 toWeb3JsInstruction(myUmiInstruction);
 ```
 
-Let's take a look at an example. Say you want to issue a vanilla token using the `@identity.com/solana-gateway-ts` library which relies on `@solana/web3.js`. It offers a `issueVanilla` function that creates an instruction but this isn't compatible with Umi.
+Let's take a look at an example. Say you want to issue a vanilla token using the `@identity.com/solana-gateway-ts` library which relies on `@solana/web3.js`. It offers an `issueVanilla` function that creates an instruction but this isn't compatible with Umi.
 
 To go around this, you could create a wrapper function that converts the `issueVanilla` function into a Umi-compatible one. Precisely, this means we need to convert the returned instruction using `fromWeb3JsInstruction` and convert any public key passed into the function using `toWeb3JsPublicKey`.
 
