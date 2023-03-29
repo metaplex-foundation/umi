@@ -2,7 +2,7 @@
 
 On top of the core interfaces, Umi provides a set of helper functions that can be used to make working with Solana programs easier.
 
-## Amounts
+## Amounts
 
 An `Amount` is special type that allows us to define big decimal numbers. It does this by representing the number in its lowest possible unit (e.g. lamports) and then keeping track of the decimal number of that unit (e.g. 9). This allows for a more accurate representation of the number and avoids JavaScript rounding errors caused by IEEE 754 floating point numbers. It also uses an string identifier to ensure that we are dealing with amounts in the same unit when performing operations. Here's how the `Amount` generic type is defined:
 
