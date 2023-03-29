@@ -32,7 +32,7 @@ type PercentAmount<D extends AmountDecimals> = Amount<'%', D>;
 
 In order to make it easier for developers to handle amounts, Umi provides a set of helper functions that can be used to create, format, and perform operations on amounts.
 
-Here's a list of helper functions that can help create new amount types.
+You may want to [check out the "Utils — Amounts" section of the API references](https://umi-docs.vercel.app/modules/umi.html) to learn more about all these helpers but here's a quick list of functions that can help create new amount types.
 
 ```ts
 // Creates an amount from a basis points.
@@ -57,36 +57,6 @@ percentAmount(50.42, 0); // -> Amount for "50%"
 tokenAmount(123); // -> Amount for "123 Tokens"
 tokenAmount(123, 'splToken.BONK'); // -> Amount for "123 BONK"
 tokenAmount(123.45, 'splToken.BONK', 2); // -> Amount for "123.45 BONK"
-```
-
-Here's a list of helper functions that can help manipulate amounts.
-TODO: Show a few and link to API references.
-
-```ts
-isAmount
-isSolAmount
-sameAmounts
-assertAmount
-assertSolAmount
-assertSameAmounts
-addAmounts
-subtractAmounts
-multiplyAmount
-divideAmount
-absoluteAmount
-compareAmounts
-isEqualToAmount
-isLessThanAmount
-isLessThanOrEqualToAmount
-isGreaterThanAmount
-isGreaterThanOrEqualToAmount
-isZeroAmount
-isPositiveAmount
-isNegativeAmount
-amountToString
-amountToNumber
-displayAmount
-mapAmountSerializer
 ```
 
 ## Options
