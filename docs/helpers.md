@@ -61,14 +61,12 @@ tokenAmount(123.45, 'splToken.BONK', 2); // -> Amount for "123.45 BONK"
 
 ## Options
 
-_Coming soon..._
+[_Coming soon..._](https://umi-docs.vercel.app/types/umi.Option.html)
 
 ## DateTimes
 
-_Coming soon..._
+[_Coming soon..._](https://umi-docs.vercel.app/types/umi.DateTime.html)
 
 ## GpaBuilders
 
-_Coming soon..._
-
-https://umi-docs.vercel.app/classes/umi.GpaBuilder.html
+[_Coming soon..._](https://umi-docs.vercel.app/classes/umi.GpaBuilder.html)
