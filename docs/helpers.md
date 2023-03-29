@@ -17,3 +17,5 @@ _Coming soon..._
 ## GpaBuilders
 
 _Coming soon..._
+
+https://umi-docs.vercel.app/classes/umi.GpaBuilder.html

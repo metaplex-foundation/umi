@@ -52,7 +52,7 @@ Now that we know how to generate Umi-compatible libraries via Kinobi, let's take
 
 ### Types and serializers
 
-Kinobi-generated libraries provide a serializer for each type, account and instruction defined on the program. It also exports the two TypeScript types required to create the serializer. For instance, if you have a `MyType` type defined in your IDL, you can use the following code to serialize and deserialize it.
+Kinobi-generated libraries provide a serializer for each type, account and instruction defined on the program. It also exports the two TypeScript types required to create the serializer — i.e. its `From` and `To` type parameters. It will suffix the `From` type with `Args` to distinguish the two. For instance, if you have a `MyType` type defined in your IDL, you can use the following code to serialize and deserialize it.
 
 ```ts
 const serializer: Serializer<MyTypeArgs, MyType> = getMyTypeSerializer(umi);
@@ -60,7 +60,7 @@ serializer.serialize(myType);
 serializer.deserialize(myBuffer);
 ```
 
-For instructions, the name of the type is suffixed with `InstructionData` and, for accounts, it is suffixed with `AccountData`. This allows the unsuffixed account name to be used as a `Account<T>` type. For example, if you have a `Token` account and a `Transfer` instruction on your program, you will get the following types and serializers.
+For instructions, the name of the type is suffixed with `InstructionData` and, for accounts, it is suffixed with `AccountData`. This allows the unsuffixed account name to be used as an `Account<T>` type. For example, if you have a `Token` account and a `Transfer` instruction on your program, you will get the following types and serializers.
 
 ```ts
 // For accounts.
@@ -77,20 +77,120 @@ const transferDataSerializer = getTransferInstructionDataSerializer(umi);
 
 ### Data enum helpers
 
-TODO
+If a generated type is identified as a [data enum](./serializers.md#data-enums), additional helper methods will be created to help improve the developer experience. For instance, say you have the following data enum type generated.
 
-### Fetching accounts
+```ts
+type Message = 
+  | { __kind: 'Quit' } // Empty variant.
+  | { __kind: 'Write'; fields: [string] } // Tuple variant.
+  | { __kind: 'Move'; x: number; y: number }; // Struct variant.
+```
 
-TODO
+Then, on top of generating the types and `getMessageSerializer` function, it will also generate a `message` and `isMessage` function that can be used to create a new data enum and check the type of its variant respectively.
 
-### Fetching program accounts
+```ts
+message('Quit'); // -> { __kind: 'Quit' }
+message('Write', ['Hi']); // -> { __kind: 'Write', fields: ['Hi'] }
+message('Move', { x: 5, y: 6 }); // -> { __kind: 'Move', x: 5, y: 6 }
+isMessage('Quit', message('Quit')); // -> true
+isMessage('Write', message('Quit')); // -> false
+```
 
-TODO
+### Account helpers
+
+Kinobi will also provide additional helper methods for accounts, providing us with an easy way to fetch and deserialize them. Assuming the account name is `Metadata` here are the additional helper methods available to you.
+
+```ts
+// Deserialize a raw account into a parsed account.
+deserializeMetadata(umi, rawAccount); // -> Metadata
+
+// Fetch an deserialized account from its public key.
+await fetchMetadata(umi, publicKey); // -> Metadata or fail
+await safeFetchMetadata(umi, publicKey); // -> Metadata or null
+
+// Fetch all deserialized accounts by public key.
+await fetchAllMetadata(umi, publicKeys); // -> Metadata[], fails if any account is missing
+await safeFetchAllMetadata(umi, publicKeys) // -> Metadata[], filters out missing accounts
+
+// Create a getProgramAccount builder for the account.
+await getMetadataGpaBuilder()
+  .whereField('updateAuthority', updateAuthority)
+  .selectField('mint')
+  .getDataAsPublicKeys() // -> PublicKey[]
+
+// Get the size of the account data in bytes, if it has a fixed size.
+getMetadataSize() // -> number
+
+// Find the PDA address of the account from its seeds.
+findMetadataPda(umi, seeds) // -> Pda
+```
+
+You may want to check the [documentation on `GpaBuilder`s](./helpers.md#gpabuilders) to learn more about what they can do.
 
 ### Transaction builders
 
-TODO
+Each generated instruction will also have its own function that can be used to create a transaction builder containing the instruction. For instance, if you have a `Transfer` instruction, it will generate a `transfer` function returning a `TransactionBuilder`.
+
+```ts
+await transfer(umi, { from, to, amount }).sendAndConfirm();
+```
+
+Because transaction builders can be combined together, this allows us to easily create transactions that contains multiple instructions like so.
+
+```ts
+await transfer(umi, { from, to: destinationA, amount })
+  .add(transfer(umi, { from, to: destinationB, amount }))
+  .add(transfer(umi, { from, to: destinationC, amount }))
+  .sendAndConfirm();
+```
 
 ### Errors and programs
 
-TODO
+Kinobi will also generate a function that returns a `Program` type for each program defined in the client as well as some helpers to access them. For instance, say your client defines a `MplTokenMetadata` program, then the following helpers will be generated.
+
+```ts
+// The program's public key as a constant variable.
+MPL_TOKEN_METADATA_PROGRAM_ID; // -> PublicKey
+
+// Create a program object that can be registered in the program repository.
+createMplTokenMetadataProgram(); // -> Program
+
+// Get the program object from the program repository.
+getMplTokenMetadataProgram(umi); // -> Program
+
+// Get the program's public key from the program repository.
+getMplTokenMetadataProgramId(umi); // -> PublicKey
+```
+
+Note that Kinobi does not auto-generate a Umi plugin for your client allowing you to customize it however you want. That means you'll need to create a plugin yourself and, at the very least, register the programs defined in your client. Here's an example using the `MplTokenMetadata` program.
+
+```ts
+export const mplTokenMetadata = (): UmiPlugin => ({
+  install(umi) {
+    umi.programs.add(createMplTokenMetadataProgram(), false);
+  },
+});
+```
+
+Additionally, each program generates a custom `ProgramError` for each error it may throw. For instance, if your program defines an `UpdateAuthorityIncorrect` error, it will generate the following class.
+
+```ts
+export class UpdateAuthorityIncorrectError extends ProgramError {
+  readonly name: string = 'UpdateAuthorityIncorrect';
+
+  readonly code: number = 0x7; // 7
+
+  constructor(program: Program, cause?: Error) {
+    super('Update Authority given does not match', program, cause);
+  }
+}
+```
+
+Each generated error is also registered in a `codeToErrorMap` and a `nameToErrorMap` allowing the library to provide two helper methods that can find any error class from its name or code.
+
+```ts
+getMplTokenMetadataErrorFromCode(0x7, program); // -> UpdateAuthorityIncorrectError
+getMplTokenMetadataErrorFromName('UpdateAuthorityIncorrect', program); // -> UpdateAuthorityIncorrectError
+```
+
+Note that these methods are used by the `createMplTokenMetadataProgram` function to fill the `getErrorFromCode` and `getErrorFromName` functions of the `Program` object.
