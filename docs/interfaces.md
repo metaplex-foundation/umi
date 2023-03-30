@@ -4,7 +4,7 @@
 
 Umi defines a set of core interfaces that makes it easy to interact with the Solana blockchain. Namely, they are:
 - [`Signer`](https://umi-docs.vercel.app/interfaces/umi.Signer.html): An interface representing a wallet that can sign transactions and messages.
-- [`EddsaSigner`](https://umi-docs.vercel.app/interfaces/umi.EddsaSigner.html): An interface to create keypairs, find PDAs and sign/verify messages using the EdDSA algorithm.
+- [`EddsaInterface`](https://umi-docs.vercel.app/interfaces/umi.EddsaInterface.html): An interface to create keypairs, find PDAs and sign/verify messages using the EdDSA algorithm.
 - [`RpcInterface`](https://umi-docs.vercel.app/interfaces/umi.RpcInterface.html): An interface representing a Solana RPC client.
 - [`TransactionFactoryInterface`](https://umi-docs.vercel.app/interfaces/umi.TransactionFactoryInterface.html): An interface allowing us to create and serialize transactions.
 - [`SerializerInterface`](https://umi-docs.vercel.app/interfaces/umi.SerializerInterface.html): An interface providing a vast range of serializers for any Solana types.
