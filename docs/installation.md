@@ -2,10 +2,13 @@
 
 ## For end-users
 
-End-users using Umi to build applications need to install Umi and select the plugins they want to use. Alternatively, they can install the default bundle that includes a set of plugins that's suitable for most use cases.
+End-users using Umi to build applications need to install Umi and select the plugins they want to use. Alternatively, they can install the default bundle that includes a set of plugins that's suitable for most use cases. Note that, for now, the default bundle relies on web3.js for some of the interfaces so we have to install it as well.
 
 ```sh
-npm install @metaplex-foundation/umi @metaplex-foundation/umi-bundle-defaults
+npm install \
+  @metaplex-foundation/umi \
+  @metaplex-foundation/umi-bundle-defaults \
+  @solana/web3.js
 ```
 
 Then, you can create a new Umi instance using the `createUmi` function of the default bundle.
