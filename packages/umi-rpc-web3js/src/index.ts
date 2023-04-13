@@ -1,2 +1,2 @@
 export * from './plugin';
-export * from './Web3JsRpc';
+export * from './createWeb3JsRpc';
