@@ -5,7 +5,7 @@ import {
   NullProgramRepository,
   ProgramRepositoryInterface,
 } from './ProgramRepositoryInterface';
-import { NullRpc, RpcInterface } from './RpcInterface';
+import { createNullRpc, RpcInterface } from './RpcInterface';
 import { NullSerializer, SerializerInterface } from './SerializerInterface';
 import { NullSigner, Signer } from './Signer';
 import {
@@ -59,7 +59,7 @@ export const createNullContext = (): Context => ({
   identity: new NullSigner(),
   payer: new NullSigner(),
   programs: new NullProgramRepository(),
-  rpc: new NullRpc(),
+  rpc: createNullRpc(),
   serializer: new NullSerializer(),
   transactions: new NullTransactionFactory(),
   uploader: new NullUploader(),
