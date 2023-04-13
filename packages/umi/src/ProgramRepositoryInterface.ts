@@ -83,33 +83,19 @@ export interface ProgramRepositoryInterface {
  * An implementation of the {@link ProgramRepositoryInterface} that throws an error when called.
  * @category Programs
  */
-export class NullProgramRepository implements ProgramRepositoryInterface {
-  private readonly error = new InterfaceImplementationMissingError(
-    'ProgramRepositoryInterface',
-    'programs'
-  );
-
-  has(): boolean {
-    throw this.error;
-  }
-
-  get<T extends Program = Program>(): T {
-    throw this.error;
-  }
-
-  getPublicKey(): PublicKey {
-    throw this.error;
-  }
-
-  all(): Program[] {
-    throw this.error;
-  }
-
-  add(): void {
-    throw this.error;
-  }
-
-  resolveError(): ProgramError | null {
-    throw this.error;
-  }
+export function createNullProgramRepository(): ProgramRepositoryInterface {
+  const errorHandler = () => {
+    throw new InterfaceImplementationMissingError(
+      'ProgramRepositoryInterface',
+      'programs'
+    );
+  };
+  return {
+    has: errorHandler,
+    get: errorHandler,
+    getPublicKey: errorHandler,
+    all: errorHandler,
+    add: errorHandler,
+    resolveError: errorHandler,
+  };
 }

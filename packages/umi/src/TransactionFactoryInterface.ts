@@ -32,29 +32,18 @@ export interface TransactionFactoryInterface {
  * An implementation of the {@link TransactionFactoryInterface} that throws an error when called.
  * @category Transactions
  */
-export class NullTransactionFactory implements TransactionFactoryInterface {
-  private readonly error = new InterfaceImplementationMissingError(
-    'TransactionFactoryInterface',
-    'transactions'
-  );
-
-  create(): Transaction {
-    throw this.error;
-  }
-
-  serialize(): SerializedTransaction {
-    throw this.error;
-  }
-
-  deserialize(): Transaction {
-    throw this.error;
-  }
-
-  serializeMessage(): SerializedTransactionMessage {
-    throw this.error;
-  }
-
-  deserializeMessage(): TransactionMessage {
-    throw this.error;
-  }
+export function createNullTransactionFactory(): TransactionFactoryInterface {
+  const errorHandler = () => {
+    throw new InterfaceImplementationMissingError(
+      'TransactionFactoryInterface',
+      'transactions'
+    );
+  };
+  return {
+    create: errorHandler,
+    serialize: errorHandler,
+    deserialize: errorHandler,
+    serializeMessage: errorHandler,
+    deserializeMessage: errorHandler,
+  };
 }

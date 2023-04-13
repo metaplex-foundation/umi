@@ -1,18 +1,24 @@
-import { DownloaderInterface, NullDownloader } from './DownloaderInterface';
-import { EddsaInterface, NullEddsa } from './EddsaInterface';
-import { HttpInterface, NullHttp } from './HttpInterface';
 import {
-  NullProgramRepository,
+  DownloaderInterface,
+  createNullDownloader,
+} from './DownloaderInterface';
+import { EddsaInterface, createNullEddsa } from './EddsaInterface';
+import { HttpInterface, createNullHttp } from './HttpInterface';
+import {
+  createNullProgramRepository,
   ProgramRepositoryInterface,
 } from './ProgramRepositoryInterface';
 import { createNullRpc, RpcInterface } from './RpcInterface';
-import { NullSerializer, SerializerInterface } from './SerializerInterface';
-import { NullSigner, Signer } from './Signer';
 import {
-  NullTransactionFactory,
+  createNullSerializer,
+  SerializerInterface,
+} from './SerializerInterface';
+import { createNullSigner, Signer } from './Signer';
+import {
+  createNullTransactionFactory,
   TransactionFactoryInterface,
 } from './TransactionFactoryInterface';
-import { NullUploader, UploaderInterface } from './UploaderInterface';
+import { createNullUploader, UploaderInterface } from './UploaderInterface';
 
 /**
  * A Umi context object that uses all of the interfaces provided by Umi.
@@ -53,14 +59,14 @@ export interface Context {
  * @category Context and Interfaces
  */
 export const createNullContext = (): Context => ({
-  downloader: new NullDownloader(),
-  eddsa: new NullEddsa(),
-  http: new NullHttp(),
-  identity: new NullSigner(),
-  payer: new NullSigner(),
-  programs: new NullProgramRepository(),
+  downloader: createNullDownloader(),
+  eddsa: createNullEddsa(),
+  http: createNullHttp(),
+  identity: createNullSigner(),
+  payer: createNullSigner(),
+  programs: createNullProgramRepository(),
   rpc: createNullRpc(),
-  serializer: new NullSerializer(),
-  transactions: new NullTransactionFactory(),
-  uploader: new NullUploader(),
+  serializer: createNullSerializer(),
+  transactions: createNullTransactionFactory(),
+  uploader: createNullUploader(),
 });

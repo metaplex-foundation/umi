@@ -47,21 +47,16 @@ export type UploaderUploadOptions = {
  * An implementation of the {@link UploaderInterface} that throws an error when called.
  * @category Storage
  */
-export class NullUploader implements UploaderInterface {
-  private readonly error = new InterfaceImplementationMissingError(
-    'UploaderInterface',
-    'uploader'
-  );
-
-  upload(): Promise<string[]> {
-    throw this.error;
-  }
-
-  uploadJson(): Promise<string> {
-    throw this.error;
-  }
-
-  getUploadPrice(): Promise<Amount> {
-    throw this.error;
-  }
+export function createNullUploader(): UploaderInterface {
+  const errorHandler = () => {
+    throw new InterfaceImplementationMissingError(
+      'UploaderInterface',
+      'uploader'
+    );
+  };
+  return {
+    upload: errorHandler,
+    uploadJson: errorHandler,
+    getUploadPrice: errorHandler,
+  };
 }
