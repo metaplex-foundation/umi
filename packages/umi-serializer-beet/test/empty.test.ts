@@ -1,11 +1,11 @@
 import test, { ThrowsExpectation } from 'ava';
 import { none, Serializer } from '@metaplex-foundation/umi';
-import { BeetSerializer, DeserializingEmptyBufferError } from '../src';
+import { createBeetSerializer, DeserializingEmptyBufferError } from '../src';
 
 test('it can handle empty buffers', (t) => {
-  const { u8, unit } = new BeetSerializer();
-  const tolerant = new BeetSerializer();
-  const intolerant = new BeetSerializer({ tolerateEmptyBuffers: false });
+  const { u8, unit } = createBeetSerializer();
+  const tolerant = createBeetSerializer();
+  const intolerant = createBeetSerializer({ tolerateEmptyBuffers: false });
   const remainder = { size: 'remainder' } as const;
   const e: ThrowsExpectation = { instanceOf: DeserializingEmptyBufferError };
   const fixedError = (expectedBytes: number) => ({

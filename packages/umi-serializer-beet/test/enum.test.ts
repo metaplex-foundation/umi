@@ -1,5 +1,5 @@
 import test from 'ava';
-import { BeetSerializer } from '../src';
+import { createBeetSerializer } from '../src';
 import { s, d } from './_helpers';
 
 enum Empty {}
@@ -15,7 +15,7 @@ enum Direction {
 }
 
 test('numerical enum (de)serialization', (t) => {
-  const { enum: scalarEnum } = new BeetSerializer();
+  const { enum: scalarEnum } = createBeetSerializer();
 
   // Bad.
   s(t, scalarEnum(Feedback), 'BAD', '00');
@@ -42,7 +42,7 @@ test('numerical enum (de)serialization', (t) => {
 });
 
 test('lexical enum (de)serialization', (t) => {
-  const { enum: scalarEnum } = new BeetSerializer();
+  const { enum: scalarEnum } = createBeetSerializer();
 
   // Up.
   s(t, scalarEnum(Direction), Direction.UP, '00');
@@ -82,7 +82,7 @@ test('lexical enum (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { enum: scalarEnum } = new BeetSerializer();
+  const { enum: scalarEnum } = createBeetSerializer();
   t.is(scalarEnum(Empty).description, 'enum()');
   t.is(scalarEnum(Feedback).description, 'enum(BAD, GOOD)');
   t.is(scalarEnum(Direction).description, 'enum(Up, Down, Left, Right)');
@@ -93,7 +93,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { enum: scalarEnum } = new BeetSerializer();
+  const { enum: scalarEnum } = createBeetSerializer();
   t.is(scalarEnum(Empty).fixedSize, 1);
   t.is(scalarEnum(Empty).maxSize, 1);
   t.is(scalarEnum(Feedback).fixedSize, 1);

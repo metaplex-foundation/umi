@@ -1,10 +1,10 @@
 import test from 'ava';
 import { Endian } from '@metaplex-foundation/umi';
-import { BeetSerializer } from '../src';
+import { createBeetSerializer } from '../src';
 import { s, d } from './_helpers';
 
 test('prefixed (de)serialization', (t) => {
-  const { array, u8, string, u64 } = new BeetSerializer();
+  const { array, u8, string, u64 } = createBeetSerializer();
 
   // Empty.
   s(t, array(u8()), [], '00000000'); // 4-bytes prefix.
@@ -30,7 +30,7 @@ test('prefixed (de)serialization', (t) => {
 });
 
 test('fixed (de)serialization', (t) => {
-  const { array, u8, string, u64 } = new BeetSerializer();
+  const { array, u8, string, u64 } = createBeetSerializer();
 
   // Empty.
   s(t, array(u8(), { size: 0 }), [], '');
@@ -62,7 +62,7 @@ test('fixed (de)serialization', (t) => {
 });
 
 test('remainder (de)serialization', (t) => {
-  const { array, u8, string, u64 } = new BeetSerializer();
+  const { array, u8, string, u64 } = createBeetSerializer();
   const remainder = { size: 'remainder' } as const;
 
   // Empty.
@@ -91,7 +91,7 @@ test('remainder (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { array, u8, u16 } = new BeetSerializer();
+  const { array, u8, u16 } = createBeetSerializer();
 
   // Size.
   t.is(array(u8(), { size: 42 }).description, 'array(u8; 42)');
@@ -111,7 +111,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { array, u8, u32, string } = new BeetSerializer();
+  const { array, u8, u32, string } = createBeetSerializer();
   t.is(array(u8()).fixedSize, null);
   t.is(array(u8()).maxSize, null);
   t.is(array(u8(), { size: u8() }).fixedSize, null);
