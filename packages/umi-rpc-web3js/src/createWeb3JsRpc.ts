@@ -72,6 +72,46 @@ export function createWeb3JsRpc(
     return connection;
   };
 
+  const getAccount = async (
+    publicKey: PublicKey,
+    options: RpcGetAccountOptions = {}
+  ): Promise<MaybeRpcAccount> => {
+    const account = await getConnection().getAccountInfo(
+      toWeb3JsPublicKey(publicKey),
+      options
+    );
+    return parseMaybeAccount(account, publicKey);
+  };
+
+  const getAccounts = async (
+    publicKeys: PublicKey[],
+    options: RpcGetAccountsOptions = {}
+  ): Promise<MaybeRpcAccount[]> => {
+    const accounts = await getConnection().getMultipleAccountsInfo(
+      publicKeys.map(toWeb3JsPublicKey),
+      options
+    );
+    return accounts.map((account, index) =>
+      parseMaybeAccount(account, publicKeys[index])
+    );
+  };
+
+  const getProgramAccounts = async (
+    programId: PublicKey,
+    options: RpcGetProgramAccountsOptions = {}
+  ): Promise<RpcAccount[]> => {
+    const accounts = await getConnection().getProgramAccounts(
+      toWeb3JsPublicKey(programId),
+      {
+        ...options,
+        filters: options.filters?.map((filter) => parseDataFilter(filter)),
+      }
+    );
+    return accounts.map(({ pubkey, account }) =>
+      parseAccount(account, fromWeb3JsPublicKey(pubkey))
+    );
+  };
+
   const getBalance = async (
     publicKey: PublicKey,
     options: RpcGetBalanceOptions = {}
@@ -83,10 +123,177 @@ export function createWeb3JsRpc(
     return lamports(balanceInLamports);
   };
 
+  const getRent = async (
+    bytes: number,
+    options: RpcGetRentOptions = {}
+  ): Promise<SolAmount> => {
+    const rentFor = (bytes: number) =>
+      getConnection().getMinimumBalanceForRentExemption(
+        bytes,
+        options.commitment
+      );
+    if (options.includesHeaderBytes ?? false) {
+      const headerRent = await rentFor(0);
+      const rentPerByte = BigInt(headerRent) / BigInt(ACCOUNT_HEADER_SIZE);
+      return lamports(rentPerByte * BigInt(bytes));
+    }
+    return lamports(await rentFor(bytes));
+  };
+
   const getLatestBlockhash = async (
     options: RpcGetLatestBlockhashOptions = {}
   ): Promise<BlockhashWithExpiryBlockHeight> =>
     getConnection().getLatestBlockhash(options);
+
+  const getTransaction = async (
+    signature: TransactionSignature,
+    options: RpcGetTransactionOptions = {}
+  ): Promise<TransactionWithMeta | null> => {
+    const response = await getConnection().getTransaction(
+      base58.deserialize(signature)[0],
+      {
+        commitment: options.commitment as 'confirmed' | 'finalized' | undefined,
+        maxSupportedTransactionVersion: 0,
+      }
+    );
+
+    if (!response) {
+      return null;
+    }
+
+    if (!response.meta) {
+      // TODO: Custom error.
+      throw new Error('Transaction meta is missing.');
+    }
+
+    const { transaction, meta } = response;
+    const message = fromWeb3JsMessage(transaction.message);
+    const mapPublicKey = (key: string) =>
+      fromWeb3JsPublicKey(new Web3JsPublicKey(key));
+    const mapTokenBalance = (
+      tokenBalance: Web3JsTokenBalance
+    ): TransactionMetaTokenBalance => ({
+      accountIndex: tokenBalance.accountIndex,
+      amount: createAmount(
+        tokenBalance.uiTokenAmount.amount,
+        'splToken',
+        tokenBalance.uiTokenAmount.decimals
+      ),
+      mint: mapPublicKey(tokenBalance.mint),
+      owner: tokenBalance.owner ? mapPublicKey(tokenBalance.owner) : null,
+    });
+
+    return {
+      message,
+      serializedMessage: context.transactions.serializeMessage(message),
+      signatures: transaction.signatures.map(base58.serialize),
+      meta: {
+        fee: lamports(meta.fee),
+        logs: meta.logMessages ?? [],
+        preBalances: meta.preBalances.map(lamports),
+        postBalances: meta.postBalances.map(lamports),
+        preTokenBalances: (meta.preTokenBalances ?? []).map(mapTokenBalance),
+        postTokenBalances: (meta.postTokenBalances ?? []).map(mapTokenBalance),
+        innerInstructions:
+          meta.innerInstructions?.map(
+            (inner): TransactionMetaInnerInstruction => ({
+              index: inner.index,
+              instructions: inner.instructions.map(
+                (instruction): CompiledInstruction => ({
+                  programIndex: instruction.programIdIndex,
+                  accountIndexes: instruction.accounts,
+                  data: base58.serialize(instruction.data),
+                })
+              ),
+            })
+          ) ?? null,
+        loadedAddresses: {
+          writable: (meta.loadedAddresses?.writable ?? []).map(
+            fromWeb3JsPublicKey
+          ),
+          readonly: (meta.loadedAddresses?.readonly ?? []).map(
+            fromWeb3JsPublicKey
+          ),
+        },
+        computeUnitsConsumed: meta.computeUnitsConsumed
+          ? BigInt(meta.computeUnitsConsumed)
+          : null,
+        err: meta.err,
+      },
+    };
+  };
+
+  const accountExists = async (
+    publicKey: PublicKey,
+    options: RpcAccountExistsOptions = {}
+  ): Promise<boolean> => !isZeroAmount(await getBalance(publicKey, options));
+
+  const airdrop = async (
+    publicKey: PublicKey,
+    amount: SolAmount,
+    options: RpcAirdropOptions = {}
+  ): Promise<void> => {
+    const signature = await getConnection().requestAirdrop(
+      toWeb3JsPublicKey(publicKey),
+      Number(amount.basisPoints)
+    );
+    if (options.strategy) {
+      await confirmTransaction(
+        base58.serialize(signature),
+        options as RpcConfirmTransactionOptions
+      );
+      return;
+    }
+    await confirmTransaction(base58.serialize(signature), {
+      ...options,
+      strategy: { type: 'blockhash', ...(await getLatestBlockhash()) },
+    });
+  };
+
+  const call = async <Result, Params extends any[] = any[]>(
+    method: string,
+    params?: [...Params],
+    options: RpcCallOptions = {}
+  ): Promise<Result> => {
+    const client = (getConnection() as any)._rpcClient as RpcClient;
+    const resolvedParams = resolveCallParams(
+      getConnection(),
+      (params ? [...params] : []) as [...Params],
+      options.commitment,
+      options.extra
+    );
+    return new Promise((resolve, reject) => {
+      const callback: JSONRPCCallbackTypePlain = (error, response) =>
+        error ? reject(error) : resolve(response.result);
+      if (options.id) {
+        client.request(method, resolvedParams, options.id, callback);
+      } else {
+        client.request(method, resolvedParams, callback);
+      }
+    });
+  };
+
+  const sendTransaction = async (
+    transaction: Transaction,
+    options: RpcSendTransactionOptions = {}
+  ): Promise<TransactionSignature> => {
+    try {
+      const signature = await getConnection().sendRawTransaction(
+        context.transactions.serialize(transaction),
+        options
+      );
+      return base58.serialize(signature);
+    } catch (error: any) {
+      let resolvedError: ProgramError | null = null;
+      if (error instanceof Error && 'logs' in error) {
+        resolvedError = context.programs.resolveError(
+          error as ErrorWithLogs,
+          transaction
+        );
+      }
+      throw resolvedError || error;
+    }
+  };
 
   const confirmTransaction = async (
     signature: TransactionSignature,
@@ -98,234 +305,26 @@ export function createWeb3JsRpc(
     );
 
   return {
+    getEndpoint: (): string => getConnection().rpcEndpoint,
+    getCluster: (): Cluster => cluster,
+    getAccount,
+    getAccounts,
+    getProgramAccounts,
+    getBalance,
+    getRent,
+    getSlot: async (options: RpcGetSlotOptions = {}) =>
+      getConnection().getSlot(options),
+    getLatestBlockhash,
+    getTransaction,
+    accountExists,
+    airdrop,
+    call,
+    sendTransaction,
+    confirmTransaction,
+
     get connection() {
       return getConnection();
     },
-
-    getEndpoint: (): string => getConnection().rpcEndpoint,
-    getCluster: (): Cluster => cluster,
-
-    getAccount: async (
-      publicKey: PublicKey,
-      options: RpcGetAccountOptions = {}
-    ): Promise<MaybeRpcAccount> => {
-      const account = await getConnection().getAccountInfo(
-        toWeb3JsPublicKey(publicKey),
-        options
-      );
-      return parseMaybeAccount(account, publicKey);
-    },
-
-    getAccounts: async (
-      publicKeys: PublicKey[],
-      options: RpcGetAccountsOptions = {}
-    ): Promise<MaybeRpcAccount[]> => {
-      const accounts = await getConnection().getMultipleAccountsInfo(
-        publicKeys.map(toWeb3JsPublicKey),
-        options
-      );
-      return accounts.map((account, index) =>
-        parseMaybeAccount(account, publicKeys[index])
-      );
-    },
-
-    getProgramAccounts: async (
-      programId: PublicKey,
-      options: RpcGetProgramAccountsOptions = {}
-    ): Promise<RpcAccount[]> => {
-      const accounts = await getConnection().getProgramAccounts(
-        toWeb3JsPublicKey(programId),
-        {
-          ...options,
-          filters: options.filters?.map((filter) => parseDataFilter(filter)),
-        }
-      );
-      return accounts.map(({ pubkey, account }) =>
-        parseAccount(account, fromWeb3JsPublicKey(pubkey))
-      );
-    },
-
-    getBalance,
-
-    getRent: async (
-      bytes: number,
-      options: RpcGetRentOptions = {}
-    ): Promise<SolAmount> => {
-      const rentFor = (bytes: number) =>
-        getConnection().getMinimumBalanceForRentExemption(
-          bytes,
-          options.commitment
-        );
-      if (options.includesHeaderBytes ?? false) {
-        const headerRent = await rentFor(0);
-        const rentPerByte = BigInt(headerRent) / BigInt(ACCOUNT_HEADER_SIZE);
-        return lamports(rentPerByte * BigInt(bytes));
-      }
-      return lamports(await rentFor(bytes));
-    },
-
-    async getSlot(options: RpcGetSlotOptions = {}): Promise<number> {
-      return getConnection().getSlot(options);
-    },
-
-    getLatestBlockhash,
-
-    getTransaction: async (
-      signature: TransactionSignature,
-      options: RpcGetTransactionOptions = {}
-    ): Promise<TransactionWithMeta | null> => {
-      const response = await getConnection().getTransaction(
-        base58.deserialize(signature)[0],
-        {
-          commitment: options.commitment as
-            | 'confirmed'
-            | 'finalized'
-            | undefined,
-          maxSupportedTransactionVersion: 0,
-        }
-      );
-
-      if (!response) {
-        return null;
-      }
-
-      if (!response.meta) {
-        // TODO: Custom error.
-        throw new Error('Transaction meta is missing.');
-      }
-
-      const { transaction, meta } = response;
-      const message = fromWeb3JsMessage(transaction.message);
-      const mapPublicKey = (key: string) =>
-        fromWeb3JsPublicKey(new Web3JsPublicKey(key));
-      const mapTokenBalance = (
-        tokenBalance: Web3JsTokenBalance
-      ): TransactionMetaTokenBalance => ({
-        accountIndex: tokenBalance.accountIndex,
-        amount: createAmount(
-          tokenBalance.uiTokenAmount.amount,
-          'splToken',
-          tokenBalance.uiTokenAmount.decimals
-        ),
-        mint: mapPublicKey(tokenBalance.mint),
-        owner: tokenBalance.owner ? mapPublicKey(tokenBalance.owner) : null,
-      });
-
-      return {
-        message,
-        serializedMessage: context.transactions.serializeMessage(message),
-        signatures: transaction.signatures.map(base58.serialize),
-        meta: {
-          fee: lamports(meta.fee),
-          logs: meta.logMessages ?? [],
-          preBalances: meta.preBalances.map(lamports),
-          postBalances: meta.postBalances.map(lamports),
-          preTokenBalances: (meta.preTokenBalances ?? []).map(mapTokenBalance),
-          postTokenBalances: (meta.postTokenBalances ?? []).map(
-            mapTokenBalance
-          ),
-          innerInstructions:
-            meta.innerInstructions?.map(
-              (inner): TransactionMetaInnerInstruction => ({
-                index: inner.index,
-                instructions: inner.instructions.map(
-                  (instruction): CompiledInstruction => ({
-                    programIndex: instruction.programIdIndex,
-                    accountIndexes: instruction.accounts,
-                    data: base58.serialize(instruction.data),
-                  })
-                ),
-              })
-            ) ?? null,
-          loadedAddresses: {
-            writable: (meta.loadedAddresses?.writable ?? []).map(
-              fromWeb3JsPublicKey
-            ),
-            readonly: (meta.loadedAddresses?.readonly ?? []).map(
-              fromWeb3JsPublicKey
-            ),
-          },
-          computeUnitsConsumed: meta.computeUnitsConsumed
-            ? BigInt(meta.computeUnitsConsumed)
-            : null,
-          err: meta.err,
-        },
-      };
-    },
-
-    accountExists: async (
-      publicKey: PublicKey,
-      options: RpcAccountExistsOptions = {}
-    ): Promise<boolean> => !isZeroAmount(await getBalance(publicKey, options)),
-
-    airdrop: async (
-      publicKey: PublicKey,
-      amount: SolAmount,
-      options: RpcAirdropOptions = {}
-    ): Promise<void> => {
-      const signature = await getConnection().requestAirdrop(
-        toWeb3JsPublicKey(publicKey),
-        Number(amount.basisPoints)
-      );
-      if (options.strategy) {
-        await confirmTransaction(
-          base58.serialize(signature),
-          options as RpcConfirmTransactionOptions
-        );
-        return;
-      }
-      await confirmTransaction(base58.serialize(signature), {
-        ...options,
-        strategy: { type: 'blockhash', ...(await getLatestBlockhash()) },
-      });
-    },
-
-    call: async <Result, Params extends any[] = any[]>(
-      method: string,
-      params?: [...Params],
-      options: RpcCallOptions = {}
-    ): Promise<Result> => {
-      const client = (getConnection() as any)._rpcClient as RpcClient;
-      const resolvedParams = resolveCallParams(
-        getConnection(),
-        (params ? [...params] : []) as [...Params],
-        options.commitment,
-        options.extra
-      );
-      return new Promise((resolve, reject) => {
-        const callback: JSONRPCCallbackTypePlain = (error, response) =>
-          error ? reject(error) : resolve(response.result);
-        if (options.id) {
-          client.request(method, resolvedParams, options.id, callback);
-        } else {
-          client.request(method, resolvedParams, callback);
-        }
-      });
-    },
-
-    sendTransaction: async (
-      transaction: Transaction,
-      options: RpcSendTransactionOptions = {}
-    ): Promise<TransactionSignature> => {
-      try {
-        const signature = await getConnection().sendRawTransaction(
-          context.transactions.serialize(transaction),
-          options
-        );
-        return base58.serialize(signature);
-      } catch (error: any) {
-        let resolvedError: ProgramError | null = null;
-        if (error instanceof Error && 'logs' in error) {
-          resolvedError = context.programs.resolveError(
-            error as ErrorWithLogs,
-            transaction
-          );
-        }
-        throw resolvedError || error;
-      }
-    },
-
-    confirmTransaction,
   };
 }
 
