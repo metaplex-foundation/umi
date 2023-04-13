@@ -18,6 +18,7 @@ test('numerical enum (de)serialization', (t) => {
   const { enum: scalarEnum } = createDataViewSerializer();
 
   // Bad.
+  s(t, scalarEnum(Feedback), Feedback.BAD, '00');
   s(t, scalarEnum(Feedback), 'BAD', '00');
   s(t, scalarEnum(Feedback), '0', '00');
   s(t, scalarEnum(Feedback), 0, '00');

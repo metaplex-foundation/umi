@@ -101,7 +101,7 @@ export interface SerializerInterface {
    * @param options - A set of options for the serializer.
    */
   enum<T>(
-    constructor: ScalarEnum<T>,
+    constructor: ScalarEnum<T> & {},
     options?: EnumSerializerOptions
   ): Serializer<T>;
 
