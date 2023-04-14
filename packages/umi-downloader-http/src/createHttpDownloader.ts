@@ -7,33 +7,34 @@ import {
   request,
 } from '@metaplex-foundation/umi';
 
-export class HttpDownloader implements DownloaderInterface {
-  constructor(protected context: Pick<Context, 'http'>) {}
-
-  async downloadOne(
+export function createHttpDownloader(
+  context: Pick<Context, 'http'>
+): DownloaderInterface {
+  const downloadOne = async (
     uri: string,
     options: DownloaderOptions = {}
-  ): Promise<GenericFile> {
-    const response = await this.context.http.send(
+  ): Promise<GenericFile> => {
+    const response = await context.http.send(
       request().get(uri).withAbortSignal(options.signal)
     );
     return createGenericFile(response.body, uri);
-  }
+  };
 
-  async download(
+  const download = async (
     uris: string[],
     options: DownloaderOptions = {}
-  ): Promise<GenericFile[]> {
-    return Promise.all(uris.map((uri) => this.downloadOne(uri, options)));
-  }
+  ): Promise<GenericFile[]> =>
+    Promise.all(uris.map((uri) => downloadOne(uri, options)));
 
-  async downloadJson<T>(
+  const downloadJson = async <T>(
     uri: string,
     options: DownloaderOptions = {}
-  ): Promise<T> {
-    const response = await this.context.http.send<T>(
+  ): Promise<T> => {
+    const response = await context.http.send<T>(
       request().get(uri).asJson().withAbortSignal(options.signal)
     );
     return response.data;
-  }
+  };
+
+  return { download, downloadJson };
 }
