@@ -76,7 +76,7 @@
     "not IE 11",
     "maintained node versions"
   ],
-  "packageManager": "pnpm@7.18.1",
+  "packageManager": "pnpm@8.2.0",
   "pnpm": {
     "patchedDependencies": {
       "@changesets/assemble-release-plan@5.2.3": "patches/@changesets__assemble-release-plan@5.2.3.patch"
