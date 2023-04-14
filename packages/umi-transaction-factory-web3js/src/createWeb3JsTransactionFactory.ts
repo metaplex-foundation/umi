@@ -25,14 +25,10 @@ import { VersionedTransaction as Web3JsTransaction } from '@solana/web3.js';
 const TRANSACTION_VERSION_FLAG = 0x80;
 const TRANSACTION_VERSION_MASK = 0x7f;
 
-export class Web3JsTransactionFactory implements TransactionFactoryInterface {
-  protected readonly context: Pick<Context, 'serializer'>;
-
-  constructor(context: Web3JsTransactionFactory['context']) {
-    this.context = context;
-  }
-
-  create(input: TransactionInput): Transaction {
+export function createWeb3JsTransactionFactory(
+  context: Pick<Context, 'serializer'>
+): TransactionFactoryInterface {
+  const create = (input: TransactionInput): Transaction => {
     const web3JsMessage = toWeb3JsMessageFromInput(input);
     const message = fromWeb3JsMessage(web3JsMessage);
     const web3JsTransaction = new Web3JsTransaction(
@@ -41,35 +37,31 @@ export class Web3JsTransactionFactory implements TransactionFactoryInterface {
     );
     return {
       message,
-      serializedMessage: this.serializeMessage(message),
+      serializedMessage: serializeMessage(message),
       signatures: web3JsTransaction.signatures,
     };
-  }
+  };
 
-  serialize(transaction: Transaction): SerializedTransaction {
-    return this.getTransactionSerializer().serialize(transaction);
-  }
+  const serialize = (transaction: Transaction): SerializedTransaction =>
+    getTransactionSerializer().serialize(transaction);
 
-  deserialize(serializedTransaction: SerializedTransaction): Transaction {
-    return this.getTransactionSerializer().deserialize(
-      serializedTransaction
-    )[0];
-  }
+  const deserialize = (
+    serializedTransaction: SerializedTransaction
+  ): Transaction =>
+    getTransactionSerializer().deserialize(serializedTransaction)[0];
 
-  serializeMessage(message: TransactionMessage): SerializedTransactionMessage {
-    return this.getTransactionMessageSerializer().serialize(message);
-  }
+  const serializeMessage = (
+    message: TransactionMessage
+  ): SerializedTransactionMessage =>
+    getTransactionMessageSerializer().serialize(message);
 
-  deserializeMessage(
+  const deserializeMessage = (
     serializedMessage: SerializedTransactionMessage
-  ): TransactionMessage {
-    return this.getTransactionMessageSerializer().deserialize(
-      serializedMessage
-    )[0];
-  }
+  ): TransactionMessage =>
+    getTransactionMessageSerializer().deserialize(serializedMessage)[0];
 
-  getTransactionSerializer(): Serializer<Transaction> {
-    const s = this.context.serializer;
+  const getTransactionSerializer = (): Serializer<Transaction> => {
+    const s = context.serializer;
     return {
       ...mapSerializer(
         s.struct<Omit<Transaction, 'message'>>([
@@ -79,20 +71,20 @@ export class Web3JsTransactionFactory implements TransactionFactoryInterface {
         (value: Transaction): Omit<Transaction, 'message'> => value,
         (value: Omit<Transaction, 'message'>): Transaction => ({
           ...value,
-          message: this.deserializeMessage(value.serializedMessage),
+          message: deserializeMessage(value.serializedMessage),
         })
       ),
       description: 'Transaction',
     };
-  }
+  };
 
-  getTransactionMessageSerializer(): Serializer<TransactionMessage> {
-    return {
+  const getTransactionMessageSerializer =
+    (): Serializer<TransactionMessage> => ({
       description: 'TransactionMessage',
       fixedSize: null,
       maxSize: null,
       serialize: (value: TransactionMessage): Uint8Array => {
-        const serializer = this.getTransactionMessageSerializerForVersion(
+        const serializer = getTransactionMessageSerializerForVersion(
           value.version
         );
         return serializer.serialize(value);
@@ -101,41 +93,39 @@ export class Web3JsTransactionFactory implements TransactionFactoryInterface {
         bytes: Uint8Array,
         offset = 0
       ): [TransactionMessage, number] => {
-        const [version] = this.getTransactionVersionSerializer().deserialize(
+        const [version] = getTransactionVersionSerializer().deserialize(
           bytes,
           offset
         );
-        const serializer =
-          this.getTransactionMessageSerializerForVersion(version);
+        const serializer = getTransactionMessageSerializerForVersion(version);
         return serializer.deserialize(bytes, offset);
       },
-    };
-  }
+    });
 
-  getTransactionMessageSerializerForVersion(
+  const getTransactionMessageSerializerForVersion = (
     version: TransactionVersion
-  ): Serializer<TransactionMessage> {
-    const s = this.context.serializer;
+  ): Serializer<TransactionMessage> => {
+    const s = context.serializer;
     return s.struct<TransactionMessage, TransactionMessage>([
-      ['version', this.getTransactionVersionSerializer()],
-      ['header', this.getTransactionMessageHeaderSerializer()],
+      ['version', getTransactionVersionSerializer()],
+      ['header', getTransactionMessageHeaderSerializer()],
       ['accounts', s.array(s.publicKey(), { size: shortU16() })],
       ['blockhash', s.string({ encoding: base58, size: 32 })],
       [
         'instructions',
-        s.array(this.getCompiledInstructionSerializer(), { size: shortU16() }),
+        s.array(getCompiledInstructionSerializer(), { size: shortU16() }),
       ],
       [
         'addressLookupTables',
-        s.array(this.getCompiledAddressLookupTableSerializer(), {
+        s.array(getCompiledAddressLookupTableSerializer(), {
           size: version === 'legacy' ? 0 : shortU16(),
         }),
       ],
     ]);
-  }
+  };
 
-  getTransactionVersionSerializer(): Serializer<TransactionVersion> {
-    return {
+  const getTransactionVersionSerializer =
+    (): Serializer<TransactionVersion> => ({
       description: 'TransactionVersion',
       fixedSize: null,
       maxSize: 1,
@@ -157,35 +147,45 @@ export class Web3JsTransactionFactory implements TransactionFactoryInterface {
         }
         return [version as TransactionVersion, offset + 1];
       },
+    });
+
+  const getTransactionMessageHeaderSerializer =
+    (): Serializer<TransactionMessageHeader> => {
+      const s = context.serializer;
+      return s.struct([
+        ['numRequiredSignatures', s.u8()],
+        ['numReadonlySignedAccounts', s.u8()],
+        ['numReadonlyUnsignedAccounts', s.u8()],
+      ]);
     };
-  }
 
-  getTransactionMessageHeaderSerializer(): Serializer<TransactionMessageHeader> {
-    const s = this.context.serializer;
-    return s.struct([
-      ['numRequiredSignatures', s.u8()],
-      ['numReadonlySignedAccounts', s.u8()],
-      ['numReadonlyUnsignedAccounts', s.u8()],
-    ]);
-  }
+  const getCompiledInstructionSerializer =
+    (): Serializer<CompiledInstruction> => {
+      const s = context.serializer;
+      return s.struct([
+        ['programIndex', s.u8()],
+        ['accountIndexes', s.array(s.u8(), { size: shortU16() })],
+        ['data', s.bytes({ size: shortU16() })],
+      ]);
+    };
 
-  getCompiledInstructionSerializer(): Serializer<CompiledInstruction> {
-    const s = this.context.serializer;
-    return s.struct([
-      ['programIndex', s.u8()],
-      ['accountIndexes', s.array(s.u8(), { size: shortU16() })],
-      ['data', s.bytes({ size: shortU16() })],
-    ]);
-  }
+  const getCompiledAddressLookupTableSerializer =
+    (): Serializer<CompiledAddressLookupTable> => {
+      const s = context.serializer;
+      return s.struct([
+        ['publicKey', s.publicKey()],
+        ['writableIndexes', s.array(s.u8(), { size: shortU16() })],
+        ['readonlyIndexes', s.array(s.u8(), { size: shortU16() })],
+      ]);
+    };
 
-  getCompiledAddressLookupTableSerializer(): Serializer<CompiledAddressLookupTable> {
-    const s = this.context.serializer;
-    return s.struct([
-      ['publicKey', s.publicKey()],
-      ['writableIndexes', s.array(s.u8(), { size: shortU16() })],
-      ['readonlyIndexes', s.array(s.u8(), { size: shortU16() })],
-    ]);
-  }
+  return {
+    create,
+    serialize,
+    deserialize,
+    serializeMessage,
+    deserializeMessage,
+  };
 }
 
 /**
