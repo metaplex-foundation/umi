@@ -7,12 +7,13 @@ import {
   web3JsRpc,
   Web3JsRpcOptions,
 } from '@metaplex-foundation/umi-rpc-web3js';
+import { chunkGetAccountsRpc } from '@metaplex-foundation/umi-rpc-chunk-get-accounts';
 import { dataViewSerializer } from '@metaplex-foundation/umi-serializer-data-view';
 import { web3JsTransactionFactory } from '@metaplex-foundation/umi-transaction-factory-web3js';
 
 export const defaultPlugins = (
   endpoint: string,
-  rpcOptions?: Web3JsRpcOptions
+  rpcOptions?: Web3JsRpcOptions & { getAccountsChunkSize?: number }
 ): UmiPlugin => ({
   install(umi) {
     umi.use(dataViewSerializer());
@@ -21,6 +22,7 @@ export const defaultPlugins = (
     umi.use(httpDownloader());
     umi.use(web3JsEddsa());
     umi.use(web3JsRpc(endpoint, rpcOptions));
+    umi.use(chunkGetAccountsRpc(rpcOptions?.getAccountsChunkSize));
     umi.use(web3JsTransactionFactory());
   },
 });
