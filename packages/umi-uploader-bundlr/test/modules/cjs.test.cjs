@@ -11,17 +11,17 @@ const exported = require('../../dist/cjs/index.cjs');
 test('it successfully exports commonjs named exports', (t) => {
   const exportedKeys = Object.keys(exported);
 
-  t.true(exportedKeys.includes('BundlrUploader'));
+  t.true(exportedKeys.includes('createBundlrUploader'));
 });
 
 test('it can import the Bundlr client', async (t) => {
-  const { BundlrUploader } = exported;
+  const { createBundlrUploader } = exported;
   const context = createUmi()
     .use(web3JsRpc('http://localhost:8899'))
     .use(web3JsEddsa())
     .use(generatedSignerIdentity());
-  const bundlrDriver = new BundlrUploader(context);
-  const bundlr = await bundlrDriver.bundlr();
+  const bundlrUploader = createBundlrUploader(context);
+  const bundlr = await bundlrUploader.bundlr();
   t.true(typeof bundlr === 'object', 'Bundlr is an object');
   t.true('uploader' in bundlr, 'Bundlr can upload');
   t.true('getLoadedBalance' in bundlr, 'Bundlr can get the loaded balance');
