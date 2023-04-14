@@ -1,8 +1,11 @@
 import type { UmiPlugin } from '@metaplex-foundation/umi';
-import { BundlrUploaderOptions, BundlrUploader } from './BundlrUploader';
+import {
+  BundlrUploaderOptions,
+  createBundlrUploader,
+} from './createBundlrUploader';
 
 export const bundlrUploader = (options?: BundlrUploaderOptions): UmiPlugin => ({
   install(umi) {
-    umi.uploader = new BundlrUploader(umi, options);
+    umi.uploader = createBundlrUploader(umi, options);
   },
 });
