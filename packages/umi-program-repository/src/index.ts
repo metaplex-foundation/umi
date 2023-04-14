@@ -1,2 +1,2 @@
-export * from './DefaultProgramRepository';
+export * from './createDefaultProgramRepository';
 export * from './plugin';
