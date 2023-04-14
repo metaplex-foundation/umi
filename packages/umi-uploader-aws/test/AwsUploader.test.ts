@@ -2,7 +2,7 @@ import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { createGenericFile, utf8 } from '@metaplex-foundation/umi';
 import test from 'ava';
 import sinon from 'sinon';
-import { AwsUploader } from '../src';
+import { createAwsUploader } from '../src';
 
 const awsClient = {
   async send() {
@@ -20,7 +20,7 @@ test('it can upload assets to a S3 bucket', async (t) => {
   const stub = sinon.spy(awsClient);
 
   // Fed to a AwsUploader.
-  const uploader = new AwsUploader(awsClient, 'some-bucket');
+  const uploader = createAwsUploader(awsClient, 'some-bucket');
 
   // When we upload some content to AWS S3.
   const file = createGenericFile('some-image', 'some-image.jpg', {

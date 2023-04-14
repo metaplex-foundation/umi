@@ -1,2 +1,2 @@
-export * from './AwsUploader';
+export * from './createAwsUploader';
 export * from './plugin';
