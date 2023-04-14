@@ -1,5 +1,24 @@
 # @metaplex-foundation/umi-bundle-defaults
 
+## 0.7.0
+
+### Minor Changes
+
+- [#34](https://github.com/metaplex-foundation/umi/pull/34) [`a963320`](https://github.com/metaplex-foundation/umi/commit/a9633202645a23b19c00ec973e93f5e5fda0776d) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Use functions instead of classes to implement interfaces
+
+### Patch Changes
+
+- Updated dependencies [[`a963320`](https://github.com/metaplex-foundation/umi/commit/a9633202645a23b19c00ec973e93f5e5fda0776d)]:
+  - @metaplex-foundation/umi-transaction-factory-web3js@0.7.0
+  - @metaplex-foundation/umi-rpc-chunk-get-accounts@0.7.0
+  - @metaplex-foundation/umi-serializer-data-view@0.7.0
+  - @metaplex-foundation/umi-program-repository@0.7.0
+  - @metaplex-foundation/umi-downloader-http@0.7.0
+  - @metaplex-foundation/umi-eddsa-web3js@0.7.0
+  - @metaplex-foundation/umi-http-fetch@0.7.0
+  - @metaplex-foundation/umi-rpc-web3js@0.7.0
+  - @metaplex-foundation/umi@0.7.0
+
 ## 0.6.0
 
 ### Patch Changes
