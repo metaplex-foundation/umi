@@ -31,53 +31,57 @@ export type NftStorageUploaderOptions = {
   useGatewayUrls?: boolean;
 };
 
-export class NftStorageUploader implements UploaderInterface {
-  protected readonly context: Pick<Context, 'rpc' | 'payer'>;
+export function createNftStorageUploader(
+  context: Pick<Context, 'rpc' | 'payer'>,
+  options: NftStorageUploaderOptions = {}
+): UploaderInterface & {
+  client: () => Promise<NFTStorage | NFTStorageMetaplexor>;
+} {
+  const { payer } = options;
+  const { token } = options;
+  const { endpoint } = options;
+  const { gatewayHost } = options;
+  const batchSize = options.batchSize ?? 50;
+  const useGatewayUrls = options.useGatewayUrls ?? true;
 
-  readonly payer?: Signer;
+  const getClient = async (): Promise<NFTStorage | NFTStorageMetaplexor> => {
+    if (token) {
+      return new NFTStorage({ token, endpoint });
+    }
 
-  readonly token?: string;
+    const signer: Signer = payer ?? context.payer;
+    const authOptions = {
+      mintingAgent: '@metaplex-foundation/umi-plugin-nft-storage',
+      solanaCluster: context.rpc.getCluster(),
+      endpoint,
+    };
 
-  readonly endpoint?: URL;
+    return isKeypairSigner(signer)
+      ? NFTStorageMetaplexor.withSecretKey(signer.secretKey, authOptions)
+      : NFTStorageMetaplexor.withSigner(
+          signer.signMessage.bind(signer),
+          signer.publicKey.bytes,
+          authOptions
+        );
+  };
 
-  readonly gatewayHost?: string;
+  const getUploadPrice = async (): Promise<SolAmount> => lamports(0);
 
-  batchSize: number;
-
-  useGatewayUrls: boolean;
-
-  constructor(
-    context: Pick<Context, 'rpc' | 'payer'>,
-    options: NftStorageUploaderOptions = {}
-  ) {
-    this.context = context;
-    this.payer = options.payer;
-    this.token = options.token;
-    this.endpoint = options.endpoint;
-    this.gatewayHost = options.gatewayHost;
-    this.batchSize = options.batchSize ?? 50;
-    this.useGatewayUrls = options.useGatewayUrls ?? true;
-  }
-
-  async getUploadPrice(): Promise<SolAmount> {
-    return lamports(0);
-  }
-
-  async upload(
+  const upload = async (
     files: GenericFile[],
     options: UploaderUploadOptions = {}
-  ): Promise<string[]> {
-    if (this.batchSize <= 0) {
+  ): Promise<string[]> => {
+    if (batchSize <= 0) {
       throw new Error('batchSize must be greater than 0');
     }
 
-    const client = await this.client();
+    const client = await getClient();
     const blockstore = new MemoryBlockStore();
     const uris: string[] = [];
-    const numBatches = Math.ceil(files.length / this.batchSize);
+    const numBatches = Math.ceil(files.length / batchSize);
     const batches: GenericFile[][] = new Array(numBatches)
       .fill([])
-      .map((_, i) => files.slice(i * this.batchSize, (i + 1) * this.batchSize));
+      .map((_, i) => files.slice(i * batchSize, (i + 1) * batchSize));
 
     for (let i = 0; i < batches.length; i += 1) {
       const batch = batches[i];
@@ -87,8 +91,8 @@ export class NftStorageUploader implements UploaderInterface {
         const file = batch[j];
         const blob = new Blob([file.buffer]);
         const node = await NFTStorage.encodeBlob(blob, { blockstore });
-        const fileUri = this.useGatewayUrls
-          ? toGatewayUri(node.cid.toString(), undefined, this.gatewayHost)
+        const fileUri = useGatewayUrls
+          ? toGatewayUri(node.cid.toString(), undefined, gatewayHost)
           : toIpfsUri(node.cid.toString());
         uris.push(fileUri);
         batchLinks.push(await toDagPbLink(node, file.uniqueName));
@@ -117,37 +121,20 @@ export class NftStorageUploader implements UploaderInterface {
     }
 
     return uris;
-  }
+  };
 
-  async uploadJson<T>(json: T): Promise<string> {
+  const uploadJson = async <T>(json: T): Promise<string> => {
     const file = createGenericFileFromJson(json);
-    const uris = await this.upload([file]);
+    const uris = await upload([file]);
     return uris[0];
-  }
+  };
 
-  async client(): Promise<NFTStorage | NFTStorageMetaplexor> {
-    if (this.token) {
-      return new NFTStorage({
-        token: this.token,
-        endpoint: this.endpoint,
-      });
-    }
-
-    const signer: Signer = this.payer ?? this.context.payer;
-    const authOptions = {
-      mintingAgent: '@metaplex-foundation/umi-plugin-nft-storage',
-      solanaCluster: this.context.rpc.getCluster(),
-      endpoint: this.endpoint,
-    };
-
-    return isKeypairSigner(signer)
-      ? NFTStorageMetaplexor.withSecretKey(signer.secretKey, authOptions)
-      : NFTStorageMetaplexor.withSigner(
-          signer.signMessage.bind(signer),
-          signer.publicKey.bytes,
-          authOptions
-        );
-  }
+  return {
+    getUploadPrice,
+    upload,
+    uploadJson,
+    client: getClient,
+  };
 }
 
 const isNFTStorageMetaplexor = (
