@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 0.7.0
+
+### Minor Changes
+
+- [#34](https://github.com/metaplex-foundation/umi/pull/34) [`a963320`](https://github.com/metaplex-foundation/umi/commit/a9633202645a23b19c00ec973e93f5e5fda0776d) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Use functions instead of classes to implement interfaces
+
 ## 0.6.0
 
 ### Minor Changes
