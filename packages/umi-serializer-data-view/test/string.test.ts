@@ -1,10 +1,10 @@
 import test from 'ava';
 import { base16, base58, Endian } from '@metaplex-foundation/umi';
-import { DataViewSerializer } from '../src';
+import { createDataViewSerializer } from '../src';
 import { s, d } from './_helpers';
 
 test('prefixed (de)serialization', (t) => {
-  const { string, u8 } = new DataViewSerializer();
+  const { string, u8 } = createDataViewSerializer();
 
   // Empty string.
   s(t, string(), '', '00000000'); // 4-bytes prefix.
@@ -30,7 +30,7 @@ test('prefixed (de)serialization', (t) => {
 });
 
 test('fixed (de)serialization', (t) => {
-  const { string } = new DataViewSerializer();
+  const { string } = createDataViewSerializer();
   const string5 = string({ size: 5 });
   const string12 = string({ size: 12 });
 
@@ -52,7 +52,7 @@ test('fixed (de)serialization', (t) => {
 });
 
 test('variable (de)serialization', (t) => {
-  const { string } = new DataViewSerializer();
+  const { string } = createDataViewSerializer();
   const variableString = string({ size: 'variable' });
 
   // Empty string.
@@ -69,7 +69,7 @@ test('variable (de)serialization', (t) => {
 });
 
 test('base58 (de)serialization', (t) => {
-  const { string, u8 } = new DataViewSerializer();
+  const { string, u8 } = createDataViewSerializer();
 
   // Prefixed.
   const prefixedString = string({ size: u8(), encoding: base58 });
@@ -89,7 +89,7 @@ test('base58 (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { string, u16 } = new DataViewSerializer();
+  const { string, u16 } = createDataViewSerializer();
 
   // Encoding.
   t.is(string().description, 'string(utf8; u32(le))');
@@ -112,7 +112,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { string, u8 } = new DataViewSerializer();
+  const { string, u8 } = createDataViewSerializer();
   t.is(string().fixedSize, null);
   t.is(string().maxSize, null);
   t.is(string({ size: u8() }).fixedSize, null);

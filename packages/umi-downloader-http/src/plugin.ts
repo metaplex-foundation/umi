@@ -1,8 +1,8 @@
 import { UmiPlugin } from '@metaplex-foundation/umi';
-import { HttpDownloader } from './HttpDownloader';
+import { createHttpDownloader } from './createHttpDownloader';
 
 export const httpDownloader = (): UmiPlugin => ({
   install(umi) {
-    umi.downloader = new HttpDownloader(umi);
+    umi.downloader = createHttpDownloader(umi);
   },
 });

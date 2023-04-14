@@ -1,2 +1,2 @@
-export * from './FetchHttp';
+export * from './createFetchHttp';
 export * from './plugin';

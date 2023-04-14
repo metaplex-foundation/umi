@@ -17,27 +17,27 @@ import {
   ProgramNotRecognizedError,
 } from './errors';
 
-export class DefaultProgramRepository implements ProgramRepositoryInterface {
-  protected programs: Program[] = [];
+export function createDefaultProgramRepository(
+  context: Pick<Context, 'rpc'>
+): ProgramRepositoryInterface {
+  const programs: Program[] = [];
 
-  constructor(protected readonly context: Pick<Context, 'rpc'>) {}
-
-  has(
+  const has = (
     identifier: string | PublicKey,
     clusterFilter: ClusterFilter = 'current'
-  ): boolean {
-    const programs = this.all(clusterFilter);
+  ): boolean => {
+    const programs = all(clusterFilter);
     return typeof identifier === 'string'
       ? programs.some((p) => p.name === identifier)
       : programs.some((p) => samePublicKey(p.publicKey, identifier));
-  }
+  };
 
-  get<T extends Program = Program>(
+  const get = <T extends Program = Program>(
     identifier: string | PublicKey,
     clusterFilter: ClusterFilter = 'current'
-  ): T {
-    const cluster = this.parseClusterFilter(clusterFilter);
-    const programs = this.all(clusterFilter);
+  ): T => {
+    const cluster = parseClusterFilter(clusterFilter);
+    const programs = all(clusterFilter);
     const program =
       typeof identifier === 'string'
         ? programs.find((p) => p.name === identifier)
@@ -48,40 +48,40 @@ export class DefaultProgramRepository implements ProgramRepositoryInterface {
     }
 
     return program as T;
-  }
+  };
 
-  getPublicKey(
+  const getPublicKey = (
     identifier: string | PublicKey,
     fallback?: PublicKeyInput,
     clusterFilter?: ClusterFilter
-  ): PublicKey {
+  ): PublicKey => {
     try {
-      return this.get(identifier, clusterFilter).publicKey;
+      return get(identifier, clusterFilter).publicKey;
     } catch (error) {
       if (fallback === undefined) throw error;
       return publicKey(fallback);
     }
-  }
+  };
 
-  all(clusterFilter: ClusterFilter = 'current'): Program[] {
-    const cluster = this.parseClusterFilter(clusterFilter);
+  const all = (clusterFilter: ClusterFilter = 'current'): Program[] => {
+    const cluster = parseClusterFilter(clusterFilter);
     return cluster === '*'
-      ? this.programs
-      : this.programs.filter((program) => program.isOnCluster(cluster));
-  }
+      ? programs
+      : programs.filter((program) => program.isOnCluster(cluster));
+  };
 
-  add(program: Program, overrides = true): void {
+  const add = (program: Program, overrides = true): void => {
     if (overrides) {
-      this.programs.unshift(program);
+      programs.unshift(program);
     } else {
-      this.programs.push(program);
+      programs.push(program);
     }
-  }
+  };
 
-  resolveError(
+  const resolveError = (
     error: ErrorWithLogs,
     transaction: Transaction
-  ): ProgramError | null {
+  ): ProgramError | null => {
     // Ensure the error as logs.
     if (!Array.isArray(error.logs) || error.logs.length === 0) return null;
     const logs = error.logs.join('\n');
@@ -113,7 +113,7 @@ export class DefaultProgramRepository implements ProgramRepositoryInterface {
     // Find a registered program if any.
     let program: Program;
     try {
-      program = this.get(programId);
+      program = get(programId);
     } catch (_programNotFoundError) {
       return null;
     }
@@ -121,11 +121,17 @@ export class DefaultProgramRepository implements ProgramRepositoryInterface {
     // Finally, resolve the error.
     const resolvedError = program.getErrorFromCode(errorCode, error);
     return resolvedError ?? new ProgramErrorNotRecognizedError(program, error);
-  }
+  };
 
-  protected parseClusterFilter(clusterFilter: ClusterFilter): Cluster | '*' {
-    return clusterFilter === 'current'
-      ? this.context.rpc.getCluster()
-      : clusterFilter;
-  }
+  const parseClusterFilter = (clusterFilter: ClusterFilter): Cluster | '*' =>
+    clusterFilter === 'current' ? context.rpc.getCluster() : clusterFilter;
+
+  return {
+    has,
+    get,
+    getPublicKey,
+    all,
+    add,
+    resolveError,
+  };
 }

@@ -5,11 +5,11 @@ import {
   Serializer,
 } from '@metaplex-foundation/umi';
 import test, { Assertions } from 'ava';
-import { DataViewSerializer } from '../src';
+import { createDataViewSerializer } from '../src';
 import { d as baseD, s as baseS } from './_helpers';
 
 test('integer serialization', (t) => {
-  const serializer = new DataViewSerializer();
+  const serializer = createDataViewSerializer();
   testIntegerSerialization(t, serializer.u8);
   testIntegerSerialization(t, serializer.u16);
   testIntegerSerialization(t, serializer.u32);
@@ -83,7 +83,7 @@ function testIntegerSerialization(
 }
 
 test('integer deserialization', (t) => {
-  const serializer = new DataViewSerializer();
+  const serializer = createDataViewSerializer();
   testIntegerDeserialization(t, serializer.u8);
   testIntegerDeserialization(t, serializer.u16);
   testIntegerDeserialization(t, serializer.u32);
@@ -155,7 +155,7 @@ function testIntegerDeserialization(
 }
 
 test('description', (t) => {
-  const serializer = new DataViewSerializer();
+  const serializer = createDataViewSerializer();
 
   // Little endian.
   t.is(serializer.u8().description, 'u8');
@@ -194,7 +194,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const serializer = new DataViewSerializer();
+  const serializer = createDataViewSerializer();
   t.is(serializer.u8().fixedSize, 1);
   t.is(serializer.u8().maxSize, 1);
   t.is(serializer.u16().fixedSize, 2);
@@ -222,7 +222,7 @@ test('sizes', (t) => {
 });
 
 test('float (de)serialization', (t) => {
-  const { f32, f64 } = new DataViewSerializer();
+  const { f32, f64 } = createDataViewSerializer();
 
   // Zero.
   baseS(t, f32(), 0, '00000000');

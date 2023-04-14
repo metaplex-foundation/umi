@@ -18,8 +18,9 @@ export interface HttpInterface {
  * An implementation of the {@link HttpInterface} that throws an error when called.
  * @category Http
  */
-export class NullHttp implements HttpInterface {
-  send<ResponseData>(): Promise<HttpResponse<ResponseData>> {
+export function createNullHttp(): HttpInterface {
+  const errorHandler = () => {
     throw new InterfaceImplementationMissingError('HttpInterface', 'http');
-  }
+  };
+  return { send: errorHandler };
 }

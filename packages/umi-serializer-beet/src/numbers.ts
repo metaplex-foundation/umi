@@ -7,7 +7,10 @@ import {
   Serializer,
 } from '@metaplex-foundation/umi';
 import { Buffer } from 'buffer';
-import { DeserializingEmptyBufferError } from './errors';
+import {
+  DeserializingEmptyBufferError,
+  OperationNotSupportedError,
+} from './errors';
 
 // Helpers.
 const wrapBeet =
@@ -132,3 +135,27 @@ export const i128 = (options: NumberSerializerOptions = {}) => {
     },
   };
 };
+
+export const f32 = (): Serializer<number> => ({
+  description: 'f32 [not supported]',
+  fixedSize: 4,
+  maxSize: 4,
+  serialize: () => {
+    throw new OperationNotSupportedError('f32');
+  },
+  deserialize: () => {
+    throw new OperationNotSupportedError('f32');
+  },
+});
+
+export const f64 = (): Serializer<number> => ({
+  description: 'f64 [not supported]',
+  fixedSize: 8,
+  maxSize: 8,
+  serialize: () => {
+    throw new OperationNotSupportedError('f64');
+  },
+  deserialize: () => {
+    throw new OperationNotSupportedError('f64');
+  },
+});

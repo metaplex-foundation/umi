@@ -62,7 +62,7 @@
     "rimraf": "^3.0.2",
     "rollup": "^2.72.0",
     "rollup-plugin-polyfill-node": "^0.9.0",
-    "turbo": "^1.7.4",
+    "turbo": "^1.9.1",
     "typedoc": "^0.23.0",
     "typedoc-plugin-resolve-crossmodule-references": "^0.3.3",
     "typescript": "^4.9.5",
@@ -76,7 +76,7 @@
     "not IE 11",
     "maintained node versions"
   ],
-  "packageManager": "pnpm@7.18.1",
+  "packageManager": "pnpm@8.2.0",
   "pnpm": {
     "patchedDependencies": {
       "@changesets/assemble-release-plan@5.2.3": "patches/@changesets__assemble-release-plan@5.2.3.patch"

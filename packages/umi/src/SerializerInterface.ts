@@ -101,7 +101,7 @@ export interface SerializerInterface {
    * @param options - A set of options for the serializer.
    */
   enum<T>(
-    constructor: ScalarEnum<T>,
+    constructor: ScalarEnum<T> & {},
     options?: EnumSerializerOptions
   ): Serializer<T>;
 
@@ -493,116 +493,39 @@ export type PublicKeySerializerOptions = BaseSerializerOptions;
  * An implementation of the {@link SerializerInterface} that throws an error when called.
  * @category Serializers
  */
-export class NullSerializer implements SerializerInterface {
-  private readonly error = new InterfaceImplementationMissingError(
-    'SerializerInterface',
-    'serializer'
-  );
-
-  tuple<T extends any[], U extends T = T>(): Serializer<T, U> {
-    throw this.error;
-  }
-
-  array<T, U extends T = T>(): Serializer<T[], U[]> {
-    throw this.error;
-  }
-
-  map<TK, TV, UK extends TK = TK, UV extends TV = TV>(): Serializer<
-    Map<TK, TV>,
-    Map<UK, UV>
-  > {
-    throw this.error;
-  }
-
-  set<T, U extends T = T>(): Serializer<Set<T>, Set<U>> {
-    throw this.error;
-  }
-
-  option<T, U extends T = T>(): Serializer<Option<T>, Option<U>> {
-    throw this.error;
-  }
-
-  nullable<T, U extends T = T>(): Serializer<Nullable<T>, Nullable<U>> {
-    throw this.error;
-  }
-
-  struct<T extends object, U extends T = T>(): Serializer<T, U> {
-    throw this.error;
-  }
-
-  enum<T>(): Serializer<T> {
-    throw this.error;
-  }
-
-  dataEnum<T extends DataEnum, U extends T = T>(): Serializer<T, U> {
-    throw this.error;
-  }
-
-  string(): Serializer<string> {
-    throw this.error;
-  }
-
-  bool(): Serializer<boolean> {
-    throw this.error;
-  }
-
-  unit(): Serializer<void> {
-    throw this.error;
-  }
-
-  u8(): Serializer<number> {
-    throw this.error;
-  }
-
-  u16(): Serializer<number> {
-    throw this.error;
-  }
-
-  u32(): Serializer<number> {
-    throw this.error;
-  }
-
-  u64(): Serializer<number | bigint, bigint> {
-    throw this.error;
-  }
-
-  u128(): Serializer<number | bigint, bigint> {
-    throw this.error;
-  }
-
-  i8(): Serializer<number> {
-    throw this.error;
-  }
-
-  i16(): Serializer<number> {
-    throw this.error;
-  }
-
-  i32(): Serializer<number> {
-    throw this.error;
-  }
-
-  i64(): Serializer<number | bigint, bigint> {
-    throw this.error;
-  }
-
-  i128(): Serializer<number | bigint, bigint> {
-    throw this.error;
-  }
-
-  f32(): Serializer<number> {
-    throw this.error;
-  }
-
-  f64(): Serializer<number> {
-    throw this.error;
-  }
-
-  bytes(): Serializer<Uint8Array> {
-    throw this.error;
-  }
-
-  publicKey(): Serializer<PublicKey | PublicKeyInput, PublicKey> {
-    throw this.error;
-  }
+export function createNullSerializer(): SerializerInterface {
+  const errorHandler = () => {
+    throw new InterfaceImplementationMissingError(
+      'SerializerInterface',
+      'serializer'
+    );
+  };
+  return {
+    tuple: errorHandler,
+    array: errorHandler,
+    map: errorHandler,
+    set: errorHandler,
+    option: errorHandler,
+    nullable: errorHandler,
+    struct: errorHandler,
+    enum: errorHandler,
+    dataEnum: errorHandler,
+    string: errorHandler,
+    bool: errorHandler,
+    unit: errorHandler,
+    u8: errorHandler,
+    u16: errorHandler,
+    u32: errorHandler,
+    u64: errorHandler,
+    u128: errorHandler,
+    i8: errorHandler,
+    i16: errorHandler,
+    i32: errorHandler,
+    i64: errorHandler,
+    i128: errorHandler,
+    f32: errorHandler,
+    f64: errorHandler,
+    bytes: errorHandler,
+    publicKey: errorHandler,
+  };
 }

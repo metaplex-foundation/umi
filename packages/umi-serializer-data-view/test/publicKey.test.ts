@@ -1,10 +1,10 @@
 import test from 'ava';
 import { base16, publicKey as toPublicKey } from '@metaplex-foundation/umi';
-import { DataViewSerializer } from '../src';
+import { createDataViewSerializer } from '../src';
 import { s, d } from './_helpers';
 
 test('serialization', (t) => {
-  const { publicKey } = new DataViewSerializer();
+  const { publicKey } = createDataViewSerializer();
 
   const keyA = toPublicKey('4HM9LW2rm3SR2ZdBiFK3D21ENmQWpqEJEhx1nfgcC3r9');
   const keyABytes = base16.deserialize(keyA.bytes)[0];
@@ -23,7 +23,7 @@ test('serialization', (t) => {
 });
 
 test('deserialization', (t) => {
-  const { publicKey } = new DataViewSerializer();
+  const { publicKey } = createDataViewSerializer();
 
   const keyA = toPublicKey('4HM9LW2rm3SR2ZdBiFK3D21ENmQWpqEJEhx1nfgcC3r9');
   const keyABytes = base16.deserialize(keyA.bytes)[0];
@@ -35,13 +35,13 @@ test('deserialization', (t) => {
 });
 
 test('description', (t) => {
-  const { publicKey } = new DataViewSerializer();
+  const { publicKey } = createDataViewSerializer();
   t.is(publicKey().description, 'publicKey');
   t.is(publicKey({ description: 'My publicKey' }).description, 'My publicKey');
 });
 
 test('sizes', (t) => {
-  const { publicKey } = new DataViewSerializer();
+  const { publicKey } = createDataViewSerializer();
   t.is(publicKey().fixedSize, 32);
   t.is(publicKey().maxSize, 32);
 });

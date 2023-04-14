@@ -1,11 +1,11 @@
 import { UmiPlugin } from '@metaplex-foundation/umi';
-import { Web3JsRpc, Web3JsRpcOptions } from './Web3JsRpc';
+import { createWeb3JsRpc, Web3JsRpcOptions } from './createWeb3JsRpc';
 
 export const web3JsRpc = (
   endpoint: string,
   rpcOptions?: Web3JsRpcOptions
 ): UmiPlugin => ({
   install(umi) {
-    umi.rpc = new Web3JsRpc(umi, endpoint, rpcOptions);
+    umi.rpc = createWeb3JsRpc(umi, endpoint, rpcOptions);
   },
 });

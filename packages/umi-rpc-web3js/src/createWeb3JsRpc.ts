@@ -57,88 +57,78 @@ import type RpcClient from 'jayson/lib/client/browser';
 
 export type Web3JsRpcOptions = Commitment | Web3JsConnectionConfig;
 
-export class Web3JsRpc implements RpcInterface {
-  protected readonly context: Pick<Context, 'programs' | 'transactions'>;
+export function createWeb3JsRpc(
+  context: Pick<Context, 'programs' | 'transactions'>,
+  endpoint: string,
+  rpcOptions?: Web3JsRpcOptions
+): RpcInterface & { connection: Web3JsConnection } {
+  const cluster = resolveClusterFromEndpoint(endpoint);
 
-  public readonly connection: Web3JsConnection;
+  let connection: Web3JsConnection | null = null;
+  const getConnection = () => {
+    if (!connection) {
+      connection = new Web3JsConnection(endpoint, rpcOptions);
+    }
+    return connection;
+  };
 
-  public readonly cluster: Cluster;
-
-  constructor(
-    context: Pick<Context, 'programs' | 'transactions'>,
-    endpoint: string,
-    rpcOptions?: Web3JsRpcOptions
-  ) {
-    this.context = context;
-    this.connection = new Web3JsConnection(endpoint, rpcOptions);
-    this.cluster = resolveClusterFromEndpoint(endpoint);
-  }
-
-  getEndpoint(): string {
-    return this.connection.rpcEndpoint;
-  }
-
-  getCluster(): Cluster {
-    return this.cluster;
-  }
-
-  async getAccount(
+  const getAccount = async (
     publicKey: PublicKey,
     options: RpcGetAccountOptions = {}
-  ): Promise<MaybeRpcAccount> {
-    const account = await this.connection.getAccountInfo(
+  ): Promise<MaybeRpcAccount> => {
+    const account = await getConnection().getAccountInfo(
       toWeb3JsPublicKey(publicKey),
       options
     );
-    return this.parseMaybeAccount(account, publicKey);
-  }
+    return parseMaybeAccount(account, publicKey);
+  };
 
-  async getAccounts(
+  const getAccounts = async (
     publicKeys: PublicKey[],
     options: RpcGetAccountsOptions = {}
-  ): Promise<MaybeRpcAccount[]> {
-    const accounts = await this.connection.getMultipleAccountsInfo(
+  ): Promise<MaybeRpcAccount[]> => {
+    const accounts = await getConnection().getMultipleAccountsInfo(
       publicKeys.map(toWeb3JsPublicKey),
       options
     );
     return accounts.map((account, index) =>
-      this.parseMaybeAccount(account, publicKeys[index])
+      parseMaybeAccount(account, publicKeys[index])
     );
-  }
+  };
 
-  async getProgramAccounts(
+  const getProgramAccounts = async (
     programId: PublicKey,
     options: RpcGetProgramAccountsOptions = {}
-  ): Promise<RpcAccount[]> {
-    const accounts = await this.connection.getProgramAccounts(
+  ): Promise<RpcAccount[]> => {
+    const accounts = await getConnection().getProgramAccounts(
       toWeb3JsPublicKey(programId),
       {
         ...options,
-        filters: options.filters?.map((filter) => this.parseDataFilter(filter)),
+        filters: options.filters?.map((filter) => parseDataFilter(filter)),
       }
     );
     return accounts.map(({ pubkey, account }) =>
-      this.parseAccount(account, fromWeb3JsPublicKey(pubkey))
+      parseAccount(account, fromWeb3JsPublicKey(pubkey))
     );
-  }
+  };
 
-  async getBalance(
+  const getBalance = async (
     publicKey: PublicKey,
     options: RpcGetBalanceOptions = {}
-  ): Promise<SolAmount> {
-    const balanceInLamports = await this.connection.getBalance(
+  ): Promise<SolAmount> => {
+    const balanceInLamports = await getConnection().getBalance(
       toWeb3JsPublicKey(publicKey),
       options
     );
     return lamports(balanceInLamports);
-  }
+  };
 
-  async getRent(
+  const getRent = async (
     bytes: number,
     options: RpcGetRentOptions = {}
-  ): Promise<SolAmount> {
+  ): Promise<SolAmount> => {
     const rentFor = (bytes: number) =>
-      this.connection.getMinimumBalanceForRentExemption(
+      getConnection().getMinimumBalanceForRentExemption(
         bytes,
         options.commitment
       );
@@ -148,23 +138,18 @@ export class Web3JsRpc implements RpcInterface {
       return lamports(rentPerByte * BigInt(bytes));
     }
     return lamports(await rentFor(bytes));
-  }
+  };
 
-  async getSlot(options: RpcGetSlotOptions = {}): Promise<number> {
-    return this.connection.getSlot(options);
-  }
-
-  async getLatestBlockhash(
+  const getLatestBlockhash = async (
     options: RpcGetLatestBlockhashOptions = {}
-  ): Promise<BlockhashWithExpiryBlockHeight> {
-    return this.connection.getLatestBlockhash(options);
-  }
+  ): Promise<BlockhashWithExpiryBlockHeight> =>
+    getConnection().getLatestBlockhash(options);
 
-  async getTransaction(
+  const getTransaction = async (
     signature: TransactionSignature,
     options: RpcGetTransactionOptions = {}
-  ): Promise<TransactionWithMeta | null> {
-    const response = await this.connection.getTransaction(
+  ): Promise<TransactionWithMeta | null> => {
+    const response = await getConnection().getTransaction(
       base58.deserialize(signature)[0],
       {
         commitment: options.commitment as 'confirmed' | 'finalized' | undefined,
@@ -200,7 +185,7 @@ export class Web3JsRpc implements RpcInterface {
 
     return {
       message,
-      serializedMessage: this.context.transactions.serializeMessage(message),
+      serializedMessage: context.transactions.serializeMessage(message),
       signatures: transaction.signatures.map(base58.serialize),
       meta: {
         fee: lamports(meta.fee),
@@ -236,44 +221,43 @@ export class Web3JsRpc implements RpcInterface {
         err: meta.err,
       },
     };
-  }
+  };
 
-  async accountExists(
+  const accountExists = async (
     publicKey: PublicKey,
     options: RpcAccountExistsOptions = {}
-  ): Promise<boolean> {
-    return !isZeroAmount(await this.getBalance(publicKey, options));
-  }
+  ): Promise<boolean> => !isZeroAmount(await getBalance(publicKey, options));
 
-  async airdrop(
+  const airdrop = async (
     publicKey: PublicKey,
     amount: SolAmount,
     options: RpcAirdropOptions = {}
-  ): Promise<void> {
-    const signature = await this.connection.requestAirdrop(
+  ): Promise<void> => {
+    const signature = await getConnection().requestAirdrop(
       toWeb3JsPublicKey(publicKey),
       Number(amount.basisPoints)
     );
     if (options.strategy) {
-      await this.confirmTransaction(
+      await confirmTransaction(
         base58.serialize(signature),
         options as RpcConfirmTransactionOptions
       );
       return;
     }
-    await this.confirmTransaction(base58.serialize(signature), {
+    await confirmTransaction(base58.serialize(signature), {
       ...options,
-      strategy: { type: 'blockhash', ...(await this.getLatestBlockhash()) },
+      strategy: { type: 'blockhash', ...(await getLatestBlockhash()) },
     });
-  }
+  };
 
-  async call<Result, Params extends any[] = any[]>(
+  const call = async <Result, Params extends any[] = any[]>(
     method: string,
     params?: [...Params],
     options: RpcCallOptions = {}
-  ): Promise<Result> {
-    const client = (this.connection as any)._rpcClient as RpcClient;
-    const resolvedParams = this._resolveCallParams(
+  ): Promise<Result> => {
+    const client = (getConnection() as any)._rpcClient as RpcClient;
+    const resolvedParams = resolveCallParams(
+      getConnection(),
       (params ? [...params] : []) as [...Params],
       options.commitment,
       options.extra
@@ -287,107 +271,128 @@ export class Web3JsRpc implements RpcInterface {
         client.request(method, resolvedParams, callback);
       }
     });
-  }
+  };
 
-  private _resolveCallParams<Params extends any[]>(
-    args: Params,
-    override?: Commitment,
-    extra?: object
-  ): Params {
-    const commitment =
-      override || (this.connection.commitment as Commitment | undefined);
-    if (commitment || extra) {
-      let options: any = {};
-      if (commitment) {
-        options.commitment = commitment;
-      }
-      if (extra) {
-        options = { ...options, ...extra };
-      }
-      args.push(options);
-    }
-    return args;
-  }
-
-  async sendTransaction(
+  const sendTransaction = async (
     transaction: Transaction,
     options: RpcSendTransactionOptions = {}
-  ): Promise<TransactionSignature> {
+  ): Promise<TransactionSignature> => {
     try {
-      const signature = await this.connection.sendRawTransaction(
-        this.context.transactions.serialize(transaction),
+      const signature = await getConnection().sendRawTransaction(
+        context.transactions.serialize(transaction),
         options
       );
       return base58.serialize(signature);
     } catch (error: any) {
       let resolvedError: ProgramError | null = null;
       if (error instanceof Error && 'logs' in error) {
-        resolvedError = this.context.programs.resolveError(
+        resolvedError = context.programs.resolveError(
           error as ErrorWithLogs,
           transaction
         );
       }
       throw resolvedError || error;
     }
-  }
+  };
 
-  async confirmTransaction(
+  const confirmTransaction = async (
     signature: TransactionSignature,
     options: RpcConfirmTransactionOptions
-  ): Promise<RpcConfirmTransactionResult> {
-    return this.connection.confirmTransaction(
-      this.parseConfirmStrategy(signature, options),
+  ): Promise<RpcConfirmTransactionResult> =>
+    getConnection().confirmTransaction(
+      parseConfirmStrategy(signature, options),
       options.commitment
     );
-  }
 
-  protected parseAccount(
-    account: Web3JsAccountInfo<Uint8Array>,
-    publicKey: PublicKey
-  ): RpcAccount {
-    return {
-      executable: account.executable,
-      owner: fromWeb3JsPublicKey(account.owner),
-      lamports: lamports(account.lamports),
-      rentEpoch: account.rentEpoch,
-      publicKey,
-      data: new Uint8Array(account.data),
-    };
-  }
+  return {
+    getEndpoint: (): string => getConnection().rpcEndpoint,
+    getCluster: (): Cluster => cluster,
+    getAccount,
+    getAccounts,
+    getProgramAccounts,
+    getBalance,
+    getRent,
+    getSlot: async (options: RpcGetSlotOptions = {}) =>
+      getConnection().getSlot(options),
+    getLatestBlockhash,
+    getTransaction,
+    accountExists,
+    airdrop,
+    call,
+    sendTransaction,
+    confirmTransaction,
 
-  protected parseMaybeAccount(
-    account: Web3JsAccountInfo<Uint8Array> | null,
-    publicKey: PublicKey
-  ): MaybeRpcAccount {
-    return account
-      ? { ...this.parseAccount(account, publicKey), exists: true }
-      : { exists: false, publicKey };
-  }
+    get connection() {
+      return getConnection();
+    },
+  };
+}
 
-  protected parseDataFilter(
-    filter: RpcDataFilter
-  ): Web3JsGetProgramAccountsFilter {
-    if (!('memcmp' in filter)) return filter;
-    const { bytes, ...rest } = filter.memcmp;
-    return { memcmp: { ...rest, bytes: base58.deserialize(bytes)[0] } };
-  }
+function parseAccount(
+  account: Web3JsAccountInfo<Uint8Array>,
+  publicKey: PublicKey
+): RpcAccount {
+  return {
+    executable: account.executable,
+    owner: fromWeb3JsPublicKey(account.owner),
+    lamports: lamports(account.lamports),
+    rentEpoch: account.rentEpoch,
+    publicKey,
+    data: new Uint8Array(account.data),
+  };
+}
 
-  protected parseConfirmStrategy(
-    signature: TransactionSignature,
-    options: RpcConfirmTransactionOptions
-  ): Web3JsTransactionConfirmationStrategy {
-    if (options.strategy.type === 'blockhash') {
-      return {
-        ...options.strategy,
-        signature: base58.deserialize(signature)[0],
-      };
-    }
+function parseMaybeAccount(
+  account: Web3JsAccountInfo<Uint8Array> | null,
+  publicKey: PublicKey
+): MaybeRpcAccount {
+  return account
+    ? { ...parseAccount(account, publicKey), exists: true }
+    : { exists: false, publicKey };
+}
+
+function parseDataFilter(
+  filter: RpcDataFilter
+): Web3JsGetProgramAccountsFilter {
+  if (!('memcmp' in filter)) return filter;
+  const { bytes, ...rest } = filter.memcmp;
+  return { memcmp: { ...rest, bytes: base58.deserialize(bytes)[0] } };
+}
+
+function parseConfirmStrategy(
+  signature: TransactionSignature,
+  options: RpcConfirmTransactionOptions
+): Web3JsTransactionConfirmationStrategy {
+  if (options.strategy.type === 'blockhash') {
     return {
       ...options.strategy,
       signature: base58.deserialize(signature)[0],
-      nonceAccountPubkey: toWeb3JsPublicKey(
-        options.strategy.nonceAccountPubkey
-      ),
     };
   }
+  return {
+    ...options.strategy,
+    signature: base58.deserialize(signature)[0],
+    nonceAccountPubkey: toWeb3JsPublicKey(options.strategy.nonceAccountPubkey),
+  };
+}
+
+function resolveCallParams<Params extends any[]>(
+  connection: Web3JsConnection,
+  args: Params,
+  override?: Commitment,
+  extra?: object
+): Params {
+  const commitment =
+    override || (connection.commitment as Commitment | undefined);
+  if (commitment || extra) {
+    let options: any = {};
+    if (commitment) {
+      options.commitment = commitment;
+    }
+    if (extra) {
+      options = { ...options, ...extra };
+    }
+    args.push(options);
+  }
+  return args;
 }

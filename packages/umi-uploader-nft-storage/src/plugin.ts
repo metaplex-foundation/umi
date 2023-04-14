@@ -1,13 +1,13 @@
 import type { UmiPlugin } from '@metaplex-foundation/umi';
 import {
-  NftStorageUploader,
+  createNftStorageUploader,
   NftStorageUploaderOptions,
-} from './NftStorageUploader';
+} from './createNftStorageUploader';
 
 export const nftStorageUploader = (
   options?: NftStorageUploaderOptions
 ): UmiPlugin => ({
   install(umi) {
-    umi.uploader = new NftStorageUploader(umi, options);
+    umi.uploader = createNftStorageUploader(umi, options);
   },
 });

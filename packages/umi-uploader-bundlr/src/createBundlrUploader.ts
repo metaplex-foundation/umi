@@ -62,6 +62,15 @@ function _removeDoubleDefault(pkg: any) {
   return pkg;
 }
 
+export type BundlrUploader = UploaderInterface & {
+  bundlr: () => Promise<NodeBundlr | WebBundlr>;
+  getUploadPriceFromBytes: (bytes: number) => Promise<SolAmount>;
+  getBalance: () => Promise<SolAmount>;
+  fund: (amount: SolAmount, skipBalanceCheck: boolean) => Promise<void>;
+  withdrawAll: (amount: SolAmount) => Promise<void>;
+  withdraw: (amount: SolAmount) => Promise<void>;
+};
+
 export type BundlrUploaderOptions = {
   address?: string;
   timeout?: number;
@@ -92,47 +101,40 @@ const HEADER_SIZE = 2_000;
 // Minimum file size for cost calculation.
 const MINIMUM_SIZE = 80_000;
 
-export class BundlrUploader implements UploaderInterface {
-  protected context: Pick<Context, 'rpc' | 'payer' | 'eddsa'>;
+export function createBundlrUploader(
+  context: Pick<Context, 'rpc' | 'payer' | 'eddsa'>,
+  options: BundlrUploaderOptions = {}
+): BundlrUploader {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  let _bundlr: WebBundlr | NodeBundlr | null = null;
+  options = {
+    providerUrl: context.rpc.getEndpoint(),
+    ...options,
+  };
 
-  protected options: BundlrUploaderOptions;
-
-  protected _bundlr: WebBundlr | NodeBundlr | null = null;
-
-  constructor(
-    context: Pick<Context, 'rpc' | 'payer' | 'eddsa'>,
-    options: BundlrUploaderOptions = {}
-  ) {
-    this.context = context;
-    this.options = {
-      providerUrl: context.rpc.getEndpoint(),
-      ...options,
-    };
-  }
-
-  async getUploadPriceFromBytes(bytes: number): Promise<SolAmount> {
-    const bundlr = await this.bundlr();
+  const getUploadPriceFromBytes = async (bytes: number): Promise<SolAmount> => {
+    const bundlr = await getBundlr();
     const price = await bundlr.getPrice(bytes);
 
     return bigNumberToAmount(
-      price.multipliedBy(this.options.priceMultiplier ?? 1.1)
+      price.multipliedBy(options.priceMultiplier ?? 1.1)
     );
-  }
+  };
 
-  async getUploadPrice(files: GenericFile[]): Promise<SolAmount> {
+  const getUploadPrice = async (files: GenericFile[]): Promise<SolAmount> => {
     const bytes: number = files.reduce(
       (sum, file) =>
         sum + HEADER_SIZE + Math.max(MINIMUM_SIZE, file.buffer.byteLength),
       0
     );
 
-    return this.getUploadPriceFromBytes(bytes);
-  }
+    return getUploadPriceFromBytes(bytes);
+  };
 
-  async upload(files: GenericFile[]): Promise<string[]> {
-    const bundlr = await this.bundlr();
-    const amount = await this.getUploadPrice(files);
-    await this.fund(amount);
+  const upload = async (files: GenericFile[]): Promise<string[]> => {
+    const bundlr = await getBundlr();
+    const amount = await getUploadPrice(files);
+    await fund(amount);
 
     const promises = files.map(async (file) => {
       const buffer = Buffer.from(file.buffer);
@@ -148,23 +150,26 @@ export class BundlrUploader implements UploaderInterface {
     });
 
     return Promise.all(promises);
-  }
+  };
 
-  async uploadJson<T>(json: T): Promise<string> {
+  const uploadJson = async <T>(json: T): Promise<string> => {
     const file = createGenericFileFromJson(json);
-    const uris = await this.upload([file]);
+    const uris = await upload([file]);
     return uris[0];
-  }
+  };
 
-  async getBalance(): Promise<SolAmount> {
-    const bundlr = await this.bundlr();
+  const getBalance = async (): Promise<SolAmount> => {
+    const bundlr = await getBundlr();
     const balance = await bundlr.getLoadedBalance();
 
     return bigNumberToAmount(balance);
-  }
+  };
 
-  async fund(amount: SolAmount, skipBalanceCheck = false): Promise<void> {
-    const bundlr = await this.bundlr();
+  const fund = async (
+    amount: SolAmount,
+    skipBalanceCheck = false
+  ): Promise<void> => {
+    const bundlr = await getBundlr();
     let toFund = amountToBigNumber(amount);
 
     if (!skipBalanceCheck) {
@@ -180,11 +185,11 @@ export class BundlrUploader implements UploaderInterface {
     }
 
     await bundlr.fund(toFund);
-  }
+  };
 
-  async withdrawAll(): Promise<void> {
+  const withdrawAll = async (): Promise<void> => {
     // TODO(loris): Replace with "withdrawAll" when available on Bundlr.
-    const bundlr = await this.bundlr();
+    const bundlr = await getBundlr();
     const balance = await bundlr.getLoadedBalance();
     const minimumBalance = new BigNumber(5000);
 
@@ -193,46 +198,46 @@ export class BundlrUploader implements UploaderInterface {
     }
 
     const balanceToWithdraw = balance.minus(minimumBalance);
-    await this.withdraw(bigNumberToAmount(balanceToWithdraw));
-  }
+    await withdraw(bigNumberToAmount(balanceToWithdraw));
+  };
 
-  async withdraw(amount: SolAmount): Promise<void> {
-    const bundlr = await this.bundlr();
+  const withdraw = async (amount: SolAmount): Promise<void> => {
+    const bundlr = await getBundlr();
 
     const { status } = await bundlr.withdrawBalance(amountToBigNumber(amount));
 
     if (status >= 300) {
       throw new BundlrWithdrawError(status);
     }
-  }
+  };
 
-  async bundlr(): Promise<WebBundlr | NodeBundlr> {
-    const oldPayer = this._bundlr?.getSigner().publicKey;
-    const newPayer = this.options.payer ?? this.context.payer;
+  const getBundlr = async (): Promise<WebBundlr | NodeBundlr> => {
+    const oldPayer = _bundlr?.getSigner().publicKey;
+    const newPayer = options.payer ?? context.payer;
     if (oldPayer && !samePublicKey(new Uint8Array(oldPayer), newPayer)) {
-      this._bundlr = null;
+      _bundlr = null;
     }
 
-    if (!this._bundlr) {
-      this._bundlr = await this.initBundlr();
+    if (!_bundlr) {
+      _bundlr = await initBundlr();
     }
 
-    return this._bundlr;
-  }
+    return _bundlr;
+  };
 
-  async initBundlr(): Promise<WebBundlr | NodeBundlr> {
+  const initBundlr = async (): Promise<WebBundlr | NodeBundlr> => {
     const currency = 'solana';
     const defaultAddress =
-      this.context.rpc.getCluster() === 'devnet'
+      context.rpc.getCluster() === 'devnet'
         ? 'https://devnet.bundlr.network'
         : 'https://node1.bundlr.network';
-    const address = this.options?.address ?? defaultAddress;
-    const options = {
-      timeout: this.options.timeout,
-      providerUrl: this.options.providerUrl,
+    const address = options?.address ?? defaultAddress;
+    const bundlrOptions = {
+      timeout: options.timeout,
+      providerUrl: options.providerUrl,
     };
 
-    const payer: Signer = this.options.payer ?? this.context.payer;
+    const payer: Signer = options.payer ?? context.payer;
 
     // If in node use node bundlr, else use web bundlr.
     const isNode =
@@ -241,9 +246,9 @@ export class BundlrUploader implements UploaderInterface {
 
     let bundlr;
     if (isNode && isKeypairSigner(payer))
-      bundlr = await this.initNodeBundlr(address, currency, payer, options);
+      bundlr = await initNodeBundlr(address, currency, payer, bundlrOptions);
     else {
-      bundlr = await this.initWebBundlr(address, currency, payer, options);
+      bundlr = await initWebBundlr(address, currency, payer, bundlrOptions);
     }
 
     try {
@@ -254,27 +259,27 @@ export class BundlrUploader implements UploaderInterface {
     }
 
     return bundlr;
-  }
+  };
 
-  async initNodeBundlr(
+  const initNodeBundlr = async (
     address: string,
     currency: string,
     keypair: Keypair,
     options: any
-  ): Promise<NodeBundlr> {
+  ): Promise<NodeBundlr> => {
     const bPackage = _removeDoubleDefault(
       await import('@bundlr-network/client')
     );
     // eslint-disable-next-line new-cap
     return new bPackage.default(address, currency, keypair.secretKey, options);
-  }
+  };
 
-  async initWebBundlr(
+  const initWebBundlr = async (
     address: string,
     currency: string,
     payer: Signer,
     options: any
-  ): Promise<WebBundlr> {
+  ): Promise<WebBundlr> => {
     const wallet: BundlrWalletAdapter = {
       publicKey: toWeb3JsPublicKey(payer.publicKey),
       signMessage: (message: Uint8Array) => payer.signMessage(message),
@@ -301,7 +306,7 @@ export class BundlrUploader implements UploaderInterface {
         const { signers: web3JsSigners = [], ...sendOptions } = options;
         const signers = web3JsSigners.map((web3JsSigner) =>
           createSignerFromKeypair(
-            this.context,
+            context,
             fromWeb3JsKeypair(
               Web3JsKeypair.fromSecretKey(web3JsSigner.secretKey)
             )
@@ -311,7 +316,7 @@ export class BundlrUploader implements UploaderInterface {
         let transaction = fromWeb3JsLegacyTransaction(web3JsTransaction);
         transaction = await signTransaction(transaction, [payer, ...signers]);
 
-        const signature = await this.context.rpc.sendTransaction(transaction, {
+        const signature = await context.rpc.sendTransaction(transaction, {
           ...sendOptions,
           preflightCommitment: sendOptions.preflightCommitment as Commitment,
         });
@@ -333,7 +338,19 @@ export class BundlrUploader implements UploaderInterface {
     }
 
     return bundlr;
-  }
+  };
+
+  return {
+    getUploadPriceFromBytes,
+    getUploadPrice,
+    upload,
+    uploadJson,
+    getBalance,
+    fund,
+    withdrawAll,
+    withdraw,
+    bundlr: getBundlr,
+  };
 }
 
 export const isBundlrUploader = (

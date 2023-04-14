@@ -1,6 +1,6 @@
 import test from 'ava';
 import { HttpResponse, request } from '@metaplex-foundation/umi';
-import { FetchHttp } from '../src';
+import { createFetchHttp } from '../src';
 
 const BASE_URL = 'http://localhost:3000';
 
@@ -11,7 +11,7 @@ type User = {
 };
 
 test('it can send a JSON get request', async (t) => {
-  const http = new FetchHttp();
+  const http = createFetchHttp();
   const response = await http.send<User>(
     request().get(`${BASE_URL}/users/1`).asJson()
   );
@@ -28,7 +28,7 @@ test('it can send a JSON get request', async (t) => {
 });
 
 test('it can handle JSON errors', async (t) => {
-  const http = new FetchHttp();
+  const http = createFetchHttp();
   const response = await http.send<User>(
     request().get(`${BASE_URL}/errors/404`).asJson()
   );
@@ -41,7 +41,7 @@ test('it can handle JSON errors', async (t) => {
 });
 
 test('it can send a JSON post request', async (t) => {
-  const http = new FetchHttp();
+  const http = createFetchHttp();
   const response = await http.send<User>(
     request()
       .post(`${BASE_URL}/post`)
@@ -62,7 +62,7 @@ test('it can send a JSON post request', async (t) => {
 
 // FormData unavailable in Node.js 16.
 test.skip('it can send a Multipart post request', async (t) => {
-  const http = new FetchHttp();
+  const http = createFetchHttp();
   const response = await http.send<User>(
     request()
       .post(`${BASE_URL}/post-multipart`)

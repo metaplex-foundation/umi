@@ -121,27 +121,21 @@ export const createNoopSigner = (publicKey: PublicKey): Signer => ({
  * Creates a `Signer` that, when required to sign, throws an error.
  * @category Signers and PublicKeys
  */
-export const createNullSigner = (): Signer => new NullSigner();
-
-/**
- * Creates a `Signer` that, when required to sign, throws an error.
- * @category Signers and PublicKeys
- */
-export class NullSigner implements Signer {
-  // TODO(loris): Custom errors.
-  get publicKey(): PublicKey {
-    throw new Error('Method not implemented.');
-  }
-
-  signMessage(): Promise<Uint8Array> {
-    throw new Error('Method not implemented.');
-  }
-
-  signTransaction(): Promise<Transaction> {
-    throw new Error('Method not implemented.');
-  }
-
-  signAllTransactions(): Promise<Transaction[]> {
-    throw new Error('Method not implemented.');
-  }
+export function createNullSigner(): Signer {
+  const error = new Error(
+    'Trying to use a NullSigner. ' +
+      'Did you forget to set a Signer on your Umi instance? ' +
+      'See the `signerIdentity` method for more information.'
+  );
+  const errorHandler = () => {
+    throw error;
+  };
+  return {
+    get publicKey(): PublicKey {
+      throw error;
+    },
+    signMessage: errorHandler,
+    signTransaction: errorHandler,
+    signAllTransactions: errorHandler,
+  };
 }

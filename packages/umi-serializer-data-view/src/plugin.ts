@@ -1,8 +1,13 @@
 import { UmiPlugin } from '@metaplex-foundation/umi';
-import { DataViewSerializer } from './DataViewSerializer';
+import {
+  DataViewSerializerOptions,
+  createDataViewSerializer,
+} from './createDataViewSerializer';
 
-export const dataViewSerializer = (): UmiPlugin => ({
+export const dataViewSerializer = (
+  options: DataViewSerializerOptions = {}
+): UmiPlugin => ({
   install(umi) {
-    umi.serializer = new DataViewSerializer();
+    umi.serializer = createDataViewSerializer(options);
   },
 });

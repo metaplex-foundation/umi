@@ -33,32 +33,17 @@ export interface EddsaInterface {
  * An implementation of the {@link EddsaInterface} that throws an error when called.
  * @category Signers and PublicKeys
  */
-export class NullEddsa implements EddsaInterface {
-  generateKeypair(): Keypair {
+export function createNullEddsa(): EddsaInterface {
+  const errorHandler = () => {
     throw new InterfaceImplementationMissingError('EddsaInterface', 'eddsa');
-  }
-
-  createKeypairFromSecretKey(): Keypair {
-    throw new InterfaceImplementationMissingError('EddsaInterface', 'eddsa');
-  }
-
-  createKeypairFromSeed(): Keypair {
-    throw new InterfaceImplementationMissingError('EddsaInterface', 'eddsa');
-  }
-
-  isOnCurve(): boolean {
-    throw new InterfaceImplementationMissingError('EddsaInterface', 'eddsa');
-  }
-
-  findPda(): Pda {
-    throw new InterfaceImplementationMissingError('EddsaInterface', 'eddsa');
-  }
-
-  sign(): Uint8Array {
-    throw new InterfaceImplementationMissingError('EddsaInterface', 'eddsa');
-  }
-
-  verify(): boolean {
-    throw new InterfaceImplementationMissingError('EddsaInterface', 'eddsa');
-  }
+  };
+  return {
+    generateKeypair: errorHandler,
+    createKeypairFromSecretKey: errorHandler,
+    createKeypairFromSeed: errorHandler,
+    isOnCurve: errorHandler,
+    findPda: errorHandler,
+    sign: errorHandler,
+    verify: errorHandler,
+  };
 }

@@ -32,17 +32,12 @@ export type DownloaderOptions = {
  * An implementation of the {@link DownloaderInterface} that throws an error when called.
  * @category Storage
  */
-export class NullDownloader implements DownloaderInterface {
-  private readonly error = new InterfaceImplementationMissingError(
-    'DownloaderInterface',
-    'downloader'
-  );
-
-  download(): Promise<GenericFile[]> {
-    throw this.error;
-  }
-
-  downloadJson<T>(): Promise<T> {
-    throw this.error;
-  }
+export function createNullDownloader(): DownloaderInterface {
+  const errorHandler = () => {
+    throw new InterfaceImplementationMissingError(
+      'DownloaderInterface',
+      'downloader'
+    );
+  };
+  return { download: errorHandler, downloadJson: errorHandler };
 }

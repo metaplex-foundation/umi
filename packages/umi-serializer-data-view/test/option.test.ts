@@ -1,10 +1,10 @@
 import test from 'ava';
 import { none, some } from '@metaplex-foundation/umi';
-import { DataViewSerializer } from '../src';
+import { createDataViewSerializer } from '../src';
 import { s, d } from './_helpers';
 
 test('regular (de)serialization', (t) => {
-  const { option, u8, u16, u64, string } = new DataViewSerializer();
+  const { option, u8, u16, u64, string } = createDataViewSerializer();
 
   // None.
   s(t, option(u8()), none(), '00');
@@ -35,7 +35,7 @@ test('regular (de)serialization', (t) => {
 });
 
 test('fixed (de)serialization', (t) => {
-  const { option, u8, u16, u64, string } = new DataViewSerializer();
+  const { option, u8, u16, u64, string } = createDataViewSerializer();
   const fixedU8 = option(u8(), { fixed: true });
   const fixedU8WithU16Prefix = option(u8(), { fixed: true, prefix: u16() });
   const fixedString = option(string({ size: 5 }), { fixed: true });
@@ -75,7 +75,7 @@ test('fixed (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { option, u8, u16, string } = new DataViewSerializer();
+  const { option, u8, u16, string } = createDataViewSerializer();
   t.is(option(u8()).description, 'option(u8; u8)');
   t.is(option(string()).description, 'option(string(utf8; u32(le)); u8)');
   t.is(option(u8(), { prefix: u16() }).description, 'option(u8; u16(le))');
@@ -96,7 +96,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { option, u8, u16, string } = new DataViewSerializer();
+  const { option, u8, u16, string } = createDataViewSerializer();
   t.is(option(u8()).fixedSize, null);
   t.is(option(u8()).maxSize, 2);
   t.is(option(string()).fixedSize, null);

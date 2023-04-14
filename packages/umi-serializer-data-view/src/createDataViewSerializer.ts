@@ -14,7 +14,6 @@ import {
   none,
   Nullable,
   NullableSerializerOptions,
-  NumberSerializerOptions,
   Option,
   OptionSerializerOptions,
   publicKey,
@@ -25,7 +24,6 @@ import {
   Serializer,
   SerializerInterface,
   SetSerializerOptions,
-  SingleByteNumberSerializerOptions,
   some,
   StringSerializerOptions,
   StructSerializerOptions,
@@ -41,6 +39,8 @@ import {
   NotEnoughBytesError,
 } from './errors';
 import {
+  f32,
+  f64,
   i128,
   i16,
   i32,
@@ -51,22 +51,20 @@ import {
   u32,
   u64,
   u8,
-  f32,
-  f64,
 } from './numbers';
 
-export class DataViewSerializer implements SerializerInterface {
-  constructor(
-    protected readonly options: {
-      /** @defaultValue `true` */
-      tolerateEmptyBuffers?: boolean;
-    } = {}
-  ) {}
+export type DataViewSerializerOptions = {
+  /** @defaultValue `true` */
+  tolerateEmptyBuffers?: boolean;
+};
 
-  tuple<T extends any[], U extends T = T>(
+export function createDataViewSerializer(
+  options: DataViewSerializerOptions = {}
+): SerializerInterface {
+  const tuple = <T extends any[], U extends T = T>(
     items: WrapInSerializer<[...T], [...U]>,
     options: TupleSerializerOptions = {}
-  ): Serializer<T, U> {
+  ): Serializer<T, U> => {
     const itemDescriptions = items.map((item) => item.description).join(', ');
     return {
       description: options.description ?? `tuple(${itemDescriptions})`,
@@ -92,12 +90,12 @@ export class DataViewSerializer implements SerializerInterface {
         return [values, offset];
       },
     };
-  }
+  };
 
-  array<T, U extends T = T>(
+  const array = <T, U extends T = T>(
     item: Serializer<T, U>,
     options: ArraySerializerOptions = {}
-  ): Serializer<T[], U[]> {
+  ): Serializer<T[], U[]> => {
     const size = options.size ?? u32();
     if (size === 'remainder' && item.fixedSize === null) {
       throw new DataViewSerializerError(
@@ -123,7 +121,7 @@ export class DataViewSerializer implements SerializerInterface {
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
         if (typeof size === 'object' && bytes.slice(offset).length === 0) {
-          return this.handleEmptyBuffer<U[]>('array', [], offset);
+          return handleEmptyBuffer<U[]>('array', [], offset);
         }
         const [resolvedSize, newOffset] = getResolvedSize(
           size,
@@ -141,13 +139,13 @@ export class DataViewSerializer implements SerializerInterface {
         return [values, offset];
       },
     };
-  }
+  };
 
-  map<TK, TV, UK extends TK = TK, UV extends TV = TV>(
+  const map = <TK, TV, UK extends TK = TK, UV extends TV = TV>(
     key: Serializer<TK, UK>,
     value: Serializer<TV, UV>,
     options: MapSerializerOptions = {}
-  ): Serializer<Map<TK, TV>, Map<UK, UV>> {
+  ): Serializer<Map<TK, TV>, Map<UK, UV>> => {
     const size = options.size ?? u32();
     if (
       size === 'remainder' &&
@@ -179,7 +177,7 @@ export class DataViewSerializer implements SerializerInterface {
       deserialize: (bytes: Uint8Array, offset = 0) => {
         const map: Map<UK, UV> = new Map();
         if (typeof size === 'object' && bytes.slice(offset).length === 0) {
-          return this.handleEmptyBuffer('map', map, offset);
+          return handleEmptyBuffer('map', map, offset);
         }
         const [resolvedSize, newOffset] = getResolvedSize(
           size,
@@ -198,12 +196,12 @@ export class DataViewSerializer implements SerializerInterface {
         return [map, offset];
       },
     };
-  }
+  };
 
-  set<T, U extends T = T>(
+  const set = <T, U extends T = T>(
     item: Serializer<T, U>,
     options: SetSerializerOptions = {}
-  ): Serializer<Set<T>, Set<U>> {
+  ): Serializer<Set<T>, Set<U>> => {
     const size = options.size ?? u32();
     if (size === 'remainder' && item.fixedSize === null) {
       throw new DataViewSerializerError(
@@ -228,7 +226,7 @@ export class DataViewSerializer implements SerializerInterface {
       deserialize: (bytes: Uint8Array, offset = 0) => {
         const set: Set<U> = new Set();
         if (typeof size === 'object' && bytes.slice(offset).length === 0) {
-          return this.handleEmptyBuffer('set', set, offset);
+          return handleEmptyBuffer('set', set, offset);
         }
         const [resolvedSize, newOffset] = getResolvedSize(
           size,
@@ -245,12 +243,12 @@ export class DataViewSerializer implements SerializerInterface {
         return [set, offset];
       },
     };
-  }
+  };
 
-  option<T, U extends T = T>(
+  const option = <T, U extends T = T>(
     item: Serializer<T, U>,
     options: OptionSerializerOptions = {}
-  ): Serializer<Option<T>, Option<U>> {
+  ): Serializer<Option<T>, Option<U>> => {
     const prefix = options.prefix ?? u8();
     const fixed = options.fixed ?? false;
     let descriptionSuffix = `; ${getSizeDescription(prefix)}`;
@@ -286,7 +284,7 @@ export class DataViewSerializer implements SerializerInterface {
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
         if (bytes.slice(offset).length === 0) {
-          return this.handleEmptyBuffer<Option<U>>('option', none(), offset);
+          return handleEmptyBuffer<Option<U>>('option', none(), offset);
         }
         const fixedOffset =
           offset + (prefix.fixedSize ?? 0) + (item.fixedSize ?? 0);
@@ -300,12 +298,12 @@ export class DataViewSerializer implements SerializerInterface {
         return [some(value), fixed ? fixedOffset : offset];
       },
     };
-  }
+  };
 
-  nullable<T, U extends T = T>(
+  const nullable = <T, U extends T = T>(
     item: Serializer<T, U>,
     options: NullableSerializerOptions = {}
-  ): Serializer<Nullable<T>, Nullable<U>> {
+  ): Serializer<Nullable<T>, Nullable<U>> => {
     const prefix = options.prefix ?? u8();
     const fixed = options.fixed ?? false;
     let descriptionSuffix = `; ${getSizeDescription(prefix)}`;
@@ -341,7 +339,7 @@ export class DataViewSerializer implements SerializerInterface {
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
         if (bytes.slice(offset).length === 0) {
-          return this.handleEmptyBuffer('nullable', null, offset);
+          return handleEmptyBuffer('nullable', null, offset);
         }
         const fixedOffset =
           offset + (prefix.fixedSize ?? 0) + (item.fixedSize ?? 0);
@@ -355,12 +353,12 @@ export class DataViewSerializer implements SerializerInterface {
         return [value, fixed ? fixedOffset : offset];
       },
     };
-  }
+  };
 
-  struct<T extends object, U extends T = T>(
+  const struct = <T extends object, U extends T = T>(
     fields: StructToSerializerTuple<T, U>,
     options: StructSerializerOptions = {}
-  ): Serializer<T, U> {
+  ): Serializer<T, U> => {
     const fieldDescriptions = fields
       .map(([name, serializer]) => `${String(name)}: ${serializer.description}`)
       .join(', ');
@@ -384,12 +382,12 @@ export class DataViewSerializer implements SerializerInterface {
         return [struct as U, offset];
       },
     };
-  }
+  };
 
-  enum<T>(
+  const enumFn = <T>(
     constructor: ScalarEnum<T> & {},
     options: EnumSerializerOptions = {}
-  ): Serializer<T> {
+  ): Serializer<T> => {
     const enumValues = Object.values(constructor);
     const isNumericEnum = enumValues.some((v) => typeof v === 'number');
     const valueDescriptions = enumValues
@@ -437,12 +435,12 @@ export class DataViewSerializer implements SerializerInterface {
         return [(isNumericEnum ? variantValue : variantKey) as T, offset];
       },
     };
-  }
+  };
 
-  dataEnum<T extends DataEnum, U extends T = T>(
+  const dataEnum = <T extends DataEnum, U extends T = T>(
     variants: DataEnumToSerializerTuple<T, U>,
     options: DataEnumSerializerOptions = {}
-  ): Serializer<T, U> {
+  ): Serializer<T, U> => {
     const prefix = options.prefix ?? u8();
     const fieldDescriptions = variants
       .map(
@@ -504,9 +502,11 @@ export class DataViewSerializer implements SerializerInterface {
         return [{ __kind: variantField[0], ...(variant ?? {}) } as U, offset];
       },
     };
-  }
+  };
 
-  string(options: StringSerializerOptions = {}): Serializer<string> {
+  const string = (
+    options: StringSerializerOptions = {}
+  ): Serializer<string> => {
     const size = options.size ?? u32();
     const encoding = options.encoding ?? utf8;
     const description =
@@ -546,9 +546,9 @@ export class DataViewSerializer implements SerializerInterface {
         return [value, offset];
       },
     };
-  }
+  };
 
-  bool(options: BoolSerializerOptions = {}): Serializer<boolean> {
+  const bool = (options: BoolSerializerOptions = {}): Serializer<boolean> => {
     const size = options.size ?? u8();
     if (size.fixedSize === null) {
       throw new DataViewSerializerError(
@@ -568,75 +568,19 @@ export class DataViewSerializer implements SerializerInterface {
         return [value === 1, vOffset];
       },
     };
-  }
+  };
 
-  unit(options: UnitSerializerOptions = {}): Serializer<void> {
-    return {
-      description: options.description ?? 'unit',
-      fixedSize: 0,
-      maxSize: 0,
-      serialize: () => new Uint8Array(),
-      deserialize: (_bytes: Uint8Array, offset = 0) => [undefined, offset],
-    };
-  }
+  const unit = (options: UnitSerializerOptions = {}): Serializer<void> => ({
+    description: options.description ?? 'unit',
+    fixedSize: 0,
+    maxSize: 0,
+    serialize: () => new Uint8Array(),
+    deserialize: (_bytes: Uint8Array, offset = 0) => [undefined, offset],
+  });
 
-  u8(options: SingleByteNumberSerializerOptions = {}): Serializer<number> {
-    return u8(options);
-  }
-
-  u16(options: NumberSerializerOptions = {}): Serializer<number> {
-    return u16(options);
-  }
-
-  u32(options: NumberSerializerOptions = {}): Serializer<number> {
-    return u32(options);
-  }
-
-  u64(
-    options: NumberSerializerOptions = {}
-  ): Serializer<number | bigint, bigint> {
-    return u64(options);
-  }
-
-  u128(
-    options: NumberSerializerOptions = {}
-  ): Serializer<number | bigint, bigint> {
-    return u128(options);
-  }
-
-  i8(options: SingleByteNumberSerializerOptions = {}): Serializer<number> {
-    return i8(options);
-  }
-
-  i16(options: NumberSerializerOptions = {}): Serializer<number> {
-    return i16(options);
-  }
-
-  i32(options: NumberSerializerOptions = {}): Serializer<number> {
-    return i32(options);
-  }
-
-  i64(
-    options: NumberSerializerOptions = {}
-  ): Serializer<number | bigint, bigint> {
-    return i64(options);
-  }
-
-  i128(
-    options: NumberSerializerOptions = {}
-  ): Serializer<number | bigint, bigint> {
-    return i128(options);
-  }
-
-  f32(options: NumberSerializerOptions = {}): Serializer<number> {
-    return f32(options);
-  }
-
-  f64(options: NumberSerializerOptions = {}): Serializer<number> {
-    return f64(options);
-  }
-
-  bytes(options: BytesSerializerOptions = {}): Serializer<Uint8Array> {
+  const bytes = (
+    options: BytesSerializerOptions = {}
+  ): Serializer<Uint8Array> => {
     const size = options.size ?? 'variable';
     const description =
       options.description ?? `bytes(${getSizeDescription(size)})`;
@@ -686,41 +630,68 @@ export class DataViewSerializer implements SerializerInterface {
         return [value, offset];
       },
     };
-  }
+  };
 
-  publicKey(
+  const publicKeyFn = (
     options: PublicKeySerializerOptions = {}
-  ): Serializer<PublicKeyInput, PublicKey> {
-    return {
-      description: options.description ?? 'publicKey',
-      fixedSize: 32,
-      maxSize: 32,
-      serialize: (value: PublicKeyInput) => publicKey(value).bytes,
-      deserialize: (bytes: Uint8Array, offset = 0) => {
-        if (bytes.slice(offset).length === 0) {
-          throw new DeserializingEmptyBufferError('publicKey');
-        }
-        const pubkeyBytes = bytes.slice(offset, offset + 32);
-        if (pubkeyBytes.length < 32) {
-          throw new DataViewSerializerError(
-            `Serializer [publicKey] expected 32 bytes, got ${pubkeyBytes.length}.`
-          );
-        }
-        return [publicKey(pubkeyBytes), offset + 32];
-      },
-    };
-  }
+  ): Serializer<PublicKeyInput, PublicKey> => ({
+    description: options.description ?? 'publicKey',
+    fixedSize: 32,
+    maxSize: 32,
+    serialize: (value: PublicKeyInput) => publicKey(value).bytes,
+    deserialize: (bytes: Uint8Array, offset = 0) => {
+      if (bytes.slice(offset).length === 0) {
+        throw new DeserializingEmptyBufferError('publicKey');
+      }
+      const pubkeyBytes = bytes.slice(offset, offset + 32);
+      if (pubkeyBytes.length < 32) {
+        throw new DataViewSerializerError(
+          `Serializer [publicKey] expected 32 bytes, got ${pubkeyBytes.length}.`
+        );
+      }
+      return [publicKey(pubkeyBytes), offset + 32];
+    },
+  });
 
-  protected handleEmptyBuffer<T>(
+  const handleEmptyBuffer = <T>(
     serializer: string,
     defaultValue: T,
     offset: number
-  ): [T, number] {
-    if (!(this.options.tolerateEmptyBuffers ?? true)) {
+  ): [T, number] => {
+    if (!(options.tolerateEmptyBuffers ?? true)) {
       throw new DeserializingEmptyBufferError(serializer);
     }
     return [defaultValue, offset];
-  }
+  };
+
+  return {
+    tuple,
+    array,
+    map,
+    set,
+    option,
+    nullable,
+    struct,
+    enum: enumFn,
+    dataEnum,
+    string,
+    bool,
+    unit,
+    u8,
+    u16,
+    u32,
+    u64,
+    u128,
+    i8,
+    i16,
+    i32,
+    i64,
+    i128,
+    f32,
+    f64,
+    bytes,
+    publicKey: publicKeyFn,
+  };
 }
 
 function sumSerializerSizes(sizes: (number | null)[]): number | null {

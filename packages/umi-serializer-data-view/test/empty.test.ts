@@ -1,11 +1,14 @@
 import test, { ThrowsExpectation } from 'ava';
 import { none, Serializer } from '@metaplex-foundation/umi';
-import { DataViewSerializer, DeserializingEmptyBufferError } from '../src';
+import {
+  createDataViewSerializer,
+  DeserializingEmptyBufferError,
+} from '../src';
 
 test('it can handle empty buffers', (t) => {
-  const { u8, unit } = new DataViewSerializer();
-  const tolerant = new DataViewSerializer();
-  const intolerant = new DataViewSerializer({ tolerateEmptyBuffers: false });
+  const { u8, unit } = createDataViewSerializer();
+  const tolerant = createDataViewSerializer();
+  const intolerant = createDataViewSerializer({ tolerateEmptyBuffers: false });
   const remainder = { size: 'remainder' } as const;
   const e: ThrowsExpectation = { instanceOf: DeserializingEmptyBufferError };
   const fixedError = (expectedBytes: number) => ({

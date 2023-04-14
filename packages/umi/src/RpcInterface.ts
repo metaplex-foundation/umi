@@ -376,69 +376,25 @@ export type RpcConfirmTransactionResult = RpcResultWithContext<{
  * An implementation of the {@link RpcInterface} that throws an error when called.
  * @category Rpc
  */
-export class NullRpc implements RpcInterface {
-  private readonly error = new InterfaceImplementationMissingError(
-    'RpcInterface',
-    'rpc'
-  );
-
-  getEndpoint(): string {
-    throw this.error;
-  }
-
-  getCluster(): Cluster {
-    throw this.error;
-  }
-
-  getAccount(): Promise<MaybeRpcAccount> {
-    throw this.error;
-  }
-
-  getAccounts(): Promise<MaybeRpcAccount[]> {
-    throw this.error;
-  }
-
-  getProgramAccounts(): Promise<RpcAccount[]> {
-    throw this.error;
-  }
-
-  getBalance(): Promise<SolAmount> {
-    throw this.error;
-  }
-
-  getRent(): Promise<SolAmount> {
-    throw this.error;
-  }
-
-  getSlot(): Promise<number> {
-    throw this.error;
-  }
-
-  getLatestBlockhash(): Promise<BlockhashWithExpiryBlockHeight> {
-    throw this.error;
-  }
-
-  getTransaction(): Promise<TransactionWithMeta | null> {
-    throw this.error;
-  }
-
-  accountExists(): Promise<boolean> {
-    throw this.error;
-  }
-
-  airdrop(): Promise<void> {
-    throw this.error;
-  }
-
-  call<Result>(): Promise<Result> {
-    throw this.error;
-  }
-
-  sendTransaction(): Promise<TransactionSignature> {
-    throw this.error;
-  }
-
-  confirmTransaction(): Promise<RpcConfirmTransactionResult> {
-    throw this.error;
-  }
+export function createNullRpc(): RpcInterface {
+  const errorHandler = () => {
+    throw new InterfaceImplementationMissingError('RpcInterface', 'rpc');
+  };
+  return {
+    getEndpoint: errorHandler,
+    getCluster: errorHandler,
+    getAccount: errorHandler,
+    getAccounts: errorHandler,
+    getProgramAccounts: errorHandler,
+    getBalance: errorHandler,
+    getRent: errorHandler,
+    getSlot: errorHandler,
+    getLatestBlockhash: errorHandler,
+    getTransaction: errorHandler,
+    accountExists: errorHandler,
+    airdrop: errorHandler,
+    call: errorHandler,
+    sendTransaction: errorHandler,
+    confirmTransaction: errorHandler,
+  };
 }

@@ -1,8 +1,13 @@
 import { UmiPlugin } from '@metaplex-foundation/umi';
-import { BeetSerializer } from './BeetSerializer';
+import {
+  BeetSerializerOptions,
+  createBeetSerializer,
+} from './createBeetSerializer';
 
-export const beetSerializer = (): UmiPlugin => ({
+export const beetSerializer = (
+  options: BeetSerializerOptions = {}
+): UmiPlugin => ({
   install(umi) {
-    umi.serializer = new BeetSerializer();
+    umi.serializer = createBeetSerializer(options);
   },
 });

@@ -1,8 +1,8 @@
 import { UmiPlugin } from '@metaplex-foundation/umi';
-import { DefaultProgramRepository } from './DefaultProgramRepository';
+import { createDefaultProgramRepository } from './createDefaultProgramRepository';
 
 export const defaultProgramRepository = (): UmiPlugin => ({
   install(umi) {
-    umi.programs = new DefaultProgramRepository(umi);
+    umi.programs = createDefaultProgramRepository(umi);
   },
 });

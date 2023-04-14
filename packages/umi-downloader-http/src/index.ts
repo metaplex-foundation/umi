@@ -1,2 +1,2 @@
-export * from './HttpDownloader';
+export * from './createHttpDownloader';
 export * from './plugin';
