@@ -1,9 +1,9 @@
 import { UmiPlugin } from '@metaplex-foundation/umi';
-import { MockStorage, MockStorageOptions } from './MockStorage';
+import { createMockStorage, MockStorageOptions } from './createMockStorage';
 
 export const mockStorage = (options?: MockStorageOptions): UmiPlugin => ({
   install(umi) {
-    const mockStorage = new MockStorage(options);
+    const mockStorage = createMockStorage(options);
     umi.uploader = mockStorage;
     umi.downloader = mockStorage;
   },
