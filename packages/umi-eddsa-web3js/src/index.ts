@@ -1,2 +1,2 @@
 export * from './plugin';
-export * from './Web3JsEddsa';
+export * from './createWeb3JsEddsa';
