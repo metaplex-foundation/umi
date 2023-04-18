@@ -388,30 +388,30 @@ export function createDataViewSerializer(
     constructor: ScalarEnum<T> & {},
     options: EnumSerializerOptions = {}
   ): Serializer<T> => {
+    const enumKeys = Object.keys(constructor);
     const enumValues = Object.values(constructor);
     const isNumericEnum = enumValues.some((v) => typeof v === 'number');
     const valueDescriptions = enumValues
       .filter((v) => typeof v === 'string')
       .join(', ');
-    function getVariantKeyValue(value: T): [keyof ScalarEnum<T>, number] {
-      if (typeof value === 'number') {
-        return [enumValues[value], value];
-      }
-      const variantValue = constructor[value as keyof ScalarEnum<T>];
-      if (typeof variantValue === 'number') {
-        return [value as keyof ScalarEnum<T>, variantValue];
-      }
-      const indexOfValue = enumValues.indexOf(variantValue);
-      if (indexOfValue >= 0) {
-        return [variantValue as keyof ScalarEnum<T>, indexOfValue];
-      }
-      return [value as keyof ScalarEnum<T>, enumValues.indexOf(value)];
-    }
-    function checkVariantExists(variantKey: keyof ScalarEnum<T>): void {
-      if (!enumValues.includes(variantKey)) {
+    const minRange = 0;
+    const maxRange = isNumericEnum
+      ? enumValues.length / 2 - 1
+      : enumValues.length - 1;
+    const stringValues: string[] = isNumericEnum
+      ? [...enumKeys]
+      : [...new Set([...enumKeys, ...enumValues])];
+    function assertValidVariant(variant: number | string): void {
+      const isInvalidNumber =
+        typeof variant === 'number' &&
+        (variant < minRange || variant > maxRange);
+      const isInvalidString =
+        typeof variant === 'string' && !stringValues.includes(variant);
+      if (isInvalidNumber || isInvalidString) {
         throw new DataViewSerializerError(
-          `Invalid enum variant. Got "${variantKey}", expected one of ` +
-            `[${enumValues.join(', ')}]`
+          `Invalid enum variant. Got "${variant}", ` +
+            `expected one of [${stringValues.join(', ')}] ` +
+            `or a number between ${minRange} and ${maxRange}`
         );
       }
     }
@@ -420,9 +420,11 @@ export function createDataViewSerializer(
       fixedSize: 1,
       maxSize: 1,
       serialize: (value: T) => {
-        const [variantKey, variantValue] = getVariantKeyValue(value);
-        checkVariantExists(variantKey);
-        return u8().serialize(variantValue);
+        assertValidVariant(value as string | number);
+        if (typeof value === 'number') return u8().serialize(value);
+        const valueIndex = enumValues.indexOf(value);
+        if (valueIndex >= 0) return u8().serialize(valueIndex);
+        return u8().serialize(enumKeys.indexOf(value as string));
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
         if (bytes.slice(offset).length === 0) {
@@ -430,9 +432,8 @@ export function createDataViewSerializer(
         }
         const [value, newOffset] = u8().deserialize(bytes, offset);
         offset = newOffset;
-        const [variantKey, variantValue] = getVariantKeyValue(value as T);
-        checkVariantExists(variantKey);
-        return [(isNumericEnum ? variantValue : variantKey) as T, offset];
+        assertValidVariant(value);
+        return [(isNumericEnum ? value : enumValues[value]) as T, offset];
       },
     };
   };

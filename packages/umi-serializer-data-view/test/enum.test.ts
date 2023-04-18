@@ -33,12 +33,16 @@ test('numerical enum (de)serialization', (t) => {
   d(t, scalarEnum(Feedback), '01', Feedback.GOOD, 1);
   d(t, scalarEnum(Feedback), ['ffff01', 2], Feedback.GOOD, 3);
 
-  // Invalid example.
+  // Invalid examples.
   t.throws(() => scalarEnum(Feedback).serialize('Missing'), {
     message: (m: string) =>
       m.includes(
-        'Invalid enum variant. Got "Missing", expected one of [BAD, GOOD, 0, 1]'
+        'Invalid enum variant. Got "Missing", expected one of [0, 1, BAD, GOOD] ' +
+          'or a number between 0 and 1'
       ),
+  });
+  t.throws(() => scalarEnum(Feedback).deserialize(new Uint8Array([2])), {
+    message: /Invalid enum variant\. Got "2"/,
   });
 });
 
@@ -73,12 +77,17 @@ test('lexical enum (de)serialization', (t) => {
   d(t, scalarEnum(Direction), '03', Direction.RIGHT, 1);
   d(t, scalarEnum(Direction), ['ffff03', 2], Direction.RIGHT, 3);
 
-  // Invalid example.
+  // Invalid examples.
   t.throws(() => scalarEnum(Direction).serialize('Diagonal' as any), {
     message: (m: string) =>
       m.includes(
-        'Invalid enum variant. Got "Diagonal", expected one of [Up, Down, Left, Right]'
+        'Invalid enum variant. Got "Diagonal", expected one of ' +
+          '[UP, DOWN, LEFT, RIGHT, Up, Down, Left, Right] ' +
+          'or a number between 0 and 3'
       ),
+  });
+  t.throws(() => scalarEnum(Direction).deserialize(new Uint8Array([4])), {
+    message: /Invalid enum variant\. Got "4"/,
   });
 });
 
