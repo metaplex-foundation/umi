@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-serializer-data-view
 
+## 0.7.1
+
+### Patch Changes
+
+- [`4973c97`](https://github.com/metaplex-foundation/umi/commit/4973c97e47edcabab73878c56c3aaba99b99ea26) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Improve the serialization logic for scalar enum
+
 ## 0.7.0
 
 ### Minor Changes
