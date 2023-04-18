@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 0.7.2
+
+### Patch Changes
+
+- [`2756a69`](https://github.com/metaplex-foundation/umi/commit/2756a693fb1d5d1a90608744ca73165b663cc729) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Fix Base64 serializer
+
 ## 0.7.0
 
 ### Minor Changes
