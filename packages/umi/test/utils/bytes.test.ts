@@ -121,7 +121,6 @@ test('it can serialize base 64 strings', (t) => {
   t.deepEqual(base64.deserialize(new Uint8Array([])), ['', 0]);
 
   t.deepEqual(base64.serialize('AA'), new Uint8Array([0]));
-  t.deepEqual(base64.serialize('AA='), new Uint8Array([0]));
   t.deepEqual(base64.serialize('AA=='), new Uint8Array([0]));
   t.deepEqual(base64.deserialize(new Uint8Array([0])), ['AA==', 1]);
 

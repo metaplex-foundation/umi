@@ -137,7 +137,7 @@ export const base64: Serializer<string> = {
           .map((c) => c.charCodeAt(0))
       );
     } catch (e) {
-      throw new InvalidBaseStringError(value, 64);
+      throw new InvalidBaseStringError(value, 64, e as Error);
     }
   },
   deserialize(buffer, offset = 0) {
