@@ -4,8 +4,8 @@ import { SdkError } from './SdkError';
 export class InvalidBaseStringError extends SdkError {
   readonly name: string = 'InvalidBaseStringError';
 
-  constructor(value: string, base: number) {
+  constructor(value: string, base: number, cause?: Error) {
     const message = `Expected a string of base ${base}, got [${value}].`;
-    super(message);
+    super(message, cause);
   }
 }
