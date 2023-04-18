@@ -125,9 +125,27 @@ export const base58: Serializer<string> = baseX(
  * A string serializer that uses base64 encoding.
  * @category Serializers
  */
-export const base64: Serializer<string> = baseX(
-  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-);
+export const base64: Serializer<string> = {
+  description: 'base64',
+  fixedSize: null,
+  maxSize: null,
+  serialize(value: string) {
+    try {
+      return new Uint8Array(
+        atob(value)
+          .split('')
+          .map((c) => c.charCodeAt(0))
+      );
+    } catch (e) {
+      throw new InvalidBaseStringError(value, 64);
+    }
+  },
+  deserialize(buffer, offset = 0) {
+    const slice = buffer.slice(offset);
+    const value = btoa(String.fromCharCode.apply(null, [...slice]));
+    return [value, buffer.length];
+  },
+};
 
 /**
  * A string serializer that uses base16 encoding.
