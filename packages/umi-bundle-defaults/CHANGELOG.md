@@ -1,5 +1,13 @@
 # @metaplex-foundation/umi-bundle-defaults
 
+## 0.7.3
+
+### Patch Changes
+
+- Updated dependencies [[`5e45e9f`](https://github.com/metaplex-foundation/umi/commit/5e45e9f7bd383891394dfac85e4cd2cc8ca0e3f0)]:
+  - @metaplex-foundation/umi-serializer-data-view@0.7.3
+  - @metaplex-foundation/umi-transaction-factory-web3js@0.7.2
+
 ## 0.7.2
 
 ### Patch Changes

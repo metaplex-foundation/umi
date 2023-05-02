@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-serializer-data-view
 
+## 0.7.3
+
+### Patch Changes
+
+- [#40](https://github.com/metaplex-foundation/umi/pull/40) [`5e45e9f`](https://github.com/metaplex-foundation/umi/commit/5e45e9f7bd383891394dfac85e4cd2cc8ca0e3f0) Thanks [@doodoo-aihc](https://github.com/doodoo-aihc)! - fix(dataview-serializer): assert array buffer length when converting from uint8array
+
 ## 0.7.2
 
 ### Patch Changes
