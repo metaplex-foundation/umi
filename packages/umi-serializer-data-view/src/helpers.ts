@@ -5,6 +5,8 @@
  * @returns {ArrayBuffer} An array buffer that's necessary to construct a data view
  */
 export function UInt8ArrayToBuffer(array: Uint8Array): ArrayBuffer {
-    return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset)
-
+  return array.buffer.slice(
+    array.byteOffset,
+    array.byteLength + array.byteOffset
+  );
 }
