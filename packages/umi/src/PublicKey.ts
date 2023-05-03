@@ -147,6 +147,8 @@ export const base58PublicKey = (key: PublicKeyInput): string =>
  * Helper function that enables public keys and signers
  * to override the `isWritable` property of an account meta.
  * @category Signers and PublicKeys
+ * @deprecated This function was used by Kinobi-generated libraries but
+ * is no longer needed as they now export their helpers.
  */
 export const checkForIsWritableOverride = (
   account: (PublicKey | HasPublicKey) & { isWritable?: boolean },
