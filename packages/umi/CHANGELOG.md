@@ -1,5 +1,15 @@
 # @metaplex-foundation/umi-core
 
+## 0.7.4
+
+### Patch Changes
+
+- [`3718fae`](https://github.com/metaplex-foundation/umi/commit/3718faeafc28400313aa93f8e4db3945218ffb0b) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Support custom discriminator sizes for enums
+
+- [`00cb767`](https://github.com/metaplex-foundation/umi/commit/00cb7671976a63670bd71b70a06d5452b0761f62) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Deprecate checkForIsWritableOverride function
+
+- [`f56fc59`](https://github.com/metaplex-foundation/umi/commit/f56fc59eee0deebf347e22a097c19aca1332a52a) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Accept Web3.js public keys as input of publicKey()
+
 ## 0.7.2
 
 ### Patch Changes
