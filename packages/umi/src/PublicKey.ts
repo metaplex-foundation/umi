@@ -32,7 +32,8 @@ export type PublicKeyInput =
   | HasPublicKey
   | PublicKey
   | PublicKeyBase58
-  | PublicKeyBytes;
+  | PublicKeyBytes
+  | { toBytes: () => PublicKeyBytes };
 
 /**
  * Defines a public key.
@@ -67,6 +68,10 @@ export const publicKey = (input: PublicKeyInput): PublicKey => {
   // HasPublicKey.
   else if (typeof input === 'object' && 'publicKey' in input) {
     key = { bytes: new Uint8Array(input.publicKey.bytes) };
+  }
+  // Web3JS-compatible PublicKey.
+  else if (typeof input === 'object' && 'toBytes' in input) {
+    key = { bytes: new Uint8Array(input.toBytes()) };
   }
   // PublicKey.
   else if (isPublicKey(input)) {
