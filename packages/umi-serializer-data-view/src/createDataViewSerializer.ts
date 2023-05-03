@@ -388,6 +388,7 @@ export function createDataViewSerializer(
     constructor: ScalarEnum<T> & {},
     options: EnumSerializerOptions = {}
   ): Serializer<T> => {
+    const prefix = options.discriminator ?? u8();
     const enumKeys = Object.keys(constructor);
     const enumValues = Object.values(constructor);
     const isNumericEnum = enumValues.some((v) => typeof v === 'number');
@@ -416,24 +417,30 @@ export function createDataViewSerializer(
       }
     }
     return {
-      description: options.description ?? `enum(${valueDescriptions})`,
-      fixedSize: 1,
-      maxSize: 1,
+      description:
+        options.description ??
+        `enum(${valueDescriptions}; ${prefix.description})`,
+      fixedSize: prefix.fixedSize,
+      maxSize: prefix.maxSize,
       serialize: (value: T) => {
         assertValidVariant(value as string | number);
-        if (typeof value === 'number') return u8().serialize(value);
+        if (typeof value === 'number') return prefix.serialize(value);
         const valueIndex = enumValues.indexOf(value);
-        if (valueIndex >= 0) return u8().serialize(valueIndex);
-        return u8().serialize(enumKeys.indexOf(value as string));
+        if (valueIndex >= 0) return prefix.serialize(valueIndex);
+        return prefix.serialize(enumKeys.indexOf(value as string));
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
         if (bytes.slice(offset).length === 0) {
           throw new DeserializingEmptyBufferError('enum');
         }
-        const [value, newOffset] = u8().deserialize(bytes, offset);
+        const [value, newOffset] = prefix.deserialize(bytes, offset);
+        const valueAsNumber = Number(value);
         offset = newOffset;
-        assertValidVariant(value);
-        return [(isNumericEnum ? value : enumValues[value]) as T, offset];
+        assertValidVariant(valueAsNumber);
+        return [
+          (isNumericEnum ? valueAsNumber : enumValues[valueAsNumber]) as T,
+          offset,
+        ];
       },
     };
   };
@@ -442,7 +449,7 @@ export function createDataViewSerializer(
     variants: DataEnumToSerializerTuple<T, U>,
     options: DataEnumSerializerOptions = {}
   ): Serializer<T, U> => {
-    const prefix = options.prefix ?? u8();
+    const prefix = options.discriminator ?? u8();
     const fieldDescriptions = variants
       .map(
         ([name, serializer]) =>

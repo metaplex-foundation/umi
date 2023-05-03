@@ -398,7 +398,13 @@ export type StructSerializerOptions = BaseSerializerOptions;
  * Defines the options for scalar enum serializers.
  * @category Serializers
  */
-export type EnumSerializerOptions = BaseSerializerOptions;
+export type EnumSerializerOptions = BaseSerializerOptions & {
+  /**
+   * The serializer to use for the enum discriminator.
+   * @defaultValue `u8()`
+   */
+  discriminator?: NumberSerializer;
+};
 
 /**
  * Defines the options for data enum serializers.
@@ -406,10 +412,10 @@ export type EnumSerializerOptions = BaseSerializerOptions;
  */
 export type DataEnumSerializerOptions = BaseSerializerOptions & {
   /**
-   * The serializer to use for the length prefix
-   * @defaultValue `u32()`
+   * The serializer to use for the enum discriminator prefixing the variant.
+   * @defaultValue `u8()`
    */
-  prefix?: NumberSerializer;
+  discriminator?: NumberSerializer;
 };
 
 /**

@@ -15,7 +15,7 @@ enum Direction {
 }
 
 test('numerical enum (de)serialization', (t) => {
-  const { enum: scalarEnum } = createDataViewSerializer();
+  const { enum: scalarEnum, u64 } = createDataViewSerializer();
 
   // Bad.
   s(t, scalarEnum(Feedback), Feedback.BAD, '00');
@@ -32,6 +32,11 @@ test('numerical enum (de)serialization', (t) => {
   s(t, scalarEnum(Feedback), 1, '01');
   d(t, scalarEnum(Feedback), '01', Feedback.GOOD, 1);
   d(t, scalarEnum(Feedback), ['ffff01', 2], Feedback.GOOD, 3);
+
+  // Custom discriminator.
+  const u64Feedback = scalarEnum(Feedback, { discriminator: u64() });
+  s(t, u64Feedback, Feedback.GOOD, '0100000000000000');
+  d(t, u64Feedback, '0100000000000000', Feedback.GOOD, 8);
 
   // Invalid examples.
   t.throws(() => scalarEnum(Feedback).serialize('Missing'), {
@@ -92,10 +97,14 @@ test('lexical enum (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { enum: scalarEnum } = createDataViewSerializer();
-  t.is(scalarEnum(Empty).description, 'enum()');
-  t.is(scalarEnum(Feedback).description, 'enum(BAD, GOOD)');
-  t.is(scalarEnum(Direction).description, 'enum(Up, Down, Left, Right)');
+  const { enum: scalarEnum, u32 } = createDataViewSerializer();
+  t.is(scalarEnum(Empty).description, 'enum(; u8)');
+  t.is(scalarEnum(Feedback).description, 'enum(BAD, GOOD; u8)');
+  t.is(
+    scalarEnum(Feedback, { discriminator: u32() }).description,
+    'enum(BAD, GOOD; u32(le))'
+  );
+  t.is(scalarEnum(Direction).description, 'enum(Up, Down, Left, Right; u8)');
   t.is(
     scalarEnum(Direction, { description: 'my enum' }).description,
     'my enum'
@@ -103,11 +112,13 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { enum: scalarEnum } = createDataViewSerializer();
+  const { enum: scalarEnum, u32 } = createDataViewSerializer();
   t.is(scalarEnum(Empty).fixedSize, 1);
   t.is(scalarEnum(Empty).maxSize, 1);
   t.is(scalarEnum(Feedback).fixedSize, 1);
   t.is(scalarEnum(Feedback).maxSize, 1);
   t.is(scalarEnum(Direction).fixedSize, 1);
   t.is(scalarEnum(Direction).maxSize, 1);
+  t.is(scalarEnum(Feedback, { discriminator: u32() }).fixedSize, 4);
+  t.is(scalarEnum(Feedback, { discriminator: u32() }).maxSize, 4);
 });

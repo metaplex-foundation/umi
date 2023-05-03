@@ -126,7 +126,7 @@ test('(de)serialization with different From and To types', (t) => {
 
 test('(de)serialization with custom prefix', (t) => {
   const { dataEnum, u32 } = createDataViewSerializer();
-  const x = dataEnum(getSameSizeVariants(), { prefix: u32() });
+  const x = dataEnum(getSameSizeVariants(), { discriminator: u32() });
   s(t, x, { __kind: 'A', value: 42 }, '000000002a00');
   d(t, x, '000000002a00', { __kind: 'A', value: 42 }, 6);
 });
@@ -155,7 +155,7 @@ test('description', (t) => {
     'dataEnum(A: unit, B: struct(value: u64(le)); u8)'
   );
   t.is(
-    dataEnum(getU64Enum(), { prefix: u32() }).description,
+    dataEnum(getU64Enum(), { discriminator: u32() }).description,
     'dataEnum(A: unit, B: struct(value: u64(le)); u32(le))'
   );
   t.is(
@@ -170,8 +170,8 @@ test('sizes', (t) => {
   t.is(dataEnum(getWebEvent()).maxSize, null);
   t.is(dataEnum(getSameSizeVariants()).fixedSize, 3);
   t.is(dataEnum(getSameSizeVariants()).maxSize, 3);
-  t.is(dataEnum(getSameSizeVariants(), { prefix: u32() }).fixedSize, 6);
-  t.is(dataEnum(getSameSizeVariants(), { prefix: u32() }).maxSize, 6);
+  t.is(dataEnum(getSameSizeVariants(), { discriminator: u32() }).fixedSize, 6);
+  t.is(dataEnum(getSameSizeVariants(), { discriminator: u32() }).maxSize, 6);
   t.is(dataEnum(getU64Enum()).fixedSize, null);
   t.is(dataEnum(getU64Enum()).maxSize, 9);
 });
