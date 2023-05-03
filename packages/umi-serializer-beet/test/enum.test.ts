@@ -33,8 +33,8 @@ test('numerical enum (de)serialization', (t) => {
   d(t, scalarEnum(Feedback), '01', Feedback.GOOD, 1);
   d(t, scalarEnum(Feedback), ['ffff01', 2], Feedback.GOOD, 3);
 
-  // Custom discriminator.
-  const u64Feedback = scalarEnum(Feedback, { discriminator: u64() });
+  // Custom size.
+  const u64Feedback = scalarEnum(Feedback, { size: u64() });
   s(t, u64Feedback, Feedback.GOOD, '0100000000000000');
   d(t, u64Feedback, '0100000000000000', Feedback.GOOD, 8);
 
@@ -101,7 +101,7 @@ test('description', (t) => {
   t.is(scalarEnum(Empty).description, 'enum(; u8)');
   t.is(scalarEnum(Feedback).description, 'enum(BAD, GOOD; u8)');
   t.is(
-    scalarEnum(Feedback, { discriminator: u32() }).description,
+    scalarEnum(Feedback, { size: u32() }).description,
     'enum(BAD, GOOD; u32(le))'
   );
   t.is(scalarEnum(Direction).description, 'enum(Up, Down, Left, Right; u8)');
@@ -119,6 +119,6 @@ test('sizes', (t) => {
   t.is(scalarEnum(Feedback).maxSize, 1);
   t.is(scalarEnum(Direction).fixedSize, 1);
   t.is(scalarEnum(Direction).maxSize, 1);
-  t.is(scalarEnum(Feedback, { discriminator: u32() }).fixedSize, 4);
-  t.is(scalarEnum(Feedback, { discriminator: u32() }).maxSize, 4);
+  t.is(scalarEnum(Feedback, { size: u32() }).fixedSize, 4);
+  t.is(scalarEnum(Feedback, { size: u32() }).maxSize, 4);
 });

@@ -388,7 +388,7 @@ export function createDataViewSerializer(
     constructor: ScalarEnum<T> & {},
     options: EnumSerializerOptions = {}
   ): Serializer<T> => {
-    const prefix = options.discriminator ?? u8();
+    const prefix = options.size ?? u8();
     const enumKeys = Object.keys(constructor);
     const enumValues = Object.values(constructor);
     const isNumericEnum = enumValues.some((v) => typeof v === 'number');
@@ -449,7 +449,7 @@ export function createDataViewSerializer(
     variants: DataEnumToSerializerTuple<T, U>,
     options: DataEnumSerializerOptions = {}
   ): Serializer<T, U> => {
-    const prefix = options.discriminator ?? u8();
+    const prefix = options.size ?? u8();
     const fieldDescriptions = variants
       .map(
         ([name, serializer]) =>

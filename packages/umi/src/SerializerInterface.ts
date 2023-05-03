@@ -403,7 +403,7 @@ export type EnumSerializerOptions = BaseSerializerOptions & {
    * The serializer to use for the enum discriminator.
    * @defaultValue `u8()`
    */
-  discriminator?: NumberSerializer;
+  size?: NumberSerializer;
 };
 
 /**
@@ -415,7 +415,7 @@ export type DataEnumSerializerOptions = BaseSerializerOptions & {
    * The serializer to use for the enum discriminator prefixing the variant.
    * @defaultValue `u8()`
    */
-  discriminator?: NumberSerializer;
+  size?: NumberSerializer;
 };
 
 /**
