@@ -1,5 +1,12 @@
 # @metaplex-foundation/umi-program-repository
 
+## 0.7.5
+
+### Patch Changes
+
+- Updated dependencies [[`670e7d4`](https://github.com/metaplex-foundation/umi/commit/670e7d4ba00e41802226ee7c722a116ef141891f)]:
+  - @metaplex-foundation/umi@0.7.5
+
 ## 0.7.4
 
 ### Patch Changes

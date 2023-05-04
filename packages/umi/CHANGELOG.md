@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 0.7.5
+
+### Patch Changes
+
+- [`670e7d4`](https://github.com/metaplex-foundation/umi/commit/670e7d4ba00e41802226ee7c722a116ef141891f) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Add getSignatureStatuses to RpcInterface
+
 ## 0.7.4
 
 ### Patch Changes
