@@ -10,6 +10,7 @@ import type {
   Transaction,
   TransactionError,
   TransactionSignature,
+  TransactionStatus,
   TransactionWithMeta,
 } from './Transaction';
 
@@ -112,6 +113,19 @@ export interface RpcInterface {
     signature: TransactionSignature,
     options?: RpcGetTransactionOptions
   ): Promise<TransactionWithMeta | null>;
+
+  /**
+   * Fetch transaction commitments from an array of signatures.
+   *
+   * @param signatures The signatures of all transactions we want to fetch commitments for.
+   * @param options The options to use when fetching transaction commitments.
+   * @returns An array of transaction statuses in the same order as the signatures.
+   * If a transaction was not found, `null` will be returned instead.
+   */
+  getSignatureStatuses(
+    signatures: TransactionSignature[],
+    options?: RpcGetSignatureStatusesOptions
+  ): Promise<Array<TransactionStatus | null>>;
 
   /**
    * Whether or not an account at a given address exists.
@@ -300,6 +314,18 @@ export type RpcGetLatestBlockhashOptions = RpcBaseOptions;
 export type RpcGetTransactionOptions = RpcBaseOptions;
 
 /**
+ * The options to use when fetching transaction statuses.
+ * @category Rpc
+ */
+export type RpcGetSignatureStatusesOptions = RpcBaseOptions & {
+  /**
+   * Enable searching status history, not needed for recent transactions.
+   * @defaultValue `false`
+   */
+  searchTransactionHistory?: boolean;
+};
+
+/**
  * The options to use when checking if an account exists.
  * @category Rpc
  */
@@ -391,6 +417,7 @@ export function createNullRpc(): RpcInterface {
     getSlot: errorHandler,
     getLatestBlockhash: errorHandler,
     getTransaction: errorHandler,
+    getSignatureStatuses: errorHandler,
     accountExists: errorHandler,
     airdrop: errorHandler,
     call: errorHandler,

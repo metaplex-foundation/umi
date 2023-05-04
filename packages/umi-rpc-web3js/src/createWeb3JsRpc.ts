@@ -1,18 +1,14 @@
 import {
   ACCOUNT_HEADER_SIZE,
-  base58,
   BlockhashWithExpiryBlockHeight,
   Cluster,
   Commitment,
   CompiledInstruction,
   Context,
   ErrorWithLogs,
-  isZeroAmount,
-  lamports,
   MaybeRpcAccount,
   ProgramError,
   PublicKey,
-  resolveClusterFromEndpoint,
   RpcAccount,
   RpcAccountExistsOptions,
   RpcAirdropOptions,
@@ -26,17 +22,23 @@ import {
   RpcGetLatestBlockhashOptions,
   RpcGetProgramAccountsOptions,
   RpcGetRentOptions,
+  RpcGetSignatureStatusesOptions,
+  RpcGetSlotOptions,
   RpcGetTransactionOptions,
   RpcInterface,
   RpcSendTransactionOptions,
   SolAmount,
-  createAmount,
   Transaction,
   TransactionMetaInnerInstruction,
   TransactionMetaTokenBalance,
   TransactionSignature,
+  TransactionStatus,
   TransactionWithMeta,
-  RpcGetSlotOptions,
+  base58,
+  createAmount,
+  isZeroAmount,
+  lamports,
+  resolveClusterFromEndpoint,
 } from '@metaplex-foundation/umi';
 import {
   fromWeb3JsMessage,
@@ -223,6 +225,25 @@ export function createWeb3JsRpc(
     };
   };
 
+  const getSignatureStatuses = async (
+    signatures: TransactionSignature[],
+    options: RpcGetSignatureStatusesOptions = {}
+  ): Promise<Array<TransactionStatus | null>> => {
+    const response = await getConnection().getSignatureStatuses(
+      signatures.map((signature) => base58.deserialize(signature)[0]),
+      { searchTransactionHistory: options?.searchTransactionHistory ?? false }
+    );
+    return response.value.map((status) => {
+      if (!status) return null;
+      return {
+        slot: status.slot,
+        confirmations: status.confirmations,
+        error: status.err,
+        commitment: status.confirmationStatus ?? null,
+      };
+    });
+  };
+
   const accountExists = async (
     publicKey: PublicKey,
     options: RpcAccountExistsOptions = {}
@@ -316,6 +337,7 @@ export function createWeb3JsRpc(
       getConnection().getSlot(options),
     getLatestBlockhash,
     getTransaction,
+    getSignatureStatuses,
     accountExists,
     airdrop,
     call,

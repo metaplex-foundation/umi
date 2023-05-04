@@ -1,6 +1,7 @@
 import { Amount, SolAmount } from './Amount';
 import type { Instruction } from './Instruction';
-import { samePublicKey, PublicKey } from './PublicKey';
+import { PublicKey, samePublicKey } from './PublicKey';
+import type { Commitment } from './RpcInterface';
 
 /**
  * The maximum amount of bytes that can be used for a transaction.
@@ -205,6 +206,21 @@ export type TransactionInputBase = {
 export type AddressLookupTableInput = {
   publicKey: PublicKey;
   addresses: PublicKey[];
+};
+
+/**
+ * The status of a sent transaction.
+ * @category Transactions
+ */
+export type TransactionStatus = {
+  /** When the transaction was processed. */
+  slot: number;
+  /** The number of blocks that have been confirmed and voted on in the fork containing `slot`. */
+  confirmations: number | null;
+  /** The transaction error, if any. */
+  error: TransactionError | null;
+  /** The cluster confirmation status, if any. */
+  commitment: Commitment | null;
 };
 
 /**
