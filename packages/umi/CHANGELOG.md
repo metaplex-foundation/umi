@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 0.7.6
+
+### Patch Changes
+
+- [`5b275d5`](https://github.com/metaplex-foundation/umi/commit/5b275d53680d66fcd77b1b09a30bf101036e22b3) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Fix deserializeAccount type parameters
+
 ## 0.7.5
 
 ### Patch Changes

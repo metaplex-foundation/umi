@@ -1,5 +1,12 @@
 # @metaplex-foundation/umi-http-fetch
 
+## 0.7.6
+
+### Patch Changes
+
+- Updated dependencies [[`5b275d5`](https://github.com/metaplex-foundation/umi/commit/5b275d53680d66fcd77b1b09a30bf101036e22b3)]:
+  - @metaplex-foundation/umi@0.7.6
+
 ## 0.7.5
 
 ### Patch Changes
