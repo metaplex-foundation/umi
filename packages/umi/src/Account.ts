@@ -51,10 +51,10 @@ export type Account<T extends object> = T & {
  * returns a deserialized account from a raw account.
  * @category Accounts
  */
-export function deserializeAccount<T extends object>(
+export function deserializeAccount<From extends object, To extends From = From>(
   rawAccount: RpcAccount,
-  dataSerializer: Serializer<T>
-): Account<T> {
+  dataSerializer: Serializer<From, To>
+): Account<To> {
   const { data, publicKey, ...rest } = rawAccount;
   try {
     const [parsedData] = dataSerializer.deserialize(data);
