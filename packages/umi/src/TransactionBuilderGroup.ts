@@ -27,6 +27,32 @@ export class TransactionBuilderGroup {
     readonly options: TransactionBuilderGroupOptions = {}
   ) {}
 
+  prepend(
+    builder: TransactionBuilder | TransactionBuilder[]
+  ): TransactionBuilderGroup {
+    const newBuilders = Array.isArray(builder) ? builder : [builder];
+    return new TransactionBuilderGroup(
+      [...newBuilders, ...this.builders],
+      this.options
+    );
+  }
+
+  append(
+    builder: TransactionBuilder | TransactionBuilder[]
+  ): TransactionBuilderGroup {
+    const newBuilders = Array.isArray(builder) ? builder : [builder];
+    return new TransactionBuilderGroup(
+      [...newBuilders, ...this.builders],
+      this.options
+    );
+  }
+
+  add(
+    builder: TransactionBuilder | TransactionBuilder[]
+  ): TransactionBuilderGroup {
+    return this.append(builder);
+  }
+
   sequential(): TransactionBuilderGroup {
     return new TransactionBuilderGroup(this.builders, {
       ...this.options,
