@@ -28,6 +28,7 @@ export * from './Signer';
 export * from './SignerPlugins';
 export * from './Transaction';
 export * from './TransactionBuilder';
+export * from './TransactionBuilderGroup';
 export * from './TransactionFactoryInterface';
 export * from './Umi';
 export * from './UmiPlugin';
