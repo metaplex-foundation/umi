@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-uploader-aws",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "description": "An uploader implementation relying on AWS",
   "license": "MIT",
   "sideEffects": false,

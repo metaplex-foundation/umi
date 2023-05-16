@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 0.7.7
+
+### Patch Changes
+
+- [#45](https://github.com/metaplex-foundation/umi/pull/45) [`bf9b550`](https://github.com/metaplex-foundation/umi/commit/bf9b550ae945f3963f2c96361b7d7ab38921c6a7) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Add TransactionBuilderGroup
+
 ## 0.7.6
 
 ### Patch Changes
