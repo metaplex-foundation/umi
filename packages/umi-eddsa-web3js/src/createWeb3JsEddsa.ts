@@ -11,7 +11,7 @@ import {
   fromWeb3JsPublicKey,
   toWeb3JsPublicKey,
 } from '@metaplex-foundation/umi-web3js-adapters';
-import * as ed25519 from '@noble/ed25519';
+import { ed25519 } from '@noble/curves/ed25519';
 import {
   Keypair as Web3JsKeypair,
   PublicKey as Web3JsPublicKey,
@@ -39,13 +39,13 @@ export function createWeb3JsEddsa(): EddsaInterface {
   };
 
   const sign = (message: Uint8Array, keypair: Keypair): Uint8Array =>
-    ed25519.sync.sign(message, keypair.secretKey.slice(0, 32));
+    ed25519.sign(message, keypair.secretKey.slice(0, 32));
 
   const verify = (
     message: Uint8Array,
     signature: Uint8Array,
     publicKey: PublicKey
-  ): boolean => ed25519.sync.verify(signature, message, publicKey.bytes);
+  ): boolean => ed25519.verify(signature, message, publicKey.bytes);
 
   return {
     generateKeypair,
