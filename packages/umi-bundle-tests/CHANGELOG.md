@@ -1,5 +1,13 @@
 # @metaplex-foundation/umi-bundle-tests
 
+## 0.7.8
+
+### Patch Changes
+
+- Updated dependencies [[`9ca68e2`](https://github.com/metaplex-foundation/umi/commit/9ca68e29d3aa7a69c32f64f3e096fe24c72f19d1)]:
+  - @metaplex-foundation/umi-eddsa-web3js@0.7.8
+  - @metaplex-foundation/umi-transaction-factory-web3js@0.7.7
+
 ## 0.7.7
 
 ### Patch Changes
