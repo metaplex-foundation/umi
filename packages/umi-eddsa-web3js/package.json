@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
-    "@noble/ed25519": "^1.7.1"
+    "@noble/curves": "^1.0.0"
   },
   "peerDependencies": {
     "@metaplex-foundation/umi": "workspace:^",

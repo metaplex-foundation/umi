@@ -3,6 +3,7 @@ import pkg from './package.json';
 
 export default createConfigs({
   pkg,
+  additionalExternals: ['@noble/curves/ed25519'],
   builds: [
     {
       dir: 'dist/esm',
