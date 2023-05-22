@@ -1,5 +1,12 @@
 # @metaplex-foundation/umi-bundle-tests
 
+## 0.7.9
+
+### Patch Changes
+
+- Updated dependencies [[`02ea0c8`](https://github.com/metaplex-foundation/umi/commit/02ea0c8f22c834cf0d254aa64964a2d3e7cd1b4d)]:
+  - @metaplex-foundation/umi-http-fetch@0.7.9
+
 ## 0.7.8
 
 ### Patch Changes
