@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-http-fetch
 
+## 0.7.9
+
+### Patch Changes
+
+- [#49](https://github.com/metaplex-foundation/umi/pull/49) [`02ea0c8`](https://github.com/metaplex-foundation/umi/commit/02ea0c8f22c834cf0d254aa64964a2d3e7cd1b4d) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Fix response.headers.raw is not a function (in the browser)
+
 ## 0.7.7
 
 ### Patch Changes
