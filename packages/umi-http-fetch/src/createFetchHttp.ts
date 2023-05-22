@@ -56,7 +56,7 @@ export function createFetchHttp(): HttpInterface {
         ok: response.ok,
         status: response.status,
         statusText: response.statusText,
-        headers: { ...response.headers.raw() },
+        headers: Object.fromEntries(response.headers.entries()),
       };
     },
   };
