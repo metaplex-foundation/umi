@@ -5,6 +5,7 @@ import {
   Commitment,
   CompiledInstruction,
   Context,
+  DateTime,
   ErrorWithLogs,
   MaybeRpcAccount,
   ProgramError,
@@ -19,6 +20,7 @@ import {
   RpcGetAccountOptions,
   RpcGetAccountsOptions,
   RpcGetBalanceOptions,
+  RpcGetBlockTimeOptions,
   RpcGetLatestBlockhashOptions,
   RpcGetProgramAccountsOptions,
   RpcGetRentOptions,
@@ -36,6 +38,7 @@ import {
   TransactionWithMeta,
   base58,
   createAmount,
+  dateTime,
   isZeroAmount,
   lamports,
   resolveClusterFromEndpoint,
@@ -112,6 +115,15 @@ export function createWeb3JsRpc(
     return accounts.map(({ pubkey, account }) =>
       parseAccount(account, fromWeb3JsPublicKey(pubkey))
     );
+  };
+
+  const getBlockTime = async (
+    slot: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _options: RpcGetBlockTimeOptions = {}
+  ): Promise<DateTime | null> => {
+    const blockTime = await getConnection().getBlockTime(slot);
+    return blockTime ? dateTime(blockTime) : null;
   };
 
   const getBalance = async (
@@ -331,6 +343,7 @@ export function createWeb3JsRpc(
     getAccount,
     getAccounts,
     getProgramAccounts,
+    getBlockTime,
     getBalance,
     getRent,
     getSlot: async (options: RpcGetSlotOptions = {}) =>

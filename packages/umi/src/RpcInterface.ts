@@ -1,6 +1,7 @@
 import type { MaybeRpcAccount, RpcAccount } from './Account';
 import { SolAmount } from './Amount';
 import type { Cluster } from './Cluster';
+import { DateTime } from './DateTime';
 import { InterfaceImplementationMissingError } from './errors';
 import type { GenericAbortSignal } from './GenericAbortSignal';
 import type { PublicKey } from './PublicKey';
@@ -62,6 +63,18 @@ export interface RpcInterface {
     programId: PublicKey,
     options?: RpcGetProgramAccountsOptions
   ): Promise<RpcAccount[]>;
+
+  /**
+   * Fetch the estimated production time of a block.
+   *
+   * @param slot The slot to get the estimated production time for.
+   * @param options The options to use when getting the block time of a slot.
+   * @returns The estimated production time of the block in Unix time.
+   */
+  getBlockTime(
+    slot: number,
+    options?: RpcGetBlockTimeOptions
+  ): Promise<DateTime | null>;
 
   /**
    * Fetch the balance of an account.
@@ -281,6 +294,12 @@ export type RpcGetProgramAccountsOptions = RpcBaseOptions & {
 };
 
 /**
+ * The options to use when getting the block time of a slot.
+ * @category Rpc
+ */
+export type RpcGetBlockTimeOptions = RpcBaseOptions;
+
+/**
  * The options to use when fetching the balance of an account.
  * @category Rpc
  */
@@ -412,6 +431,7 @@ export function createNullRpc(): RpcInterface {
     getAccount: errorHandler,
     getAccounts: errorHandler,
     getProgramAccounts: errorHandler,
+    getBlockTime: errorHandler,
     getBalance: errorHandler,
     getRent: errorHandler,
     getSlot: errorHandler,
