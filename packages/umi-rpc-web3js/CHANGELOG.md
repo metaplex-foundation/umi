@@ -1,5 +1,15 @@
 # @metaplex-foundation/umi-rpc-web3js
 
+## 0.7.10
+
+### Patch Changes
+
+- [`c1c1da6`](https://github.com/metaplex-foundation/umi/commit/c1c1da6bbed341492c3d81a4edc7aebb43471345) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Add getBlockTime RPC method
+
+- Updated dependencies [[`c1c1da6`](https://github.com/metaplex-foundation/umi/commit/c1c1da6bbed341492c3d81a4edc7aebb43471345), [`1139bcf`](https://github.com/metaplex-foundation/umi/commit/1139bcfedc541d6b89df2d61b10c4fdc169c4eee)]:
+  - @metaplex-foundation/umi@0.7.10
+  - @metaplex-foundation/umi-web3js-adapters@0.7.10
+
 ## 0.7.7
 
 ### Patch Changes
