@@ -1,7 +1,11 @@
 import { SolAmount } from './Amount';
 import type { Context } from './Context';
 import { SdkError } from './errors';
-import type { Instruction, WrappedInstruction } from './Instruction';
+import type {
+  AccountMeta,
+  Instruction,
+  WrappedInstruction,
+} from './Instruction';
 import type {
   RpcConfirmTransactionOptions,
   RpcConfirmTransactionResult,
@@ -96,6 +100,34 @@ export class TransactionBuilder implements HasWrappedInstructions {
 
   add(input: TransactionBuilderItemsInput): TransactionBuilder {
     return this.append(input);
+  }
+
+  mapInstructions(
+    fn: (
+      wrappedInstruction: WrappedInstruction,
+      index: number,
+      array: WrappedInstruction[]
+    ) => WrappedInstruction
+  ): TransactionBuilder {
+    return new TransactionBuilder(this.items.map(fn), this.options);
+  }
+
+  addRemainingAccounts(
+    accountMeta: AccountMeta | AccountMeta[],
+    instructionIndex?: number
+  ): TransactionBuilder {
+    instructionIndex = instructionIndex ?? this.items.length - 1;
+    return this.mapInstructions((wrappedInstruction, index) => {
+      if (index !== instructionIndex) return wrappedInstruction;
+      const keys = [
+        ...wrappedInstruction.instruction.keys,
+        ...(Array.isArray(accountMeta) ? accountMeta : [accountMeta]),
+      ];
+      return {
+        ...wrappedInstruction,
+        instruction: { ...wrappedInstruction.instruction, keys },
+      };
+    });
   }
 
   splitByIndex(index: number): [TransactionBuilder, TransactionBuilder] {

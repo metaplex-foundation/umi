@@ -15,6 +15,22 @@ import {
 export const createUmi = (): Umi =>
   baseCreateUmi().use(generatedSignerIdentity());
 
+export const mockInstruction = (): WrappedInstruction => ({
+  instruction: {
+    programId: publicKey('11111111111111111111111111111111'),
+    keys: [
+      {
+        pubkey: publicKey('LorisCg1FTs89a32VSrFskYDgiRbNQzct1WxyZb7nuA'),
+        isSigner: false,
+        isWritable: true,
+      },
+    ],
+    data: new Uint8Array(),
+  },
+  bytesCreatedOnChain: 0,
+  signers: [],
+});
+
 export const transferSol = (
   context: Pick<Context, 'eddsa'>,
   params: {
