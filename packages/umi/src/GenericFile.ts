@@ -80,7 +80,11 @@ export const createGenericFileFromJson = <T>(
   json: T,
   fileName = 'inline.json',
   options: GenericFileOptions = {}
-): GenericFile => createGenericFile(JSON.stringify(json), fileName, options);
+): GenericFile =>
+  createGenericFile(JSON.stringify(json), fileName, {
+    contentType: 'application/json',
+    ...options,
+  });
 
 /**
  * Creates a new {@link BrowserFile} from a {@link GenericFile}.
