@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-rpc-web3js",
-  "version": "0.7.10",
+  "version": "0.7.11",
   "description": "An RPC implementation relying on Solana's web3.js",
   "license": "MIT",
   "sideEffects": false,
