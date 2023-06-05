@@ -1,8 +1,8 @@
 import { base58, Transaction } from '@metaplex-foundation/umi';
 import {
-  Message as Web3JsMessage,
   SIGNATURE_LENGTH_IN_BYTES,
   Transaction as Web3JsLegacyTransaction,
+  Message as Web3JsMessage,
   VersionedTransaction as Web3JsTransaction,
 } from '@solana/web3.js';
 import { fromWeb3JsMessage, toWeb3JsMessage } from './TransactionMessage';
@@ -57,7 +57,10 @@ export function fromWeb3JsLegacyTransaction(
 export function toWeb3JsLegacyTransaction(
   transaction: Transaction
 ): Web3JsLegacyTransaction {
-  const web3JsTransaction = toWeb3JsTransaction(transaction);
+  const web3JsTransaction = toWeb3JsTransaction({
+    ...transaction,
+    message: { ...transaction.message, version: 'legacy' },
+  });
   return Web3JsLegacyTransaction.populate(
     web3JsTransaction.message as Web3JsMessage,
     web3JsTransaction.signatures.map(
