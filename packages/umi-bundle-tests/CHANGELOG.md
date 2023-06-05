@@ -1,5 +1,14 @@
 # @metaplex-foundation/umi-bundle-tests
 
+## 0.7.12
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @metaplex-foundation/umi-eddsa-web3js@0.7.12
+  - @metaplex-foundation/umi-rpc-web3js@0.7.12
+  - @metaplex-foundation/umi-transaction-factory-web3js@0.7.12
+
 ## 0.7.11
 
 ### Patch Changes
