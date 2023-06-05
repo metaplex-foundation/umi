@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 0.7.11
+
+### Patch Changes
+
+- [`38c98dc`](https://github.com/metaplex-foundation/umi/commit/38c98dcc7c61ce212198381765b80fa695c51fa7) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Fix wrong content-type when uploading a JSON file
+
 ## 0.7.10
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-rpc-chunk-get-accounts",
-  "version": "0.7.10",
+  "version": "0.7.11",
   "description": "RPC decorator that chunks getAccounts requests into batches",
   "license": "MIT",
   "sideEffects": false,
