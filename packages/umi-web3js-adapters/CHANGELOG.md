@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-web3js-adapters
 
+## 0.7.12
+
+### Patch Changes
+
+- [`3ce198a`](https://github.com/metaplex-foundation/umi/commit/3ce198a8c1eaf257dbd568053a032a601375eed2) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Update message to legacy before adapting to a legacy web3.js transaction
+
 ## 0.7.11
 
 ### Patch Changes

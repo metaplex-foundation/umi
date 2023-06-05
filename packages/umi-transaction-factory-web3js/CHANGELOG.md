@@ -1,5 +1,12 @@
 # @metaplex-foundation/umi-transaction-factory-web3js
 
+## 0.7.12
+
+### Patch Changes
+
+- Updated dependencies [[`3ce198a`](https://github.com/metaplex-foundation/umi/commit/3ce198a8c1eaf257dbd568053a032a601375eed2)]:
+  - @metaplex-foundation/umi-web3js-adapters@0.7.12
+
 ## 0.7.11
 
 ### Patch Changes
