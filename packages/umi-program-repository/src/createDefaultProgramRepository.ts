@@ -3,6 +3,7 @@ import {
   ClusterFilter,
   Context,
   ErrorWithLogs,
+  isPublicKey,
   Program,
   ProgramError,
   ProgramRepositoryInterface,
@@ -18,33 +19,38 @@ import {
 } from './errors';
 
 export function createDefaultProgramRepository(
-  context: Pick<Context, 'rpc'>
+  context: Pick<Context, 'rpc'>,
+  initialPrograms: Program[] = [],
+  initialBindings: Record<string, string | PublicKey> = {}
 ): ProgramRepositoryInterface {
-  const programs: Program[] = [];
+  const programs: Program[] = [...initialPrograms];
+  const bindings: Record<string, string | PublicKey> = { ...initialBindings };
 
   const has = (
     identifier: string | PublicKey,
     clusterFilter: ClusterFilter = 'current'
   ): boolean => {
     const programs = all(clusterFilter);
-    return typeof identifier === 'string'
-      ? programs.some((p) => p.name === identifier)
-      : programs.some((p) => samePublicKey(p.publicKey, identifier));
+    const resolvedIdentifier = resolveBinding(identifier);
+    return typeof resolvedIdentifier === 'string'
+      ? programs.some((p) => p.name === resolvedIdentifier)
+      : programs.some((p) => samePublicKey(p.publicKey, resolvedIdentifier));
   };
 
   const get = <T extends Program = Program>(
     identifier: string | PublicKey,
     clusterFilter: ClusterFilter = 'current'
   ): T => {
-    const cluster = parseClusterFilter(clusterFilter);
+    const cluster = resolveClusterFilter(clusterFilter);
     const programs = all(clusterFilter);
+    const resolvedIdentifier = resolveBinding(identifier);
     const program =
-      typeof identifier === 'string'
-        ? programs.find((p) => p.name === identifier)
-        : programs.find((p) => samePublicKey(p.publicKey, identifier));
+      typeof resolvedIdentifier === 'string'
+        ? programs.find((p) => p.name === resolvedIdentifier)
+        : programs.find((p) => samePublicKey(p.publicKey, resolvedIdentifier));
 
     if (!program) {
-      throw new ProgramNotRecognizedError(identifier, cluster);
+      throw new ProgramNotRecognizedError(resolvedIdentifier, cluster);
     }
 
     return program as T;
@@ -64,18 +70,28 @@ export function createDefaultProgramRepository(
   };
 
   const all = (clusterFilter: ClusterFilter = 'current'): Program[] => {
-    const cluster = parseClusterFilter(clusterFilter);
+    const cluster = resolveClusterFilter(clusterFilter);
     return cluster === '*'
       ? programs
       : programs.filter((program) => program.isOnCluster(cluster));
   };
 
   const add = (program: Program, overrides = true): void => {
-    if (overrides) {
-      programs.unshift(program);
-    } else {
-      programs.push(program);
-    }
+    if (!overrides && has(program.publicKey, '*')) return;
+    programs.unshift(program);
+  };
+
+  const bind = (abstract: string, concrete: string | PublicKey): void => {
+    bindings[abstract] = concrete;
+    resolveBinding(abstract); // Ensures the binding is valid.
+  };
+
+  const unbind = (abstract: string): void => {
+    delete bindings[abstract];
+  };
+
+  const clone = (): ProgramRepositoryInterface => {
+    return createDefaultProgramRepository(context, programs, bindings);
   };
 
   const resolveError = (
@@ -123,8 +139,23 @@ export function createDefaultProgramRepository(
     return resolvedError ?? new ProgramErrorNotRecognizedError(program, error);
   };
 
-  const parseClusterFilter = (clusterFilter: ClusterFilter): Cluster | '*' =>
+  const resolveClusterFilter = (clusterFilter: ClusterFilter): Cluster | '*' =>
     clusterFilter === 'current' ? context.rpc.getCluster() : clusterFilter;
+
+  const resolveBinding = (
+    identifier: string | PublicKey,
+    stack: string[] = []
+  ): string | PublicKey => {
+    if (isPublicKey(identifier)) return identifier;
+    if (bindings[identifier] === undefined) return identifier;
+    const stackWithIdentifier = [...stack, identifier];
+    if (stack.includes(identifier)) {
+      throw new Error(
+        `Circular binding detected: ${stackWithIdentifier.join(' -> ')}`
+      );
+    }
+    return resolveBinding(bindings[identifier], stackWithIdentifier);
+  };
 
   return {
     has,
@@ -132,6 +163,9 @@ export function createDefaultProgramRepository(
     getPublicKey,
     all,
     add,
+    bind,
+    unbind,
+    clone,
     resolveError,
   };
 }
