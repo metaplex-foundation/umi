@@ -1,5 +1,16 @@
 # @metaplex-foundation/umi-program-repository
 
+## 0.7.13
+
+### Patch Changes
+
+- [#54](https://github.com/metaplex-foundation/umi/pull/54) [`6a33ea3`](https://github.com/metaplex-foundation/umi/commit/6a33ea32937f37cb34114582f2c365ac21c6d8e5) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Add support for cloning a program repository
+
+- [#54](https://github.com/metaplex-foundation/umi/pull/54) [`6a33ea3`](https://github.com/metaplex-foundation/umi/commit/6a33ea32937f37cb34114582f2c365ac21c6d8e5) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Add program bindings
+
+- Updated dependencies [[`6a33ea3`](https://github.com/metaplex-foundation/umi/commit/6a33ea32937f37cb34114582f2c365ac21c6d8e5), [`6a33ea3`](https://github.com/metaplex-foundation/umi/commit/6a33ea32937f37cb34114582f2c365ac21c6d8e5)]:
+  - @metaplex-foundation/umi@0.7.13
+
 ## 0.7.11
 
 ### Patch Changes

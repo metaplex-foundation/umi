@@ -1,5 +1,13 @@
 # @metaplex-foundation/umi-signer-wallet-adapters
 
+## 0.7.13
+
+### Patch Changes
+
+- Updated dependencies [[`6a33ea3`](https://github.com/metaplex-foundation/umi/commit/6a33ea32937f37cb34114582f2c365ac21c6d8e5), [`6a33ea3`](https://github.com/metaplex-foundation/umi/commit/6a33ea32937f37cb34114582f2c365ac21c6d8e5)]:
+  - @metaplex-foundation/umi@0.7.13
+  - @metaplex-foundation/umi-web3js-adapters@0.7.13
+
 ## 0.7.12
 
 ### Patch Changes
