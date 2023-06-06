@@ -90,7 +90,8 @@ export function createDefaultProgramRepository(
     delete bindings[abstract];
   };
 
-  const clone = (): ProgramRepositoryInterface => createDefaultProgramRepository(context, programs, bindings);
+  const clone = (): ProgramRepositoryInterface =>
+    createDefaultProgramRepository(context, programs, bindings);
 
   const resolveError = (
     error: ErrorWithLogs,
