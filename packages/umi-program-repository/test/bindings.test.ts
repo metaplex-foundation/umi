@@ -91,3 +91,28 @@ test('it cannot add a binding that creates a circular dependency', async (t) => 
       /Circular binding detected: programC -> programA -> programB -> programC/,
   });
 });
+
+test('it can unbind an existing bidding', async (t) => {
+  // Given ta binding between two registered programs: splToken and splToken2022.
+  const umi = createUmi();
+  const splTokenProgram: Program = createProgram(
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+  );
+  const splToken2022Program: Program = createProgram(
+    'splToken2022',
+    'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'
+  );
+  umi.programs.add(splTokenProgram);
+  umi.programs.add(splToken2022Program);
+  umi.programs.bind('splToken', 'splToken2022');
+  t.is(umi.programs.get('splToken'), splToken2022Program);
+  t.is(umi.programs.get('splToken2022'), splToken2022Program);
+
+  // When we remove the binding.
+  umi.programs.unbind('splToken');
+
+  // Then both program names resolve to their original programs.
+  t.is(umi.programs.get('splToken'), splTokenProgram);
+  t.is(umi.programs.get('splToken2022'), splToken2022Program);
+});
