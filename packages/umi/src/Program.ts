@@ -59,7 +59,7 @@ export type Program = {
    * A method that returns `true` if the program is available on the given cluster.
    *
    * If the same program is available on multiple clusters but using different public keys,
-   * mulitple Program instances must be registered such that the `isOnCluster` method
+   * multiple Program instances must be registered such that the `isOnCluster` method
    * returns `true` for the appropriate cluster.
    */
   isOnCluster: (cluster: Cluster) => boolean;

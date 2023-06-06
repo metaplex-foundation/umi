@@ -1,8 +1,8 @@
 import type { ClusterFilter } from './Cluster';
 import { InterfaceImplementationMissingError, ProgramError } from './errors';
 import type { ErrorWithLogs, Program } from './Program';
-import { PublicKey, PublicKeyInput } from './PublicKey';
-import { Transaction } from './Transaction';
+import type { PublicKey, PublicKeyInput } from './PublicKey';
+import type { Transaction } from './Transaction';
 
 /**
  * Defines the interface for a program repository.
@@ -61,10 +61,34 @@ export interface ProgramRepositoryInterface {
    * Registers a new program in the repository.
    *
    * @param program The program to register.
-   * @param overrides Whether to override an existing program with the
-   * same name or public key. Defaults to `true`.
+   * @param overrides Whether to register and prioritize
+   * the given program even if a program with the same
+   * public key already exists. Defaults to `true`.
    */
   add(program: Program, overrides?: boolean): void;
+
+  /**
+   * Creates a binding between a name and a program identifier.
+   * This can be used to create redirections or aliases when resolving programs.
+   *
+   * @param abstract The name of the binding.
+   * @param concrete The identifier this binding should resolve to.
+   */
+  bind(abstract: string, concrete: string | PublicKey): void;
+
+  /**
+   * Removes a binding using its name.
+   *
+   * @param abstract The name of the binding to remove.
+   */
+  unbind(abstract: string): void;
+
+  /**
+   * Creates a cloned instance of the repository.
+   *
+   * @returns A new repository instance with the same programs and bindings.
+   */
+  clone(): ProgramRepositoryInterface;
 
   /**
    * Resolves a custom program error from a transaction error.
@@ -96,6 +120,9 @@ export function createNullProgramRepository(): ProgramRepositoryInterface {
     getPublicKey: errorHandler,
     all: errorHandler,
     add: errorHandler,
+    bind: errorHandler,
+    unbind: errorHandler,
+    clone: errorHandler,
     resolveError: errorHandler,
   };
 }
