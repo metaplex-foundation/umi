@@ -1,6 +1,6 @@
 import { Program, publicKey } from '@metaplex-foundation/umi';
 import test from 'ava';
-import { createUmi } from './_setup';
+import { createProgram, createUmi } from './_setup';
 
 test('it can add programs', async (t) => {
   // Given a Program.
@@ -69,4 +69,18 @@ test('it can add programs to specific clusters', async (t) => {
   t.is(umi.programs.all('*').length, 2);
   t.true(umi.programs.all('*').includes(devnetProgram));
   t.true(umi.programs.all('*').includes(mainnetProgram));
+});
+
+test('it can ignore adding programs when they are already registered', async (t) => {
+  // Given a registered program.
+  const umi = createUmi();
+  const program = createProgram('myProgram');
+  umi.programs.add(program);
+
+  // When we add it again with the `overwrite` flag set to `false`.
+  umi.programs.add(program, false);
+
+  // Then it is not added again.
+  t.is(umi.programs.all().length, 1);
+  t.deepEqual(umi.programs.all(), [program]);
 });
