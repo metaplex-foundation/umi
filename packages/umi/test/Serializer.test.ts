@@ -195,6 +195,33 @@ test('it can fix a serializer to a given amount of bytes', (t) => {
   });
 });
 
+test('it can fix a serializer that requires a minimum amount of bytes (#56)', (t) => {
+  // Given a mock `u32` serializer that ensures the buffer is 4 bytes long.
+  const u32: Serializer<number> = {
+    description: 'u32',
+    fixedSize: 4,
+    maxSize: 4,
+    serialize: (value: number) => new Uint8Array([value, 0, 0, 0]),
+    deserialize(bytes, offset = 0): [number, number] {
+      if (bytes.slice(offset).length < offset + 4) {
+        throw new Error('Not enough bytes to deserialize a u32.');
+      }
+      return [bytes.slice(offset)[0], offset + 4];
+    },
+  };
+
+  // When we synthesize a `u24` from that `u32` using `fixSerializer`.
+  const u24 = fixSerializer(u32, 3);
+
+  // Then we can serialize a `u24`.
+  const buf = u24.serialize(42);
+  t.deepEqual(buf, new Uint8Array([42, 0, 0]));
+
+  // And we can deserialize it back.
+  const hydrated = u24.deserialize(buf);
+  t.deepEqual(hydrated, [42, 3]);
+});
+
 test('it can reverse the bytes of a fixed-size serializer', (t) => {
   const b = (s: string) => base16.serialize(s);
   const s = (size: number) => reverseSerializer(fixSerializer(base16, size));

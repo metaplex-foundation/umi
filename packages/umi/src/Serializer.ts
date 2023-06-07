@@ -1,5 +1,5 @@
 import { SdkError } from './errors';
-import { mergeBytes } from './utils';
+import { fixBytes, mergeBytes } from './utils';
 
 /**
  * An object that can serialize and deserialize a value to and from a `Uint8Array`.
@@ -105,19 +105,22 @@ export function fixSerializer<T, U extends T = T>(
       description ?? `fixed(${fixedBytes}, ${serializer.description})`,
     fixedSize: fixedBytes,
     maxSize: fixedBytes,
-    serialize: (value: T) => {
-      const buffer = new Uint8Array(fixedBytes).fill(0);
-      buffer.set(serializer.serialize(value).slice(0, fixedBytes));
-      return buffer;
-    },
-    deserialize: (bytes: Uint8Array, offset = 0) => {
-      bytes = bytes.slice(offset, offset + fixedBytes);
-      if (bytes.length < fixedBytes) {
+    serialize: (value: T) => fixBytes(serializer.serialize(value), fixedBytes),
+    deserialize: (buffer: Uint8Array, offset = 0) => {
+      // Slice the buffer to the fixed size.
+      buffer = buffer.slice(offset, offset + fixedBytes);
+      // Ensure we have enough bytes.
+      if (buffer.length < fixedBytes) {
         throw new SdkError(
-          `Fixed serializer expected ${fixedBytes} bytes, got ${bytes.length}.`
+          `Fixed serializer expected ${fixedBytes} bytes, got ${buffer.length}.`
         );
       }
-      const [value] = serializer.deserialize(bytes, 0);
+      // If the nested serializer is fixed-size, pad and truncate the buffer accordingly.
+      if (serializer.fixedSize !== null) {
+        buffer = fixBytes(buffer, serializer.fixedSize);
+      }
+      // Deserialize the value using the nested serializer.
+      const [value] = serializer.deserialize(buffer, 0);
       return [value, offset + fixedBytes];
     },
   };
