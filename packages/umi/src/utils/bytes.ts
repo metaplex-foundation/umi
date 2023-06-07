@@ -37,9 +37,7 @@ export const padBytes = (bytes: Uint8Array, length: number): Uint8Array => {
  * If the array is shorter than the specified length, it is padded with zeroes.
  * @category Utils
  */
-export const fixBytes = (bytes: Uint8Array, length: number): Uint8Array => {
-  return padBytes(bytes.slice(0, length), length);
-};
+export const fixBytes = (bytes: Uint8Array, length: number): Uint8Array => padBytes(bytes.slice(0, length), length);
 
 /**
  * A string serializer that uses UTF-8 encoding
