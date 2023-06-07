@@ -23,10 +23,8 @@ import {
   StringSerializerOptions,
   StructSerializerOptions,
   StructToSerializerTuple,
-  TupleSerializerOptions,
   UnitSerializerOptions,
   utf8,
-  WrapInSerializer,
 } from '@metaplex-foundation/umi';
 import { bytes } from './bytes';
 import {
@@ -51,6 +49,7 @@ import {
 } from './numbers';
 import { publicKey } from './pubkey';
 import { sumSerializerSizes } from './sumSerializerSizes';
+import { tuple } from './tuple';
 
 export type BeetSerializerOptions = {
   /** @defaultValue `true` */
@@ -60,37 +59,6 @@ export type BeetSerializerOptions = {
 export function createBeetSerializer(
   options: BeetSerializerOptions = {}
 ): SerializerInterface {
-  const tuple = <T extends any[], U extends T = T>(
-    items: WrapInSerializer<[...T], [...U]>,
-    options: TupleSerializerOptions = {}
-  ): Serializer<T, U> => {
-    const itemDescriptions = items.map((item) => item.description).join(', ');
-    return {
-      description: options.description ?? `tuple(${itemDescriptions})`,
-      fixedSize: sumSerializerSizes(items.map((item) => item.fixedSize)),
-      maxSize: sumSerializerSizes(items.map((item) => item.maxSize)),
-      serialize: (value: T) => {
-        if (value.length !== items.length) {
-          throw new BeetSerializerError(
-            `Expected tuple to have ${items.length} items but got ${value.length}.`
-          );
-        }
-        return mergeBytes(
-          items.map((item, index) => item.serialize(value[index]))
-        );
-      },
-      deserialize: (bytes: Uint8Array, offset = 0) => {
-        const values = [] as any as U;
-        items.forEach((serializer) => {
-          const [newValue, newOffset] = serializer.deserialize(bytes, offset);
-          values.push(newValue);
-          offset = newOffset;
-        });
-        return [values, offset];
-      },
-    };
-  };
-
   const array = <T, U extends T = T>(
     item: Serializer<T, U>,
     options: ArraySerializerOptions = {}

@@ -2,6 +2,7 @@ import test from 'ava';
 import { DataEnumToSerializerTuple } from '@metaplex-foundation/umi';
 import { createBeetSerializer } from '../src';
 import { s, d } from './_helpers';
+import { tuple } from '../src/tuple';
 
 type WebEvent =
   | { __kind: 'PageLoad' } // Empty variant.
@@ -10,7 +11,7 @@ type WebEvent =
   | { __kind: 'PageUnload' }; // Empty variant (using empty struct).
 
 const getWebEvent = (): DataEnumToSerializerTuple<WebEvent, WebEvent> => {
-  const { unit, struct, tuple, string, u8 } = createBeetSerializer();
+  const { unit, struct, string, u8 } = createBeetSerializer();
   return [
     ['PageLoad', unit()],
     [

@@ -1,9 +1,10 @@
 import test from 'ava';
 import { createDataViewSerializer } from '../src';
 import { s, d } from './_helpers';
+import { tuple } from '../src/tuple';
 
 test('serialization', (t) => {
-  const { tuple, string, u8, i16 } = createDataViewSerializer();
+  const { string, u8, i16 } = createDataViewSerializer();
   s(t, tuple([]), [], '');
   s(t, tuple([u8()]), [42], '2a');
   s(t, tuple([u8(), i16()]), [0, -42], '00d6ff');
@@ -11,7 +12,7 @@ test('serialization', (t) => {
 });
 
 test('deserialization', (t) => {
-  const { tuple, string, u8, i16 } = createDataViewSerializer();
+  const { string, u8, i16 } = createDataViewSerializer();
   d(t, tuple([]), '', [], 0);
   d(t, tuple([u8()]), '2a', [42], 1);
   d(t, tuple([u8(), i16()]), '00d6ff', [0, -42], 3);
@@ -19,7 +20,7 @@ test('deserialization', (t) => {
 });
 
 test('(de)serialization with different From and To types', (t) => {
-  const { tuple, u8, u64 } = createDataViewSerializer();
+  const { u8, u64 } = createDataViewSerializer();
   const x = tuple<[number, number | bigint], [number, bigint]>([u8(), u64()]);
   s(t, x, [1, 2], '010200000000000000');
   s(t, x, [1, 2n], '010200000000000000');
@@ -29,7 +30,7 @@ test('(de)serialization with different From and To types', (t) => {
 });
 
 test('description', (t) => {
-  const { tuple, u8, i16, string } = createDataViewSerializer();
+  const { u8, i16, string } = createDataViewSerializer();
   t.is(tuple([u8()]).description, 'tuple(u8)');
   t.is(
     tuple([u8(), string(), i16()]).description,
@@ -39,7 +40,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { tuple, u8, i16, string } = createDataViewSerializer();
+  const { u8, i16, string } = createDataViewSerializer();
   t.is(tuple([]).fixedSize, 0);
   t.is(tuple([]).maxSize, 0);
   t.is(tuple([u8()]).fixedSize, 1);
