@@ -34,6 +34,7 @@ import {
 } from './errors';
 import { getSizeDescription } from './getSizeDescription';
 import { getSizeFromChildren } from './getSizeFromChildren';
+import { getSizePrefix } from './getSizePrefix';
 import {
   f32,
   f64,
@@ -654,13 +655,6 @@ function maxSerializerSizes(sizes: (number | null)[]): number | null {
     (all, size) => (all === null || size === null ? null : Math.max(all, size)),
     0 as number | null
   );
-}
-
-function getSizePrefix(
-  size: ArrayLikeSerializerSize,
-  realSize: number
-): Uint8Array {
-  return typeof size === 'object' ? size.serialize(realSize) : new Uint8Array();
 }
 
 function getResolvedSize(
