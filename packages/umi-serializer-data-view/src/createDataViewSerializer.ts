@@ -50,6 +50,7 @@ import {
   u8,
 } from './numbers';
 import { publicKey } from './pubkey';
+import { sumSerializerSizes } from './sumSerializerSizes';
 
 export type DataViewSerializerOptions = {
   /** @defaultValue `true` */
@@ -623,13 +624,6 @@ export function createDataViewSerializer(
     bytes,
     publicKey,
   };
-}
-
-function sumSerializerSizes(sizes: (number | null)[]): number | null {
-  return sizes.reduce(
-    (all, size) => (all === null || size === null ? null : all + size),
-    0 as number | null
-  );
 }
 
 function maxSerializerSizes(sizes: (number | null)[]): number | null {
