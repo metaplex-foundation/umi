@@ -33,6 +33,7 @@ import {
   NotEnoughBytesError,
 } from './errors';
 import { getSizeDescription } from './getSizeDescription';
+import { getSizeFromChildren } from './getSizeFromChildren';
 import {
   f32,
   f64,
@@ -653,16 +654,6 @@ function maxSerializerSizes(sizes: (number | null)[]): number | null {
     (all, size) => (all === null || size === null ? null : Math.max(all, size)),
     0 as number | null
   );
-}
-
-function getSizeFromChildren(
-  size: ArrayLikeSerializerSize,
-  childrenSizes: (number | null)[]
-): number | null {
-  if (typeof size !== 'number') return null;
-  if (size === 0) return 0;
-  const childrenSize = sumSerializerSizes(childrenSizes);
-  return childrenSize === null ? null : childrenSize * size;
 }
 
 function getSizePrefix(
