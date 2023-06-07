@@ -1,5 +1,4 @@
 import {
-  ArrayLikeSerializerSize,
   ArraySerializerOptions,
   BoolSerializerOptions,
   DataEnum,
@@ -32,6 +31,7 @@ import {
   DeserializingEmptyBufferError,
   NotEnoughBytesError,
 } from './errors';
+import { getResolvedSize } from './getResolvedSize';
 import { getSizeDescription } from './getSizeDescription';
 import { getSizeFromChildren } from './getSizeFromChildren';
 import { getSizePrefix } from './getSizePrefix';
@@ -654,41 +654,5 @@ function maxSerializerSizes(sizes: (number | null)[]): number | null {
   return sizes.reduce(
     (all, size) => (all === null || size === null ? null : Math.max(all, size)),
     0 as number | null
-  );
-}
-
-function getResolvedSize(
-  size: ArrayLikeSerializerSize,
-  childrenSizes: (number | null)[],
-  bytes: Uint8Array,
-  offset: number
-): [number | bigint, number] {
-  if (typeof size === 'number') {
-    return [size, offset];
-  }
-
-  if (typeof size === 'object') {
-    return size.deserialize(bytes, offset);
-  }
-
-  if (size === 'remainder') {
-    const childrenSize = sumSerializerSizes(childrenSizes);
-    if (childrenSize === null) {
-      throw new DataViewSerializerError(
-        'Serializers of "remainder" size must have fixed-size items.'
-      );
-    }
-    const remainder = bytes.slice(offset).length;
-    if (remainder % childrenSize !== 0) {
-      throw new DataViewSerializerError(
-        `Serializers of "remainder" size must have a remainder that is a multiple of its item size. ` +
-          `Got ${remainder} bytes remaining and ${childrenSize} bytes per item.`
-      );
-    }
-    return [remainder / childrenSize, offset];
-  }
-
-  throw new DataViewSerializerError(
-    `Unknown size type: ${JSON.stringify(size)}.`
   );
 }
