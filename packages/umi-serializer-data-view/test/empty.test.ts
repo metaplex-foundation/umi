@@ -3,6 +3,7 @@ import { none, Serializer } from '@metaplex-foundation/umi';
 import {
   createDataViewSerializer,
   DeserializingEmptyBufferError,
+  NotEnoughBytesError,
 } from '../src';
 
 test('it can handle empty buffers', (t) => {
@@ -29,8 +30,12 @@ test('it can handle empty buffers', (t) => {
   t.throws(() => empty(intolerant.array(u8())), e);
   t.deepEqual(empty(tolerant.array(u8(), remainder)), []);
   t.deepEqual(empty(intolerant.array(u8(), remainder)), []);
-  t.throws(() => empty(tolerant.array(u8(), { size: 5 })), e);
-  t.throws(() => empty(intolerant.array(u8(), { size: 5 })), e);
+  t.throws(() => empty(tolerant.array(u8(), { size: 5 })), {
+    instanceOf: NotEnoughBytesError,
+  });
+  t.throws(() => empty(intolerant.array(u8(), { size: 5 })), {
+    instanceOf: NotEnoughBytesError,
+  });
   t.deepEqual(empty(tolerant.array(u8(), { size: 0 })), []);
   t.deepEqual(empty(intolerant.array(u8(), { size: 0 })), []);
 
@@ -39,8 +44,12 @@ test('it can handle empty buffers', (t) => {
   t.throws(() => empty(intolerant.map(u8(), u8())), e);
   t.deepEqual(empty(tolerant.map(u8(), u8(), remainder)), new Map());
   t.deepEqual(empty(intolerant.map(u8(), u8(), remainder)), new Map());
-  t.throws(() => empty(tolerant.map(u8(), u8(), { size: 5 })), e);
-  t.throws(() => empty(intolerant.map(u8(), u8(), { size: 5 })), e);
+  t.throws(() => empty(tolerant.map(u8(), u8(), { size: 5 })), {
+    instanceOf: NotEnoughBytesError,
+  });
+  t.throws(() => empty(intolerant.map(u8(), u8(), { size: 5 })), {
+    instanceOf: NotEnoughBytesError,
+  });
   t.deepEqual(empty(tolerant.map(u8(), u8(), { size: 0 })), new Map());
   t.deepEqual(empty(intolerant.map(u8(), u8(), { size: 0 })), new Map());
 
@@ -49,8 +58,12 @@ test('it can handle empty buffers', (t) => {
   t.throws(() => empty(intolerant.set(u8())), e);
   t.deepEqual(empty(tolerant.set(u8(), remainder)), new Set());
   t.deepEqual(empty(intolerant.set(u8(), remainder)), new Set());
-  t.throws(() => empty(tolerant.set(u8(), { size: 5 })), e);
-  t.throws(() => empty(intolerant.set(u8(), { size: 5 })), e);
+  t.throws(() => empty(tolerant.set(u8(), { size: 5 })), {
+    instanceOf: NotEnoughBytesError,
+  });
+  t.throws(() => empty(intolerant.set(u8(), { size: 5 })), {
+    instanceOf: NotEnoughBytesError,
+  });
   t.deepEqual(empty(tolerant.set(u8(), { size: 0 })), new Set());
   t.deepEqual(empty(intolerant.set(u8(), { size: 0 })), new Set());
 

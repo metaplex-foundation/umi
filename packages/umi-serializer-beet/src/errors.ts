@@ -31,7 +31,7 @@ export class DeserializingEmptyBufferError extends BeetSerializerError {
 export class NotEnoughBytesError extends BeetSerializerError {
   readonly name: string = 'NotEnoughBytesError';
 
-  constructor(serializer: string, expected: number, actual: number) {
+  constructor(serializer: string, expected: bigint | number, actual: number) {
     super(
       `Serializer [${serializer}] expected ${expected} bytes, got ${actual}.`
     );

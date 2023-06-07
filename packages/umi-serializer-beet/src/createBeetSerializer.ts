@@ -56,6 +56,30 @@ export type BeetSerializerOptions = {
   tolerateEmptyBuffers?: boolean;
 };
 
+function getTolerantSerializerFactory<
+  TSerializerFactory extends (...args: never[]) => Serializer<any, any>
+>(
+  serializerFactory: TSerializerFactory,
+  defaultValueFactory: () => unknown
+): TSerializerFactory {
+  return ((...args) => {
+    const originalSerializer = serializerFactory(...args);
+    return {
+      ...originalSerializer,
+      deserialize(bytes: Uint8Array, offset = 0) {
+        try {
+          return originalSerializer.deserialize(bytes, offset);
+        } catch (e) {
+          if (e instanceof DeserializingEmptyBufferError) {
+            return [defaultValueFactory(), offset];
+          }
+          throw e;
+        }
+      },
+    };
+  }) as TSerializerFactory;
+}
+
 export function createBeetSerializer(
   options: BeetSerializerOptions = {}
 ): SerializerInterface {
@@ -88,7 +112,7 @@ export function createBeetSerializer(
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
         if (typeof size === 'object' && bytes.slice(offset).length === 0) {
-          return handleEmptyBuffer<U[]>('array', [], offset);
+          throw new DeserializingEmptyBufferError('array');
         }
         const [resolvedSize, newOffset] = getResolvedSize(
           size,
@@ -96,6 +120,16 @@ export function createBeetSerializer(
           bytes,
           offset
         );
+        if (
+          typeof size === 'number' &&
+          bytes.slice(offset).length < resolvedSize
+        ) {
+          throw new NotEnoughBytesError(
+            'array',
+            resolvedSize,
+            bytes.slice(offset).length
+          );
+        }
         offset = newOffset;
         const values: U[] = [];
         for (let i = 0; i < resolvedSize; i += 1) {
@@ -144,7 +178,7 @@ export function createBeetSerializer(
       deserialize: (bytes: Uint8Array, offset = 0) => {
         const map: Map<UK, UV> = new Map();
         if (typeof size === 'object' && bytes.slice(offset).length === 0) {
-          return handleEmptyBuffer('map', map, offset);
+          throw new DeserializingEmptyBufferError('map');
         }
         const [resolvedSize, newOffset] = getResolvedSize(
           size,
@@ -152,6 +186,16 @@ export function createBeetSerializer(
           bytes,
           offset
         );
+        if (
+          typeof size === 'number' &&
+          bytes.slice(offset).length < resolvedSize
+        ) {
+          throw new NotEnoughBytesError(
+            'map',
+            resolvedSize,
+            bytes.slice(offset).length
+          );
+        }
         offset = newOffset;
         for (let i = 0; i < resolvedSize; i += 1) {
           const [deserializedKey, kOffset] = key.deserialize(bytes, offset);
@@ -193,7 +237,7 @@ export function createBeetSerializer(
       deserialize: (bytes: Uint8Array, offset = 0) => {
         const set: Set<U> = new Set();
         if (typeof size === 'object' && bytes.slice(offset).length === 0) {
-          return handleEmptyBuffer('set', set, offset);
+          throw new DeserializingEmptyBufferError('set');
         }
         const [resolvedSize, newOffset] = getResolvedSize(
           size,
@@ -201,6 +245,16 @@ export function createBeetSerializer(
           bytes,
           offset
         );
+        if (
+          typeof size === 'number' &&
+          bytes.slice(offset).length < resolvedSize
+        ) {
+          throw new NotEnoughBytesError(
+            'set',
+            resolvedSize,
+            bytes.slice(offset).length
+          );
+        }
         offset = newOffset;
         for (let i = 0; i < resolvedSize; i += 1) {
           const [value, newOffset] = item.deserialize(bytes, offset);
@@ -251,7 +305,7 @@ export function createBeetSerializer(
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
         if (bytes.slice(offset).length === 0) {
-          return handleEmptyBuffer<Option<U>>('option', none(), offset);
+          throw new DeserializingEmptyBufferError('option');
         }
         const fixedOffset =
           offset + (prefix.fixedSize ?? 0) + (item.fixedSize ?? 0);
@@ -306,7 +360,7 @@ export function createBeetSerializer(
       },
       deserialize: (bytes: Uint8Array, offset = 0) => {
         if (bytes.slice(offset).length === 0) {
-          return handleEmptyBuffer('nullable', null, offset);
+          throw new DeserializingEmptyBufferError('nullable');
         }
         const fixedOffset =
           offset + (prefix.fixedSize ?? 0) + (item.fixedSize ?? 0);
@@ -551,24 +605,24 @@ export function createBeetSerializer(
     deserialize: (_bytes: Uint8Array, offset = 0) => [undefined, offset],
   });
 
-  const handleEmptyBuffer = <T>(
-    serializer: string,
-    defaultValue: T,
-    offset: number
-  ): [T, number] => {
-    if (!(options.tolerateEmptyBuffers ?? true)) {
-      throw new DeserializingEmptyBufferError(serializer);
-    }
-    return [defaultValue, offset];
-  };
-
+  const shouldTolerateEmptyBuffers = options.tolerateEmptyBuffers !== false;
   return {
     tuple,
-    array,
-    map,
-    set,
-    option,
-    nullable,
+    array: shouldTolerateEmptyBuffers
+      ? getTolerantSerializerFactory(array, () => [])
+      : array,
+    map: shouldTolerateEmptyBuffers
+      ? getTolerantSerializerFactory(map, () => new Map())
+      : map,
+    set: shouldTolerateEmptyBuffers
+      ? getTolerantSerializerFactory(set, () => new Set())
+      : set,
+    option: shouldTolerateEmptyBuffers
+      ? getTolerantSerializerFactory(option, () => none())
+      : option,
+    nullable: shouldTolerateEmptyBuffers
+      ? getTolerantSerializerFactory(nullable, () => null)
+      : nullable,
     struct,
     enum: enumFn,
     dataEnum,
