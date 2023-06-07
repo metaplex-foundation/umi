@@ -16,10 +16,6 @@ import {
   NullableSerializerOptions,
   Option,
   OptionSerializerOptions,
-  publicKey,
-  PublicKey,
-  PublicKeyInput,
-  PublicKeySerializerOptions,
   ScalarEnum,
   Serializer,
   SerializerInterface,
@@ -52,6 +48,7 @@ import {
   u64,
   u8,
 } from './numbers';
+import { publicKey } from './pubkey';
 
 export type DataViewSerializerOptions = {
   /** @defaultValue `true` */
@@ -640,27 +637,6 @@ export function createDataViewSerializer(
     };
   };
 
-  const publicKeyFn = (
-    options: PublicKeySerializerOptions = {}
-  ): Serializer<PublicKeyInput, PublicKey> => ({
-    description: options.description ?? 'publicKey',
-    fixedSize: 32,
-    maxSize: 32,
-    serialize: (value: PublicKeyInput) => publicKey(value).bytes,
-    deserialize: (bytes: Uint8Array, offset = 0) => {
-      if (bytes.slice(offset).length === 0) {
-        throw new DeserializingEmptyBufferError('publicKey');
-      }
-      const pubkeyBytes = bytes.slice(offset, offset + 32);
-      if (pubkeyBytes.length < 32) {
-        throw new DataViewSerializerError(
-          `Serializer [publicKey] expected 32 bytes, got ${pubkeyBytes.length}.`
-        );
-      }
-      return [publicKey(pubkeyBytes), offset + 32];
-    },
-  });
-
   const handleEmptyBuffer = <T>(
     serializer: string,
     defaultValue: T,
@@ -698,7 +674,7 @@ export function createDataViewSerializer(
     f32,
     f64,
     bytes,
-    publicKey: publicKeyFn,
+    publicKey,
   };
 }
 
