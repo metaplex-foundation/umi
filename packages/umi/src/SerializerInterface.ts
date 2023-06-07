@@ -152,6 +152,16 @@ export interface SerializerInterface {
   u16: (options?: NumberSerializerOptions) => Serializer<number>;
 
   /**
+   * Creates a serializer that packs 2-byte unsigned integers into 1 byte for values up to 127, 2
+   * bytes for values between 128-16383, and 3 bytes for values between 16384-65535.
+   *
+   * @param options - A set of options for the serializer.
+   */
+  compactU16: (
+    options?: SingleByteNumberSerializerOptions
+  ) => Serializer<number>;
+
+  /**
    * Creates a serializer for 4-bytes unsigned integers.
    *
    * @param options - A set of options for the serializer.
@@ -521,6 +531,7 @@ export function createNullSerializer(): SerializerInterface {
     unit: errorHandler,
     u8: errorHandler,
     u16: errorHandler,
+    compactU16: errorHandler,
     u32: errorHandler,
     u64: errorHandler,
     u128: errorHandler,

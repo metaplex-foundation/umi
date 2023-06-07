@@ -39,6 +39,7 @@ import {
   NotEnoughBytesError,
 } from './errors';
 import {
+  compactU16,
   i128,
   i16,
   i32,
@@ -685,6 +686,7 @@ export function createBeetSerializer(
     unit,
     u8,
     u16,
+    compactU16,
     u32,
     u64,
     u128,

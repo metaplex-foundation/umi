@@ -39,6 +39,7 @@ import {
   NotEnoughBytesError,
 } from './errors';
 import {
+  compactU16,
   f32,
   f64,
   i128,
@@ -687,6 +688,7 @@ export function createDataViewSerializer(
     unit,
     u8,
     u16,
+    compactU16,
     u32,
     u64,
     u128,

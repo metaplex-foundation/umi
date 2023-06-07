@@ -5,6 +5,7 @@ import {
   NumberSerializerOptions,
   reverseSerializer,
   Serializer,
+  SingleByteNumberSerializerOptions,
 } from '@metaplex-foundation/umi';
 import { Buffer } from 'buffer';
 import {
@@ -157,5 +158,56 @@ export const f64 = (): Serializer<number> => ({
   },
   deserialize: () => {
     throw new OperationNotSupportedError('f64');
+  },
+});
+
+export const compactU16 = (
+  options: SingleByteNumberSerializerOptions = {}
+): Serializer<number> => ({
+  description: options.description ?? 'compact-u16',
+  fixedSize: null,
+  maxSize: 3,
+  serialize(value: number): Uint8Array {
+    if (value < 0 || value > 65535) {
+      throw new RangeError(
+        `Only values in the range [0, 65535] can be serialized to compact-u16. \`${value}\` given.`
+      );
+    }
+    const bytes = [0];
+    for (let ii = 0; ; ii += 1) {
+      // Shift the bits of the value over such that the next 7 bits are at the right edge.
+      const alignedValue = value >> (ii * 7); // eslint-disable-line no-bitwise
+      if (alignedValue === 0) {
+        // No more bits to consume.
+        break;
+      }
+      // Extract those 7 bits using a mask.
+      const nextSevenBits = 0b1111111 & alignedValue; // eslint-disable-line no-bitwise
+      bytes[ii] = nextSevenBits;
+      if (ii > 0) {
+        // Set the continuation bit of the previous slice.
+        bytes[ii - 1] |= 0b10000000; // eslint-disable-line no-bitwise
+      }
+    }
+    return new Uint8Array(bytes);
+  },
+  deserialize(bytes, offset = 0): [number, number] {
+    let value = 0;
+    let byteCount = 0;
+    while (
+      ++byteCount // eslint-disable-line no-plusplus
+    ) {
+      const byteIndex = byteCount - 1;
+      const currentByte = bytes[offset + byteIndex];
+      const nextSevenBits = 0b1111111 & currentByte; // eslint-disable-line no-bitwise
+      // Insert the next group of seven bits into the correct slot of the output value.
+      value |= nextSevenBits << (byteIndex * 7); // eslint-disable-line no-bitwise
+      // eslint-disable-next-line no-bitwise
+      if ((currentByte & 0b10000000) === 0) {
+        // This byte does not have its continuation bit set. We're done.
+        break;
+      }
+    }
+    return [value, byteCount];
   },
 });

@@ -154,12 +154,36 @@ function testIntegerDeserialization(
   }
 }
 
+test('compact-u16 serialization', (t) => {
+  const serializer = createBeetSerializer();
+
+  s(t, serializer.compactU16(), 0n, '00');
+  s(t, serializer.compactU16(), 127n, '7f');
+  s(t, serializer.compactU16(), 128n, '8001');
+  s(t, serializer.compactU16(), 16383n, 'ff7f');
+  s(t, serializer.compactU16(), 16384n, '808001');
+  s(t, serializer.compactU16(), 65535n, 'ffff03');
+
+  t.throws(() => {
+    serializer.compactU16().serialize(-1);
+  });
+  t.throws(() => {
+    serializer.compactU16().serialize(65536);
+  });
+
+  for (let ii = 0; ii <= 0b1111111111111111; ii += 1) {
+    const buffer = serializer.compactU16().serialize(ii);
+    t.is(serializer.compactU16().deserialize(buffer)[0], ii);
+  }
+});
+
 test('description', (t) => {
   const serializer = createBeetSerializer();
 
   // Little endian.
   t.is(serializer.u8().description, 'u8');
   t.is(serializer.u16().description, 'u16(le)');
+  t.is(serializer.compactU16().description, 'compact-u16');
   t.is(serializer.u32().description, 'u32(le)');
   t.is(serializer.u64().description, 'u64(le)');
   t.is(serializer.u128().description, 'u128(le)');
@@ -195,6 +219,8 @@ test('sizes', (t) => {
   t.is(serializer.u8().maxSize, 1);
   t.is(serializer.u16().fixedSize, 2);
   t.is(serializer.u16().maxSize, 2);
+  t.is(serializer.compactU16().fixedSize, null);
+  t.is(serializer.compactU16().maxSize, 3);
   t.is(serializer.u32().fixedSize, 4);
   t.is(serializer.u32().maxSize, 4);
   t.is(serializer.u64().fixedSize, 8);
