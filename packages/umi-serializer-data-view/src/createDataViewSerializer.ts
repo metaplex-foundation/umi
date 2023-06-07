@@ -34,6 +34,7 @@ import {
   DeserializingEmptyBufferError,
   NotEnoughBytesError,
 } from './errors';
+import { getSizeDescription } from './getSizeDescription';
 import {
   f32,
   f64,
@@ -690,10 +691,6 @@ function maxSerializerSizes(sizes: (number | null)[]): number | null {
     (all, size) => (all === null || size === null ? null : Math.max(all, size)),
     0 as number | null
   );
-}
-
-function getSizeDescription(size: ArrayLikeSerializerSize | string): string {
-  return typeof size === 'object' ? size.description : `${size}`;
 }
 
 function getSizeFromChildren(
