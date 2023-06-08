@@ -1,9 +1,10 @@
 import test from 'ava';
+import { nullable } from '../src/nullable';
 import { createDataViewSerializer } from '../src';
 import { d, s } from './_helpers';
 
 test('regular (de)serialization', (t) => {
-  const { nullable, u8, u16, u64, string } = createDataViewSerializer();
+  const { u8, u16, u64, string } = createDataViewSerializer();
 
   // Null.
   s(t, nullable(u8()), null, '00');
@@ -34,7 +35,7 @@ test('regular (de)serialization', (t) => {
 });
 
 test('fixed (de)serialization', (t) => {
-  const { nullable, u8, u16, u64, string } = createDataViewSerializer();
+  const { u8, u16, u64, string } = createDataViewSerializer();
   const fixedU8 = nullable(u8(), { fixed: true });
   const fixedU8WithU16Prefix = nullable(u8(), { fixed: true, prefix: u16() });
   const fixedString = nullable(string({ size: 5 }), { fixed: true });
@@ -76,7 +77,7 @@ test('fixed (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { nullable, u8, u16, string } = createDataViewSerializer();
+  const { u8, u16, string } = createDataViewSerializer();
   t.is(nullable(u8()).description, 'nullable(u8; u8)');
   t.is(nullable(string()).description, 'nullable(string(utf8; u32(le)); u8)');
   t.is(nullable(u8(), { prefix: u16() }).description, 'nullable(u8; u16(le))');
@@ -100,7 +101,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { nullable, u8, u16, string } = createDataViewSerializer();
+  const { u8, u16, string } = createDataViewSerializer();
   t.is(nullable(u8()).fixedSize, null);
   t.is(nullable(u8()).maxSize, 2);
   t.is(nullable(string()).fixedSize, null);

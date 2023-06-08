@@ -3,6 +3,7 @@ export * from './createDataViewSerializer';
 export * from './bytes';
 export * from './errors';
 export * from './map';
+export * from './nullable';
 export * from './option';
 export * from './set';
 export * from './tuple';
