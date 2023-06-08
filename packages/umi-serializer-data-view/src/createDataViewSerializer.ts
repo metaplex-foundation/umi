@@ -15,7 +15,6 @@ import {
   ScalarEnum,
   Serializer,
   SerializerInterface,
-  SetSerializerOptions,
   some,
   StringSerializerOptions,
   StructSerializerOptions,
@@ -30,10 +29,7 @@ import {
   DeserializingEmptyBufferError,
   NotEnoughBytesError,
 } from './errors';
-import { getResolvedSize } from './getResolvedSize';
 import { getSizeDescription } from './getSizeDescription';
-import { getSizeFromChildren } from './getSizeFromChildren';
-import { getSizePrefix } from './getSizePrefix';
 import { map } from './map';
 import {
   f32,
@@ -50,6 +46,7 @@ import {
   u8,
 } from './numbers';
 import { publicKey } from './pubkey';
+import { set } from './set';
 import { sumSerializerSizes } from './sumSerializerSizes';
 import { tuple } from './tuple';
 
@@ -85,63 +82,6 @@ function getTolerantSerializerFactory<
 export function createDataViewSerializer(
   options: DataViewSerializerOptions = {}
 ): SerializerInterface {
-  const set = <T, U extends T = T>(
-    item: Serializer<T, U>,
-    options: SetSerializerOptions = {}
-  ): Serializer<Set<T>, Set<U>> => {
-    const size = options.size ?? u32();
-    if (size === 'remainder' && item.fixedSize === null) {
-      throw new DataViewSerializerError(
-        'Serializers of "remainder" size must have fixed-size items.'
-      );
-    }
-    return {
-      description:
-        options.description ??
-        `set(${item.description}; ${getSizeDescription(size)})`,
-      fixedSize: getSizeFromChildren(size, [item.fixedSize]),
-      maxSize: getSizeFromChildren(size, [item.maxSize]),
-      serialize: (set: Set<T>) => {
-        if (typeof size === 'number' && set.size !== size) {
-          throw new DataViewSerializerError(
-            `Expected set to have ${size} items but got ${set.size}.`
-          );
-        }
-        const itemBytes = Array.from(set, (value) => item.serialize(value));
-        return mergeBytes([getSizePrefix(size, set.size), ...itemBytes]);
-      },
-      deserialize: (bytes: Uint8Array, offset = 0) => {
-        const set: Set<U> = new Set();
-        if (typeof size === 'object' && bytes.slice(offset).length === 0) {
-          throw new DeserializingEmptyBufferError('set');
-        }
-        const [resolvedSize, newOffset] = getResolvedSize(
-          size,
-          [item.fixedSize],
-          bytes,
-          offset
-        );
-        if (
-          typeof size === 'number' &&
-          bytes.slice(offset).length < resolvedSize
-        ) {
-          throw new NotEnoughBytesError(
-            'set',
-            resolvedSize,
-            bytes.slice(offset).length
-          );
-        }
-        offset = newOffset;
-        for (let i = 0; i < resolvedSize; i += 1) {
-          const [value, newOffset] = item.deserialize(bytes, offset);
-          offset = newOffset;
-          set.add(value);
-        }
-        return [set, offset];
-      },
-    };
-  };
-
   const option = <T, U extends T = T>(
     item: Serializer<T, U>,
     options: OptionSerializerOptions = {}
