@@ -2,7 +2,6 @@ import {
   none,
   Serializer,
   SerializerInterface,
-  UnitSerializerOptions,
 } from '@metaplex-foundation/umi';
 import { array } from './array';
 import { bool } from './bool';
@@ -32,6 +31,7 @@ import { set } from './set';
 import { string } from './string';
 import { struct } from './struct';
 import { tuple } from './tuple';
+import { unit } from './unit';
 
 export type DataViewSerializerOptions = {
   /** @defaultValue `true` */
@@ -65,14 +65,6 @@ function getTolerantSerializerFactory<
 export function createDataViewSerializer(
   options: DataViewSerializerOptions = {}
 ): SerializerInterface {
-  const unit = (options: UnitSerializerOptions = {}): Serializer<void> => ({
-    description: options.description ?? 'unit',
-    fixedSize: 0,
-    maxSize: 0,
-    serialize: () => new Uint8Array(),
-    deserialize: (_bytes: Uint8Array, offset = 0) => [undefined, offset],
-  });
-
   const shouldTolerateEmptyBuffers = options.tolerateEmptyBuffers !== false;
   return {
     tuple,

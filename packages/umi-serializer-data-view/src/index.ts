@@ -14,3 +14,4 @@ export * from './struct';
 export * from './tuple';
 export * from './plugin';
 export * from './pubkey';
+export * from './unit';

@@ -8,6 +8,7 @@ import { s, d } from './_helpers';
 import { string } from '../src/string';
 import { struct } from '../src/struct';
 import { tuple } from '../src/tuple';
+import { unit } from '../src/unit';
 
 type WebEvent =
   | { __kind: 'PageLoad' } // Empty variant.
@@ -16,7 +17,7 @@ type WebEvent =
   | { __kind: 'PageUnload' }; // Empty variant (using empty struct).
 
 const getWebEvent = (): DataEnumToSerializerTuple<WebEvent, WebEvent> => {
-  const { unit, u8 } = createBeetSerializer();
+  const { u8 } = createBeetSerializer();
   return [
     ['PageLoad', unit()],
     [
@@ -57,7 +58,7 @@ const getSameSizeVariants = (): DataEnumToSerializerTuple<
 type U64EnumFrom = { __kind: 'A' } | { __kind: 'B'; value: number | bigint };
 type U64EnumTo = { __kind: 'A' } | { __kind: 'B'; value: bigint };
 const getU64Enum = (): DataEnumToSerializerTuple<U64EnumFrom, U64EnumTo> => {
-  const { unit, u64 } = createBeetSerializer();
+  const { u64 } = createBeetSerializer();
   return [
     ['A', unit()],
     [
