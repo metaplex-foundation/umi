@@ -2,9 +2,10 @@ import test from 'ava';
 import { base16, base58, Endian } from '@metaplex-foundation/umi';
 import { createBeetSerializer } from '../src';
 import { s, d } from './_helpers';
+import { string } from '../src/string';
 
 test('prefixed (de)serialization', (t) => {
-  const { string, u8 } = createBeetSerializer();
+  const { u8 } = createBeetSerializer();
 
   // Empty string.
   s(t, string(), '', '00000000'); // 4-bytes prefix.
@@ -30,7 +31,6 @@ test('prefixed (de)serialization', (t) => {
 });
 
 test('fixed (de)serialization', (t) => {
-  const { string } = createBeetSerializer();
   const string5 = string({ size: 5 });
   const string12 = string({ size: 12 });
 
@@ -52,7 +52,6 @@ test('fixed (de)serialization', (t) => {
 });
 
 test('variable (de)serialization', (t) => {
-  const { string } = createBeetSerializer();
   const variableString = string({ size: 'variable' });
 
   // Empty string.
@@ -69,7 +68,7 @@ test('variable (de)serialization', (t) => {
 });
 
 test('base58 (de)serialization', (t) => {
-  const { string, u8 } = createBeetSerializer();
+  const { u8 } = createBeetSerializer();
 
   // Prefixed.
   const prefixedString = string({ size: u8(), encoding: base58 });
@@ -89,7 +88,7 @@ test('base58 (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { string, u16 } = createBeetSerializer();
+  const { u16 } = createBeetSerializer();
 
   // Encoding.
   t.is(string().description, 'string(utf8; u32(le))');
@@ -112,7 +111,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { string, u8 } = createBeetSerializer();
+  const { u8 } = createBeetSerializer();
   t.is(string().fixedSize, null);
   t.is(string().maxSize, null);
   t.is(string({ size: u8() }).fixedSize, null);

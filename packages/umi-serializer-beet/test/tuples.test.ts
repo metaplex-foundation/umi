@@ -1,10 +1,11 @@
 import test from 'ava';
 import { createBeetSerializer } from '../src';
 import { s, d } from './_helpers';
+import { string } from '../src/string';
 import { tuple } from '../src/tuple';
 
 test('serialization', (t) => {
-  const { string, u8, i16 } = createBeetSerializer();
+  const { u8, i16 } = createBeetSerializer();
   s(t, tuple([]), [], '');
   s(t, tuple([u8()]), [42], '2a');
   s(t, tuple([u8(), i16()]), [0, -42], '00d6ff');
@@ -12,7 +13,7 @@ test('serialization', (t) => {
 });
 
 test('deserialization', (t) => {
-  const { string, u8, i16 } = createBeetSerializer();
+  const { u8, i16 } = createBeetSerializer();
   d(t, tuple([]), '', [], 0);
   d(t, tuple([u8()]), '2a', [42], 1);
   d(t, tuple([u8(), i16()]), '00d6ff', [0, -42], 3);
@@ -30,7 +31,7 @@ test('(de)serialization with different From and To types', (t) => {
 });
 
 test('description', (t) => {
-  const { u8, i16, string } = createBeetSerializer();
+  const { u8, i16 } = createBeetSerializer();
   t.is(tuple([u8()]).description, 'tuple(u8)');
   t.is(
     tuple([u8(), string(), i16()]).description,
@@ -40,7 +41,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { u8, i16, string } = createBeetSerializer();
+  const { u8, i16 } = createBeetSerializer();
   t.is(tuple([]).fixedSize, 0);
   t.is(tuple([]).maxSize, 0);
   t.is(tuple([u8()]).fixedSize, 1);

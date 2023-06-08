@@ -4,6 +4,7 @@ import { array } from '../src/array';
 import { dataEnum } from '../src/dataEnum';
 import { createDataViewSerializer } from '../src';
 import { s, d } from './_helpers';
+import { string } from '../src/string';
 import { struct } from '../src/struct';
 import { tuple } from '../src/tuple';
 
@@ -14,7 +15,7 @@ type WebEvent =
   | { __kind: 'PageUnload' }; // Empty variant (using empty struct).
 
 const getWebEvent = (): DataEnumToSerializerTuple<WebEvent, WebEvent> => {
-  const { unit, string, u8 } = createDataViewSerializer();
+  const { unit, u8 } = createDataViewSerializer();
   return [
     ['PageLoad', unit()],
     [

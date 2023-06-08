@@ -3,9 +3,10 @@ import { Endian } from '@metaplex-foundation/umi';
 import { map } from '../src/map';
 import { createDataViewSerializer } from '../src';
 import { s, d } from './_helpers';
+import { string } from '../src/string';
 
 test('prefixed (de)serialization', (t) => {
-  const { u8, string, u64 } = createDataViewSerializer();
+  const { u8, u64 } = createDataViewSerializer();
 
   // Empty.
   s(t, map(u8(), u8()), new Map(), '00000000'); // 4-bytes prefix.
@@ -35,7 +36,7 @@ test('prefixed (de)serialization', (t) => {
 });
 
 test('fixed (de)serialization', (t) => {
-  const { u8, string, u64 } = createDataViewSerializer();
+  const { u8, u64 } = createDataViewSerializer();
 
   // Empty.
   s(t, map(u8(), u8(), { size: 0 }), new Map(), '');
@@ -74,7 +75,7 @@ test('fixed (de)serialization', (t) => {
 });
 
 test('remainder (de)serialization', (t) => {
-  const { u8, string, u64 } = createDataViewSerializer();
+  const { u8, u64 } = createDataViewSerializer();
   const remainder = { size: 'remainder' } as const;
 
   // Empty.
@@ -112,7 +113,7 @@ test('remainder (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { u8, u16, string } = createDataViewSerializer();
+  const { u8, u16 } = createDataViewSerializer();
 
   // Size.
   t.is(map(u8(), u8(), { size: 42 }).description, 'map(u8, u8; 42)');
@@ -139,7 +140,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { u8, u32, string } = createDataViewSerializer();
+  const { u8, u32 } = createDataViewSerializer();
   t.is(map(u8(), u8()).fixedSize, null);
   t.is(map(u8(), u8()).maxSize, null);
   t.is(map(u8(), u8(), { size: u8() }).fixedSize, null);
