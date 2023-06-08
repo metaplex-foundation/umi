@@ -1,3 +1,4 @@
+export * from './array';
 export * from './createBeetSerializer';
 export * from './bytes';
 export * from './errors';

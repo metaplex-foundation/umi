@@ -1,5 +1,4 @@
 import {
-  ArraySerializerOptions,
   BoolSerializerOptions,
   DataEnum,
   DataEnumSerializerOptions,
@@ -25,6 +24,7 @@ import {
   UnitSerializerOptions,
   utf8,
 } from '@metaplex-foundation/umi';
+import { array } from './array';
 import { bytes } from './bytes';
 import {
   DataViewSerializerError,
@@ -85,65 +85,6 @@ function getTolerantSerializerFactory<
 export function createDataViewSerializer(
   options: DataViewSerializerOptions = {}
 ): SerializerInterface {
-  const array = <T, U extends T = T>(
-    item: Serializer<T, U>,
-    options: ArraySerializerOptions = {}
-  ): Serializer<T[], U[]> => {
-    const size = options.size ?? u32();
-    if (size === 'remainder' && item.fixedSize === null) {
-      throw new DataViewSerializerError(
-        'Serializers of "remainder" size must have fixed-size items.'
-      );
-    }
-    return {
-      description:
-        options.description ??
-        `array(${item.description}; ${getSizeDescription(size)})`,
-      fixedSize: getSizeFromChildren(size, [item.fixedSize]),
-      maxSize: getSizeFromChildren(size, [item.maxSize]),
-      serialize: (value: T[]) => {
-        if (typeof size === 'number' && value.length !== size) {
-          throw new DataViewSerializerError(
-            `Expected array to have ${size} items but got ${value.length}.`
-          );
-        }
-        return mergeBytes([
-          getSizePrefix(size, value.length),
-          ...value.map((v) => item.serialize(v)),
-        ]);
-      },
-      deserialize: (bytes: Uint8Array, offset = 0) => {
-        if (typeof size === 'object' && bytes.slice(offset).length === 0) {
-          throw new DeserializingEmptyBufferError('array');
-        }
-        const [resolvedSize, newOffset] = getResolvedSize(
-          size,
-          [item.fixedSize],
-          bytes,
-          offset
-        );
-        if (
-          typeof size === 'number' &&
-          bytes.slice(offset).length < resolvedSize
-        ) {
-          throw new NotEnoughBytesError(
-            'array',
-            resolvedSize,
-            bytes.slice(offset).length
-          );
-        }
-        offset = newOffset;
-        const values: U[] = [];
-        for (let i = 0; i < resolvedSize; i += 1) {
-          const [value, newOffset] = item.deserialize(bytes, offset);
-          values.push(value);
-          offset = newOffset;
-        }
-        return [values, offset];
-      },
-    };
-  };
-
   const map = <TK, TV, UK extends TK = TK, UV extends TV = TV>(
     key: Serializer<TK, UK>,
     value: Serializer<TV, UV>,

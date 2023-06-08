@@ -1,5 +1,6 @@
 import test from 'ava';
 import { DataEnumToSerializerTuple } from '@metaplex-foundation/umi';
+import { array } from '../src/array';
 import { createDataViewSerializer } from '../src';
 import { s, d } from './_helpers';
 import { tuple } from '../src/tuple';
@@ -35,7 +36,7 @@ const getSameSizeVariants = (): DataEnumToSerializerTuple<
   SameSizeVariants,
   SameSizeVariants
 > => {
-  const { struct, u8, u16, bool, array } = createDataViewSerializer();
+  const { struct, u8, u16, bool } = createDataViewSerializer();
   return [
     ['A', struct<any>([['value', u16()]])],
     [

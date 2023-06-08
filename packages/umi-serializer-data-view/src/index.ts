@@ -1,3 +1,4 @@
+export * from './array';
 export * from './createDataViewSerializer';
 export * from './bytes';
 export * from './errors';
