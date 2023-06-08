@@ -1,9 +1,10 @@
 import test, { ThrowsExpectation } from 'ava';
 import { none, Serializer } from '@metaplex-foundation/umi';
 import { createBeetSerializer, DeserializingEmptyBufferError } from '../src';
+import { u8 } from '../src/numbers';
+import { unit } from '../src/unit';
 
 test('it can handle empty buffers', (t) => {
-  const { u8, unit } = createBeetSerializer();
   const tolerant = createBeetSerializer();
   const intolerant = createBeetSerializer({ tolerateEmptyBuffers: false });
   const remainder = { size: 'remainder' } as const;

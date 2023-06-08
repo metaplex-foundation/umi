@@ -20,18 +20,23 @@ export class OperationNotSupportedError extends DataViewSerializerError {
   }
 }
 
-export class DeserializingEmptyBufferError extends DataViewSerializerError {
+export class DeserializingEmptyBufferError<
+  TDefaultValue = undefined
+> extends DataViewSerializerError {
   readonly name: string = 'DeserializingEmptyBufferError';
 
-  constructor(serializer: string) {
+  readonly toleratedDefaultValue: TDefaultValue;
+
+  constructor(serializer: string, toleratedDefaultValue?: TDefaultValue) {
     super(`Serializer [${serializer}] cannot deserialize empty buffers.`);
+    this.toleratedDefaultValue = toleratedDefaultValue as TDefaultValue;
   }
 }
 
 export class NotEnoughBytesError extends DataViewSerializerError {
   readonly name: string = 'NotEnoughBytesError';
 
-  constructor(serializer: string, expected: number, actual: number) {
+  constructor(serializer: string, expected: bigint | number, actual: number) {
     super(
       `Serializer [${serializer}] expected ${expected} bytes, got ${actual}.`
     );

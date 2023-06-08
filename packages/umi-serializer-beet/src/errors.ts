@@ -20,18 +20,23 @@ export class OperationNotSupportedError extends BeetSerializerError {
   }
 }
 
-export class DeserializingEmptyBufferError extends BeetSerializerError {
+export class DeserializingEmptyBufferError<
+  TDefaultValue = undefined
+> extends BeetSerializerError {
   readonly name: string = 'DeserializingEmptyBufferError';
 
-  constructor(serializer: string) {
+  readonly toleratedDefaultValue: TDefaultValue;
+
+  constructor(serializer: string, toleratedDefaultValue?: TDefaultValue) {
     super(`Serializer [${serializer}] cannot deserialize empty buffers.`);
+    this.toleratedDefaultValue = toleratedDefaultValue as TDefaultValue;
   }
 }
 
 export class NotEnoughBytesError extends BeetSerializerError {
   readonly name: string = 'NotEnoughBytesError';
 
-  constructor(serializer: string, expected: number, actual: number) {
+  constructor(serializer: string, expected: bigint | number, actual: number) {
     super(
       `Serializer [${serializer}] expected ${expected} bytes, got ${actual}.`
     );

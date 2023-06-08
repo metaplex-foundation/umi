@@ -1,11 +1,11 @@
 import test from 'ava';
 import { Endian } from '@metaplex-foundation/umi';
-import { createDataViewSerializer } from '../src';
+import { array } from '../src/array';
 import { s, d } from './_helpers';
+import { u16, u32, u64, u8 } from '../src/numbers';
+import { string } from '../src/string';
 
 test('prefixed (de)serialization', (t) => {
-  const { array, u8, string, u64 } = createDataViewSerializer();
-
   // Empty.
   s(t, array(u8()), [], '00000000'); // 4-bytes prefix.
   d(t, array(u8()), '00000000', [], 4);
@@ -30,8 +30,6 @@ test('prefixed (de)serialization', (t) => {
 });
 
 test('fixed (de)serialization', (t) => {
-  const { array, u8, string, u64 } = createDataViewSerializer();
-
   // Empty.
   s(t, array(u8(), { size: 0 }), [], '');
   d(t, array(u8(), { size: 0 }), '', [], 0);
@@ -62,7 +60,6 @@ test('fixed (de)serialization', (t) => {
 });
 
 test('remainder (de)serialization', (t) => {
-  const { array, u8, string, u64 } = createDataViewSerializer();
   const remainder = { size: 'remainder' } as const;
 
   // Empty.
@@ -91,8 +88,6 @@ test('remainder (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { array, u8, u16 } = createDataViewSerializer();
-
   // Size.
   t.is(array(u8(), { size: 42 }).description, 'array(u8; 42)');
   t.is(array(u8(), { size: 'remainder' }).description, 'array(u8; remainder)');
@@ -111,7 +106,6 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { array, u8, u32, string } = createDataViewSerializer();
   t.is(array(u8()).fixedSize, null);
   t.is(array(u8()).maxSize, null);
   t.is(array(u8(), { size: u8() }).fixedSize, null);

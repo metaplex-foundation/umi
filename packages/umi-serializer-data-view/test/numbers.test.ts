@@ -5,21 +5,34 @@ import {
   Serializer,
 } from '@metaplex-foundation/umi';
 import test, { Assertions } from 'ava';
-import { createDataViewSerializer } from '../src';
+
 import { d as baseD, s as baseS } from './_helpers';
+import {
+  u8,
+  u16,
+  u32,
+  u64,
+  u128,
+  i8,
+  i16,
+  i32,
+  i64,
+  i128,
+  f32,
+  f64,
+} from '../src/numbers';
 
 test('integer serialization', (t) => {
-  const serializer = createDataViewSerializer();
-  testIntegerSerialization(t, serializer.u8);
-  testIntegerSerialization(t, serializer.u16);
-  testIntegerSerialization(t, serializer.u32);
-  testIntegerSerialization(t, serializer.u64);
-  testIntegerSerialization(t, serializer.u128);
-  testIntegerSerialization(t, serializer.i8);
-  testIntegerSerialization(t, serializer.i16);
-  testIntegerSerialization(t, serializer.i32);
-  testIntegerSerialization(t, serializer.i64);
-  testIntegerSerialization(t, serializer.i128);
+  testIntegerSerialization(t, u8);
+  testIntegerSerialization(t, u16);
+  testIntegerSerialization(t, u32);
+  testIntegerSerialization(t, u64);
+  testIntegerSerialization(t, u128);
+  testIntegerSerialization(t, i8);
+  testIntegerSerialization(t, i16);
+  testIntegerSerialization(t, i32);
+  testIntegerSerialization(t, i64);
+  testIntegerSerialization(t, i128);
 });
 
 function testIntegerSerialization(
@@ -83,17 +96,16 @@ function testIntegerSerialization(
 }
 
 test('integer deserialization', (t) => {
-  const serializer = createDataViewSerializer();
-  testIntegerDeserialization(t, serializer.u8);
-  testIntegerDeserialization(t, serializer.u16);
-  testIntegerDeserialization(t, serializer.u32);
-  testIntegerDeserialization(t, serializer.u64);
-  testIntegerDeserialization(t, serializer.u128);
-  testIntegerDeserialization(t, serializer.i8);
-  testIntegerDeserialization(t, serializer.i16);
-  testIntegerDeserialization(t, serializer.i32);
-  testIntegerDeserialization(t, serializer.i64);
-  testIntegerDeserialization(t, serializer.i128);
+  testIntegerDeserialization(t, u8);
+  testIntegerDeserialization(t, u16);
+  testIntegerDeserialization(t, u32);
+  testIntegerDeserialization(t, u64);
+  testIntegerDeserialization(t, u128);
+  testIntegerDeserialization(t, i8);
+  testIntegerDeserialization(t, i16);
+  testIntegerDeserialization(t, i32);
+  testIntegerDeserialization(t, i64);
+  testIntegerDeserialization(t, i128);
 });
 
 function testIntegerDeserialization(
@@ -155,75 +167,70 @@ function testIntegerDeserialization(
 }
 
 test('description', (t) => {
-  const serializer = createDataViewSerializer();
-
   // Little endian.
-  t.is(serializer.u8().description, 'u8');
-  t.is(serializer.u16().description, 'u16(le)');
-  t.is(serializer.u32().description, 'u32(le)');
-  t.is(serializer.u64().description, 'u64(le)');
-  t.is(serializer.u128().description, 'u128(le)');
-  t.is(serializer.i8().description, 'i8');
-  t.is(serializer.i16().description, 'i16(le)');
-  t.is(serializer.i32().description, 'i32(le)');
-  t.is(serializer.i64().description, 'i64(le)');
-  t.is(serializer.i128().description, 'i128(le)');
-  t.is(serializer.f32().description, 'f32(le)');
-  t.is(serializer.f64().description, 'f64(le)');
+  t.is(u8().description, 'u8');
+  t.is(u16().description, 'u16(le)');
+  t.is(u32().description, 'u32(le)');
+  t.is(u64().description, 'u64(le)');
+  t.is(u128().description, 'u128(le)');
+  t.is(i8().description, 'i8');
+  t.is(i16().description, 'i16(le)');
+  t.is(i32().description, 'i32(le)');
+  t.is(i64().description, 'i64(le)');
+  t.is(i128().description, 'i128(le)');
+  t.is(f32().description, 'f32(le)');
+  t.is(f64().description, 'f64(le)');
 
   // Big endian.
   const beOptions = { endian: Endian.Big };
-  t.is(serializer.u8().description, 'u8');
-  t.is(serializer.u16(beOptions).description, 'u16(be)');
-  t.is(serializer.u32(beOptions).description, 'u32(be)');
-  t.is(serializer.u64(beOptions).description, 'u64(be)');
-  t.is(serializer.u128(beOptions).description, 'u128(be)');
-  t.is(serializer.i8().description, 'i8');
-  t.is(serializer.i16(beOptions).description, 'i16(be)');
-  t.is(serializer.i32(beOptions).description, 'i32(be)');
-  t.is(serializer.i64(beOptions).description, 'i64(be)');
-  t.is(serializer.i128(beOptions).description, 'i128(be)');
-  t.is(serializer.f32(beOptions).description, 'f32(be)');
-  t.is(serializer.f64(beOptions).description, 'f64(be)');
+  t.is(u8().description, 'u8');
+  t.is(u16(beOptions).description, 'u16(be)');
+  t.is(u32(beOptions).description, 'u32(be)');
+  t.is(u64(beOptions).description, 'u64(be)');
+  t.is(u128(beOptions).description, 'u128(be)');
+  t.is(i8().description, 'i8');
+  t.is(i16(beOptions).description, 'i16(be)');
+  t.is(i32(beOptions).description, 'i32(be)');
+  t.is(i64(beOptions).description, 'i64(be)');
+  t.is(i128(beOptions).description, 'i128(be)');
+  t.is(f32(beOptions).description, 'f32(be)');
+  t.is(f64(beOptions).description, 'f64(be)');
 
   // Custom description.
   t.is(
-    serializer.u8({ description: 'My Custom Description' }).description,
+    u8({ description: 'My Custom Description' }).description,
     'My Custom Description'
   );
 });
 
 test('sizes', (t) => {
-  const serializer = createDataViewSerializer();
-  t.is(serializer.u8().fixedSize, 1);
-  t.is(serializer.u8().maxSize, 1);
-  t.is(serializer.u16().fixedSize, 2);
-  t.is(serializer.u16().maxSize, 2);
-  t.is(serializer.u32().fixedSize, 4);
-  t.is(serializer.u32().maxSize, 4);
-  t.is(serializer.u64().fixedSize, 8);
-  t.is(serializer.u64().maxSize, 8);
-  t.is(serializer.u128().fixedSize, 16);
-  t.is(serializer.u128().maxSize, 16);
-  t.is(serializer.i8().fixedSize, 1);
-  t.is(serializer.i8().maxSize, 1);
-  t.is(serializer.i16().fixedSize, 2);
-  t.is(serializer.i16().maxSize, 2);
-  t.is(serializer.i32().fixedSize, 4);
-  t.is(serializer.i32().maxSize, 4);
-  t.is(serializer.i64().fixedSize, 8);
-  t.is(serializer.i64().maxSize, 8);
-  t.is(serializer.i128().fixedSize, 16);
-  t.is(serializer.i128().maxSize, 16);
-  t.is(serializer.f32().fixedSize, 4);
-  t.is(serializer.f32().maxSize, 4);
-  t.is(serializer.f64().fixedSize, 8);
-  t.is(serializer.f64().maxSize, 8);
+  t.is(u8().fixedSize, 1);
+  t.is(u8().maxSize, 1);
+  t.is(u16().fixedSize, 2);
+  t.is(u16().maxSize, 2);
+  t.is(u32().fixedSize, 4);
+  t.is(u32().maxSize, 4);
+  t.is(u64().fixedSize, 8);
+  t.is(u64().maxSize, 8);
+  t.is(u128().fixedSize, 16);
+  t.is(u128().maxSize, 16);
+  t.is(i8().fixedSize, 1);
+  t.is(i8().maxSize, 1);
+  t.is(i16().fixedSize, 2);
+  t.is(i16().maxSize, 2);
+  t.is(i32().fixedSize, 4);
+  t.is(i32().maxSize, 4);
+  t.is(i64().fixedSize, 8);
+  t.is(i64().maxSize, 8);
+  t.is(i128().fixedSize, 16);
+  t.is(i128().maxSize, 16);
+  t.is(f32().fixedSize, 4);
+  t.is(f32().maxSize, 4);
+  t.is(f64().fixedSize, 8);
+  t.is(f64().maxSize, 8);
 });
 
 test('float (de)serialization', (t) => {
-  const { f32, f64 } = createDataViewSerializer();
-
   // Zero.
   baseS(t, f32(), 0, '00000000');
   baseD(t, f32(), '00000000', 0, 4);

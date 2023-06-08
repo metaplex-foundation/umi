@@ -1,6 +1,7 @@
 import test from 'ava';
-import { createDataViewSerializer } from '../src';
 import { s, d } from './_helpers';
+import { u32, u64 } from '../src/numbers';
+import { scalarEnum } from '../src/scalarEnum';
 
 enum Empty {}
 enum Feedback {
@@ -15,8 +16,6 @@ enum Direction {
 }
 
 test('numerical enum (de)serialization', (t) => {
-  const { enum: scalarEnum, u64 } = createDataViewSerializer();
-
   // Bad.
   s(t, scalarEnum(Feedback), Feedback.BAD, '00');
   s(t, scalarEnum(Feedback), 'BAD', '00');
@@ -52,8 +51,6 @@ test('numerical enum (de)serialization', (t) => {
 });
 
 test('lexical enum (de)serialization', (t) => {
-  const { enum: scalarEnum } = createDataViewSerializer();
-
   // Up.
   s(t, scalarEnum(Direction), Direction.UP, '00');
   s(t, scalarEnum(Direction), 'Up' as Direction, '00');
@@ -97,7 +94,6 @@ test('lexical enum (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { enum: scalarEnum, u32 } = createDataViewSerializer();
   t.is(scalarEnum(Empty).description, 'enum(; u8)');
   t.is(scalarEnum(Feedback).description, 'enum(BAD, GOOD; u8)');
   t.is(
@@ -112,7 +108,6 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { enum: scalarEnum, u32 } = createDataViewSerializer();
   t.is(scalarEnum(Empty).fixedSize, 1);
   t.is(scalarEnum(Empty).maxSize, 1);
   t.is(scalarEnum(Feedback).fixedSize, 1);

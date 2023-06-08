@@ -1,10 +1,11 @@
 import test from 'ava';
-import { createDataViewSerializer } from '../src';
+import { option } from '../src/option';
 import { s, d } from './_helpers';
+import { u64, u8 } from '../src/numbers';
+import { string } from '../src/string';
+import { struct } from '../src/struct';
 
 test('(de)serialization', (t) => {
-  const { struct, u8, u64, string } = createDataViewSerializer();
-
   // Empty struct.
   s(t, struct([]), {}, '');
   d(t, struct([]), '', {}, 0);
@@ -31,7 +32,6 @@ test('(de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { struct, u8, string } = createDataViewSerializer();
   t.is(struct([['age', u8()]]).description, 'struct(age: u8)');
   t.is(
     struct([
@@ -47,7 +47,6 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { struct, option, u8, u64, string } = createDataViewSerializer();
   t.is(struct([]).fixedSize, 0);
   t.is(struct([]).maxSize, 0);
   t.is(struct([['age', u8()]]).fixedSize, 1);
