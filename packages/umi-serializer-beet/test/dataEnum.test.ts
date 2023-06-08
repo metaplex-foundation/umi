@@ -1,6 +1,7 @@
 import test from 'ava';
 import { DataEnumToSerializerTuple } from '@metaplex-foundation/umi';
 import { array } from '../src/array';
+import { dataEnum } from '../src/dataEnum';
 import { createBeetSerializer } from '../src';
 import { s, d } from './_helpers';
 import { struct } from '../src/struct';
@@ -65,7 +66,6 @@ const getU64Enum = (): DataEnumToSerializerTuple<U64EnumFrom, U64EnumTo> => {
 };
 
 test('empty variant (de)serialization', (t) => {
-  const { dataEnum } = createBeetSerializer();
   const pageLoad: WebEvent = { __kind: 'PageLoad' };
   s(t, dataEnum(getWebEvent()), pageLoad, '00');
   d(t, dataEnum(getWebEvent()), '00', pageLoad, 1);
@@ -77,7 +77,6 @@ test('empty variant (de)serialization', (t) => {
 });
 
 test('struct variant (de)serialization', (t) => {
-  const { dataEnum } = createBeetSerializer();
   const click = (x: number, y: number): WebEvent => ({ __kind: 'Click', x, y });
   s(t, dataEnum(getWebEvent()), click(0, 0), '010000');
   d(t, dataEnum(getWebEvent()), '010000', click(0, 0), 3);
@@ -88,7 +87,6 @@ test('struct variant (de)serialization', (t) => {
 });
 
 test('tuple variant (de)serialization', (t) => {
-  const { dataEnum } = createBeetSerializer();
   const press = (k: string): WebEvent => ({ __kind: 'KeyPress', fields: [k] });
   s(t, dataEnum(getWebEvent()), press(''), '0200000000');
   d(t, dataEnum(getWebEvent()), '0200000000', press(''), 5);
@@ -101,7 +99,6 @@ test('tuple variant (de)serialization', (t) => {
 });
 
 test('invalid variant (de)serialization', (t) => {
-  const { dataEnum } = createBeetSerializer();
   t.throws(
     () => dataEnum(getWebEvent()).serialize({ __kind: 'Missing' } as any),
     {
@@ -121,21 +118,20 @@ test('invalid variant (de)serialization', (t) => {
 });
 
 test('(de)serialization with different From and To types', (t) => {
-  const { dataEnum } = createBeetSerializer();
   const x = dataEnum(getU64Enum());
   s(t, x, { __kind: 'B', value: 2 }, '010200000000000000');
   d(t, x, '010200000000000000', { __kind: 'B', value: 2n }, 9);
 });
 
 test('(de)serialization with custom prefix', (t) => {
-  const { dataEnum, u32 } = createBeetSerializer();
+  const { u32 } = createBeetSerializer();
   const x = dataEnum(getSameSizeVariants(), { size: u32() });
   s(t, x, { __kind: 'A', value: 42 }, '000000002a00');
   d(t, x, '000000002a00', { __kind: 'A', value: 42 }, 6);
 });
 
 test('description', (t) => {
-  const { dataEnum, u32 } = createBeetSerializer();
+  const { u32 } = createBeetSerializer();
   t.is(
     dataEnum(getWebEvent()).description,
     'dataEnum(' +
@@ -168,7 +164,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { dataEnum, u32 } = createBeetSerializer();
+  const { u32 } = createBeetSerializer();
   t.is(dataEnum(getWebEvent()).fixedSize, null);
   t.is(dataEnum(getWebEvent()).maxSize, null);
   t.is(dataEnum(getSameSizeVariants()).fixedSize, 3);

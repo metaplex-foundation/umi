@@ -1,6 +1,7 @@
 export * from './array';
 export * from './createBeetSerializer';
 export * from './bytes';
+export * from './dataEnum';
 export * from './errors';
 export * from './map';
 export * from './nullable';
