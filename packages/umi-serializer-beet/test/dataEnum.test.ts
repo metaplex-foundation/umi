@@ -3,12 +3,12 @@ import { DataEnumToSerializerTuple } from '@metaplex-foundation/umi';
 import { array } from '../src/array';
 import { bool } from '../src/bool';
 import { dataEnum } from '../src/dataEnum';
-import { createBeetSerializer } from '../src';
 import { s, d } from './_helpers';
 import { string } from '../src/string';
 import { struct } from '../src/struct';
 import { tuple } from '../src/tuple';
 import { unit } from '../src/unit';
+import { u8, u16, u64, u32 } from '../src/numbers';
 
 type WebEvent =
   | { __kind: 'PageLoad' } // Empty variant.
@@ -16,21 +16,18 @@ type WebEvent =
   | { __kind: 'KeyPress'; fields: [string] } // Tuple variant.
   | { __kind: 'PageUnload' }; // Empty variant (using empty struct).
 
-const getWebEvent = (): DataEnumToSerializerTuple<WebEvent, WebEvent> => {
-  const { u8 } = createBeetSerializer();
-  return [
-    ['PageLoad', unit()],
-    [
-      'Click',
-      struct<{ x: number; y: number }>([
-        ['x', u8()],
-        ['y', u8()],
-      ]),
-    ],
-    ['KeyPress', struct<{ fields: [string] }>([['fields', tuple([string()])]])],
-    ['PageUnload', struct<{}>([])],
-  ];
-};
+const getWebEvent = (): DataEnumToSerializerTuple<WebEvent, WebEvent> => [
+  ['PageLoad', unit()],
+  [
+    'Click',
+    struct<{ x: number; y: number }>([
+      ['x', u8()],
+      ['y', u8()],
+    ]),
+  ],
+  ['KeyPress', struct<{ fields: [string] }>([['fields', tuple([string()])]])],
+  ['PageUnload', struct<{}>([])],
+];
 
 type SameSizeVariants =
   | { __kind: 'A'; value: number }
@@ -40,33 +37,27 @@ type SameSizeVariants =
 const getSameSizeVariants = (): DataEnumToSerializerTuple<
   SameSizeVariants,
   SameSizeVariants
-> => {
-  const { u8, u16 } = createBeetSerializer();
-  return [
-    ['A', struct<any>([['value', u16()]])],
-    [
-      'B',
-      struct<any>([
-        ['x', u8()],
-        ['y', u8()],
-      ]),
-    ],
-    ['C', struct<any>([['items', array(bool(), { size: 2 })]])],
-  ];
-};
+> => [
+  ['A', struct<any>([['value', u16()]])],
+  [
+    'B',
+    struct<any>([
+      ['x', u8()],
+      ['y', u8()],
+    ]),
+  ],
+  ['C', struct<any>([['items', array(bool(), { size: 2 })]])],
+];
 
 type U64EnumFrom = { __kind: 'A' } | { __kind: 'B'; value: number | bigint };
 type U64EnumTo = { __kind: 'A' } | { __kind: 'B'; value: bigint };
-const getU64Enum = (): DataEnumToSerializerTuple<U64EnumFrom, U64EnumTo> => {
-  const { u64 } = createBeetSerializer();
-  return [
-    ['A', unit()],
-    [
-      'B',
-      struct<{ value: bigint | number }, { value: bigint }>([['value', u64()]]),
-    ],
-  ];
-};
+const getU64Enum = (): DataEnumToSerializerTuple<U64EnumFrom, U64EnumTo> => [
+  ['A', unit()],
+  [
+    'B',
+    struct<{ value: bigint | number }, { value: bigint }>([['value', u64()]]),
+  ],
+];
 
 test('empty variant (de)serialization', (t) => {
   const pageLoad: WebEvent = { __kind: 'PageLoad' };
@@ -127,14 +118,12 @@ test('(de)serialization with different From and To types', (t) => {
 });
 
 test('(de)serialization with custom prefix', (t) => {
-  const { u32 } = createBeetSerializer();
   const x = dataEnum(getSameSizeVariants(), { size: u32() });
   s(t, x, { __kind: 'A', value: 42 }, '000000002a00');
   d(t, x, '000000002a00', { __kind: 'A', value: 42 }, 6);
 });
 
 test('description', (t) => {
-  const { u32 } = createBeetSerializer();
   t.is(
     dataEnum(getWebEvent()).description,
     'dataEnum(' +
@@ -167,7 +156,6 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { u32 } = createBeetSerializer();
   t.is(dataEnum(getWebEvent()).fixedSize, null);
   t.is(dataEnum(getWebEvent()).maxSize, null);
   t.is(dataEnum(getSameSizeVariants()).fixedSize, 3);

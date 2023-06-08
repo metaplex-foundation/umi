@@ -5,10 +5,10 @@ import {
   DeserializingEmptyBufferError,
   NotEnoughBytesError,
 } from '../src';
+import { u8 } from '../src/numbers';
 import { unit } from '../src/unit';
 
 test('it can handle empty buffers', (t) => {
-  const { u8 } = createBeetSerializer();
   const tolerant = createBeetSerializer();
   const intolerant = createBeetSerializer({ tolerateEmptyBuffers: false });
   const remainder = { size: 'remainder' } as const;

@@ -1,12 +1,10 @@
 import test from 'ava';
 import { base16, base58, Endian } from '@metaplex-foundation/umi';
-import { createBeetSerializer } from '../src';
 import { s, d } from './_helpers';
+import { u16, u8 } from '../src/numbers';
 import { string } from '../src/string';
 
 test('prefixed (de)serialization', (t) => {
-  const { u8 } = createBeetSerializer();
-
   // Empty string.
   s(t, string(), '', '00000000'); // 4-bytes prefix.
   d(t, string(), '00000000', '', 4);
@@ -68,8 +66,6 @@ test('variable (de)serialization', (t) => {
 });
 
 test('base58 (de)serialization', (t) => {
-  const { u8 } = createBeetSerializer();
-
   // Prefixed.
   const prefixedString = string({ size: u8(), encoding: base58 });
   s(t, prefixedString, 'ABC', '027893');
@@ -88,8 +84,6 @@ test('base58 (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { u16 } = createBeetSerializer();
-
   // Encoding.
   t.is(string().description, 'string(utf8; u32(le))');
   t.is(string({ encoding: base58 }).description, 'string(base58; u32(le))');
@@ -111,7 +105,6 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { u8 } = createBeetSerializer();
   t.is(string().fixedSize, null);
   t.is(string().maxSize, null);
   t.is(string({ size: u8() }).fixedSize, null);

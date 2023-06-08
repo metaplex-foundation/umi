@@ -1,11 +1,10 @@
 import test from 'ava';
 import { Endian } from '@metaplex-foundation/umi';
 import { bool } from '../src/bool';
-import { createBeetSerializer } from '../src';
 import { s, d } from './_helpers';
+import { u32 } from '../src/numbers';
 
 test('serialization', (t) => {
-  const { u32 } = createBeetSerializer();
   s(t, bool(), true, '01');
   s(t, bool(), false, '00');
   s(t, bool({ size: u32() }), true, '01000000');
@@ -13,7 +12,6 @@ test('serialization', (t) => {
 });
 
 test('deserialization', (t) => {
-  const { u32 } = createBeetSerializer();
   d(t, bool(), '01', true, 1);
   d(t, bool(), '00', false, 1);
   d(t, bool(), ['000001', 2], true, 3);
@@ -23,7 +21,6 @@ test('deserialization', (t) => {
 });
 
 test('description', (t) => {
-  const { u32 } = createBeetSerializer();
   t.is(bool().description, 'bool(u8)');
   t.is(bool({ size: u32() }).description, 'bool(u32(le))');
   t.is(
@@ -34,7 +31,6 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { u32 } = createBeetSerializer();
   t.is(bool().fixedSize, 1);
   t.is(bool().maxSize, 1);
   t.is(bool({ size: u32() }).fixedSize, 4);

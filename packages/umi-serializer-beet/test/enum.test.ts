@@ -1,6 +1,6 @@
 import test from 'ava';
-import { createBeetSerializer } from '../src';
 import { s, d } from './_helpers';
+import { u64, u32 } from '../src/numbers';
 import { scalarEnum } from '../src/scalarEnum';
 
 enum Empty {}
@@ -16,8 +16,6 @@ enum Direction {
 }
 
 test('numerical enum (de)serialization', (t) => {
-  const { u64 } = createBeetSerializer();
-
   // Bad.
   s(t, scalarEnum(Feedback), Feedback.BAD, '00');
   s(t, scalarEnum(Feedback), 'BAD', '00');
@@ -96,7 +94,6 @@ test('lexical enum (de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { u32 } = createBeetSerializer();
   t.is(scalarEnum(Empty).description, 'enum(; u8)');
   t.is(scalarEnum(Feedback).description, 'enum(BAD, GOOD; u8)');
   t.is(
@@ -111,7 +108,6 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { u32 } = createBeetSerializer();
   t.is(scalarEnum(Empty).fixedSize, 1);
   t.is(scalarEnum(Empty).maxSize, 1);
   t.is(scalarEnum(Feedback).fixedSize, 1);
