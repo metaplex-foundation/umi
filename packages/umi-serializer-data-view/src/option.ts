@@ -53,7 +53,7 @@ export function option<T, U extends T = T>(
     },
     deserialize: (bytes: Uint8Array, offset = 0) => {
       if (bytes.slice(offset).length === 0) {
-        throw new DeserializingEmptyBufferError('option');
+        throw new DeserializingEmptyBufferError('option', none());
       }
       const fixedOffset =
         offset + (prefix.fixedSize ?? 0) + (item.fixedSize ?? 0);

@@ -1,8 +1,4 @@
-import {
-  none,
-  Serializer,
-  SerializerInterface,
-} from '@metaplex-foundation/umi';
+import { Serializer, SerializerInterface } from '@metaplex-foundation/umi';
 import { array } from './array';
 import { bool } from './bool';
 import { bytes } from './bytes';
@@ -11,6 +7,8 @@ import { DeserializingEmptyBufferError } from './errors';
 import { map } from './map';
 import { nullable } from './nullable';
 import {
+  f32,
+  f64,
   i128,
   i16,
   i32,
@@ -21,8 +19,6 @@ import {
   u32,
   u64,
   u8,
-  f32,
-  f64,
 } from './numbers';
 import { option } from './option';
 import { publicKey } from './pubkey';
@@ -40,10 +36,7 @@ export type BeetSerializerOptions = {
 
 function getTolerantSerializerFactory<
   TSerializerFactory extends (...args: never[]) => Serializer<any, any>
->(
-  serializerFactory: TSerializerFactory,
-  defaultValueFactory: () => unknown
-): TSerializerFactory {
+>(serializerFactory: TSerializerFactory): TSerializerFactory {
   return ((...args) => {
     const originalSerializer = serializerFactory(...args);
     return {
@@ -52,8 +45,11 @@ function getTolerantSerializerFactory<
         try {
           return originalSerializer.deserialize(bytes, offset);
         } catch (e) {
-          if (e instanceof DeserializingEmptyBufferError) {
-            return [defaultValueFactory(), offset];
+          if (
+            e instanceof DeserializingEmptyBufferError &&
+            e.toleratedDefaultValue !== undefined
+          ) {
+            return [e.toleratedDefaultValue, offset];
           }
           throw e;
         }
@@ -69,19 +65,15 @@ export function createBeetSerializer(
   return {
     tuple,
     array: shouldTolerateEmptyBuffers
-      ? getTolerantSerializerFactory(array, () => [])
+      ? getTolerantSerializerFactory(array)
       : array,
-    map: shouldTolerateEmptyBuffers
-      ? getTolerantSerializerFactory(map, () => new Map())
-      : map,
-    set: shouldTolerateEmptyBuffers
-      ? getTolerantSerializerFactory(set, () => new Set())
-      : set,
+    map: shouldTolerateEmptyBuffers ? getTolerantSerializerFactory(map) : map,
+    set: shouldTolerateEmptyBuffers ? getTolerantSerializerFactory(set) : set,
     option: shouldTolerateEmptyBuffers
-      ? getTolerantSerializerFactory(option, () => none())
+      ? getTolerantSerializerFactory(option)
       : option,
     nullable: shouldTolerateEmptyBuffers
-      ? getTolerantSerializerFactory(nullable, () => null)
+      ? getTolerantSerializerFactory(nullable)
       : nullable,
     struct,
     enum: scalarEnum,

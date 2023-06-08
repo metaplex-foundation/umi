@@ -1,13 +1,9 @@
 import {
+  mergeBytes,
   Serializer,
   SetSerializerOptions,
-  mergeBytes,
 } from '@metaplex-foundation/umi';
-import {
-  BeetSerializerError,
-  DeserializingEmptyBufferError,
-  NotEnoughBytesError,
-} from './errors';
+import { BeetSerializerError, DeserializingEmptyBufferError } from './errors';
 import { getResolvedSize } from './getResolvedSize';
 import { getSizeDescription } from './getSizeDescription';
 import { getSizeFromChildren } from './getSizeFromChildren';
@@ -42,7 +38,7 @@ export function set<T, U extends T = T>(
     deserialize: (bytes: Uint8Array, offset = 0) => {
       const set: Set<U> = new Set();
       if (typeof size === 'object' && bytes.slice(offset).length === 0) {
-        throw new DeserializingEmptyBufferError('set');
+        throw new DeserializingEmptyBufferError('set', new Set());
       }
       const [resolvedSize, newOffset] = getResolvedSize(
         size,
@@ -50,16 +46,6 @@ export function set<T, U extends T = T>(
         bytes,
         offset
       );
-      if (
-        typeof size === 'number' &&
-        bytes.slice(offset).length < resolvedSize
-      ) {
-        throw new NotEnoughBytesError(
-          'set',
-          resolvedSize,
-          bytes.slice(offset).length
-        );
-      }
       offset = newOffset;
       for (let i = 0; i < resolvedSize; i += 1) {
         const [value, newOffset] = item.deserialize(bytes, offset);
