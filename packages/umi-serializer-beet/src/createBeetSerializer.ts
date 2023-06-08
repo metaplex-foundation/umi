@@ -1,14 +1,14 @@
 import {
-  BoolSerializerOptions,
   none,
   Serializer,
   SerializerInterface,
   UnitSerializerOptions,
 } from '@metaplex-foundation/umi';
 import { array } from './array';
+import { bool } from './bool';
 import { bytes } from './bytes';
 import { dataEnum } from './dataEnum';
-import { BeetSerializerError, DeserializingEmptyBufferError } from './errors';
+import { DeserializingEmptyBufferError } from './errors';
 import { map } from './map';
 import { nullable } from './nullable';
 import {
@@ -65,26 +65,6 @@ function getTolerantSerializerFactory<
 export function createBeetSerializer(
   options: BeetSerializerOptions = {}
 ): SerializerInterface {
-  const bool = (options: BoolSerializerOptions = {}): Serializer<boolean> => {
-    const size = options.size ?? u8();
-    if (size.fixedSize === null) {
-      throw new BeetSerializerError('Serializer [bool] requires a fixed size.');
-    }
-    return {
-      description: options.description ?? `bool(${size.description})`,
-      fixedSize: size.fixedSize,
-      maxSize: size.fixedSize,
-      serialize: (value: boolean) => size.serialize(value ? 1 : 0),
-      deserialize: (bytes: Uint8Array, offset = 0) => {
-        if (bytes.slice(offset).length === 0) {
-          throw new DeserializingEmptyBufferError('bool');
-        }
-        const [value, vOffset] = size.deserialize(bytes, offset);
-        return [value === 1, vOffset];
-      },
-    };
-  };
-
   const unit = (options: UnitSerializerOptions = {}): Serializer<void> => ({
     description: options.description ?? 'unit',
     fixedSize: 0,

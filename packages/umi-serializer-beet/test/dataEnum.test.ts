@@ -1,6 +1,7 @@
 import test from 'ava';
 import { DataEnumToSerializerTuple } from '@metaplex-foundation/umi';
 import { array } from '../src/array';
+import { bool } from '../src/bool';
 import { dataEnum } from '../src/dataEnum';
 import { createBeetSerializer } from '../src';
 import { s, d } from './_helpers';
@@ -39,7 +40,7 @@ const getSameSizeVariants = (): DataEnumToSerializerTuple<
   SameSizeVariants,
   SameSizeVariants
 > => {
-  const { u8, u16, bool } = createBeetSerializer();
+  const { u8, u16 } = createBeetSerializer();
   return [
     ['A', struct<any>([['value', u16()]])],
     [
