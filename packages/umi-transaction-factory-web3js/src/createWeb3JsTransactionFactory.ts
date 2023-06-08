@@ -16,6 +16,7 @@ import {
   TransactionMessageHeader,
   TransactionVersion,
 } from '@metaplex-foundation/umi';
+import { shortU16 } from '@metaplex-foundation/umi-serializer-data-view';
 import {
   fromWeb3JsMessage,
   toWeb3JsMessageFromInput,
@@ -187,47 +188,3 @@ export function createWeb3JsTransactionFactory(
     deserializeMessage,
   };
 }
-
-/**
- * Same as u16, but serialized with 1 to 3 bytes.
- *
- * If the value is above 0x7f, the top bit is set and the remaining
- * value is stored in the next bytes. Each byte follows the same
- * pattern until the 3rd byte. The 3rd byte, if needed, uses
- * all 8 bits to store the last byte of the original value.
- */
-export const shortU16 = (): Serializer<number> => ({
-  description: 'shortU16',
-  fixedSize: null,
-  maxSize: 3,
-  serialize: (value: number): Uint8Array => {
-    const bytes = [] as number[];
-    let remainingValue = value;
-    for (;;) {
-      let elem = remainingValue & 0x7f;
-      remainingValue >>= 7;
-      if (remainingValue === 0) {
-        bytes.push(elem);
-        break;
-      } else {
-        elem |= 0x80;
-        bytes.push(elem);
-      }
-    }
-    return new Uint8Array(bytes);
-  },
-  deserialize: (buffer: Uint8Array, offset = 0): [number, number] => {
-    const bytes = [...buffer.slice(offset)];
-    let len = 0;
-    let size = 0;
-    for (;;) {
-      const elem = bytes.shift() as number;
-      len |= (elem & 0x7f) << (size * 7);
-      size += 1;
-      if ((elem & 0x80) === 0) {
-        break;
-      }
-    }
-    return [len, offset + size];
-  },
-});

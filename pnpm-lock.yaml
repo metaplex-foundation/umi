@@ -393,6 +393,9 @@ importers:
 
   packages/umi-transaction-factory-web3js:
     dependencies:
+      '@metaplex-foundation/umi-serializer-data-view':
+        specifier: workspace:^
+        version: link:../umi-serializer-data-view
       '@metaplex-foundation/umi-web3js-adapters':
         specifier: workspace:^
         version: link:../umi-web3js-adapters
@@ -406,9 +409,6 @@ importers:
       '@metaplex-foundation/umi-eddsa-web3js':
         specifier: workspace:^
         version: link:../umi-eddsa-web3js
-      '@metaplex-foundation/umi-serializer-data-view':
-        specifier: workspace:^
-        version: link:../umi-serializer-data-view
       '@solana/web3.js':
         specifier: ^1.72.0
         version: 1.72.0
