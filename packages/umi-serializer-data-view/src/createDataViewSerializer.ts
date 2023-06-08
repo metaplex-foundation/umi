@@ -11,8 +11,6 @@ import {
   Serializer,
   SerializerInterface,
   StringSerializerOptions,
-  StructSerializerOptions,
-  StructToSerializerTuple,
   UnitSerializerOptions,
   utf8,
 } from '@metaplex-foundation/umi';
@@ -43,6 +41,7 @@ import {
 import { option } from './option';
 import { publicKey } from './pubkey';
 import { set } from './set';
+import { struct } from './struct';
 import { sumSerializerSizes } from './sumSerializerSizes';
 import { tuple } from './tuple';
 
@@ -78,35 +77,6 @@ function getTolerantSerializerFactory<
 export function createDataViewSerializer(
   options: DataViewSerializerOptions = {}
 ): SerializerInterface {
-  const struct = <T extends object, U extends T = T>(
-    fields: StructToSerializerTuple<T, U>,
-    options: StructSerializerOptions = {}
-  ): Serializer<T, U> => {
-    const fieldDescriptions = fields
-      .map(([name, serializer]) => `${String(name)}: ${serializer.description}`)
-      .join(', ');
-    return {
-      description: options.description ?? `struct(${fieldDescriptions})`,
-      fixedSize: sumSerializerSizes(fields.map(([, field]) => field.fixedSize)),
-      maxSize: sumSerializerSizes(fields.map(([, field]) => field.maxSize)),
-      serialize: (struct: T) => {
-        const fieldBytes = fields.map(([key, serializer]) =>
-          serializer.serialize(struct[key])
-        );
-        return mergeBytes(fieldBytes);
-      },
-      deserialize: (bytes: Uint8Array, offset = 0) => {
-        const struct: Partial<U> = {};
-        fields.forEach(([key, serializer]) => {
-          const [value, newOffset] = serializer.deserialize(bytes, offset);
-          offset = newOffset;
-          struct[key] = value;
-        });
-        return [struct as U, offset];
-      },
-    };
-  };
-
   const enumFn = <T>(
     constructor: ScalarEnum<T> & {},
     options: EnumSerializerOptions = {}

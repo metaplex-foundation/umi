@@ -2,9 +2,10 @@ import test from 'ava';
 import { option } from '../src/option';
 import { createBeetSerializer } from '../src';
 import { s, d } from './_helpers';
+import { struct } from '../src/struct';
 
 test('(de)serialization', (t) => {
-  const { struct, u8, u64, string } = createBeetSerializer();
+  const { u8, u64, string } = createBeetSerializer();
 
   // Empty struct.
   s(t, struct([]), {}, '');
@@ -32,7 +33,7 @@ test('(de)serialization', (t) => {
 });
 
 test('description', (t) => {
-  const { struct, u8, string } = createBeetSerializer();
+  const { u8, string } = createBeetSerializer();
   t.is(struct([['age', u8()]]).description, 'struct(age: u8)');
   t.is(
     struct([
@@ -48,7 +49,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { struct, u8, u64, string } = createBeetSerializer();
+  const { u8, u64, string } = createBeetSerializer();
   t.is(struct([]).fixedSize, 0);
   t.is(struct([]).maxSize, 0);
   t.is(struct([['age', u8()]]).fixedSize, 1);

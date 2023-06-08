@@ -6,6 +6,7 @@ export * from './map';
 export * from './nullable';
 export * from './option';
 export * from './set';
+export * from './struct';
 export * from './tuple';
 export * from './plugin';
 export * from './pubkey';

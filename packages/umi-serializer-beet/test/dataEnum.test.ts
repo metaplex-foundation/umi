@@ -3,6 +3,7 @@ import { DataEnumToSerializerTuple } from '@metaplex-foundation/umi';
 import { array } from '../src/array';
 import { createBeetSerializer } from '../src';
 import { s, d } from './_helpers';
+import { struct } from '../src/struct';
 import { tuple } from '../src/tuple';
 
 type WebEvent =
@@ -12,7 +13,7 @@ type WebEvent =
   | { __kind: 'PageUnload' }; // Empty variant (using empty struct).
 
 const getWebEvent = (): DataEnumToSerializerTuple<WebEvent, WebEvent> => {
-  const { unit, struct, string, u8 } = createBeetSerializer();
+  const { unit, string, u8 } = createBeetSerializer();
   return [
     ['PageLoad', unit()],
     [
@@ -36,7 +37,7 @@ const getSameSizeVariants = (): DataEnumToSerializerTuple<
   SameSizeVariants,
   SameSizeVariants
 > => {
-  const { struct, u8, u16, bool } = createBeetSerializer();
+  const { u8, u16, bool } = createBeetSerializer();
   return [
     ['A', struct<any>([['value', u16()]])],
     [
@@ -53,7 +54,7 @@ const getSameSizeVariants = (): DataEnumToSerializerTuple<
 type U64EnumFrom = { __kind: 'A' } | { __kind: 'B'; value: number | bigint };
 type U64EnumTo = { __kind: 'A' } | { __kind: 'B'; value: bigint };
 const getU64Enum = (): DataEnumToSerializerTuple<U64EnumFrom, U64EnumTo> => {
-  const { unit, struct, u64 } = createBeetSerializer();
+  const { unit, u64 } = createBeetSerializer();
   return [
     ['A', unit()],
     [
