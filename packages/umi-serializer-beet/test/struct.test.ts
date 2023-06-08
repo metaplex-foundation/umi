@@ -1,4 +1,5 @@
 import test from 'ava';
+import { option } from '../src/option';
 import { createBeetSerializer } from '../src';
 import { s, d } from './_helpers';
 
@@ -47,7 +48,7 @@ test('description', (t) => {
 });
 
 test('sizes', (t) => {
-  const { struct, option, u8, u64, string } = createBeetSerializer();
+  const { struct, u8, u64, string } = createBeetSerializer();
   t.is(struct([]).fixedSize, 0);
   t.is(struct([]).maxSize, 0);
   t.is(struct([['age', u8()]]).fixedSize, 1);
