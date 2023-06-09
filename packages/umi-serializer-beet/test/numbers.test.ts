@@ -20,6 +20,7 @@ import {
   i128,
   f32,
   f64,
+  shortU16,
 } from '../src/numbers';
 
 test('serialization', (t) => {
@@ -166,10 +167,32 @@ function testIntegerDeserialization(
   }
 }
 
+test('shortU16 serialization', (t) => {
+  s(t, shortU16(), 0n, '00');
+  s(t, shortU16(), 127n, '7f');
+  s(t, shortU16(), 128n, '8001');
+  s(t, shortU16(), 16383n, 'ff7f');
+  s(t, shortU16(), 16384n, '808001');
+  s(t, shortU16(), 65535n, 'ffff03');
+
+  t.throws(() => {
+    shortU16().serialize(-1);
+  });
+  t.throws(() => {
+    shortU16().serialize(65536);
+  });
+
+  for (let ii = 0; ii <= 0b1111111111111111; ii += 1) {
+    const buffer = shortU16().serialize(ii);
+    t.is(shortU16().deserialize(buffer)[0], ii);
+  }
+});
+
 test('description', (t) => {
   // Little endian.
   t.is(u8().description, 'u8');
   t.is(u16().description, 'u16(le)');
+  t.is(shortU16().description, 'shortU16');
   t.is(u32().description, 'u32(le)');
   t.is(u64().description, 'u64(le)');
   t.is(u128().description, 'u128(le)');
@@ -204,6 +227,8 @@ test('sizes', (t) => {
   t.is(u8().maxSize, 1);
   t.is(u16().fixedSize, 2);
   t.is(u16().maxSize, 2);
+  t.is(shortU16().fixedSize, null);
+  t.is(shortU16().maxSize, 3);
   t.is(u32().fixedSize, 4);
   t.is(u32().maxSize, 4);
   t.is(u64().fixedSize, 8);
