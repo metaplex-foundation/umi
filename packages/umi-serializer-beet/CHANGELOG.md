@@ -1,5 +1,16 @@
 # @metaplex-foundation/umi-serializer-beet
 
+## 0.7.14
+
+### Patch Changes
+
+- [#60](https://github.com/metaplex-foundation/umi/pull/60) [`416e7c9`](https://github.com/metaplex-foundation/umi/commit/416e7c982d8fbe7e4cb427106731feec1c636545) Thanks [@steveluscher](https://github.com/steveluscher)! - You can now import and use individual serializers
+
+- [#61](https://github.com/metaplex-foundation/umi/pull/61) [`8853427`](https://github.com/metaplex-foundation/umi/commit/88534278abc4f5bcda5ef83ff289d33f7559331a) Thanks [@steveluscher](https://github.com/steveluscher)! - Move shortU16 serializer into common serializer package
+
+- Updated dependencies [[`f530089`](https://github.com/metaplex-foundation/umi/commit/f5300891d0bad4b13431a11d87bfa35b6881ae56)]:
+  - @metaplex-foundation/umi@0.7.14
+
 ## 0.7.13
 
 ### Patch Changes
