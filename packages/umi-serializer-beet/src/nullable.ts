@@ -48,7 +48,7 @@ export function nullable<T, U extends T = T>(
     },
     deserialize: (bytes: Uint8Array, offset = 0) => {
       if (bytes.slice(offset).length === 0) {
-        throw new DeserializingEmptyBufferError('nullable');
+        throw new DeserializingEmptyBufferError('nullable', null);
       }
       const fixedOffset =
         offset + (prefix.fixedSize ?? 0) + (item.fixedSize ?? 0);

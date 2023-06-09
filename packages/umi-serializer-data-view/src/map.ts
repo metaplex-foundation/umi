@@ -1,12 +1,11 @@
 import {
-  Serializer,
   MapSerializerOptions,
   mergeBytes,
+  Serializer,
 } from '@metaplex-foundation/umi';
 import {
   DataViewSerializerError,
   DeserializingEmptyBufferError,
-  NotEnoughBytesError,
 } from './errors';
 import { getResolvedSize } from './getResolvedSize';
 import { getSizeDescription } from './getSizeDescription';
@@ -50,7 +49,7 @@ export function map<TK, TV, UK extends TK = TK, UV extends TV = TV>(
     deserialize: (bytes: Uint8Array, offset = 0) => {
       const map: Map<UK, UV> = new Map();
       if (typeof size === 'object' && bytes.slice(offset).length === 0) {
-        throw new DeserializingEmptyBufferError('map');
+        throw new DeserializingEmptyBufferError('map', new Map());
       }
       const [resolvedSize, newOffset] = getResolvedSize(
         size,
@@ -58,16 +57,6 @@ export function map<TK, TV, UK extends TK = TK, UV extends TV = TV>(
         bytes,
         offset
       );
-      if (
-        typeof size === 'number' &&
-        bytes.slice(offset).length < resolvedSize
-      ) {
-        throw new NotEnoughBytesError(
-          'map',
-          resolvedSize,
-          bytes.slice(offset).length
-        );
-      }
       offset = newOffset;
       for (let i = 0; i < resolvedSize; i += 1) {
         const [deserializedKey, kOffset] = key.deserialize(bytes, offset);

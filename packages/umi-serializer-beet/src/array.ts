@@ -3,11 +3,7 @@ import {
   ArraySerializerOptions,
   mergeBytes,
 } from '@metaplex-foundation/umi';
-import {
-  BeetSerializerError,
-  DeserializingEmptyBufferError,
-  NotEnoughBytesError,
-} from './errors';
+import { BeetSerializerError, DeserializingEmptyBufferError } from './errors';
 import { getResolvedSize } from './getResolvedSize';
 import { getSizeDescription } from './getSizeDescription';
 import { getSizeFromChildren } from './getSizeFromChildren';
@@ -43,7 +39,7 @@ export function array<T, U extends T = T>(
     },
     deserialize: (bytes: Uint8Array, offset = 0) => {
       if (typeof size === 'object' && bytes.slice(offset).length === 0) {
-        throw new DeserializingEmptyBufferError('array');
+        throw new DeserializingEmptyBufferError('array', []);
       }
       const [resolvedSize, newOffset] = getResolvedSize(
         size,
@@ -51,16 +47,6 @@ export function array<T, U extends T = T>(
         bytes,
         offset
       );
-      if (
-        typeof size === 'number' &&
-        bytes.slice(offset).length < resolvedSize
-      ) {
-        throw new NotEnoughBytesError(
-          'array',
-          resolvedSize,
-          bytes.slice(offset).length
-        );
-      }
       offset = newOffset;
       const values: U[] = [];
       for (let i = 0; i < resolvedSize; i += 1) {
