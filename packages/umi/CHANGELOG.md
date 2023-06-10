@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 0.7.14
+
+### Patch Changes
+
+- [#58](https://github.com/metaplex-foundation/umi/pull/58) [`f530089`](https://github.com/metaplex-foundation/umi/commit/f5300891d0bad4b13431a11d87bfa35b6881ae56) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Ensure nested serializer is padded when using fixSerializer
+
 ## 0.7.13
 
 ### Patch Changes

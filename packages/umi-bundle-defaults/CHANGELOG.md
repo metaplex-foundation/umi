@@ -1,5 +1,20 @@
 # @metaplex-foundation/umi-bundle-defaults
 
+## 0.7.14
+
+### Patch Changes
+
+- Updated dependencies [[`416e7c9`](https://github.com/metaplex-foundation/umi/commit/416e7c982d8fbe7e4cb427106731feec1c636545), [`f530089`](https://github.com/metaplex-foundation/umi/commit/f5300891d0bad4b13431a11d87bfa35b6881ae56), [`8853427`](https://github.com/metaplex-foundation/umi/commit/88534278abc4f5bcda5ef83ff289d33f7559331a)]:
+  - @metaplex-foundation/umi-serializer-data-view@0.7.14
+  - @metaplex-foundation/umi@0.7.14
+  - @metaplex-foundation/umi-transaction-factory-web3js@0.7.14
+  - @metaplex-foundation/umi-downloader-http@0.7.14
+  - @metaplex-foundation/umi-eddsa-web3js@0.7.14
+  - @metaplex-foundation/umi-http-fetch@0.7.14
+  - @metaplex-foundation/umi-program-repository@0.7.14
+  - @metaplex-foundation/umi-rpc-chunk-get-accounts@0.7.14
+  - @metaplex-foundation/umi-rpc-web3js@0.7.14
+
 ## 0.7.13
 
 ### Patch Changes
