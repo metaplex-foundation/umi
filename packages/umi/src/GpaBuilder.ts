@@ -1,12 +1,7 @@
 import type { RpcAccount } from './Account';
 import type { Context } from './Context';
 import { SdkError } from './errors';
-import {
-  base58PublicKey,
-  isPublicKey,
-  publicKey,
-  PublicKey,
-} from './PublicKey';
+import { publicKey, PublicKey } from './PublicKey';
 import type {
   RpcDataFilter,
   RpcDataSlice,
@@ -140,8 +135,6 @@ export class GpaBuilder<
       typeof data === 'boolean'
     ) {
       bytes = base10.serialize(BigInt(data).toString());
-    } else if (isPublicKey(data)) {
-      bytes = new Uint8Array(data.bytes);
     } else {
       bytes = new Uint8Array(data);
     }
@@ -215,7 +208,7 @@ export class GpaBuilder<
           `Following a getProgramAccount call, you are trying to use an ` +
           `account's data (or a slice of it) as a public key. ` +
           `However, we encountered an account ` +
-          `[${base58PublicKey(account.publicKey)}] whose data ` +
+          `[${account.publicKey}] whose data ` +
           `[base64=${base64.deserialize(account.data)}] ` +
           `is not a valid public key.`;
         throw new SdkError(message);

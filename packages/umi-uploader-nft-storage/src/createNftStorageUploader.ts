@@ -6,6 +6,7 @@ import {
   getBytesFromGenericFiles,
   isKeypairSigner,
   lamports,
+  publicKeyBytes,
   Signer,
   SolAmount,
   UploaderInterface,
@@ -60,7 +61,7 @@ export function createNftStorageUploader(
       ? NFTStorageMetaplexor.withSecretKey(signer.secretKey, authOptions)
       : NFTStorageMetaplexor.withSigner(
           signer.signMessage.bind(signer),
-          signer.publicKey.bytes,
+          publicKeyBytes(signer.publicKey),
           authOptions
         );
   };

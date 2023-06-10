@@ -5,6 +5,7 @@ import {
   defaultPublicKey,
   GpaBuilder,
   gpaBuilder,
+  publicKeyBytes,
   RpcAccount,
   Serializer,
 } from '../src';
@@ -58,7 +59,7 @@ test('it can add memcmp filters', (t) => {
 
   builder = getTestGpaBuilder().where(42, defaultPublicKey());
   t.deepEqual(builder.options.filters?.[0], {
-    memcmp: { offset: 42, bytes: defaultPublicKey().bytes },
+    memcmp: { offset: 42, bytes: publicKeyBytes(defaultPublicKey()) },
   });
 });
 

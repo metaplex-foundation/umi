@@ -1,4 +1,5 @@
-import { base58, uniqueBy } from './utils';
+import { InvalidPublicKeyError } from './errors';
+import { base58 } from './utils';
 
 /**
  * The amount of bytes in a public key.
@@ -7,16 +8,20 @@ import { base58, uniqueBy } from './utils';
 export const PUBLIC_KEY_LENGTH = 32;
 
 /**
- * Defines an object that has a public key.
+ * Defines a public key as a base58 string.
  * @category Signers and PublicKeys
  */
-export type HasPublicKey = { publicKey: PublicKey };
+export type PublicKey = string;
 
 /**
- * A base58 string that represents a public key.
+ * Defines all the possible inputs for creating a public key.
  * @category Signers and PublicKeys
  */
-export type PublicKeyBase58 = string;
+export type PublicKeyInput =
+  | PublicKey
+  | PublicKeyBytes
+  | HasPublicKey
+  | { toBase58: () => PublicKey };
 
 /**
  * A Uint8Array that represents a public key.
@@ -25,23 +30,10 @@ export type PublicKeyBase58 = string;
 export type PublicKeyBytes = Uint8Array;
 
 /**
- * Defines all the possible inputs for creating a public key.
+ * Defines an object that has a public key.
  * @category Signers and PublicKeys
  */
-export type PublicKeyInput =
-  | HasPublicKey
-  | PublicKey
-  | PublicKeyBase58
-  | PublicKeyBytes
-  | { toBytes: () => PublicKeyBytes };
-
-/**
- * Defines a public key.
- * @category Signers and PublicKeys
- */
-export type PublicKey = {
-  readonly bytes: PublicKeyBytes;
-};
+export type HasPublicKey = { publicKey: PublicKey };
 
 /**
  * Defines a Program-Derived Address.
@@ -51,7 +43,8 @@ export type PublicKey = {
  *
  * @category Signers and PublicKeys
  */
-export type Pda = PublicKey & {
+export type Pda = {
+  readonly publicKey: PublicKey;
   readonly bump: number;
 };
 
@@ -61,25 +54,21 @@ export type Pda = PublicKey & {
  */
 export const publicKey = (input: PublicKeyInput): PublicKey => {
   let key: PublicKey;
-  // PublicKeyBase58.
+  // PublicKey.
   if (typeof input === 'string') {
-    key = { bytes: base58.serialize(input) };
+    key = input;
   }
   // HasPublicKey.
   else if (typeof input === 'object' && 'publicKey' in input) {
-    key = { bytes: new Uint8Array(input.publicKey.bytes) };
+    key = input.publicKey;
   }
   // Web3JS-compatible PublicKey.
-  else if (typeof input === 'object' && 'toBytes' in input) {
-    key = { bytes: new Uint8Array(input.toBytes()) };
-  }
-  // PublicKey.
-  else if (isPublicKey(input)) {
-    key = { bytes: new Uint8Array(input.bytes) };
+  else if (typeof input === 'object' && 'toBase58' in input) {
+    key = input.toBase58();
   }
   // PublicKeyBytes.
   else {
-    key = { bytes: new Uint8Array(input) };
+    [key] = base58.deserialize(input);
   }
 
   assertPublicKey(key);
@@ -91,19 +80,15 @@ export const publicKey = (input: PublicKeyInput): PublicKey => {
  * @category Signers and PublicKeys
  */
 export const defaultPublicKey = (): PublicKey =>
-  publicKey('11111111111111111111111111111111');
+  '11111111111111111111111111111111';
 
 /**
  * Whether the given value is a valid public key.
  * @category Signers and PublicKeys
  */
 export const isPublicKey = (value: any): value is PublicKey =>
-  typeof value === 'object' &&
-  typeof value.bytes === 'object' &&
-  typeof value.bytes.BYTES_PER_ELEMENT === 'number' &&
-  typeof value.bytes.length === 'number' &&
-  value.bytes.BYTES_PER_ELEMENT === 1 &&
-  value.bytes.length === PUBLIC_KEY_LENGTH;
+  typeof value === 'string' &&
+  base58.serialize(value).length === PUBLIC_KEY_LENGTH;
 
 /**
  * Whether the given value is a valid program-derived address.
@@ -112,7 +97,7 @@ export const isPublicKey = (value: any): value is PublicKey =>
 export const isPda = (value: any): value is Pda =>
   typeof value === 'object' &&
   typeof value.bump === 'number' &&
-  isPublicKey(value);
+  isPublicKey(value.publicKey);
 
 /**
  * Ensures the given value is a valid public key.
@@ -120,7 +105,7 @@ export const isPda = (value: any): value is Pda =>
  */
 export function assertPublicKey(value: any): asserts value is PublicKey {
   if (!isPublicKey(value)) {
-    throw new Error('Invalid public key');
+    throw new InvalidPublicKeyError(value);
   }
 }
 
@@ -131,34 +116,26 @@ export function assertPublicKey(value: any): asserts value is PublicKey {
 export const samePublicKey = (
   left: PublicKeyInput,
   right: PublicKeyInput
-): boolean =>
-  publicKey(left).bytes.toString() === publicKey(right).bytes.toString();
+): boolean => publicKey(left) === publicKey(right);
 
 /**
  * Deduplicates the given array of public keys.
  * @category Signers and PublicKeys
  */
-export const uniquePublicKeys = (publicKeys: PublicKey[]): PublicKey[] =>
-  uniqueBy(publicKeys, samePublicKey);
+export const uniquePublicKeys = (publicKeys: PublicKey[]): PublicKey[] => [
+  ...new Set(publicKeys),
+];
+
+/**
+ * Converts the given public key to a Uint8Array.
+ * @category Signers and PublicKeys
+ */
+export const publicKeyBytes = (key: PublicKeyInput): Uint8Array =>
+  base58.serialize(publicKey(key));
 
 /**
  * Converts the given public key to a base58 string.
  * @category Signers and PublicKeys
+ * @deprecated Public keys are now represented directly as base58 strings.
  */
-export const base58PublicKey = (key: PublicKeyInput): string =>
-  base58.deserialize(publicKey(key).bytes)[0];
-
-/**
- * Helper function that enables public keys and signers
- * to override the `isWritable` property of an account meta.
- * @category Signers and PublicKeys
- * @deprecated This function was used by Kinobi-generated libraries but
- * is no longer needed as they now export their helpers.
- */
-export const checkForIsWritableOverride = (
-  account: (PublicKey | HasPublicKey) & { isWritable?: boolean },
-  value: boolean
-): boolean =>
-  'isWritable' in account && typeof account.isWritable === 'boolean'
-    ? account.isWritable
-    : value;
+export const base58PublicKey = (key: PublicKeyInput): string => publicKey(key);

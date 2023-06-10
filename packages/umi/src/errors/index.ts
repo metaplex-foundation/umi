@@ -2,6 +2,7 @@ export * from './AccountNotFoundError';
 export * from './AmountMismatchError';
 export * from './InterfaceImplementationMissingError';
 export * from './InvalidBaseStringError';
+export * from './InvalidPublicKeyError';
 export * from './ProgramError';
 export * from './SdkError';
 export * from './UmiError';

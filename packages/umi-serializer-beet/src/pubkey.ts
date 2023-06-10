@@ -4,6 +4,7 @@ import {
   PublicKeyInput,
   PublicKeySerializerOptions,
   Serializer,
+  publicKeyBytes,
 } from '@metaplex-foundation/umi';
 import { DeserializingEmptyBufferError, BeetSerializerError } from './errors';
 
@@ -14,7 +15,7 @@ export function publicKey(
     description: options.description ?? 'publicKey',
     fixedSize: 32,
     maxSize: 32,
-    serialize: (value: PublicKeyInput) => toPublicKey(value).bytes,
+    serialize: (value: PublicKeyInput) => publicKeyBytes(toPublicKey(value)),
     deserialize: (bytes: Uint8Array, offset = 0) => {
       if (bytes.slice(offset).length === 0) {
         throw new DeserializingEmptyBufferError('publicKey');

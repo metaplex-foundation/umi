@@ -1,11 +1,11 @@
 import {
   Cluster,
-  base58PublicKey,
   Program,
   ProgramError,
   PublicKey,
   SdkError,
   UnderlyingProgramError,
+  isPublicKey,
 } from '@metaplex-foundation/umi';
 
 export class ProgramNotRecognizedError extends SdkError {
@@ -16,8 +16,8 @@ export class ProgramNotRecognizedError extends SdkError {
   readonly cluster: Cluster | '*';
 
   constructor(identifier: string | PublicKey, cluster: Cluster | '*') {
-    const isName = typeof identifier === 'string';
-    const toString = isName ? identifier : base58PublicKey(identifier);
+    const isName = !isPublicKey(identifier);
+    const toString = isName ? identifier : identifier;
     const clusterString = cluster === '*' ? 'any' : `the [${cluster}]`;
     const message =
       `The provided program ${isName ? 'name' : 'address'} [${toString}] ` +
@@ -38,7 +38,7 @@ export class ProgramErrorNotRecognizedError extends ProgramError {
     const ofCode = cause.code ? ` of code [${cause.code}]` : '';
     const message =
       `The program [${program.name}] ` +
-      `at address [${base58PublicKey(program.publicKey)}] ` +
+      `at address [${program.publicKey}] ` +
       `raised an error${ofCode} ` +
       `that is not recognized by the programs registered on the SDK. ` +
       `Please check the underlying program error below for more details.`;
