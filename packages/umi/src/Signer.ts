@@ -1,4 +1,4 @@
-import { Pda, PublicKey, samePublicKey } from './PublicKey';
+import { PublicKey, PublicKeyInput, samePublicKey } from './PublicKey';
 import { Transaction } from './Transaction';
 import { uniqueBy } from './utils';
 
@@ -84,7 +84,7 @@ export const signAllTransactions = async (
  * Whether the provided value is a `Signer`.
  * @category Signers and PublicKeys
  */
-export const isSigner = (value: PublicKey | Pda | Signer): value is Signer =>
+export const isSigner = (value: PublicKeyInput | Signer): value is Signer =>
   typeof value === 'object' && 'publicKey' in value && 'signMessage' in value;
 
 /**
