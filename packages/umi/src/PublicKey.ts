@@ -14,12 +14,23 @@ export const PUBLIC_KEY_LENGTH = 32;
 export type PublicKey = string;
 
 /**
+ * Defines a Program-Derived Address.
+ *
+ * It is a public key with the bump number that was used
+ * to ensure the address is not on the ed25519 curve.
+ *
+ * @category Signers and PublicKeys
+ */
+export type Pda = [PublicKey, number];
+
+/**
  * Defines all the possible inputs for creating a public key.
  * @category Signers and PublicKeys
  */
 export type PublicKeyInput =
   | string
   | Uint8Array
+  | Pda
   | { publicKey: string }
   | { toBase58: () => string };
 
@@ -35,18 +46,6 @@ export type PublicKeyBytes = Uint8Array;
  */
 export type HasPublicKey = {
   readonly publicKey: PublicKey;
-};
-
-/**
- * Defines a Program-Derived Address.
- *
- * It is a public key with the bump number that was used
- * to ensure the address is not on the ed25519 curve.
- *
- * @category Signers and PublicKeys
- */
-export type Pda = HasPublicKey & {
-  readonly bump: number;
 };
 
 /**
@@ -66,6 +65,10 @@ export const publicKey = (input: PublicKeyInput): PublicKey => {
   // Legacy Web3JS-compatible PublicKey.
   else if (typeof input === 'object' && 'toBase58' in input) {
     key = input.toBase58();
+  }
+  // Pda.
+  else if (Array.isArray(input)) {
+    [key] = input;
   }
   // PublicKeyBytes.
   else {
@@ -101,9 +104,10 @@ export const isPublicKey = (value: any): value is PublicKey => {
  * @category Signers and PublicKeys
  */
 export const isPda = (value: any): value is Pda =>
-  typeof value === 'object' &&
-  typeof value.bump === 'number' &&
-  isPublicKey(value.publicKey);
+  Array.isArray(value) &&
+  value.length === 2 &&
+  typeof value[1] === 'number' &&
+  isPublicKey(value[0]);
 
 /**
  * Ensures the given value is a valid public key.
