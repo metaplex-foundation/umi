@@ -86,9 +86,14 @@ export const defaultPublicKey = (): PublicKey =>
  * Whether the given value is a valid public key.
  * @category Signers and PublicKeys
  */
-export const isPublicKey = (value: any): value is PublicKey =>
-  typeof value === 'string' &&
-  base58.serialize(value).length === PUBLIC_KEY_LENGTH;
+export const isPublicKey = (value: any): value is PublicKey => {
+  try {
+    assertPublicKey(value);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
 
 /**
  * Whether the given value is a valid program-derived address.
@@ -104,8 +109,28 @@ export const isPda = (value: any): value is Pda =>
  * @category Signers and PublicKeys
  */
 export function assertPublicKey(value: any): asserts value is PublicKey {
-  if (!isPublicKey(value)) {
-    throw new InvalidPublicKeyError(value);
+  // Check value type.
+  if (typeof value !== 'string') {
+    throw new InvalidPublicKeyError(value, 'Public keys must be strings.');
+  }
+
+  // Check base58 encoding.
+  let bytes: Uint8Array;
+  try {
+    bytes = base58.serialize(value);
+  } catch (error) {
+    throw new InvalidPublicKeyError(
+      value,
+      'Public keys must be base58 encoded.'
+    );
+  }
+
+  // Check byte length.
+  if (bytes.length !== PUBLIC_KEY_LENGTH) {
+    throw new InvalidPublicKeyError(
+      value,
+      `Public keys must be ${PUBLIC_KEY_LENGTH} bytes.`
+    );
   }
 }
 

@@ -4,8 +4,9 @@ export class InvalidPublicKeyError extends Error {
 
   readonly invalidPublicKey: unknown;
 
-  constructor(invalidPublicKey: unknown) {
-    super(`The provided public key is invalid: ${invalidPublicKey}`);
+  constructor(invalidPublicKey: unknown, reason?: string) {
+    reason = reason ? `. ${reason}` : '';
+    super(`The provided public key is invalid: ${invalidPublicKey}${reason}`);
     this.invalidPublicKey = invalidPublicKey;
   }
 }
