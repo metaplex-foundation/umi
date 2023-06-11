@@ -43,8 +43,7 @@ export type HasPublicKey = { publicKey: PublicKey };
  *
  * @category Signers and PublicKeys
  */
-export type Pda = {
-  readonly publicKey: PublicKey;
+export type Pda = HasPublicKey & {
   readonly bump: number;
 };
 
@@ -163,7 +162,7 @@ export const uniquePublicKeys = (publicKeys: PublicKey[]): PublicKey[] => [
  * Converts the given public key to a Uint8Array.
  * @category Signers and PublicKeys
  */
-export const publicKeyBytes = (key: PublicKeyInput): Uint8Array =>
+export const publicKeyBytes = (key: PublicKeyInput): PublicKeyBytes =>
   base58.serialize(publicKey(key));
 
 /**
