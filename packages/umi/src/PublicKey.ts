@@ -114,6 +114,14 @@ export function assertPublicKey(value: any): asserts value is PublicKey {
     throw new InvalidPublicKeyError(value, 'Public keys must be strings.');
   }
 
+  // Check string length to avoid unnecessary base58 decoding.
+  if (value.length < 32 || value.length > 44) {
+    throw new InvalidPublicKeyError(
+      value,
+      'Public keys must be between 32 and 44 characters.'
+    );
+  }
+
   // Check base58 encoding.
   let bytes: Uint8Array;
   try {
