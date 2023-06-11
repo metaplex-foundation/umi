@@ -61,7 +61,7 @@ export const publicKey = (input: PublicKeyInput): PublicKey => {
   else if (typeof input === 'object' && 'publicKey' in input) {
     key = input.publicKey;
   }
-  // Web3JS-compatible PublicKey.
+  // Legacy Web3JS-compatible PublicKey.
   else if (typeof input === 'object' && 'toBase58' in input) {
     key = input.toBase58();
   }
