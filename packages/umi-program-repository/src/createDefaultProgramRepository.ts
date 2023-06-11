@@ -10,7 +10,6 @@ import {
   publicKey,
   PublicKey,
   PublicKeyInput,
-  samePublicKey,
   Transaction,
 } from '@metaplex-foundation/umi';
 import {
@@ -33,7 +32,7 @@ export function createDefaultProgramRepository(
     const programs = all(clusterFilter);
     const resolvedIdentifier = resolveBinding(identifier);
     return isPublicKey(resolvedIdentifier)
-      ? programs.some((p) => samePublicKey(p.publicKey, resolvedIdentifier))
+      ? programs.some((p) => p.publicKey === resolvedIdentifier)
       : programs.some((p) => p.name === resolvedIdentifier);
   };
 
@@ -45,7 +44,7 @@ export function createDefaultProgramRepository(
     const programs = all(clusterFilter);
     const resolvedIdentifier = resolveBinding(identifier);
     const program = isPublicKey(resolvedIdentifier)
-      ? programs.find((p) => samePublicKey(p.publicKey, resolvedIdentifier))
+      ? programs.find((p) => p.publicKey === resolvedIdentifier)
       : programs.find((p) => p.name === resolvedIdentifier);
 
     if (!program) {

@@ -18,10 +18,10 @@ export type PublicKey = string;
  * @category Signers and PublicKeys
  */
 export type PublicKeyInput =
-  | PublicKey
-  | PublicKeyBytes
-  | HasPublicKey
-  | { toBase58: () => PublicKey };
+  | string
+  | Uint8Array
+  | { publicKey: string }
+  | { toBase58: () => string };
 
 /**
  * A Uint8Array that represents a public key.
@@ -33,7 +33,9 @@ export type PublicKeyBytes = Uint8Array;
  * Defines an object that has a public key.
  * @category Signers and PublicKeys
  */
-export type HasPublicKey = { publicKey: PublicKey };
+export type HasPublicKey = {
+  readonly publicKey: PublicKey;
+};
 
 /**
  * Defines a Program-Derived Address.
@@ -52,7 +54,7 @@ export type Pda = HasPublicKey & {
  * @category Signers and PublicKeys
  */
 export const publicKey = (input: PublicKeyInput): PublicKey => {
-  let key: PublicKey;
+  let key: string;
   // PublicKey.
   if (typeof input === 'string') {
     key = input;
@@ -79,7 +81,7 @@ export const publicKey = (input: PublicKeyInput): PublicKey => {
  * @category Signers and PublicKeys
  */
 export const defaultPublicKey = (): PublicKey =>
-  '11111111111111111111111111111111';
+  '11111111111111111111111111111111' as PublicKey;
 
 /**
  * Whether the given value is a valid public key.
@@ -113,7 +115,34 @@ export function assertPublicKey(value: any): asserts value is PublicKey {
     throw new InvalidPublicKeyError(value, 'Public keys must be strings.');
   }
 
-  // Check string length to avoid unnecessary base58 decoding.
+  // Check base58 encoding and byte length.
+  publicKeyBytes(value as PublicKey);
+}
+
+/**
+ * Whether the given public keys are the same.
+ * @category Signers and PublicKeys
+ * @deprecated Use `left === right` instead now that public keys are base58 strings.
+ */
+export const samePublicKey = (
+  left: PublicKeyInput,
+  right: PublicKeyInput
+): boolean => publicKey(left) === publicKey(right);
+
+/**
+ * Deduplicates the given array of public keys.
+ * @category Signers and PublicKeys
+ */
+export const uniquePublicKeys = (publicKeys: PublicKey[]): PublicKey[] => [
+  ...new Set(publicKeys),
+];
+
+/**
+ * Converts the given public key to a Uint8Array.
+ * @category Signers and PublicKeys
+ */
+export const publicKeyBytes = (value: PublicKey): PublicKeyBytes => {
+  // Check string length to avoid unnecessary base58 encoding.
   if (value.length < 32 || value.length > 44) {
     throw new InvalidPublicKeyError(
       value,
@@ -139,31 +168,9 @@ export function assertPublicKey(value: any): asserts value is PublicKey {
       `Public keys must be ${PUBLIC_KEY_LENGTH} bytes.`
     );
   }
-}
 
-/**
- * Whether the given public keys are the same.
- * @category Signers and PublicKeys
- */
-export const samePublicKey = (
-  left: PublicKeyInput,
-  right: PublicKeyInput
-): boolean => publicKey(left) === publicKey(right);
-
-/**
- * Deduplicates the given array of public keys.
- * @category Signers and PublicKeys
- */
-export const uniquePublicKeys = (publicKeys: PublicKey[]): PublicKey[] => [
-  ...new Set(publicKeys),
-];
-
-/**
- * Converts the given public key to a Uint8Array.
- * @category Signers and PublicKeys
- */
-export const publicKeyBytes = (key: PublicKeyInput): PublicKeyBytes =>
-  base58.serialize(publicKey(key));
+  return bytes;
+};
 
 /**
  * Converts the given public key to a base58 string.

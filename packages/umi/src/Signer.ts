@@ -1,4 +1,4 @@
-import { PublicKey, PublicKeyInput, samePublicKey } from './PublicKey';
+import { PublicKey, PublicKeyInput } from './PublicKey';
 import { Transaction } from './Transaction';
 import { uniqueBy } from './utils';
 
@@ -8,13 +8,15 @@ import { uniqueBy } from './utils';
  */
 export interface Signer {
   /** The public key of the Signer. */
-  publicKey: PublicKey;
+  readonly publicKey: PublicKey;
   /** Signs the given message. */
-  signMessage(message: Uint8Array): Promise<Uint8Array>;
+  readonly signMessage: (message: Uint8Array) => Promise<Uint8Array>;
   /** Signs the given transaction. */
-  signTransaction(transaction: Transaction): Promise<Transaction>;
+  readonly signTransaction: (transaction: Transaction) => Promise<Transaction>;
   /** Signs all the given transactions at once. */
-  signAllTransactions(transactions: Transaction[]): Promise<Transaction[]>;
+  readonly signAllTransactions: (
+    transactions: Transaction[]
+  ) => Promise<Transaction[]>;
 }
 
 /**
@@ -47,8 +49,8 @@ export const signAllTransactions = async (
   const signersWithTransactions = transactionsWithSigners.reduce(
     (all, { signers }, index) => {
       signers.forEach((signer) => {
-        const item = all.find((item) =>
-          samePublicKey(item.signer.publicKey, signer.publicKey)
+        const item = all.find(
+          (item) => item.signer.publicKey === signer.publicKey
         );
         if (item) {
           item.indices.push(index);
@@ -92,7 +94,7 @@ export const isSigner = (value: PublicKeyInput | Signer): value is Signer =>
  * @category Signers and PublicKeys
  */
 export const uniqueSigners = (signers: Signer[]): Signer[] =>
-  uniqueBy(signers, samePublicKey);
+  uniqueBy(signers, (a, b) => a.publicKey === b.publicKey);
 
 /**
  * Creates a `Signer` that, when required to sign, does nothing.
