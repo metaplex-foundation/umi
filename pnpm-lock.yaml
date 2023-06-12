@@ -114,6 +114,9 @@ importers:
       '@ava/typescript':
         specifier: ^3.0.1
         version: 3.0.1
+      '@solana/keys':
+        specifier: 2.0.0-experimental.7d8a778
+        version: 2.0.0-experimental.7d8a778
       ava:
         specifier: ^5.1.0
         version: 5.1.0(@ava/typescript@3.0.1)
@@ -4340,6 +4343,12 @@ packages:
     dependencies:
       buffer: 6.0.3
 
+  /@solana/keys@2.0.0-experimental.7d8a778:
+    resolution: {integrity: sha512-n0FAssDlT65RQtlYrtJfVKgz7EvzgWQAyMxMFq9j5Wrh59+PRnWpOAEK4CN+OUVaDHk0L57ehoRx4T2vHUGu0A==}
+    dependencies:
+      bs58: 5.0.0
+    dev: true
+
   /@solana/spl-token-registry@0.2.4574:
     resolution: {integrity: sha512-JzlfZmke8Rxug20VT/VpI2XsXlsqMlcORIUivF+Yucj7tFi7A0dXG7h+2UnD0WaZJw8BrUz2ABNkUnv89vbv1A==}
     engines: {node: '>=10'}
@@ -5643,6 +5652,10 @@ packages:
     dependencies:
       safe-buffer: 5.2.1
 
+  /base-x@4.0.0:
+    resolution: {integrity: sha512-FuwxlW4H5kh37X/oW59pwTzzTKRzfrrQwhmyspRM7swOEZcHtDZSCt45U6oKgtuFE+WYPblePMVIPR4RZrh/hw==}
+    dev: true
+
   /base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
 
@@ -5860,6 +5873,12 @@ packages:
     resolution: {integrity: sha512-Ok3Wdf5vOIlBrgCvTq96gBkJw+JUEzdBgyaza5HLtPm7yTHkjRy8+JzNyHF7BHa0bNWOQIp3m5YF0nnFcOIKLw==}
     dependencies:
       base-x: 3.0.9
+
+  /bs58@5.0.0:
+    resolution: {integrity: sha512-r+ihvQJvahgYT50JD05dyJNKlmmSlMoOGwn1lCcEzanPglg7TxYjioQUYehQ9mAR/+hOSd2jRc/Z2y5UxBymvQ==}
+    dependencies:
+      base-x: 4.0.0
+    dev: true
 
   /buffer-from@1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}

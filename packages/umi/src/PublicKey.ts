@@ -1,3 +1,4 @@
+import type { Base58EncodedAddress } from '@solana/keys';
 import { InvalidPublicKeyError } from './errors';
 import { base58 } from './utils';
 
@@ -11,7 +12,8 @@ export const PUBLIC_KEY_LENGTH = 32;
  * Defines a public key as a base58 string.
  * @category Signers and PublicKeys
  */
-export type PublicKey = string & { readonly __publicKey: unique symbol };
+export type PublicKey = string &
+  Base58EncodedAddress & { readonly __publicKey: unique symbol };
 
 /**
  * Defines a Program-Derived Address.
