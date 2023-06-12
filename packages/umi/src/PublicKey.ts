@@ -24,21 +24,12 @@ export type PublicKey = string & { readonly __publicKey: unique symbol };
 export type Pda = [PublicKey, number] & { readonly __pda: unique symbol };
 
 /**
- * Defines all the possible inputs for creating a public key.
- * @category Signers and PublicKeys
- */
-export type PublicKeyInput =
-  | string
-  | Uint8Array
-  | Pda
-  | { publicKey: string }
-  | { toBase58: () => string };
-
-/**
  * A Uint8Array that represents a public key.
  * @category Signers and PublicKeys
  */
-export type PublicKeyBytes = Uint8Array;
+export type PublicKeyBytes = Uint8Array & {
+  readonly __publicKeyBytes: unique symbol;
+};
 
 /**
  * Defines an object that has a public key.
@@ -49,35 +40,79 @@ export type HasPublicKey = {
 };
 
 /**
+ * Defines an object that can be converted to a base58 public key.
+ * @category Signers and PublicKeys
+ */
+export type LegacyWeb3JsPublicKey = {
+  toBase58: () => string;
+};
+
+/**
+ * Defines all the possible inputs for creating a public key.
+ * @category Signers and PublicKeys
+ */
+export type PublicKeyInput =
+  | string
+  | Uint8Array
+  | [string, number]
+  | { publicKey: string }
+  | LegacyWeb3JsPublicKey;
+
+/**
+ * Defines all the possible safe inputs for creating a public key.
+ * That is, they have already been validated to be or
+ * to contain a valid public key.
+ * @category Signers and PublicKeys
+ */
+export type SafePublicKeyInput =
+  | PublicKey
+  | PublicKeyBytes
+  | Pda
+  | HasPublicKey
+  | LegacyWeb3JsPublicKey;
+
+/**
  * Creates a new public key from the given input.
  * @category Signers and PublicKeys
  */
-export const publicKey = (input: PublicKeyInput): PublicKey => {
-  let key: string;
-  // PublicKey.
-  if (typeof input === 'string') {
-    key = input;
-  }
-  // HasPublicKey.
-  else if (typeof input === 'object' && 'publicKey' in input) {
-    key = input.publicKey;
-  }
-  // Legacy Web3JS-compatible PublicKey.
-  else if (typeof input === 'object' && 'toBase58' in input) {
-    key = input.toBase58();
-  }
-  // Pda.
-  else if (Array.isArray(input)) {
-    [key] = input;
-  }
-  // PublicKeyBytes.
-  else {
-    [key] = base58.deserialize(input);
+export function publicKey(
+  input: PublicKeyInput,
+  assertValidPublicKey?: true
+): PublicKey;
+export function publicKey(
+  input: SafePublicKeyInput,
+  assertValidPublicKey: false
+): PublicKey;
+export function publicKey(
+  input: PublicKeyInput | SafePublicKeyInput,
+  assertValidPublicKey: boolean = true
+): PublicKey {
+  const key = ((): string => {
+    if (typeof input === 'string') {
+      return input;
+    }
+    // HasPublicKey.
+    if (typeof input === 'object' && 'publicKey' in input) {
+      return input.publicKey;
+    }
+    // LegacyWeb3JsPublicKey.
+    if (typeof input === 'object' && 'toBase58' in input) {
+      return input.toBase58();
+    }
+    // Pda.
+    if (Array.isArray(input)) {
+      return input[0];
+    }
+    // PublicKeyBytes.
+    return base58.deserialize(input)[0];
+  })();
+
+  if (assertValidPublicKey) {
+    assertPublicKey(key);
   }
 
-  assertPublicKey(key);
-  return key;
-};
+  return key as PublicKey;
+}
 
 /**
  * Creates the default public key which is composed of all zero bytes.
@@ -173,7 +208,7 @@ export const publicKeyBytes = (value: PublicKey): PublicKeyBytes => {
     );
   }
 
-  return bytes;
+  return bytes as PublicKeyBytes;
 };
 
 /**
