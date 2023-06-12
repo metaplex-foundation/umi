@@ -1,15 +1,15 @@
 import test from 'ava';
-import { createNoopSigner, publicKey } from '../src';
+import { PublicKey, createNoopSigner, publicKey } from '../src';
 
 test('it can create PublicKeys from base 58 strings', (t) => {
-  t.deepEqual(
+  t.is(
     publicKey('11111111111111111111111111111111'),
-    '11111111111111111111111111111111'
+    '11111111111111111111111111111111' as PublicKey
   );
 
-  t.deepEqual(
+  t.is(
     publicKey('4HM9LW2rm3SR2ZdBiFK3D21ENmQWpqEJEhx1nfgcC3r9'),
-    '4HM9LW2rm3SR2ZdBiFK3D21ENmQWpqEJEhx1nfgcC3r9'
+    '4HM9LW2rm3SR2ZdBiFK3D21ENmQWpqEJEhx1nfgcC3r9' as PublicKey
   );
 });
 
@@ -18,11 +18,14 @@ test('it can create PublicKeys from bytes', (t) => {
     48, 195, 33, 91, 254, 142, 96, 119, 69, 93, 155, 127, 231, 0, 98, 115, 193,
     101, 97, 80, 204, 136, 168, 50, 218, 168, 254, 212, 56, 247, 237, 178,
   ]);
-  t.is(publicKey(bytes), '4HM9LW2rm3SR2ZdBiFK3D21ENmQWpqEJEhx1nfgcC3r9');
+  t.is(
+    publicKey(bytes),
+    '4HM9LW2rm3SR2ZdBiFK3D21ENmQWpqEJEhx1nfgcC3r9' as PublicKey
+  );
 
   t.is(
     publicKey(new Uint8Array(Array(32).fill(0))),
-    '11111111111111111111111111111111'
+    '11111111111111111111111111111111' as PublicKey
   );
 });
 

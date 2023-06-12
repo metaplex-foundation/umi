@@ -11,7 +11,7 @@ export const PUBLIC_KEY_LENGTH = 32;
  * Defines a public key as a base58 string.
  * @category Signers and PublicKeys
  */
-export type PublicKey = string;
+export type PublicKey = string & { readonly __publicKey: unique symbol };
 
 /**
  * Defines a Program-Derived Address.
@@ -21,7 +21,7 @@ export type PublicKey = string;
  *
  * @category Signers and PublicKeys
  */
-export type Pda = [PublicKey, number];
+export type Pda = [PublicKey, number] & { readonly __pda: unique symbol };
 
 /**
  * Defines all the possible inputs for creating a public key.
