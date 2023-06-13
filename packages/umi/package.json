@@ -28,7 +28,6 @@
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
-    "@solana/keys": "2.0.0-experimental.7d8a778",
     "ava": "^5.1.0"
   },
   "publishConfig": {
