@@ -4,12 +4,12 @@ import { PublicKey, createNoopSigner, publicKey } from '../src';
 test('it can create PublicKeys from base 58 strings', (t) => {
   t.is(
     publicKey('11111111111111111111111111111111'),
-    '11111111111111111111111111111111' as PublicKey
+    '11111111111111111111111111111111' as PublicKey<'11111111111111111111111111111111'>
   );
 
   t.is(
     publicKey('4HM9LW2rm3SR2ZdBiFK3D21ENmQWpqEJEhx1nfgcC3r9'),
-    '4HM9LW2rm3SR2ZdBiFK3D21ENmQWpqEJEhx1nfgcC3r9' as PublicKey
+    '4HM9LW2rm3SR2ZdBiFK3D21ENmQWpqEJEhx1nfgcC3r9' as PublicKey<'4HM9LW2rm3SR2ZdBiFK3D21ENmQWpqEJEhx1nfgcC3r9'>
   );
 });
 

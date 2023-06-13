@@ -12,7 +12,8 @@ export const PUBLIC_KEY_LENGTH = 32;
  * Defines a public key as a base58 string.
  * @category Signers and PublicKeys
  */
-export type PublicKey = Base58EncodedAddress;
+export type PublicKey<TAddress extends string = string> =
+  Base58EncodedAddress<TAddress>;
 
 /**
  * Defines a Program-Derived Address.
@@ -22,7 +23,10 @@ export type PublicKey = Base58EncodedAddress;
  *
  * @category Signers and PublicKeys
  */
-export type Pda = [PublicKey, number] & { readonly __pda: unique symbol };
+export type Pda<
+  TAddress extends string = string,
+  TBump extends number = number
+> = [PublicKey<TAddress>, TBump] & { readonly __pda: unique symbol };
 
 /**
  * A Uint8Array that represents a public key.
@@ -36,28 +40,28 @@ export type PublicKeyBytes = Uint8Array & {
  * Defines an object that has a public key.
  * @category Signers and PublicKeys
  */
-export type HasPublicKey = {
-  readonly publicKey: PublicKey;
+export type HasPublicKey<TAddress extends string = string> = {
+  readonly publicKey: PublicKey<TAddress>;
 };
 
 /**
  * Defines an object that can be converted to a base58 public key.
  * @category Signers and PublicKeys
  */
-export type LegacyWeb3JsPublicKey = {
-  toBase58: () => string;
+export type LegacyWeb3JsPublicKey<TAddress extends string = string> = {
+  toBase58: () => TAddress;
 };
 
 /**
  * Defines all the possible inputs for creating a public key.
  * @category Signers and PublicKeys
  */
-export type PublicKeyInput =
-  | string
+export type PublicKeyInput<TAddress extends string = string> =
+  | TAddress
   | Uint8Array
-  | [string, number]
-  | { publicKey: string }
-  | LegacyWeb3JsPublicKey;
+  | [TAddress, number]
+  | { publicKey: TAddress }
+  | LegacyWeb3JsPublicKey<TAddress>;
 
 /**
  * Defines all the possible safe inputs for creating a public key.
@@ -65,29 +69,29 @@ export type PublicKeyInput =
  * to contain a valid public key.
  * @category Signers and PublicKeys
  */
-export type SafePublicKeyInput =
-  | PublicKey
+export type SafePublicKeyInput<TAddress extends string = string> =
+  | PublicKey<TAddress>
   | PublicKeyBytes
-  | Pda
-  | HasPublicKey
-  | LegacyWeb3JsPublicKey;
+  | Pda<TAddress>
+  | HasPublicKey<TAddress>
+  | LegacyWeb3JsPublicKey<TAddress>;
 
 /**
  * Creates a new public key from the given input.
  * @category Signers and PublicKeys
  */
-export function publicKey(
-  input: PublicKeyInput,
+export function publicKey<TAddress extends string>(
+  input: PublicKeyInput<TAddress>,
   assertValidPublicKey?: true
-): PublicKey;
-export function publicKey(
-  input: SafePublicKeyInput,
+): PublicKey<TAddress>;
+export function publicKey<TAddress extends string>(
+  input: SafePublicKeyInput<TAddress>,
   assertValidPublicKey: false
-): PublicKey;
-export function publicKey(
-  input: PublicKeyInput | SafePublicKeyInput,
+): PublicKey<TAddress>;
+export function publicKey<TAddress extends string>(
+  input: PublicKeyInput<TAddress> | SafePublicKeyInput<TAddress>,
   assertValidPublicKey: boolean = true
-): PublicKey {
+): PublicKey<TAddress> {
   const key = ((): string => {
     if (typeof input === 'string') {
       return input;
@@ -112,21 +116,23 @@ export function publicKey(
     assertPublicKey(key);
   }
 
-  return key as PublicKey;
+  return key as PublicKey<TAddress>;
 }
 
 /**
  * Creates the default public key which is composed of all zero bytes.
  * @category Signers and PublicKeys
  */
-export const defaultPublicKey = (): PublicKey =>
-  '11111111111111111111111111111111' as PublicKey;
+export const defaultPublicKey = () =>
+  '11111111111111111111111111111111' as PublicKey<'11111111111111111111111111111111'>;
 
 /**
  * Whether the given value is a valid public key.
  * @category Signers and PublicKeys
  */
-export const isPublicKey = (value: any): value is PublicKey => {
+export const isPublicKey = <TAddress extends string>(
+  value: TAddress
+): value is PublicKey<TAddress> => {
   try {
     assertPublicKey(value);
     return true;
@@ -139,7 +145,9 @@ export const isPublicKey = (value: any): value is PublicKey => {
  * Whether the given value is a valid program-derived address.
  * @category Signers and PublicKeys
  */
-export const isPda = (value: any): value is Pda =>
+export const isPda = <TAddress extends string, TBump extends number>(
+  value: [TAddress, TBump]
+): value is Pda<TAddress, TBump> =>
   Array.isArray(value) &&
   value.length === 2 &&
   typeof value[1] === 'number' &&
@@ -149,14 +157,16 @@ export const isPda = (value: any): value is Pda =>
  * Ensures the given value is a valid public key.
  * @category Signers and PublicKeys
  */
-export function assertPublicKey(value: any): asserts value is PublicKey {
+export function assertPublicKey<TAddress extends string>(
+  value: TAddress
+): asserts value is PublicKey<TAddress> {
   // Check value type.
   if (typeof value !== 'string') {
     throw new InvalidPublicKeyError(value, 'Public keys must be strings.');
   }
 
   // Check base58 encoding and byte length.
-  publicKeyBytes(value as PublicKey);
+  publicKeyBytes(value);
 }
 
 /**
@@ -179,9 +189,10 @@ export const uniquePublicKeys = (publicKeys: PublicKey[]): PublicKey[] => [
 
 /**
  * Converts the given public key to a Uint8Array.
+ * Throws an error if the public key is an invalid base58 string.
  * @category Signers and PublicKeys
  */
-export const publicKeyBytes = (value: PublicKey): PublicKeyBytes => {
+export const publicKeyBytes = (value: string): PublicKeyBytes => {
   // Check string length to avoid unnecessary base58 encoding.
   if (value.length < 32 || value.length > 44) {
     throw new InvalidPublicKeyError(
