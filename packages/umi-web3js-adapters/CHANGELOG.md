@@ -1,5 +1,16 @@
 # @metaplex-foundation/umi-web3js-adapters
 
+## 0.8.0
+
+### Minor Changes
+
+- [#62](https://github.com/metaplex-foundation/umi/pull/62) [`15392cd`](https://github.com/metaplex-foundation/umi/commit/15392cd9a98d55750be09268c8ee93611d159e03) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Use PublicKeys as base58 strings. See `@metaplex-foundation/umi` changelog for more details.
+
+### Patch Changes
+
+- Updated dependencies [[`15392cd`](https://github.com/metaplex-foundation/umi/commit/15392cd9a98d55750be09268c8ee93611d159e03)]:
+  - @metaplex-foundation/umi@0.8.0
+
 ## 0.7.14
 
 ### Patch Changes
