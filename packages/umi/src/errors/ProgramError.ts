@@ -1,5 +1,4 @@
 import type { Program } from '../Program';
-import { base58PublicKey } from '../PublicKey';
 import { UmiError } from './UmiError';
 
 /** @category Errors */
@@ -18,12 +17,7 @@ export class ProgramError extends UmiError {
     program: Program,
     cause?: UnderlyingProgramError
   ) {
-    super(
-      message,
-      'program',
-      `${program.name} [${base58PublicKey(program.publicKey)}]`,
-      cause
-    );
+    super(message, 'program', `${program.name} [${program.publicKey}]`, cause);
     this.program = program;
     this.logs = cause?.logs;
     if (this.logs) {

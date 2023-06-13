@@ -10,7 +10,6 @@ import {
   publicKey,
   PublicKey,
   PublicKeyInput,
-  samePublicKey,
   Transaction,
 } from '@metaplex-foundation/umi';
 import {
@@ -32,9 +31,9 @@ export function createDefaultProgramRepository(
   ): boolean => {
     const programs = all(clusterFilter);
     const resolvedIdentifier = resolveBinding(identifier);
-    return typeof resolvedIdentifier === 'string'
-      ? programs.some((p) => p.name === resolvedIdentifier)
-      : programs.some((p) => samePublicKey(p.publicKey, resolvedIdentifier));
+    return isPublicKey(resolvedIdentifier)
+      ? programs.some((p) => p.publicKey === resolvedIdentifier)
+      : programs.some((p) => p.name === resolvedIdentifier);
   };
 
   const get = <T extends Program = Program>(
@@ -44,10 +43,9 @@ export function createDefaultProgramRepository(
     const cluster = resolveClusterFilter(clusterFilter);
     const programs = all(clusterFilter);
     const resolvedIdentifier = resolveBinding(identifier);
-    const program =
-      typeof resolvedIdentifier === 'string'
-        ? programs.find((p) => p.name === resolvedIdentifier)
-        : programs.find((p) => samePublicKey(p.publicKey, resolvedIdentifier));
+    const program = isPublicKey(resolvedIdentifier)
+      ? programs.find((p) => p.publicKey === resolvedIdentifier)
+      : programs.find((p) => p.name === resolvedIdentifier);
 
     if (!program) {
       throw new ProgramNotRecognizedError(resolvedIdentifier, cluster);

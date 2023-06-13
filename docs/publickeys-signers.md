@@ -8,12 +8,14 @@ Let's tackle this on a per-use case basis.
 
 ## Public keys
 
-In Umi, a public key is a simple object containing the 32 bytes of the public key represented by the native `Uint8Array` type.
+In Umi, a public key is a simple base58 `string` representing a 32-byte array. We use an opaque type to tell TypeScript that the given public key has been verified and is valid. We also use a type parameter to offer more granular type safety.
 
 ```ts
-type PublicKey = {
-  bytes: Uint8Array;
-}
+// In short:
+type PublicKey = string;
+
+// In reality:
+type PublicKey<TAddress extends string = string> = TAddress & { __publicKey: unique symbol };
 ```
 
 We can create a new valid public key from a variety of inputs using the `publicKey` helper method. If the provided input cannot be converted to a valid public key, an error will be thrown.
@@ -29,24 +31,21 @@ publicKey(new Uint8Array(32));
 publicKey(someWallet as PublicKey | Signer);
 ```
 
-It is possible to convert a public key to a base58 string using the `base58PublicKey` helper method.
+It is possible to convert a public key to a `Uint8Array` using the `publicKeyBytes` helper method.
 
 ```ts
-base58PublicKey(myPublicKey);
-// -> "LorisCg1FTs89a32VSrFskYDgiRbNQzct1WxyZb7nuA"
+publicKeyBytes(myPublicKey);
+// -> Uint8Array(32)
 ```
 
 Additional helper methods are also available to help manage public keys.
 
 ```ts
-// Check if the provided value is a PublicKey object.
+// Check if the provided value is a valid public key.
 isPublicKey(myPublicKey);
 
-// Assert the provided value is a PublicKey object and fail otherwise.
+// Assert the provided value is a valid public key and fail otherwise.
 assertPublicKey(myPublicKey);
-
-// Check if two public keys are equal.
-samePublicKey(publicKeyA, publicKeyB);
 
 // Deduplicate an array of public keys.
 uniquePublicKeys(myPublicKeys);
@@ -59,12 +58,17 @@ defaultPublicKey();
 
 A PDA — or Program-Derived Address — is a public key that is derived from a program ID and an array of predefined seeds. A `bump` number ranging from 0 to 255 is required to ensure the PDA does not live on the EdDSA elliptic curve and therefore does not conflict with cryptographically generated public keys.
 
-In Umi, PDAs are public keys with an extra `bump` attribute. This ensures that PDA objects can be used anywhere a public key is expected.
+In Umi, PDAs are represented as a tuple composed of the derived public key and the bump number. Similarly to public keys, it uses opaque types and type parameters.
 
 ```ts
-type Pda = PublicKey & {
-  bump: number;
-};
+// In short:
+type Pda = [PublicKey, number];
+
+// In reality:
+export type Pda<
+  TAddress extends string = string,
+  TBump extends number = number
+> = [PublicKey<TAddress>, TBump] & { readonly __pda: unique symbol };
 ```
 
 To derive a new PDA, we can use the `findPda` method of the EdDSA interface.
@@ -79,7 +83,7 @@ Each seed must be serialized as a `Uint8Array`. You can learn more about seriali
 const tokenMetadataProgramId = publicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
 const metadata = umi.eddsa.findPda(tokenMetadataProgramId, [
   umi.serializer.string({ size: 'variable' }).serialize('metadata'),
-  tokenMetadataProgramId.bytes,
+  umi.serializer.publicKey().serialize(tokenMetadataProgramId),
   umi.serializer.publicKey().serialize(mint),
 ]);
 ```
@@ -95,7 +99,7 @@ const metadata = findMetadataPda(umi, { mint })
 The following helper methods are also available to help manage PDAs.
 
 ```ts
-// Check if the provided value is a Pda object.
+// Check if the provided value is a Pda.
 isPda(myPda);
 
 // Check if the provided public key is on the EdDSA elliptic curve.
@@ -124,7 +128,7 @@ const mySigner = generateSigner(umi);
 The following helper functions can also be used to manage signers.
 
 ```ts
-// Check if the provided value is a Signer object.
+// Check if the provided value is a Signer.
 isSigner(mySigner);
 
 // Deduplicate an array of signers by public key.

@@ -4,6 +4,7 @@ import {
   Pda,
   publicKey,
   PublicKey,
+  publicKeyBytes,
   PublicKeyInput,
 } from '@metaplex-foundation/umi';
 import {
@@ -35,7 +36,7 @@ export function createWeb3JsEddsa(): EddsaInterface {
       seeds,
       toWeb3JsPublicKey(publicKey(programId))
     );
-    return { ...fromWeb3JsPublicKey(key), bump };
+    return [fromWeb3JsPublicKey(key), bump] as Pda;
   };
 
   const sign = (message: Uint8Array, keypair: Keypair): Uint8Array =>
@@ -45,7 +46,7 @@ export function createWeb3JsEddsa(): EddsaInterface {
     message: Uint8Array,
     signature: Uint8Array,
     publicKey: PublicKey
-  ): boolean => ed25519.verify(signature, message, publicKey.bytes);
+  ): boolean => ed25519.verify(signature, message, publicKeyBytes(publicKey));
 
   return {
     generateKeypair,

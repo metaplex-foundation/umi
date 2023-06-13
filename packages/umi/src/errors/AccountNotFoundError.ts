@@ -1,4 +1,4 @@
-import { base58PublicKey, PublicKey } from '../PublicKey';
+import { PublicKey } from '../PublicKey';
 import { SdkError } from './SdkError';
 
 /** @category Errors */
@@ -10,9 +10,7 @@ export class AccountNotFoundError extends SdkError {
       accountType
         ? `The account of type [${accountType}] was not found`
         : 'No account was found'
-    } at the provided address [${base58PublicKey(publicKey)}].${
-      solution ? ` ${solution}` : ''
-    }`;
+    } at the provided address [${publicKey}].${solution ? ` ${solution}` : ''}`;
     super(message);
   }
 }

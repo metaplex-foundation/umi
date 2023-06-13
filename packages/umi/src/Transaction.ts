@@ -1,6 +1,6 @@
 import { Amount, SolAmount } from './Amount';
 import type { Instruction } from './Instruction';
-import { PublicKey, samePublicKey } from './PublicKey';
+import { PublicKey } from './PublicKey';
 import type { Commitment } from './RpcInterface';
 
 /**
@@ -236,8 +236,8 @@ export const addTransactionSignature = (
 ): Transaction => {
   const maxSigners = transaction.message.header.numRequiredSignatures;
   const signerPublicKeys = transaction.message.accounts.slice(0, maxSigners);
-  const signerIndex = signerPublicKeys.findIndex((key) =>
-    samePublicKey(key, signerPublicKey)
+  const signerIndex = signerPublicKeys.findIndex(
+    (key) => key === signerPublicKey
   );
 
   if (signerIndex < 0) {

@@ -1,21 +1,21 @@
 // eslint-disable-next-line import/no-named-default
 import type { default as NodeBundlr, WebBundlr } from '@bundlr-network/client';
 import {
-  base58,
   Commitment,
   Context,
-  createGenericFileFromJson,
-  createSignerFromKeypair,
   GenericFile,
   GenericFileTag,
-  isKeypairSigner,
   Keypair,
-  lamports,
-  samePublicKey,
   Signer,
-  signTransaction,
   SolAmount,
   UploaderInterface,
+  base58,
+  createGenericFileFromJson,
+  createSignerFromKeypair,
+  isKeypairSigner,
+  lamports,
+  publicKey,
+  signTransaction,
 } from '@metaplex-foundation/umi';
 import {
   fromWeb3JsKeypair,
@@ -214,7 +214,10 @@ export function createBundlrUploader(
   const getBundlr = async (): Promise<WebBundlr | NodeBundlr> => {
     const oldPayer = _bundlr?.getSigner().publicKey;
     const newPayer = options.payer ?? context.payer;
-    if (oldPayer && !samePublicKey(new Uint8Array(oldPayer), newPayer)) {
+    if (
+      oldPayer &&
+      publicKey(new Uint8Array(oldPayer)) !== newPayer.publicKey
+    ) {
       _bundlr = null;
     }
 
