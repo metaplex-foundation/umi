@@ -23,11 +23,11 @@ const pubkeyB = { bytes: bytesOfPubkeyB };
 // After.
 const pubkeyA = publicKey('4HM9LW2rm3SR2ZdBiFK3D21ENmQWpqEJEhx1nfgcC3r9'); // ✅ No changes needed.
 const bytesOfPubkeyB = new Uint8Array(Array(32).fill(0));
-const pubkeyB = publicKey(bytesOfPubkeyB); // ⚠️ Use the `publicKey` helper to convert to a `PublicKey` string.
-const pubkeyB = publicKey('11111111111111111111111111111111'); // ⚠️ Or pass in the base58 string directly.
+const pubkeyB = publicKey(bytesOfPubkeyB); // 🚧 Use the `publicKey` helper to convert to a `PublicKey` string.
+const pubkeyB = publicKey('11111111111111111111111111111111'); // 🚧 Or pass in the base58 string directly.
 ```
 
-Note that the `Pda` type has also been adjusted since it can no longer extend the `PublicKey` type (as it is now a primitive value and not an object). Instead, the `Pda` type is now defined as the following tuple `[PublicKey, number]`. If you are using Kinobi-generated library, they have been updated to ensure that you can pass either a `PublicKey` or a `Pda` in various generated method to avoid any breaking change. That being said, if you are using PDAs directly you need to update your code as showed below:
+Note that the `Pda` type has also been adjusted since it can no longer extend the `PublicKey` type (as it is now a primitive value and not an object). Instead, the `Pda` type is now defined as the following tuple `[PublicKey, number]`. If you are using a Kinobi-generated library, they have been updated to ensure that you can pass either a `PublicKey` or a `Pda` in various generated method to avoid any breaking change. That being said, if you are using PDAs directly you may need to update your code as showed below:
 
 ```ts
 // Before.
@@ -41,6 +41,6 @@ await umi.rpc.getAccount(pdaB);
 const pdaA = findSomePda(umi, seedsA);
 await fetchSomeAccount(umi, pdaA); // ✅ No changes needed as generated methods now accept PublicKey | Pda.
 
-const [publicKeyB] = findSomePda(umi, seedsB); // ⚠️ Destructure the Pda to get the PublicKey...
+const [publicKeyB] = findSomePda(umi, seedsB); // 🚧 Destructure the Pda to get the PublicKey...
 await umi.rpc.getAccount(publicKeyB); // ...because `getAccount` requires a `PublicKey`.
 ```
