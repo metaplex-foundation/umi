@@ -4,7 +4,7 @@
 
 Define PublicKeys as base58 strings
 
-See (PR #62)[https://github.com/metaplex-foundation/umi/pull/62].
+See PR #62
 
 The `PublicKey` type is now a `string` instead of a `{ bytes: Uint8Array }`. This was done to:
 
