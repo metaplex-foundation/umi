@@ -62,7 +62,7 @@ builder = builder.prepend(myWrappedInstruction);
 Note that either of these methods also accepts other transaction builders and will merge them into the current one. In practice, this means program libraries can write (or [auto-generate](./kinobi.md)) their own helper methods that return transaction builders so they can be composed together by the end-user.
 
 ```ts
-import { transferSol, addMemo } from '@metaplex-foundation/mpl-essentials';
+import { transferSol, addMemo } from '@metaplex-foundation/mpl-toolbox';
 import { createNft } from '@metaplex-foundation/mpl-token-metadata';
 
 let builder = transactionBuilder()
@@ -187,10 +187,10 @@ const myLut: AddressLookupTableInput = {
 builder = builder.setAddressLookupTables([myLut]);
 ```
 
-To create an address lookup table, you might be interested in the `@metaplex-foundation/mpl-essentials` package which provides helpers for creating them.
+To create an address lookup table, you might be interested in the `@metaplex-foundation/mpl-toolbox` package which provides helpers for creating them.
 
 ```ts
-import { createLut } from '@metaplex-foundation/mpl-essentials';
+import { createLut } from '@metaplex-foundation/mpl-toolbox';
 
 // Create a lookup table.
 const [lutBuilder, lut] = createLut(umi, {
