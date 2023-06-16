@@ -47,6 +47,17 @@ export const some = <T>(value: T): Option<T> => ({ __option: 'Some', value });
 export const none = <T>(): Option<T> => ({ __option: 'None' });
 
 /**
+ * Whether the given data is an {@link Option}.
+ * @category Utils — Options
+ */
+export const isOption = <T = unknown>(input: any): input is Option<T> =>
+  input &&
+  typeof input === 'object' &&
+  '__option' in input &&
+  ((input.__option === 'Some' && 'value' in input) ||
+    input.__option === 'None');
+
+/**
  * Whether the given {@link Option} is a {@link Some}.
  * @category Utils — Options
  */
@@ -142,20 +153,15 @@ export function unwrapOptionRecursively<T, U = null>(
 ): UnwrappedOption<T, U> {
   // Because null passes `typeof input === 'object'`.
   if (!input) return input as UnwrappedOption<T, U>;
-  const isOption = typeof input === 'object' && '__option' in input;
   const next = <X>(x: X) =>
     (fallback
       ? unwrapOptionRecursively(x, fallback)
       : unwrapOptionRecursively(x)) as UnwrappedOption<X, U>;
 
-  // Handle None.
-  if (isOption && input.__option === 'None') {
+  // Handle Option.
+  if (isOption(input)) {
+    if (isSome(input)) return next(input.value) as UnwrappedOption<T, U>;
     return (fallback ? fallback() : null) as UnwrappedOption<T, U>;
-  }
-
-  // Handle Some.
-  if (isOption && input.__option === 'Some' && 'value' in input) {
-    return next(input.value) as UnwrappedOption<T, U>;
   }
 
   // Walk.
@@ -169,3 +175,11 @@ export function unwrapOptionRecursively<T, U = null>(
   }
   return input as UnwrappedOption<T, U>;
 }
+
+/**
+ * Wraps a nullable value into an {@link Option}.
+ *
+ * @category Utils — Options
+ */
+export const wrapNullable = <T>(nullable: Nullable<T>): Option<T> =>
+  nullable !== null ? some(nullable) : none<T>();
