@@ -143,6 +143,10 @@ export function unwrapOptionRecursively<T, U = null>(
   // Because null passes `typeof input === 'object'`.
   if (!input) return input as UnwrappedOption<T, U>;
   const isOption = typeof input === 'object' && '__option' in input;
+  const next = <X>(x: X) =>
+    (fallback
+      ? unwrapOptionRecursively(x, fallback)
+      : unwrapOptionRecursively(x)) as UnwrappedOption<X, U>;
 
   // Handle None.
   if (isOption && input.__option === 'None') {
@@ -151,16 +155,16 @@ export function unwrapOptionRecursively<T, U = null>(
 
   // Handle Some.
   if (isOption && input.__option === 'Some' && 'value' in input) {
-    return unwrapOptionRecursively(input.value) as UnwrappedOption<T, U>;
+    return next(input.value) as UnwrappedOption<T, U>;
   }
 
   // Walk.
   if (Array.isArray(input)) {
-    return input.map(unwrapOptionRecursively) as UnwrappedOption<T, U>;
+    return input.map(next) as UnwrappedOption<T, U>;
   }
   if (typeof input === 'object') {
     return Object.fromEntries(
-      Object.entries(input).map(([k, v]) => [k, unwrapOptionRecursively(v)])
+      Object.entries(input).map(([k, v]) => [k, next(v)])
     ) as UnwrappedOption<T, U>;
   }
   return input as UnwrappedOption<T, U>;
