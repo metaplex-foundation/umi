@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 0.8.1
+
+### Patch Changes
+
+- [#64](https://github.com/metaplex-foundation/umi/pull/64) [`bc11e6e`](https://github.com/metaplex-foundation/umi/commit/bc11e6e6f964594c75d04f78ef6c86a87aae6749) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Add new helpers to unwrap options recursively
+
 ## 0.8.0
 
 ### Minor Changes
