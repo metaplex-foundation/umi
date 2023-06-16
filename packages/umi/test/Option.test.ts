@@ -193,7 +193,7 @@ test('it can unwrap options recursively whilst using a custom fallback', (t) => 
   );
   t.is(
     unwrapOptionRecursively(some(some(none<100>())), fallback),
-    <100 | 42>100
+    <100 | 42>42
   );
 
   // Combination.
