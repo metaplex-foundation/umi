@@ -93,13 +93,19 @@ isNone(some('Hello World')); // -> false
 isNone(none()); // -> true
 
 // Unwrap the value of an option if it is a `Some` or return null.
-unwrapSome(some('Hello World')) // -> 'Hello World'
-unwrapSome(none()) // -> null
+// Supports custom fallback values for `None`.
+unwrapOption(some('Hello World')) // -> 'Hello World'
+unwrapOption(none()) // -> null
+unwrapOption(some('Hello World'), () => 'Default'); // -> 'Hello World'
+unwrapOption(none(), () => 'Default'); // -> 'Default'
 
-// Unwrap the value of an option if it is a `Some`
-// or return the value of the provided callback.
-unwrapSomeOrElse(some('Hello World'), () => 'Default'); // -> 'Hello World'
-unwrapSomeOrElse(none(), () => 'Default'); // -> 'Default'
+// Same as `unwrapOption` but recursively (without mutating the original object/array).
+// Also supports custom fallback values for `None`.
+unwrapOptionRecursively({
+  a: 'hello',
+  b: none<string>(),
+  c: [{ c1: some(42) }, { c2: none<number>() }],
+}) // -> { a: 'hello', b: null, c: [{ c1: 42 }, { c2: null }] }
 ```
 
 ## DateTimes
