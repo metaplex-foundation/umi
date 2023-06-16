@@ -6,6 +6,9 @@ import {
   mergeBytes,
   none,
   some,
+  Nullable,
+  isOption,
+  wrapNullable,
 } from '@metaplex-foundation/umi';
 import { BeetSerializerError, DeserializingEmptyBufferError } from './errors';
 import { getSizeDescription } from './getSizeDescription';
@@ -15,7 +18,7 @@ import { u8 } from './numbers';
 export function option<T, U extends T = T>(
   item: Serializer<T, U>,
   options: OptionSerializerOptions = {}
-): Serializer<Option<T>, Option<U>> {
+): Serializer<Option<T> | Nullable<T>, Option<U>> {
   const prefix = options.prefix ?? u8();
   const fixed = options.fixed ?? false;
   let descriptionSuffix = `; ${getSizeDescription(prefix)}`;
@@ -34,7 +37,11 @@ export function option<T, U extends T = T>(
       options.description ?? `option(${item.description + descriptionSuffix})`,
     fixedSize,
     maxSize: sumSerializerSizes([prefix.maxSize, item.maxSize]),
-    serialize: (option: Option<T>) => {
+    serialize: (optionOrNullable: Option<T> | Nullable<T>) => {
+      const option = isOption<T>(optionOrNullable)
+        ? optionOrNullable
+        : wrapNullable(optionOrNullable);
+
       const prefixByte = prefix.serialize(Number(isSome(option)));
       if (fixed) {
         const itemFixedSize = item.fixedSize as number;
