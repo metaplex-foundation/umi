@@ -1,5 +1,12 @@
 # @metaplex-foundation/umi-rpc-chunk-get-accounts
 
+## 0.8.1
+
+### Patch Changes
+
+- Updated dependencies [[`bc11e6e`](https://github.com/metaplex-foundation/umi/commit/bc11e6e6f964594c75d04f78ef6c86a87aae6749)]:
+  - @metaplex-foundation/umi@0.8.1
+
 ## 0.8.0
 
 ### Patch Changes
