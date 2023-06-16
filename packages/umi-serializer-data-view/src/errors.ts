@@ -36,7 +36,11 @@ export class DeserializingEmptyBufferError<
 export class NotEnoughBytesError extends DataViewSerializerError {
   readonly name: string = 'NotEnoughBytesError';
 
-  constructor(serializer: string, expected: bigint | number, actual: number) {
+  constructor(
+    serializer: string,
+    expected: bigint | number,
+    actual: bigint | number
+  ) {
     super(
       `Serializer [${serializer}] expected ${expected} bytes, got ${actual}.`
     );
