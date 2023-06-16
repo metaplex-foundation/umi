@@ -1,13 +1,5 @@
 import test from 'ava';
-import {
-  isNone,
-  isSome,
-  none,
-  Option,
-  some,
-  unwrapSome,
-  unwrapSomeOrElse,
-} from '../src';
+import { isNone, isSome, none, Option, some, unwrapOption } from '../src';
 
 test('it can create Some and None options', (t) => {
   const optionA: Option<number> = some(42);
@@ -34,26 +26,26 @@ test('it can check if an option is Some or None', (t) => {
 });
 
 test('it can unwrap an Option as a Nullable', (t) => {
-  t.is(unwrapSome(some(42)), 42);
-  t.is(unwrapSome(some(null)), null);
-  t.is(unwrapSome(some('hello')), 'hello');
-  t.is(unwrapSome(none()), null);
-  t.is(unwrapSome(none<number>()), null);
-  t.is(unwrapSome(none<string>()), null);
+  t.is(unwrapOption(some(42)), 42);
+  t.is(unwrapOption(some(null)), null);
+  t.is(unwrapOption(some('hello')), 'hello');
+  t.is(unwrapOption(none()), null);
+  t.is(unwrapOption(none<number>()), null);
+  t.is(unwrapOption(none<string>()), null);
 });
 
 test('it can unwrap an Option using a fallback callback', (t) => {
   const fallbackA = () => 42;
-  t.is(unwrapSomeOrElse(some(1), fallbackA), 1);
-  t.is(unwrapSomeOrElse(some('A'), fallbackA), 'A');
-  t.is(unwrapSomeOrElse(none(), fallbackA), 42);
+  t.is(unwrapOption(some(1), fallbackA), 1);
+  t.is(unwrapOption(some('A'), fallbackA), 'A');
+  t.is(unwrapOption(none(), fallbackA), 42);
 
   const fallbackB = () => {
     throw new Error('Fallback Error');
   };
-  t.is(unwrapSomeOrElse(some(1), fallbackB), 1);
-  t.is(unwrapSomeOrElse(some('A'), fallbackB), 'A');
-  t.throws(() => unwrapSomeOrElse(none(), fallbackB), {
+  t.is(unwrapOption(some(1), fallbackB), 1);
+  t.is(unwrapOption(some('A'), fallbackB), 'A');
+  t.throws(() => unwrapOption(none(), fallbackB), {
     message: 'Fallback Error',
   });
 });
