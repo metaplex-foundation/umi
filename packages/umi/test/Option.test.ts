@@ -8,6 +8,7 @@ import {
   some,
   unwrapOption,
   unwrapOptionRecursively,
+  wrapNullable,
 } from '../src';
 
 test('it can create Some and None options', (t) => {
@@ -248,4 +249,13 @@ test('it can unwrap options recursively whilst using a custom fallback', (t) => 
       phone: 42,
     },
   });
+});
+
+test('it can wrap a Nullable as an Option', (t) => {
+  t.deepEqual(wrapNullable(42), some(42));
+  t.deepEqual(wrapNullable('hello'), some('hello'));
+  t.deepEqual(wrapNullable(false), some(false));
+  t.deepEqual(wrapNullable(undefined), some(undefined));
+  t.deepEqual(wrapNullable<string>(null), none<string>());
+  t.deepEqual(wrapNullable<number>(null), none<number>());
 });

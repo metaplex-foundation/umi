@@ -70,7 +70,7 @@ export interface SerializerInterface {
   option: <T, U extends T = T>(
     item: Serializer<T, U>,
     options?: OptionSerializerOptions
-  ) => Serializer<Option<T>, Option<U>>;
+  ) => Serializer<Option<T> | Nullable<T>, Option<U>>;
 
   /**
    * Creates a serializer for an optional value using `null` as the `None` value.
