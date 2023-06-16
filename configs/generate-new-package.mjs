@@ -8,12 +8,13 @@ import chalk from 'chalk';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const templateFolder = __dirname + '/new-package-template';
 const packageName = process.argv[2];
+const isPlugin = process.argv[3] && (process.argv[3] === '--plugin' || process.argv[3] === '-p');
 
 if (!packageName) {
   error('Please provide a package name as an argument.');
 }
 
-const packageFolder = __dirname + '/../packages/' + packageName;
+const packageFolder = __dirname + `/../${isPlugin ? 'plugins' : 'packages' }/` + packageName;
 
 fs.mkdirSync(packageFolder);
 generateFilesRecursively(templateFolder, packageFolder);
