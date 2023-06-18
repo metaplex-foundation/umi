@@ -6,7 +6,8 @@ export const assertValid = <T>(
   t: Assertions,
   serializer: Serializer<T>,
   number: T,
-  bytes: string
+  bytes: string,
+  deserializedNumber?: T
 ): void => {
   // Serialize.
   const actualBytes = serializer.serialize(number);
@@ -14,14 +15,14 @@ export const assertValid = <T>(
   t.is(actualBytesBase16, bytes);
   // Deserialize.
   const deserialization = serializer.deserialize(actualBytes);
-  t.is(deserialization[0], number);
+  t.is(deserialization[0], deserializedNumber ?? number);
   t.is(deserialization[1], actualBytes.length);
   // Deserialize with offset.
   const deserializationWithOffset = serializer.deserialize(
     base16.serialize(`ffffff${bytes}`),
     3
   );
-  t.is(deserializationWithOffset[0], number);
+  t.is(deserializationWithOffset[0], deserializedNumber ?? number);
   t.is(deserializationWithOffset[1], actualBytes.length + 3);
 };
 

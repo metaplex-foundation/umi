@@ -3,6 +3,7 @@ import {
   BaseSerializerOptions,
   Serializer,
 } from '@metaplex-foundation/umi-serializers-core';
+import { assertRange } from './utils';
 
 /**
  * Defines the options for the shortU16 serializer.
@@ -27,11 +28,7 @@ export const shortU16 = (
   fixedSize: null,
   maxSize: 3,
   serialize: (value: number): Uint8Array => {
-    if (value < 0 || value > 65535) {
-      throw new RangeError(
-        `Only values in the range [0, 65535] can be serialized to shortU16. \`${value}\` given.`
-      );
-    }
+    assertRange('shortU16', 0, 65535, value);
     const bytes = [0];
     for (let ii = 0; ; ii += 1) {
       // Shift the bits of the value over such that the next 7 bits are at the right edge.
