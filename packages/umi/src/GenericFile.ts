@@ -1,4 +1,5 @@
-import { generateRandomString, utf8 } from './utils';
+import { utf8 } from '@metaplex-foundation/umi-serializers';
+import { generateRandomString } from './utils';
 
 /**
  * A generic definition of a File represented as a buffer with

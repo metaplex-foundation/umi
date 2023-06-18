@@ -1,6 +1,10 @@
+import {
+  NumberSerializer,
+  Serializer,
+  mapSerializer,
+} from '@metaplex-foundation/umi-serializers';
 import { BigIntInput, createBigInt } from './BigInt';
 import { AmountMismatchError, UnexpectedAmountError } from './errors';
-import { mapSerializer, NumberSerializer, Serializer } from './Serializer';
 
 /**
  * The identifier of an amount.

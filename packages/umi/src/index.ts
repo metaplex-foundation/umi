@@ -23,7 +23,6 @@ export * from './Keypair';
 export * from './Program';
 export * from './ProgramRepositoryInterface';
 export * from './RpcInterface';
-export * from './Serializer';
 export * from './SerializerInterface';
 export * from './Signer';
 export * from './SignerPlugins';

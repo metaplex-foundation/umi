@@ -11,6 +11,10 @@
     ".": {
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs"
+    },
+    "./serializers": {
+      "import": "./dist/esm/serializers.mjs",
+      "require": "./dist/cjs/serializers.cjs"
     }
   },
   "files": [

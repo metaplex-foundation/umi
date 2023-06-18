@@ -1,6 +1,6 @@
 import type { PublicKey } from '@metaplex-foundation/umi-public-keys';
+import type { Serializer } from '@metaplex-foundation/umi-serializers';
 import type { SolAmount } from './Amount';
-import type { Serializer } from './Serializer';
 import { AccountNotFoundError, UnexpectedAccountError } from './errors';
 
 /**

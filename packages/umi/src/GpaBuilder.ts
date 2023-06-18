@@ -1,4 +1,6 @@
 import { publicKey, PublicKey } from '@metaplex-foundation/umi-public-keys';
+import type { Serializer } from '@metaplex-foundation/umi-serializers';
+import { base10, base58, base64 } from '@metaplex-foundation/umi-serializers';
 import type { RpcAccount } from './Account';
 import type { Context } from './Context';
 import { SdkError } from './errors';
@@ -7,9 +9,7 @@ import type {
   RpcDataSlice,
   RpcGetProgramAccountsOptions,
 } from './RpcInterface';
-import type { Serializer } from './Serializer';
 import type { StructToSerializerTuple } from './SerializerInterface';
-import { base10, base58, base64 } from './utils';
 
 /**
  * Callback for sorting raw accounts from `getProgramAccounts` RPC requests.

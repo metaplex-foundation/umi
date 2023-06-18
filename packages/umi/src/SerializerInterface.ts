@@ -3,12 +3,12 @@ import type {
   PublicKey,
   PublicKeyInput,
 } from '@metaplex-foundation/umi-public-keys';
-import { DataEnum, ScalarEnum } from './Enums';
 import type {
   NumberSerializer,
   Serializer,
   WrapInSerializer,
-} from './Serializer';
+} from '@metaplex-foundation/umi-serializers';
+import { DataEnum, ScalarEnum } from './Enums';
 import { InterfaceImplementationMissingError } from './errors';
 
 /**
