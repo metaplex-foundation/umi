@@ -1,3 +1,4 @@
+/** @category Errors */
 export class NumberOutOfRangeError extends Error {
   readonly name: string = 'NumberOutOfRangeError';
 

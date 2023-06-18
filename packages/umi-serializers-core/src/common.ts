@@ -26,12 +26,13 @@ export type Serializer<From, To extends From = From> = {
 };
 
 /**
- * Defines a serializer for numbers and bigints.
+ * Defines common options for serializer factories.
  * @category Serializers
  */
-export type NumberSerializer =
-  | Serializer<number>
-  | Serializer<number | bigint, bigint>;
+export type BaseSerializerOptions = {
+  /** A custom description for the serializer. */
+  description?: string;
+};
 
 /**
  * Wraps all the attributes of an object in serializers.

@@ -1,4 +1,13 @@
 /** @category Errors */
+export class DeserializingEmptyBufferError extends Error {
+  readonly name: string = 'DeserializingEmptyBufferError';
+
+  constructor(serializer: string) {
+    super(`Serializer [${serializer}] cannot deserialize empty buffers.`);
+  }
+}
+
+/** @category Errors */
 export class NotEnoughBytesError extends Error {
   readonly name: string = 'NotEnoughBytesError';
 
