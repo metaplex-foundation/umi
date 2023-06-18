@@ -10,8 +10,7 @@ test('it can handle empty buffers', (t) => {
   const remainder = { size: 'remainder' } as const;
   const e: ThrowsExpectation = { instanceOf: DeserializingEmptyBufferError };
   const fixedError = (expectedBytes: number) => ({
-    message: (m: string) =>
-      m.includes(`Fixed serializer expected ${expectedBytes} bytes, got 0.`),
+    message: `Serializer [fixSerializer] expected ${expectedBytes} bytes, got 0.`,
   });
   const empty = (serializer: Serializer<any, any>) =>
     serializer.deserialize(new Uint8Array())[0];
