@@ -2,6 +2,39 @@
 import { Serializer } from '@metaplex-foundation/umi-serializers-core';
 import { Assertions } from 'ava';
 
+export const assertValid = <T>(
+  t: Assertions,
+  serializer: Serializer<T>,
+  number: T,
+  bytes: string
+): void => {
+  // Serialize.
+  const actualBytes = serializer.serialize(number);
+  const [actualBytesBase16] = base16.deserialize(actualBytes);
+  t.is(actualBytesBase16, bytes);
+  // Deserialize.
+  const deserialization = serializer.deserialize(actualBytes);
+  t.is(deserialization[0], number);
+  t.is(deserialization[1], actualBytes.length);
+  // Deserialize with offset.
+  const deserializationWithOffset = serializer.deserialize(
+    base16.serialize(`ffffff${bytes}`),
+    3
+  );
+  t.is(deserializationWithOffset[0], number);
+  t.is(deserializationWithOffset[1], actualBytes.length + 3);
+};
+
+export const assertRangeError = <T>(
+  t: Assertions,
+  serializer: Serializer<T>,
+  number: T
+): void => {
+  t.throws(() => serializer.serialize(number), {
+    name: 'NumberOutOfRangeError',
+  });
+};
+
 /** Assert serialization using a hex string. */
 export const s = <T, U extends T = T>(
   t: Assertions,
