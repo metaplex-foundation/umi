@@ -17,6 +17,7 @@ export default [
   }),
   ...createConfigs({
     input: ['src/serializers.ts'],
+    dependenciesToExcludeInBundle: ['@metaplex-foundation/umi-serializers'],
     pkg,
     builds: [
       {

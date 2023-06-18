@@ -13,6 +13,7 @@
       "require": "./dist/cjs/index.cjs"
     },
     "./serializers": {
+      "types": "./dist/types/serializers.d.ts",
       "import": "./dist/esm/serializers.mjs",
       "require": "./dist/cjs/serializers.cjs"
     }
@@ -21,7 +22,8 @@
     "/dist/cjs",
     "/dist/esm",
     "/dist/types",
-    "/src"
+    "/src",
+    "*.d.ts"
   ],
   "scripts": {
     "lint": "eslint --ext js,ts,tsx src",

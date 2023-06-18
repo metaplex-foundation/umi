@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src"],
+  "include": ["src", "*.d.ts"],
   "compilerOptions": {
     "outDir": "dist/esm",
     "declarationDir": "dist/types"

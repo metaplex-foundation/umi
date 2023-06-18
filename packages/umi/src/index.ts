@@ -1,6 +1,10 @@
 export * from '@metaplex-foundation/umi-options';
 export * from '@metaplex-foundation/umi-public-keys';
 
+// Deprecated exports.
+// They should instead be imported from "@metaplex-foundation/umi/serializers".
+export * from './serializersInternal';
+
 export * from './Account';
 export * from './Amount';
 export * from './BigInt';
