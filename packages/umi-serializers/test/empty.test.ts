@@ -1,7 +1,6 @@
-import test, { ThrowsExpectation } from 'ava';
 import { none } from '@metaplex-foundation/umi-options';
+import test, { ThrowsExpectation } from 'ava';
 import {
-  DeserializingEmptyBufferError,
   Serializer,
   array,
   bool,
@@ -22,13 +21,9 @@ import {
 } from '../src';
 
 test('it can handle empty buffers', (t) => {
-  const remainder = { size: 'remainder' } as const;
-  const e: ThrowsExpectation = { instanceOf: DeserializingEmptyBufferError };
-  const fixedError = (expectedBytes: number) => ({
-    message: (m: string) =>
-      m.includes(
-        `Serializer [fixSerializer] expected ${expectedBytes} bytes, got 0.`
-      ),
+  const e: ThrowsExpectation = { name: 'DeserializingEmptyBufferError' };
+  const fixedError = (expectedBytes: number): ThrowsExpectation => ({
+    message: `Serializer [fixSerializer] expected ${expectedBytes} bytes, got 0.`,
   });
   const empty = (serializer: Serializer<any, any>) =>
     serializer.deserialize(new Uint8Array())[0];
@@ -39,19 +34,19 @@ test('it can handle empty buffers', (t) => {
 
   // Array.
   t.deepEqual(empty(array(u8())), []);
-  t.deepEqual(empty(array(u8(), remainder)), []);
+  t.deepEqual(empty(array(u8(), { size: 'remainder' })), []);
   t.throws(() => empty(array(u8(), { size: 5 })), e);
   t.deepEqual(empty(array(u8(), { size: 0 })), []);
 
   // Map.
   t.deepEqual(empty(map(u8(), u8())), new Map());
-  t.deepEqual(empty(map(u8(), u8(), remainder)), new Map());
+  t.deepEqual(empty(map(u8(), u8(), { size: 'remainder' })), new Map());
   t.throws(() => empty(map(u8(), u8(), { size: 5 })), e);
   t.deepEqual(empty(map(u8(), u8(), { size: 0 })), new Map());
 
   // Set.
   t.deepEqual(empty(set(u8())), new Set());
-  t.deepEqual(empty(set(u8(), remainder)), new Set());
+  t.deepEqual(empty(set(u8(), { size: 'remainder' })), new Set());
   t.throws(() => empty(set(u8(), { size: 5 })), e);
   t.deepEqual(empty(set(u8(), { size: 0 })), new Set());
 
