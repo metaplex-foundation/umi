@@ -13,7 +13,6 @@ export * from './Context';
 export * from './DateTime';
 export * from './DownloaderInterface';
 export * from './EddsaInterface';
-export * from './Enums';
 export * from './errors';
 export * from './GenericAbortSignal';
 export * from './GenericFile';
