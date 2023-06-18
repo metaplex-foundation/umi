@@ -10,12 +10,11 @@ import { NumberOutOfRangeError } from './errors';
  * @param {Uint8Array} array Uint8array that's being converted into an array buffer
  * @returns {ArrayBuffer} An array buffer that's necessary to construct a data view
  */
-export function UInt8ArrayToBuffer(array: Uint8Array): ArrayBuffer {
-  return array.buffer.slice(
-    array.byteOffset,
-    array.byteLength + array.byteOffset
-  );
-}
+export const toArrayBuffer = (array: Uint8Array): ArrayBuffer =>
+  array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
+
+export const toDataView = (array: Uint8Array): DataView =>
+  new DataView(toArrayBuffer(array));
 
 export const assertRange = (
   serializer: string,
