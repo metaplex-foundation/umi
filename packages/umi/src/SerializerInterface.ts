@@ -4,8 +4,25 @@ import type {
   PublicKeyInput,
 } from '@metaplex-foundation/umi-public-keys';
 import type {
-  NumberSerializer,
+  ArraySerializerOptions,
+  BoolSerializerOptions,
+  BytesSerializerOptions,
+  DataEnumSerializerOptions,
+  DataEnumToSerializerTuple,
+  MapSerializerOptions,
+  NullableSerializerOptions,
+  NumberSerializerOptions,
+  OptionSerializerOptions,
+  PublicKeySerializerOptions,
+  ScalarEnumSerializerOptions,
   Serializer,
+  SetSerializerOptions,
+  SingleByteNumberSerializerOptions,
+  StringSerializerOptions,
+  StructSerializerOptions,
+  StructToSerializerTuple,
+  TupleSerializerOptions,
+  UnitSerializerOptions,
   WrapInSerializer,
 } from '@metaplex-foundation/umi-serializers';
 import { DataEnum, ScalarEnum } from './Enums';
@@ -105,7 +122,7 @@ export interface SerializerInterface {
    */
   enum<T>(
     constructor: ScalarEnum<T> & {},
-    options?: EnumSerializerOptions
+    options?: ScalarEnumSerializerOptions
   ): Serializer<T>;
 
   /**
@@ -248,255 +265,6 @@ export interface SerializerInterface {
     options?: PublicKeySerializerOptions
   ) => Serializer<PublicKey | PublicKeyInput, PublicKey>;
 }
-
-/**
- * Get the name and serializer of each field in a struct.
- * @category Serializers
- */
-export type StructToSerializerTuple<T extends object, U extends T> = Array<
-  {
-    [K in keyof T]: [K, Serializer<T[K], U[K]>];
-  }[keyof T]
->;
-
-/**
- * Get the name and serializer of each variant in a data enum.
- * @category Serializers
- */
-export type DataEnumToSerializerTuple<T extends DataEnum, U extends T> = Array<
-  T extends any
-    ? [
-        T['__kind'],
-        keyof Omit<T, '__kind'> extends never
-          ? Serializer<Omit<T, '__kind'>, Omit<U, '__kind'>> | Serializer<void>
-          : Serializer<Omit<T, '__kind'>, Omit<U, '__kind'>>
-      ]
-    : never
->;
-
-/**
- * Defines the endianness of a number serializer.
- * @category Serializers
- */
-export enum Endian {
-  Little = 'le',
-  Big = 'be',
-}
-
-/**
- * Represents all the size options for array-like serializers
- * — i.e. `array`, `map` and `set`.
- *
- * It can be one of the following:
- * - a {@link NumberSerializer} that prefixes its content with its size.
- * - a fixed number of items.
- * - or `'remainder'` to infer the number of items by dividing
- *   the rest of the buffer by the fixed size of its item.
- *   Note that this option is only available for fixed-size items.
- *
- * @category Serializers
- */
-export type ArrayLikeSerializerSize = NumberSerializer | number | 'remainder';
-
-/**
- * Defines the common options for all methods in the serializer interface.
- * @category Serializers
- */
-export type BaseSerializerOptions = {
-  /** A custom description for the serializer. */
-  description?: string;
-};
-
-/**
- * Defines the options for tuple serializers.
- * @category Serializers
- */
-export type TupleSerializerOptions = BaseSerializerOptions;
-
-/**
- * Defines the options for array serializers.
- * @category Serializers
- */
-export type ArraySerializerOptions = BaseSerializerOptions & {
-  /**
-   * The size of the array.
-   * @defaultValue `u32()`
-   */
-  size?: ArrayLikeSerializerSize;
-};
-
-/**
- * Defines the options for `Map` serializers.
- * @category Serializers
- */
-export type MapSerializerOptions = BaseSerializerOptions & {
-  /**
-   * The size of the map.
-   * @defaultValue `u32()`
-   */
-  size?: ArrayLikeSerializerSize;
-};
-
-/**
- * Defines the options for `Set` serializers.
- * @category Serializers
- */
-export type SetSerializerOptions = BaseSerializerOptions & {
-  /**
-   * The size of the set.
-   * @defaultValue `u32()`
-   */
-  size?: ArrayLikeSerializerSize;
-};
-
-/**
- * Defines the options for `Option` serializers.
- * @category Serializers
- */
-export type OptionSerializerOptions = BaseSerializerOptions & {
-  /**
-   * The serializer to use for the boolean prefix.
-   * @defaultValue `u8()`
-   */
-  prefix?: NumberSerializer;
-  /**
-   * Whether the item serializer should be of fixed size.
-   *
-   * When this is true, a `None` value will skip the bytes that would
-   * have been used for the item. Note that this will only work if the
-   * item serializer is of fixed size.
-   * @defaultValue `false`
-   */
-  fixed?: boolean;
-};
-
-/**
- * Defines the options for `Nullable` serializers.
- * @category Serializers
- */
-export type NullableSerializerOptions = BaseSerializerOptions & {
-  /**
-   * The serializer to use for the boolean prefix.
-   * @defaultValue `u8()`
-   */
-  prefix?: NumberSerializer;
-  /**
-   * Whether the item serializer should be of fixed size.
-   *
-   * When this is true, a `null` value will skip the bytes that would
-   * have been used for the item. Note that this will only work if the
-   * item serializer is of fixed size.
-   * @defaultValue `false`
-   */
-  fixed?: boolean;
-};
-
-/**
- * Defines the options for struct serializers.
- * @category Serializers
- */
-export type StructSerializerOptions = BaseSerializerOptions;
-
-/**
- * Defines the options for scalar enum serializers.
- * @category Serializers
- */
-export type EnumSerializerOptions = BaseSerializerOptions & {
-  /**
-   * The serializer to use for the enum discriminator.
-   * @defaultValue `u8()`
-   */
-  size?: NumberSerializer;
-};
-
-/**
- * Defines the options for data enum serializers.
- * @category Serializers
- */
-export type DataEnumSerializerOptions = BaseSerializerOptions & {
-  /**
-   * The serializer to use for the enum discriminator prefixing the variant.
-   * @defaultValue `u8()`
-   */
-  size?: NumberSerializer;
-};
-
-/**
- * Defines the options for string serializers.
- * @category Serializers
- */
-export type StringSerializerOptions = BaseSerializerOptions & {
-  /**
-   * The size of the string. It can be one of the following:
-   * - a {@link NumberSerializer} that prefixes the string with its size.
-   * - a fixed number of bytes.
-   * - or `'variable'` to use the rest of the buffer.
-   * @defaultValue `u32()`
-   */
-  size?: NumberSerializer | number | 'variable';
-  /**
-   * The string serializer to use for encoding and decoding the content.
-   * @defaultValue `utf8`
-   */
-  encoding?: Serializer<string>;
-};
-
-/**
- * Defines the options for boolean serializers.
- * @category Serializers
- */
-export type BoolSerializerOptions = BaseSerializerOptions & {
-  /**
-   * The number serializer to delegate to.
-   * @defaultValue `u8()`
-   */
-  size?: NumberSerializer;
-};
-
-/**
- * Defines the options for unit serializers.
- * @category Serializers
- */
-export type UnitSerializerOptions = BaseSerializerOptions;
-
-/**
- * Defines the options for u8 and i8 serializers.
- * @category Serializers
- */
-export type SingleByteNumberSerializerOptions = BaseSerializerOptions;
-
-/**
- * Defines the options for number serializers that use more than one byte.
- * @category Serializers
- */
-export type NumberSerializerOptions = BaseSerializerOptions & {
-  /**
-   * Whether the serializer should use little-endian or big-endian encoding.
-   * @defaultValue `Endian.Little`
-   */
-  endian?: Endian;
-};
-
-/**
- * Defines the options for bytes serializers.
- * @category Serializers
- */
-export type BytesSerializerOptions = BaseSerializerOptions & {
-  /**
-   * The size of the buffer. It can be one of the following:
-   * - a {@link NumberSerializer} that prefixes the buffer with its size.
-   * - a fixed number of bytes.
-   * - or `'variable'` to use the rest of the buffer.
-   * @defaultValue `'variable'`
-   */
-  size?: NumberSerializer | number | 'variable';
-};
-
-/**
- * Defines the options for `PublicKey` serializers.
- * @category Serializers
- */
-export type PublicKeySerializerOptions = BaseSerializerOptions;
 
 /**
  * An implementation of the {@link SerializerInterface} that throws an error when called.
