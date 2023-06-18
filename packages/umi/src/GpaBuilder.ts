@@ -1,7 +1,7 @@
+import { publicKey, PublicKey } from '@metaplex-foundation/umi-public-keys';
 import type { RpcAccount } from './Account';
 import type { Context } from './Context';
 import { SdkError } from './errors';
-import { publicKey, PublicKey } from './PublicKey';
 import type {
   RpcDataFilter,
   RpcDataSlice,

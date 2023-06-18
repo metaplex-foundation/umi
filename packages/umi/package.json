@@ -26,6 +26,11 @@
     "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
     "test": "ava"
   },
+  "dependencies": {
+    "@metaplex-foundation/umi-options": "workspace:^",
+    "@metaplex-foundation/umi-public-keys": "workspace:^",
+    "@metaplex-foundation/umi-serializers": "workspace:^"
+  },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
     "ava": "^5.1.0"

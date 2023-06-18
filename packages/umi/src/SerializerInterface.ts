@@ -1,12 +1,15 @@
+import type { Nullable, Option } from '@metaplex-foundation/umi-options';
+import type {
+  PublicKey,
+  PublicKeyInput,
+} from '@metaplex-foundation/umi-public-keys';
 import { DataEnum, ScalarEnum } from './Enums';
-import { InterfaceImplementationMissingError } from './errors';
-import type { PublicKey, PublicKeyInput } from './PublicKey';
 import type {
   NumberSerializer,
   Serializer,
   WrapInSerializer,
 } from './Serializer';
-import type { Nullable, Option } from './Option';
+import { InterfaceImplementationMissingError } from './errors';
 
 /**
  * Defines the interface for a set of serializers

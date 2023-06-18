@@ -1,6 +1,6 @@
+import { PublicKey } from '@metaplex-foundation/umi-public-keys';
 import { Amount, SolAmount } from './Amount';
 import type { Instruction } from './Instruction';
-import { PublicKey } from './PublicKey';
 import type { Commitment } from './RpcInterface';
 
 /**

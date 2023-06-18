@@ -110,6 +110,16 @@ importers:
         version: 28.16.1
 
   packages/umi:
+    dependencies:
+      '@metaplex-foundation/umi-options':
+        specifier: workspace:^
+        version: link:../umi-options
+      '@metaplex-foundation/umi-public-keys':
+        specifier: workspace:^
+        version: link:../umi-public-keys
+      '@metaplex-foundation/umi-serializers':
+        specifier: workspace:^
+        version: link:../umi-serializers
     devDependencies:
       '@ava/typescript':
         specifier: ^3.0.1

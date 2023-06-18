@@ -1,6 +1,6 @@
+import type { Pda, PublicKey } from '@metaplex-foundation/umi-public-keys';
 import { InterfaceImplementationMissingError } from './errors';
 import type { Keypair } from './Keypair';
-import type { Pda, PublicKey } from './PublicKey';
 
 /**
  * Defines the interface for the EdDSA cryptography algorithm.
