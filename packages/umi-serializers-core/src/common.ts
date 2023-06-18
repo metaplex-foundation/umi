@@ -24,3 +24,19 @@ export type Serializer<From, To extends From = From> = {
    */
   deserialize: (buffer: Uint8Array, offset?: number) => [To, number];
 };
+
+/**
+ * Defines a serializer for numbers and bigints.
+ * @category Serializers
+ */
+export type NumberSerializer =
+  | Serializer<number>
+  | Serializer<number | bigint, bigint>;
+
+/**
+ * Wraps all the attributes of an object in serializers.
+ * @category Serializers
+ */
+export type WrapInSerializer<T, U extends T = T> = {
+  [P in keyof T]: Serializer<T[P], U[P]>;
+};
