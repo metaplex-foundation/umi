@@ -1,12 +1,9 @@
-import { Serializer, SerializerInterface } from '@metaplex-foundation/umi';
-import { array } from './array';
-import { bool } from './bool';
-import { bytes } from './bytes';
-import { dataEnum } from './dataEnum';
-import { DeserializingEmptyBufferError } from './errors';
-import { map } from './map';
-import { nullable } from './nullable';
+import { SerializerInterface } from '@metaplex-foundation/umi';
 import {
+  array,
+  bool,
+  bytes,
+  dataEnum,
   f32,
   f64,
   i128,
@@ -14,67 +11,36 @@ import {
   i32,
   i64,
   i8,
+  map,
+  nullable,
+  option,
+  publicKey,
+  scalarEnum,
+  set,
+  string,
+  struct,
+  tuple,
   u128,
   u16,
   u32,
   u64,
   u8,
-} from './numbers';
-import { option } from './option';
-import { publicKey } from './pubkey';
-import { scalarEnum } from './scalarEnum';
-import { set } from './set';
-import { string } from './string';
-import { struct } from './struct';
-import { tuple } from './tuple';
-import { unit } from './unit';
+  unit,
+} from '@metaplex-foundation/umi/serializers';
 
-export type DataViewSerializerOptions = {
-  /** @defaultValue `true` */
-  tolerateEmptyBuffers?: boolean;
-};
-
-function getTolerantSerializerFactory<
-  TSerializerFactory extends (...args: never[]) => Serializer<any, any>
->(serializerFactory: TSerializerFactory): TSerializerFactory {
-  return ((...args) => {
-    const originalSerializer = serializerFactory(...args);
-    return {
-      ...originalSerializer,
-      deserialize(bytes: Uint8Array, offset = 0) {
-        try {
-          return originalSerializer.deserialize(bytes, offset);
-        } catch (e) {
-          if (
-            e instanceof DeserializingEmptyBufferError &&
-            e.toleratedDefaultValue !== undefined
-          ) {
-            return [e.toleratedDefaultValue, offset];
-          }
-          throw e;
-        }
-      },
-    };
-  }) as TSerializerFactory;
-}
+export type DataViewSerializerOptions = {};
 
 export function createDataViewSerializer(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   options: DataViewSerializerOptions = {}
 ): SerializerInterface {
-  const shouldTolerateEmptyBuffers = options.tolerateEmptyBuffers !== false;
   return {
     tuple,
-    array: shouldTolerateEmptyBuffers
-      ? getTolerantSerializerFactory(array)
-      : array,
-    map: shouldTolerateEmptyBuffers ? getTolerantSerializerFactory(map) : map,
-    set: shouldTolerateEmptyBuffers ? getTolerantSerializerFactory(set) : set,
-    option: shouldTolerateEmptyBuffers
-      ? getTolerantSerializerFactory(option)
-      : option,
-    nullable: shouldTolerateEmptyBuffers
-      ? getTolerantSerializerFactory(nullable)
-      : nullable,
+    array,
+    map,
+    set,
+    option,
+    nullable,
     struct,
     enum: scalarEnum,
     dataEnum,
