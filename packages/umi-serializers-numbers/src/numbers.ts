@@ -1,360 +1,176 @@
 /* eslint-disable no-bitwise */
 import { Serializer } from '@metaplex-foundation/umi-serializers-core';
-import { toDataView, assertEnoughBytes, assertRange } from './utils';
 import {
-  Endian,
   NumberSerializerOptions,
   SingleByteNumberSerializerOptions,
 } from './common';
+import { numberFactory } from './utils';
 
 export const u8 = (
   options: SingleByteNumberSerializerOptions = {}
-): Serializer<number> => ({
-  description: options.description ?? 'u8',
-  fixedSize: 1,
-  maxSize: 1,
-  serialize(value: number): Uint8Array {
-    assertRange('u8', 0, Number('0xff'), value);
-    const buffer = new ArrayBuffer(1);
-    new DataView(buffer).setUint8(0, value);
-    return new Uint8Array(buffer);
-  },
-  deserialize(bytes, offset = 0): [number, number] {
-    assertEnoughBytes('u8', bytes.slice(offset), 1);
-    const view = toDataView(bytes.slice(offset, offset + 1));
-    return [view.getUint8(0), offset + 1];
-  },
-});
+): Serializer<number> =>
+  numberFactory({
+    name: 'u8',
+    size: 1,
+    range: [0, Number('0xff')],
+    set: (view, value) => view.setUint8(0, Number(value)),
+    get: (view) => view.getUint8(0),
+    options,
+  });
 
 export const i8 = (
   options: SingleByteNumberSerializerOptions = {}
-): Serializer<number> => ({
-  description: options.description ?? 'i8',
-  fixedSize: 1,
-  maxSize: 1,
-  serialize(value: number): Uint8Array {
-    const half = Number('0x7f');
-    assertRange('i8', -half - 1, half, value);
-    const buffer = new ArrayBuffer(1);
-    new DataView(buffer).setInt8(0, value);
-    return new Uint8Array(buffer);
-  },
-  deserialize(bytes, offset = 0): [number, number] {
-    assertEnoughBytes('i8', bytes.slice(offset), 1);
-    const view = toDataView(bytes.slice(offset, offset + 1));
-    return [view.getInt8(0), offset + 1];
-  },
-});
+): Serializer<number> =>
+  numberFactory({
+    name: 'i8',
+    size: 1,
+    range: [-Number('0x7f') - 1, Number('0x7f')],
+    set: (view, value) => view.setInt8(0, Number(value)),
+    get: (view) => view.getInt8(0),
+    options,
+  });
 
 export const u16 = (
   options: NumberSerializerOptions = {}
-): Serializer<number> => {
-  const littleEndian = (options.endian ?? Endian.Little) === Endian.Little;
-  const defaultDescription = littleEndian ? 'u16(le)' : 'u16(be)';
-  return {
-    description: options.description ?? defaultDescription,
-    fixedSize: 2,
-    maxSize: 2,
-    serialize(value: number): Uint8Array {
-      assertRange('u16', 0, Number('0xffff'), value);
-      const buffer = new ArrayBuffer(2);
-      new DataView(buffer).setUint16(0, value, littleEndian);
-      return new Uint8Array(buffer);
-    },
-    deserialize(bytes, offset = 0): [number, number] {
-      assertEnoughBytes('u16', bytes.slice(offset), 2);
-      const view = toDataView(bytes.slice(offset, offset + 2));
-      return [view.getUint16(0, littleEndian), offset + 2];
-    },
-  };
-};
+): Serializer<number> =>
+  numberFactory({
+    name: 'u16',
+    size: 2,
+    range: [0, Number('0xffff')],
+    set: (view, value, le) => view.setUint16(0, Number(value), le),
+    get: (view, le) => view.getUint16(0, le),
+    options,
+  });
 
 export const i16 = (
   options: NumberSerializerOptions = {}
-): Serializer<number> => {
-  const littleEndian = (options.endian ?? Endian.Little) === Endian.Little;
-  const defaultDescription = littleEndian ? 'i16(le)' : 'i16(be)';
-  return {
-    description: options.description ?? defaultDescription,
-    fixedSize: 2,
-    maxSize: 2,
-    serialize(value: number): Uint8Array {
-      const half = Number('0x7fff');
-      assertRange('i16', -half - 1, half, value);
-      const buffer = new ArrayBuffer(2);
-      new DataView(buffer).setInt16(0, value, littleEndian);
-      return new Uint8Array(buffer);
-    },
-    deserialize(bytes, offset = 0): [number, number] {
-      assertEnoughBytes('i16', bytes.slice(offset), 2);
-      const view = toDataView(bytes.slice(offset, offset + 2));
-      return [view.getInt16(0, littleEndian), offset + 2];
-    },
-  };
-};
-
-/**
- * Same as u16, but serialized with 1 to 3 bytes.
- *
- * If the value is above 0x7f, the top bit is set and the remaining
- * value is stored in the next bytes. Each byte follows the same
- * pattern until the 3rd byte. The 3rd byte, if needed, uses
- * all 8 bits to store the last byte of the original value.
- */
-export function shortU16(): Serializer<number> {
-  return {
-    description: 'shortU16',
-    fixedSize: null,
-    maxSize: 3,
-    serialize: (value: number): Uint8Array => {
-      if (value < 0 || value > 65535) {
-        throw new RangeError(
-          `Only values in the range [0, 65535] can be serialized to shortU16. \`${value}\` given.`
-        );
-      }
-      const bytes = [0];
-      for (let ii = 0; ; ii += 1) {
-        // Shift the bits of the value over such that the next 7 bits are at the right edge.
-        const alignedValue = value >> (ii * 7);
-        if (alignedValue === 0) {
-          // No more bits to consume.
-          break;
-        }
-        // Extract those 7 bits using a mask.
-        const nextSevenBits = 0b1111111 & alignedValue;
-        bytes[ii] = nextSevenBits;
-        if (ii > 0) {
-          // Set the continuation bit of the previous slice.
-          bytes[ii - 1] |= 0b10000000;
-        }
-      }
-      return new Uint8Array(bytes);
-    },
-    deserialize: (bytes: Uint8Array, offset = 0): [number, number] => {
-      let value = 0;
-      let byteCount = 0;
-      while (
-        ++byteCount // eslint-disable-line no-plusplus
-      ) {
-        const byteIndex = byteCount - 1;
-        const currentByte = bytes[offset + byteIndex];
-        const nextSevenBits = 0b1111111 & currentByte;
-        // Insert the next group of seven bits into the correct slot of the output value.
-        value |= nextSevenBits << (byteIndex * 7);
-        if ((currentByte & 0b10000000) === 0) {
-          // This byte does not have its continuation bit set. We're done.
-          break;
-        }
-      }
-      return [value, offset + byteCount];
-    },
-  };
-}
+): Serializer<number> =>
+  numberFactory({
+    name: 'i16',
+    size: 2,
+    range: [-Number('0x7fff') - 1, Number('0x7fff')],
+    set: (view, value, le) => view.setInt16(0, Number(value), le),
+    get: (view, le) => view.getInt16(0, le),
+    options,
+  });
 
 export const u32 = (
   options: NumberSerializerOptions = {}
-): Serializer<number> => {
-  const littleEndian = (options.endian ?? Endian.Little) === Endian.Little;
-  const defaultDescription = littleEndian ? 'u32(le)' : 'u32(be)';
-  return {
-    description: options.description ?? defaultDescription,
-    fixedSize: 4,
-    maxSize: 4,
-    serialize(value: number): Uint8Array {
-      assertRange('u32', 0, Number('0xffffffff'), value);
-      const buffer = new ArrayBuffer(4);
-      new DataView(buffer).setUint32(0, value, littleEndian);
-      return new Uint8Array(buffer);
-    },
-    deserialize(bytes, offset = 0): [number, number] {
-      assertEnoughBytes('u32', bytes.slice(offset), 4);
-      const view = toDataView(bytes.slice(offset, offset + 4));
-      return [view.getUint32(0, littleEndian), offset + 4];
-    },
-  };
-};
+): Serializer<number> =>
+  numberFactory({
+    name: 'u32',
+    size: 4,
+    range: [0, Number('0xffffffff')],
+    set: (view, value, le) => view.setUint32(0, Number(value), le),
+    get: (view, le) => view.getUint32(0, le),
+    options,
+  });
 
 export const i32 = (
   options: NumberSerializerOptions = {}
-): Serializer<number> => {
-  const littleEndian = (options.endian ?? Endian.Little) === Endian.Little;
-  const defaultDescription = littleEndian ? 'i32(le)' : 'i32(be)';
-  return {
-    description: options.description ?? defaultDescription,
-    fixedSize: 4,
-    maxSize: 4,
-    serialize(value: number): Uint8Array {
-      const half = Number('0x7fffffff');
-      assertRange('i32', -half - 1, half, value);
-      const buffer = new ArrayBuffer(4);
-      new DataView(buffer).setInt32(0, value, littleEndian);
-      return new Uint8Array(buffer);
-    },
-    deserialize(bytes, offset = 0): [number, number] {
-      assertEnoughBytes('i32', bytes.slice(offset), 4);
-      const view = toDataView(bytes.slice(offset, offset + 4));
-      return [view.getInt32(0, littleEndian), offset + 4];
-    },
-  };
-};
+): Serializer<number> =>
+  numberFactory({
+    name: 'i32',
+    size: 4,
+    range: [-Number('0x7fffffff') - 1, Number('0x7fffffff')],
+    set: (view, value, le) => view.setInt32(0, Number(value), le),
+    get: (view, le) => view.getInt32(0, le),
+    options,
+  });
 
 export const u64 = (
   options: NumberSerializerOptions = {}
-): Serializer<number | bigint, bigint> => {
-  const littleEndian = (options.endian ?? Endian.Little) === Endian.Little;
-  const defaultDescription = littleEndian ? 'u64(le)' : 'u64(be)';
-  return {
-    description: options.description ?? defaultDescription,
-    fixedSize: 8,
-    maxSize: 8,
-    serialize(value: number | bigint): Uint8Array {
-      const valueBigInt = BigInt(value);
-      assertRange('u64', 0, BigInt('0xffffffffffffffff'), valueBigInt);
-      const buffer = new ArrayBuffer(8);
-      new DataView(buffer).setBigUint64(0, valueBigInt, littleEndian);
-      return new Uint8Array(buffer);
-    },
-    deserialize(bytes, offset = 0): [bigint, number] {
-      assertEnoughBytes('u64', bytes.slice(offset), 8);
-      const view = toDataView(bytes.slice(offset, offset + 8));
-      return [view.getBigUint64(0, littleEndian), offset + 8];
-    },
-  };
-};
+): Serializer<number | bigint, bigint> =>
+  numberFactory({
+    name: 'u64',
+    size: 8,
+    range: [0, BigInt('0xffffffffffffffff')],
+    set: (view, value, le) => view.setBigUint64(0, BigInt(value), le),
+    get: (view, le) => view.getBigUint64(0, le),
+    options,
+  });
 
 export const i64 = (
   options: NumberSerializerOptions = {}
-): Serializer<number | bigint, bigint> => {
-  const littleEndian = (options.endian ?? Endian.Little) === Endian.Little;
-  const defaultDescription = littleEndian ? 'i64(le)' : 'i64(be)';
-  return {
-    description: options.description ?? defaultDescription,
-    fixedSize: 8,
-    maxSize: 8,
-    serialize(value: number | bigint): Uint8Array {
-      const valueBigInt = BigInt(value);
-      const half = BigInt('0x7fffffffffffffff');
-      assertRange('i64', -half - 1n, half, valueBigInt);
-      const buffer = new ArrayBuffer(8);
-      new DataView(buffer).setBigInt64(0, valueBigInt, littleEndian);
-      return new Uint8Array(buffer);
-    },
-    deserialize(bytes, offset = 0): [bigint, number] {
-      assertEnoughBytes('i64', bytes.slice(offset), 8);
-      const view = toDataView(bytes.slice(offset, offset + 8));
-      return [view.getBigInt64(0, littleEndian), offset + 8];
-    },
-  };
-};
+): Serializer<number | bigint, bigint> =>
+  numberFactory({
+    name: 'i64',
+    size: 8,
+    range: [-BigInt('0x7fffffffffffffff') - 1n, BigInt('0x7fffffffffffffff')],
+    set: (view, value, le) => view.setBigInt64(0, BigInt(value), le),
+    get: (view, le) => view.getBigInt64(0, le),
+    options,
+  });
 
 export const u128 = (
   options: NumberSerializerOptions = {}
-): Serializer<number | bigint, bigint> => {
-  const littleEndian = (options.endian ?? Endian.Little) === Endian.Little;
-  const defaultDescription = littleEndian ? 'u128(le)' : 'u128(be)';
-  return {
-    description: options.description ?? defaultDescription,
-    fixedSize: 16,
-    maxSize: 16,
-    serialize(value: number | bigint): Uint8Array {
-      const valueBigInt = BigInt(value);
-      const max = BigInt('0xffffffffffffffffffffffffffffffff');
-      assertRange('u128', 0, max, valueBigInt);
-      const buffer = new ArrayBuffer(16);
-      const view = new DataView(buffer);
-      const leftOffset = littleEndian ? 8 : 0;
-      const rightOffset = littleEndian ? 0 : 8;
+): Serializer<number | bigint, bigint> =>
+  numberFactory({
+    name: 'u128',
+    size: 16,
+    range: [0, BigInt('0xffffffffffffffffffffffffffffffff')],
+    set: (view, value, le) => {
+      const leftOffset = le ? 8 : 0;
+      const rightOffset = le ? 0 : 8;
       const rightMask = 0xffffffffffffffffn;
-      view.setBigUint64(leftOffset, valueBigInt >> 64n, littleEndian);
-      view.setBigUint64(rightOffset, valueBigInt & rightMask, littleEndian);
-      return new Uint8Array(buffer);
+      view.setBigUint64(leftOffset, BigInt(value) >> 64n, le);
+      view.setBigUint64(rightOffset, BigInt(value) & rightMask, le);
     },
-    deserialize(bytes, offset = 0): [bigint, number] {
-      assertEnoughBytes('u128', bytes.slice(offset), 16);
-      const view = toDataView(bytes.slice(offset, offset + 16));
-      const leftOffset = littleEndian ? 8 : 0;
-      const rightOffset = littleEndian ? 0 : 8;
-      const left = view.getBigUint64(leftOffset, littleEndian);
-      const right = view.getBigUint64(rightOffset, littleEndian);
-      return [(left << 64n) + right, offset + 16];
+    get: (view, le) => {
+      const leftOffset = le ? 8 : 0;
+      const rightOffset = le ? 0 : 8;
+      const left = view.getBigUint64(leftOffset, le);
+      const right = view.getBigUint64(rightOffset, le);
+      return (left << 64n) + right;
     },
-  };
-};
+    options,
+  });
 
 export const i128 = (
   options: NumberSerializerOptions = {}
-): Serializer<number | bigint, bigint> => {
-  const littleEndian = (options.endian ?? Endian.Little) === Endian.Little;
-  const defaultDescription = littleEndian ? 'i128(le)' : 'i128(be)';
-  return {
-    description: options.description ?? defaultDescription,
-    fixedSize: 16,
-    maxSize: 16,
-    serialize(value: number | bigint): Uint8Array {
-      const valueBigInt = BigInt(value);
-      const half = BigInt('0x7fffffffffffffffffffffffffffffff');
-      assertRange('i128', -half - 1n, half, valueBigInt);
-      const buffer = new ArrayBuffer(16);
-      const view = new DataView(buffer);
-      const leftOffset = littleEndian ? 8 : 0;
-      const rightOffset = littleEndian ? 0 : 8;
+): Serializer<number | bigint, bigint> =>
+  numberFactory({
+    name: 'i128',
+    size: 16,
+    range: [
+      -BigInt('0x7fffffffffffffffffffffffffffffff') - 1n,
+      BigInt('0x7fffffffffffffffffffffffffffffff'),
+    ],
+    set: (view, value, le) => {
+      const leftOffset = le ? 8 : 0;
+      const rightOffset = le ? 0 : 8;
       const rightMask = 0xffffffffffffffffn;
-      view.setBigInt64(leftOffset, valueBigInt >> 64n, littleEndian);
-      view.setBigUint64(rightOffset, valueBigInt & rightMask, littleEndian);
-      return new Uint8Array(buffer);
+      view.setBigInt64(leftOffset, BigInt(value) >> 64n, le);
+      view.setBigUint64(rightOffset, BigInt(value) & rightMask, le);
     },
-    deserialize(bytes, offset = 0): [bigint, number] {
-      assertEnoughBytes('i128', bytes.slice(offset), 16);
-      const view = toDataView(bytes.slice(offset, offset + 16));
-      const leftOffset = littleEndian ? 8 : 0;
-      const rightOffset = littleEndian ? 0 : 8;
-      const left = view.getBigInt64(leftOffset, littleEndian);
-      const right = view.getBigUint64(rightOffset, littleEndian);
-      return [(left << 64n) + right, offset + 16];
+    get: (view, le) => {
+      const leftOffset = le ? 8 : 0;
+      const rightOffset = le ? 0 : 8;
+      const left = view.getBigInt64(leftOffset, le);
+      const right = view.getBigUint64(rightOffset, le);
+      return (left << 64n) + right;
     },
-  };
-};
+    options,
+  });
 
 export const f32 = (
   options: NumberSerializerOptions = {}
-): Serializer<number> => {
-  const littleEndian = (options.endian ?? Endian.Little) === Endian.Little;
-  const defaultDescription = littleEndian ? 'f32(le)' : 'f32(be)';
-  return {
-    description: options.description ?? defaultDescription,
-    fixedSize: 4,
-    maxSize: 4,
-    serialize(value: number): Uint8Array {
-      const buffer = new ArrayBuffer(4);
-      new DataView(buffer).setFloat32(0, value, littleEndian);
-      return new Uint8Array(buffer);
-    },
-    deserialize(bytes, offset = 0): [number, number] {
-      assertEnoughBytes('f32', bytes.slice(offset), 4);
-      const view = toDataView(bytes.slice(offset, offset + 4));
-      return [view.getFloat32(0, littleEndian), offset + 4];
-    },
-  };
-};
+): Serializer<number> =>
+  numberFactory({
+    name: 'f32',
+    size: 4,
+    set: (view, value, le) => view.setFloat32(0, Number(value), le),
+    get: (view, le) => view.getFloat32(0, le),
+    options,
+  });
 
 export const f64 = (
   options: NumberSerializerOptions = {}
-): Serializer<number> => {
-  const littleEndian = (options.endian ?? Endian.Little) === Endian.Little;
-  const defaultDescription = littleEndian ? 'f64(le)' : 'f64(be)';
-  return {
-    description: options.description ?? defaultDescription,
-    fixedSize: 8,
-    maxSize: 8,
-    serialize(value: number): Uint8Array {
-      const buffer = new ArrayBuffer(8);
-      new DataView(buffer).setFloat64(0, value, littleEndian);
-      return new Uint8Array(buffer);
-    },
-    deserialize(bytes, offset = 0): [number, number] {
-      assertEnoughBytes('f64', bytes.slice(offset), 8);
-      const view = toDataView(bytes.slice(offset, offset + 8));
-      return [view.getFloat64(0, littleEndian), offset + 8];
-    },
-  };
-};
+): Serializer<number> =>
+  numberFactory({
+    name: 'f64',
+    size: 8,
+    set: (view, value, le) => view.setFloat64(0, Number(value), le),
+    get: (view, le) => view.getFloat64(0, le),
+    options,
+  });

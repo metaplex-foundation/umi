@@ -1,5 +1,5 @@
 /** @category Errors */
-export class NumberOutOfRangeError extends Error {
+export class NumberOutOfRangeError extends RangeError {
   readonly name: string = 'NumberOutOfRangeError';
 
   constructor(
