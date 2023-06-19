@@ -1,10 +1,9 @@
+import type { PublicKey } from '@metaplex-foundation/umi-public-keys';
 import type { MaybeRpcAccount, RpcAccount } from './Account';
 import { SolAmount } from './Amount';
 import type { Cluster } from './Cluster';
 import { DateTime } from './DateTime';
-import { InterfaceImplementationMissingError } from './errors';
 import type { GenericAbortSignal } from './GenericAbortSignal';
-import type { PublicKey } from './PublicKey';
 import type {
   Blockhash,
   BlockhashWithExpiryBlockHeight,
@@ -14,6 +13,7 @@ import type {
   TransactionStatus,
   TransactionWithMeta,
 } from './Transaction';
+import { InterfaceImplementationMissingError } from './errors';
 
 /**
  * Defines the interface for an RPC client.

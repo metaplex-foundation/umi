@@ -23,6 +23,7 @@ const createConfig = (build, options) => {
   } = build;
 
   const {
+    input = ['src/index.ts'],
     pkg,
     extensions = ['.js', '.ts'],
     globals = {},
@@ -44,7 +45,7 @@ const createConfig = (build, options) => {
   const entryFileNames = `[name].${outputExtension}`;
 
   return {
-    input: ['src/index.ts'],
+    input,
     output: {
       dir,
       file,

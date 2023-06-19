@@ -3,6 +3,6 @@ import { createWeb3JsTransactionFactory } from './createWeb3JsTransactionFactory
 
 export const web3JsTransactionFactory = (): UmiPlugin => ({
   install(umi) {
-    umi.transactions = createWeb3JsTransactionFactory(umi);
+    umi.transactions = createWeb3JsTransactionFactory();
   },
 });

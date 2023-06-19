@@ -1,16 +1,16 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {
-  base10,
   Context,
-  createUmi as baseCreateUmi,
-  generatedSignerIdentity,
-  generateSigner,
   PublicKey,
-  publicKey,
   Signer,
   Umi,
   WrappedInstruction,
+  createUmi as baseCreateUmi,
+  generateSigner,
+  generatedSignerIdentity,
+  publicKey,
 } from '../src';
+import { base10 } from '../src/serializers';
 
 export const createUmi = (): Umi =>
   baseCreateUmi().use(generatedSignerIdentity());

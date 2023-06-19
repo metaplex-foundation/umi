@@ -31,7 +31,7 @@ test('fixed (de)serialization', (t) => {
   d(t, bytes5, '0102000000', new Uint8Array([1, 2, 0, 0, 0]), 5);
   d(t, bytes5, ['ff0102000000', 1], new Uint8Array([1, 2, 0, 0, 0]), 6);
   t.throws(() => bytes5.deserialize(base16.serialize('0102')), {
-    message: (m) => m.includes('Fixed serializer expected 5 bytes, got 2'),
+    message: 'Serializer [fixSerializer] expected 5 bytes, got 2.',
   });
 
   // Too large (truncated).

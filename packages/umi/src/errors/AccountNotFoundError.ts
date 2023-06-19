@@ -1,4 +1,4 @@
-import { PublicKey } from '../PublicKey';
+import { PublicKey } from '@metaplex-foundation/umi-public-keys';
 import { SdkError } from './SdkError';
 
 /** @category Errors */

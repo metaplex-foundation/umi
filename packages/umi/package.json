@@ -11,13 +11,19 @@
     ".": {
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs"
+    },
+    "./serializers": {
+      "types": "./dist/types/serializers.d.ts",
+      "import": "./dist/esm/serializers.mjs",
+      "require": "./dist/cjs/serializers.cjs"
     }
   },
   "files": [
     "/dist/cjs",
     "/dist/esm",
     "/dist/types",
-    "/src"
+    "/src",
+    "*.d.ts"
   ],
   "scripts": {
     "lint": "eslint --ext js,ts,tsx src",
@@ -25,6 +31,11 @@
     "clean": "rimraf dist",
     "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
     "test": "ava"
+  },
+  "dependencies": {
+    "@metaplex-foundation/umi-options": "workspace:^",
+    "@metaplex-foundation/umi-public-keys": "workspace:^",
+    "@metaplex-foundation/umi-serializers": "workspace:^"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",

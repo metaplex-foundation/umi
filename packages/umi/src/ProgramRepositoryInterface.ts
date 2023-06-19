@@ -1,8 +1,11 @@
+import type {
+  PublicKey,
+  PublicKeyInput,
+} from '@metaplex-foundation/umi-public-keys';
 import type { ClusterFilter } from './Cluster';
-import { InterfaceImplementationMissingError, ProgramError } from './errors';
 import type { ErrorWithLogs, Program } from './Program';
-import type { PublicKey, PublicKeyInput } from './PublicKey';
 import type { Transaction } from './Transaction';
+import { InterfaceImplementationMissingError, ProgramError } from './errors';
 
 /**
  * Defines the interface for a program repository.

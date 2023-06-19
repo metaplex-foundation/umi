@@ -110,6 +110,16 @@ importers:
         version: 28.16.1
 
   packages/umi:
+    dependencies:
+      '@metaplex-foundation/umi-options':
+        specifier: workspace:^
+        version: link:../umi-options
+      '@metaplex-foundation/umi-public-keys':
+        specifier: workspace:^
+        version: link:../umi-public-keys
+      '@metaplex-foundation/umi-serializers':
+        specifier: workspace:^
+        version: link:../umi-serializers
     devDependencies:
       '@ava/typescript':
         specifier: ^3.0.1
@@ -251,6 +261,15 @@ importers:
         specifier: ^0.17.1
         version: 0.17.1
 
+  packages/umi-options:
+    devDependencies:
+      '@ava/typescript':
+        specifier: ^3.0.1
+        version: 3.0.1
+      ava:
+        specifier: ^5.1.0
+        version: 5.1.0(@ava/typescript@3.0.1)
+
   packages/umi-program-repository:
     devDependencies:
       '@ava/typescript':
@@ -259,6 +278,19 @@ importers:
       '@metaplex-foundation/umi':
         specifier: workspace:^
         version: link:../umi
+      ava:
+        specifier: ^5.1.0
+        version: 5.1.0(@ava/typescript@3.0.1)
+
+  packages/umi-public-keys:
+    dependencies:
+      '@metaplex-foundation/umi-serializers-encodings':
+        specifier: workspace:^
+        version: link:../umi-serializers-encodings
+    devDependencies:
+      '@ava/typescript':
+        specifier: ^3.0.1
+        version: 3.0.1
       ava:
         specifier: ^5.1.0
         version: 5.1.0(@ava/typescript@3.0.1)
@@ -331,6 +363,66 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0(@ava/typescript@3.0.1)
 
+  packages/umi-serializers:
+    dependencies:
+      '@metaplex-foundation/umi-options':
+        specifier: workspace:^
+        version: link:../umi-options
+      '@metaplex-foundation/umi-public-keys':
+        specifier: workspace:^
+        version: link:../umi-public-keys
+      '@metaplex-foundation/umi-serializers-core':
+        specifier: workspace:^
+        version: link:../umi-serializers-core
+      '@metaplex-foundation/umi-serializers-encodings':
+        specifier: workspace:^
+        version: link:../umi-serializers-encodings
+      '@metaplex-foundation/umi-serializers-numbers':
+        specifier: workspace:^
+        version: link:../umi-serializers-numbers
+    devDependencies:
+      '@ava/typescript':
+        specifier: ^3.0.1
+        version: 3.0.1
+      ava:
+        specifier: ^5.1.0
+        version: 5.1.0(@ava/typescript@3.0.1)
+
+  packages/umi-serializers-core:
+    devDependencies:
+      '@ava/typescript':
+        specifier: ^3.0.1
+        version: 3.0.1
+      ava:
+        specifier: ^5.1.0
+        version: 5.1.0(@ava/typescript@3.0.1)
+
+  packages/umi-serializers-encodings:
+    dependencies:
+      '@metaplex-foundation/umi-serializers-core':
+        specifier: workspace:^
+        version: link:../umi-serializers-core
+    devDependencies:
+      '@ava/typescript':
+        specifier: ^3.0.1
+        version: 3.0.1
+      ava:
+        specifier: ^5.1.0
+        version: 5.1.0(@ava/typescript@3.0.1)
+
+  packages/umi-serializers-numbers:
+    dependencies:
+      '@metaplex-foundation/umi-serializers-core':
+        specifier: workspace:^
+        version: link:../umi-serializers-core
+    devDependencies:
+      '@ava/typescript':
+        specifier: ^3.0.1
+        version: 3.0.1
+      ava:
+        specifier: ^5.1.0
+        version: 5.1.0(@ava/typescript@3.0.1)
+
   packages/umi-signer-derived:
     dependencies:
       '@noble/hashes':
@@ -393,9 +485,6 @@ importers:
 
   packages/umi-transaction-factory-web3js:
     dependencies:
-      '@metaplex-foundation/umi-serializer-data-view':
-        specifier: workspace:^
-        version: link:../umi-serializer-data-view
       '@metaplex-foundation/umi-web3js-adapters':
         specifier: workspace:^
         version: link:../umi-web3js-adapters

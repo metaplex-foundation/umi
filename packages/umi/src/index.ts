@@ -1,3 +1,10 @@
+export * from '@metaplex-foundation/umi-options';
+export * from '@metaplex-foundation/umi-public-keys';
+
+// Deprecated exports.
+// They should instead be imported from "@metaplex-foundation/umi/serializers".
+export * from './serializersInternal';
+
 export * from './Account';
 export * from './Amount';
 export * from './BigInt';
@@ -6,7 +13,6 @@ export * from './Context';
 export * from './DateTime';
 export * from './DownloaderInterface';
 export * from './EddsaInterface';
-export * from './Enums';
 export * from './errors';
 export * from './GenericAbortSignal';
 export * from './GenericFile';
@@ -17,12 +23,9 @@ export * from './HttpRequest';
 export * from './HttpResponse';
 export * from './Instruction';
 export * from './Keypair';
-export * from './Option';
 export * from './Program';
 export * from './ProgramRepositoryInterface';
-export * from './PublicKey';
 export * from './RpcInterface';
-export * from './Serializer';
 export * from './SerializerInterface';
 export * from './Signer';
 export * from './SignerPlugins';

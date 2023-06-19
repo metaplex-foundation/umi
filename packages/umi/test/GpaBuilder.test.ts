@@ -1,14 +1,13 @@
 import test from 'ava';
 import {
-  base58,
   createNullContext,
   defaultPublicKey,
   GpaBuilder,
   gpaBuilder,
   publicKeyBytes,
   RpcAccount,
-  Serializer,
 } from '../src';
+import { base58, Serializer } from '../src/serializers';
 
 test('it can add a data slice', (t) => {
   let builder = getTestGpaBuilder().slice(42, 10);

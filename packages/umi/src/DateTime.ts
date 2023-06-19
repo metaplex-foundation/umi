@@ -1,5 +1,9 @@
+import {
+  NumberSerializer,
+  Serializer,
+  mapSerializer,
+} from '@metaplex-foundation/umi-serializers';
 import { BigIntInput, createBigInt } from './BigInt';
-import { mapSerializer, NumberSerializer, Serializer } from './Serializer';
 
 /**
  * Defines a string that can be parsed into a Date object.

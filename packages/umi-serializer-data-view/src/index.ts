@@ -1,18 +1,32 @@
-export * from './array';
+export {
+  array,
+  bool,
+  bytes,
+  dataEnum,
+  f32,
+  f64,
+  i128,
+  i16,
+  i32,
+  i64,
+  i8,
+  map,
+  nullable,
+  option,
+  publicKey,
+  scalarEnum,
+  set,
+  string,
+  struct,
+  tuple,
+  u128,
+  u16,
+  u32,
+  u64,
+  u8,
+  unit,
+  shortU16,
+} from '@metaplex-foundation/umi/serializers';
+
 export * from './createDataViewSerializer';
-export * from './bool';
-export * from './bytes';
-export * from './dataEnum';
-export * from './errors';
-export * from './map';
-export * from './nullable';
-export * from './numbers';
-export * from './option';
-export * from './scalarEnum';
-export * from './set';
-export * from './string';
-export * from './struct';
-export * from './tuple';
 export * from './plugin';
-export * from './pubkey';
-export * from './unit';

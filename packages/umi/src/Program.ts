@@ -1,6 +1,6 @@
+import type { PublicKey } from '@metaplex-foundation/umi-public-keys';
 import type { Cluster } from './Cluster';
 import type { ProgramError } from './errors';
-import type { PublicKey } from './PublicKey';
 
 /**
  * An error that contains Program logs.

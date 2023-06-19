@@ -1,4 +1,7 @@
-import { PublicKey, PublicKeyInput } from './PublicKey';
+import {
+  PublicKey,
+  PublicKeyInput,
+} from '@metaplex-foundation/umi-public-keys';
 import { Transaction } from './Transaction';
 import { uniqueBy } from './utils';
 

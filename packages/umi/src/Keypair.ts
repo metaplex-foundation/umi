@@ -1,5 +1,5 @@
+import type { PublicKey } from '@metaplex-foundation/umi-public-keys';
 import type { Context } from './Context';
-import type { PublicKey } from './PublicKey';
 import type { Signer } from './Signer';
 import { addTransactionSignature, Transaction } from './Transaction';
 

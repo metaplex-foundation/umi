@@ -1,7 +1,7 @@
+import type { PublicKey } from '@metaplex-foundation/umi-public-keys';
+import type { Serializer } from '@metaplex-foundation/umi-serializers';
 import type { SolAmount } from './Amount';
 import { AccountNotFoundError, UnexpectedAccountError } from './errors';
-import type { PublicKey } from './PublicKey';
-import type { Serializer } from './Serializer';
 
 /**
  * The size of an account header in bytes.
