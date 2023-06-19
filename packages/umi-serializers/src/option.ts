@@ -1,6 +1,6 @@
 import {
-  Nullable,
   Option,
+  OptionOrNullable,
   isOption,
   isSome,
   none,
@@ -51,7 +51,7 @@ export type OptionSerializerOptions = BaseSerializerOptions & {
 export function option<T, U extends T = T>(
   item: Serializer<T, U>,
   options: OptionSerializerOptions = {}
-): Serializer<Option<T> | Nullable<T>, Option<U>> {
+): Serializer<OptionOrNullable<T>, Option<U>> {
   const prefix = options.prefix ?? u8();
   const fixed = options.fixed ?? false;
   let descriptionSuffix = `; ${getSizeDescription(prefix)}`;
@@ -70,7 +70,7 @@ export function option<T, U extends T = T>(
       options.description ?? `option(${item.description + descriptionSuffix})`,
     fixedSize,
     maxSize: sumSerializerSizes([prefix.maxSize, item.maxSize]),
-    serialize: (optionOrNullable: Option<T> | Nullable<T>) => {
+    serialize: (optionOrNullable: OptionOrNullable<T>) => {
       const option = isOption<T>(optionOrNullable)
         ? optionOrNullable
         : wrapNullable(optionOrNullable);

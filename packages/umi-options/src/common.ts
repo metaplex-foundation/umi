@@ -15,6 +15,15 @@ export type Nullable<T> = T | null;
 export type Option<T> = Some<T> | None;
 
 /**
+ * Defines a looser type that can be used when serializing an {@link Option}.
+ * This allows us to pass null or the Option value directly whilst still
+ * supporting the Option type for use-cases that need more type safety.
+ *
+ * @category Utils — Options
+ */
+export type OptionOrNullable<T> = Option<T> | Nullable<T>;
+
+/**
  * Represents an option of type `T` that has a value.
  *
  * @see {@link Option}
