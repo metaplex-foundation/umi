@@ -42,7 +42,11 @@ export interface Context {
   programs: ProgramRepositoryInterface;
   /** An interface for sending RPC requests. */
   rpc: RpcInterface;
-  /** An interface for serializing various types. */
+  /**
+   * An interface for serializing various types.
+   * @deprecated This interface is deprecated.
+   * You can now directly use `@metaplex-foundation/umi/serializers` instead.
+   */
   serializer: SerializerInterface;
   /** An interface for managing transactions. */
   transactions: TransactionFactoryInterface;

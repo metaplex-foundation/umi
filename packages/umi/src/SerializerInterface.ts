@@ -33,6 +33,8 @@ import { InterfaceImplementationMissingError } from './errors';
  * that can be used to serialize/deserialize any Serde types.
  *
  * @category Context and Interfaces
+ * @deprecated This interface is deprecated.
+ * You can now directly use `@metaplex-foundation/umi/serializers` instead.
  */
 export interface SerializerInterface {
   /**
