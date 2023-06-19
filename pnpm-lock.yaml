@@ -485,9 +485,6 @@ importers:
 
   packages/umi-transaction-factory-web3js:
     dependencies:
-      '@metaplex-foundation/umi-serializer-data-view':
-        specifier: workspace:^
-        version: link:../umi-serializer-data-view
       '@metaplex-foundation/umi-web3js-adapters':
         specifier: workspace:^
         version: link:../umi-web3js-adapters

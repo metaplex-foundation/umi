@@ -25,6 +25,7 @@ export {
   u64,
   u8,
   unit,
+  shortU16,
 } from '@metaplex-foundation/umi/serializers';
 
 export * from './createDataViewSerializer';

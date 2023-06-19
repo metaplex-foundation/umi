@@ -27,8 +27,7 @@
     "test": "ava"
   },
   "dependencies": {
-    "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
-    "@metaplex-foundation/umi-serializer-data-view": "workspace:^"
+    "@metaplex-foundation/umi-web3js-adapters": "workspace:^"
   },
   "peerDependencies": {
     "@metaplex-foundation/umi": "workspace:^",

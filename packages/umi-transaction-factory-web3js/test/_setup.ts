@@ -9,7 +9,6 @@ import {
   Umi,
 } from '@metaplex-foundation/umi';
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
-import { dataViewSerializer } from '@metaplex-foundation/umi-serializer-data-view';
 import {
   fromWeb3JsInstruction,
   fromWeb3JsMessage,
@@ -19,20 +18,17 @@ import {
   toWeb3JsTransaction,
 } from '@metaplex-foundation/umi-web3js-adapters';
 import {
-  AddressLookupTableAccount as Web3JsAddressLookupTableAccount,
-  Message as Web3JsLegacyMessage,
-  MessageV0 as Web3JsV0Message,
   SystemProgram,
+  AddressLookupTableAccount as Web3JsAddressLookupTableAccount,
   TransactionInstruction as Web3JsInstruction,
+  Message as Web3JsLegacyMessage,
   VersionedTransaction as Web3JsTransaction,
+  MessageV0 as Web3JsV0Message,
 } from '@solana/web3.js';
 import { web3JsTransactionFactory } from '../src';
 
 export const createUmi = (): Umi =>
-  baseCreateUmi()
-    .use(dataViewSerializer())
-    .use(web3JsEddsa())
-    .use(web3JsTransactionFactory());
+  baseCreateUmi().use(web3JsEddsa()).use(web3JsTransactionFactory());
 
 export const createTransferInstruction = (
   umi: Umi
