@@ -55,7 +55,7 @@ Now that we know how to generate Umi-compatible libraries via Kinobi, let's take
 Kinobi-generated libraries provide a serializer for each type, account and instruction defined on the program. It also exports the two TypeScript types required to create the serializer — i.e. its `From` and `To` type parameters. It will suffix the `From` type with `Args` to distinguish the two. For instance, if you have a `MyType` type defined in your IDL, you can use the following code to serialize and deserialize it.
 
 ```ts
-const serializer: Serializer<MyTypeArgs, MyType> = getMyTypeSerializer(umi);
+const serializer: Serializer<MyTypeArgs, MyType> = getMyTypeSerializer();
 serializer.serialize(myType);
 serializer.deserialize(myBuffer);
 ```
@@ -67,12 +67,12 @@ For instructions, the name of the type is suffixed with `InstructionData` and, f
 type Token = Account<TokenAccountData>;
 type TokenAccountData = {...};
 type TokenAccountDataArgs = {...};
-const tokenDataSerializer = getTokenAccountDataSerializer(umi);
+const tokenDataSerializer = getTokenAccountDataSerializer();
 
 // For instructions.
 type TransferInstructionData = {...};
 type TransferInstructionDataArgs = {...};
-const transferDataSerializer = getTransferInstructionDataSerializer(umi);
+const transferDataSerializer = getTransferInstructionDataSerializer();
 ```
 
 ### Data enum helpers
@@ -102,7 +102,7 @@ Kinobi will also provide additional helper methods for accounts, providing us wi
 
 ```ts
 // Deserialize a raw account into a parsed account.
-deserializeMetadata(umi, rawAccount); // -> Metadata
+deserializeMetadata(rawAccount); // -> Metadata
 
 // Fetch an deserialized account from its public key.
 await fetchMetadata(umi, publicKey); // -> Metadata or fail
