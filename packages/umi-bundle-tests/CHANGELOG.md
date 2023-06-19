@@ -1,5 +1,19 @@
 # @metaplex-foundation/umi-bundle-tests
 
+## 0.8.2
+
+### Patch Changes
+
+- Updated dependencies [[`4accd34`](https://github.com/metaplex-foundation/umi/commit/4accd34f0a70d360321c42f395a2ad45cbadca16), [`4342375`](https://github.com/metaplex-foundation/umi/commit/43423750c9b351446b868ede57ecb634cebde42a), [`4342375`](https://github.com/metaplex-foundation/umi/commit/43423750c9b351446b868ede57ecb634cebde42a)]:
+  - @metaplex-foundation/umi-transaction-factory-web3js@0.8.2
+  - @metaplex-foundation/umi-serializer-data-view@0.8.2
+  - @metaplex-foundation/umi@0.8.2
+  - @metaplex-foundation/umi-eddsa-web3js@0.8.2
+  - @metaplex-foundation/umi-http-fetch@0.8.2
+  - @metaplex-foundation/umi-program-repository@0.8.2
+  - @metaplex-foundation/umi-rpc-web3js@0.8.2
+  - @metaplex-foundation/umi-storage-mock@0.8.2
+
 ## 0.8.1
 
 ### Patch Changes
