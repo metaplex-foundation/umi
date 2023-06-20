@@ -80,11 +80,14 @@ const pda = umi.eddsa.findPda(programId, seeds);
 Each seed must be serialized as a `Uint8Array`. You can learn more about serializers on [the Serializers page](./serializers.md) but here is a quick example showing how to find the metadata PDA of a given mint address.
 
 ```ts
+import { publicKey } from '@metaplex-foundation/umi';
+import { publicKey as publicKeySerializer, string } from '@metaplex-foundation/umi/serializers';
+
 const tokenMetadataProgramId = publicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
 const metadata = umi.eddsa.findPda(tokenMetadataProgramId, [
-  umi.serializer.string({ size: 'variable' }).serialize('metadata'),
-  umi.serializer.publicKey().serialize(tokenMetadataProgramId),
-  umi.serializer.publicKey().serialize(mint),
+  string({ size: 'variable' }).serialize('metadata'),
+  publicKeySerializer().serialize(tokenMetadataProgramId),
+  publicKeySerializer().serialize(mint),
 ]);
 ```
 
