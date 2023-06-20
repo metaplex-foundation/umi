@@ -7,7 +7,6 @@ Umi defines a set of core interfaces that makes it easy to interact with the Sol
 - [`EddsaInterface`](https://umi-docs.vercel.app/interfaces/umi.EddsaInterface.html): An interface to create keypairs, find PDAs and sign/verify messages using the EdDSA algorithm.
 - [`RpcInterface`](https://umi-docs.vercel.app/interfaces/umi.RpcInterface.html): An interface representing a Solana RPC client.
 - [`TransactionFactoryInterface`](https://umi-docs.vercel.app/interfaces/umi.TransactionFactoryInterface.html): An interface allowing us to create and serialize transactions.
-- [`SerializerInterface`](https://umi-docs.vercel.app/interfaces/umi.SerializerInterface.html): An interface providing a vast range of serializers for any Solana types.
 - [`UploaderInterface`](https://umi-docs.vercel.app/interfaces/umi.UploaderInterface.html): An interface allowing us to upload files and get a URI to access them.
 - [`DownloaderInterface`](https://umi-docs.vercel.app/interfaces/umi.DownloaderInterface.html): An interface allowing us to download files from a given URI.
 - [`HttpInterface`](https://umi-docs.vercel.app/interfaces/umi.HttpInterface.html): An interface allowing us to send HTTP requests.
@@ -26,7 +25,6 @@ interface Context {
   payer: Signer;
   programs: ProgramRepositoryInterface;
   rpc: RpcInterface;
-  serializer: SerializerInterface;
   transactions: TransactionFactoryInterface;
   uploader: UploaderInterface;
 };

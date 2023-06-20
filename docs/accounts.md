@@ -1,6 +1,6 @@
 # Fetching accounts
 
-Let's see how we can fetch account data from the Solana blockchain using Umi. For that, we will need the [`RpcInterface`](https://umi-docs.vercel.app/interfaces/umi.RpcInterface.html) to fetch accounts with serialized data and the [`SerializerInterface`](https://umi-docs.vercel.app/interfaces/umi.SerializerInterface.html) to help deserialize them.
+Let's see how we can fetch account data from the Solana blockchain using Umi. For that, we will need the [`RpcInterface`](https://umi-docs.vercel.app/interfaces/umi.RpcInterface.html) to fetch accounts with serialized data and [serializers](./serializers.md) to help deserialize them.
 
 ## Account definitions
 
@@ -87,15 +87,18 @@ Note that when fetching program accounts, you might be interested in [`GpaBuilde
 In order to turn a `RpcAccount` into a deserialized `Account<T>`, we simply need the `deserializeAccount` function and a `Serializer` that knows how to deserialize the account's data. You can read more about `Serializer`s in the [Serializers page](./serializers.md) but here's a quick example assuming the data is composed of two public keys and one `u64` number.
 
 ```ts
+import { assertAccountExists, deserializeAccount } from '@metaplex-foundation/umi';
+import { struct, publicKey, u64 } from '@metaplex-foundation/umi/serializers';
+
 // Given an existing RPC account.
 const myRpcAccount = await umi.rpc.getAccount(myPublicKey);
 assertAccountExists(myRpcAccount);
 
 // And an account data serializer.
-const myDataSerializer = umi.serializer.struct([
-  ['source', umi.serializer.publicKey()],
-  ['destination', umi.serializer.publicKey()],
-  ['amount', umi.serializer.u64()],
+const myDataSerializer = struct([
+  ['source', publicKey()],
+  ['destination', publicKey()],
+  ['amount', u64()],
 ]);
 
 // We can deserialize the account like so.

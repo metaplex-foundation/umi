@@ -169,10 +169,13 @@ const accounts: Metadata[] = await metadataGpaBuilder.getDeserialized();
 Additionally, we can pass a set of fields with their offsets to a `GpaBuilder` to improve the developer experience around filtering and slicing data. To do so, we can use the `registerFields` method. For instance, say we know that starting from byte 16, the next 32 bytes represent a `name` via a fixed size string and the next 4 bytes after that represent an `age`. Here's how we could register those fields.
 
 ```ts
+import { gpaBuilder } from '@metaplex-foundation/umi';
+import { string, u32 } from '@metaplex-foundation/umi/serializers';
+
 const myGpaBuilderWithFields = gpaBuilder(umi, programId)
   .registerFields<{ name: string; age: number; }>({
-    name: [16, umi.serializer.string({ size: 32 })],
-    age: [48, umi.serializer.u32()],
+    name: [16, string({ size: 32 })],
+    age: [48, u32()],
   })
 ```
 

@@ -33,14 +33,15 @@ You can then use Umi's `Context` object or a subset of it to inject any interfac
 
 ```ts
 import type { Context, PublicKey } from '@metaplex-foundation/umi';
+import { u32 } from '@metaplex-foundation/umi/serializers';
 
 export async function myFunction(
-  context: Pick<Context, 'rpc' | 'serializer'>, // <-- Inject the interfaces you need.
+  context: Pick<Context, 'rpc'>, // <-- Inject the interfaces you need.
   publicKey: PublicKey
 ): number {
   const rawAccount = await context.rpc.getAccount(publicKey);
   if (!rawAccount.exists) return 0;
-  return context.serializer.u32().deserialize(rawAccount.data)[0];
+  return u32().deserialize(rawAccount.data)[0];
 }
 ```
 
