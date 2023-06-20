@@ -28,19 +28,13 @@ The page aims to list all the available implementations of [the interfaces defin
 | Description | Maintainer | Links |
 | --- | --- | --- |
 | Use Solana's web3.js | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-rpc-web3js) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-rpc-web3js) |
+| An RPC decorator that chunks `getAccounts` requests into batches of a given size, and run them in parallel to abstract API limitations to the end-user. | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-rpc-chunk-get-accounts) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-rpc-chunk-get-accounts) |
 
 ## Transaction Factory Interface
 
 | Description | Maintainer | Links |
 | --- | --- | --- |
 | Use Solana's web3.js | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-transaction-factory-web3js) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-transaction-factory-web3js) |
-
-## Serializer Interface
-
-| Description | Maintainer | Links |
-| --- | --- | --- |
-| Uses JavaScript's native `DataView` API | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-serializer-data-view) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-serializer-data-view) |
-| Uses Metaplex's Beet library | Metaplex | [GitHub](https://github.com/metaplex-foundation/umi/tree/main/packages/umi-serializer-beet) / [NPM](https://www.npmjs.com/package/@metaplex-foundation/umi-serializer-beet) |
 
 ## Uploader Interface
 
