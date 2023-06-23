@@ -1,5 +1,12 @@
 # @metaplex-foundation/umi-bundle-defaults
 
+## 0.8.3
+
+### Patch Changes
+
+- Updated dependencies [[`8ab5ee3`](https://github.com/metaplex-foundation/umi/commit/8ab5ee3d54c2876b159d9f29f256541359a76f45)]:
+  - @metaplex-foundation/umi-rpc-web3js@0.8.3
+
 ## 0.8.2
 
 ### Patch Changes
