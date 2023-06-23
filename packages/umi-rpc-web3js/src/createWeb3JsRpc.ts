@@ -36,7 +36,6 @@ import {
   TransactionSignature,
   TransactionStatus,
   TransactionWithMeta,
-  base58,
   createAmount,
   dateTime,
   isZeroAmount,
@@ -48,6 +47,7 @@ import {
   fromWeb3JsPublicKey,
   toWeb3JsPublicKey,
 } from '@metaplex-foundation/umi-web3js-adapters';
+import { base58 } from '@metaplex-foundation/umi/serializers';
 import {
   AccountInfo as Web3JsAccountInfo,
   Connection as Web3JsConnection,
@@ -290,7 +290,6 @@ export function createWeb3JsRpc(
   ): Promise<Result> => {
     const client = (getConnection() as any)._rpcClient as RpcClient;
     const resolvedParams = resolveCallParams(
-      getConnection(),
       (params ? [...params] : []) as [...Params],
       options.commitment,
       options.extra
@@ -412,22 +411,14 @@ function parseConfirmStrategy(
 }
 
 function resolveCallParams<Params extends any[]>(
-  connection: Web3JsConnection,
   args: Params,
-  override?: Commitment,
+  commitment?: Commitment,
   extra?: object
 ): Params {
-  const commitment =
-    override || (connection.commitment as Commitment | undefined);
-  if (commitment || extra) {
-    let options: any = {};
-    if (commitment) {
-      options.commitment = commitment;
-    }
-    if (extra) {
-      options = { ...options, ...extra };
-    }
-    args.push(options);
-  }
+  if (!commitment && !extra) return args;
+  let options: any = {};
+  if (commitment) options.commitment = commitment;
+  if (extra) options = { ...options, ...extra };
+  args.push(options);
   return args;
 }
