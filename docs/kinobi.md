@@ -23,10 +23,10 @@ npm install @metaplex-foundation/kinobi
 Then, you need to create a JavaScript file — e.g. `kinobi.js` — that creates and renders a Kinobi tree. This is done by creating a `Kinobi` instance and passing it an array of paths to IDL files. You may want to check the [Shank JS library](https://github.com/metaplex-foundation/shank-js) to generate your IDL files. You can then use visitors to update the tree and render it as a Umi-compatible library via the `RenderJavaScriptVisitor`. Here's an example.
 
 ```ts
-import { Kinobi, RenderJavaScriptVisitor } from "@metaplex-foundation/kinobi";
+import { createFromIdls, RenderJavaScriptVisitor } from "@metaplex-foundation/kinobi";
 
 // Instanciate Kinobi.
-const kinobi = new Kinobi([
+const kinobi = createFromIdls([
   path.join(__dirname, "idls", "my_idl.json"),
   path.join(__dirname, "idls", "my_other_idl.json"),
 ]);
