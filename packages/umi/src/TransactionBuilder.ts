@@ -309,6 +309,30 @@ export class TransactionBuilder implements HasWrappedInstructions {
     return context.rpc.sendTransaction(transaction, options);
   }
 
+  async confirm(
+    context: Pick<Context, 'transactions' | 'rpc' | 'payer'>,
+    signature: TransactionSignature,
+    options: Partial<RpcConfirmTransactionOptions> = {}
+  ): Promise<RpcConfirmTransactionResult> {
+    let builder: TransactionBuilder = this;
+    if (!this.options.blockhash) {
+      builder = await this.setLatestBlockhash(context);
+    }
+
+    let strategy: RpcConfirmTransactionStrategy;
+    if (options.strategy) {
+      strategy = options.strategy;
+    } else {
+      const blockhash =
+        typeof builder.options.blockhash === 'object'
+          ? builder.options.blockhash
+          : await context.rpc.getLatestBlockhash();
+      strategy = options.strategy ?? { type: 'blockhash', ...blockhash };
+    }
+
+    return context.rpc.confirmTransaction(signature, { ...options, strategy });
+  }
+
   async sendAndConfirm(
     context: Pick<Context, 'transactions' | 'rpc' | 'payer'>,
     options: TransactionBuilderSendAndConfirmOptions = {}
@@ -320,27 +344,8 @@ export class TransactionBuilder implements HasWrappedInstructions {
     if (!this.options.blockhash) {
       builder = await this.setLatestBlockhash(context);
     }
-
-    let strategy: RpcConfirmTransactionStrategy;
-    if (options.confirm?.strategy) {
-      strategy = options.confirm.strategy;
-    } else {
-      const blockhash =
-        typeof builder.options.blockhash === 'object'
-          ? builder.options.blockhash
-          : await context.rpc.getLatestBlockhash();
-      strategy = options.confirm?.strategy ?? {
-        type: 'blockhash',
-        ...blockhash,
-      };
-    }
-
     const signature = await builder.send(context, options.send);
-    const result = await context.rpc.confirmTransaction(signature, {
-      ...options.confirm,
-      strategy,
-    });
-
+    const result = await builder.confirm(context, signature, options.confirm);
     return { signature, result };
   }
 
