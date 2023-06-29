@@ -10,6 +10,7 @@ import type {
   RpcConfirmTransactionOptions,
   RpcConfirmTransactionResult,
   RpcConfirmTransactionStrategy,
+  RpcGetLatestBlockhashOptions,
   RpcSendTransactionOptions,
 } from './RpcInterface';
 import { Signer, signTransaction, uniqueSigners } from './Signer';
@@ -213,9 +214,10 @@ export class TransactionBuilder implements HasWrappedInstructions {
   }
 
   async setLatestBlockhash(
-    context: Pick<Context, 'rpc'>
+    context: Pick<Context, 'rpc'>,
+    options: RpcGetLatestBlockhashOptions = {}
   ): Promise<TransactionBuilder> {
-    return this.setBlockhash(await context.rpc.getLatestBlockhash());
+    return this.setBlockhash(await context.rpc.getLatestBlockhash(options));
   }
 
   getInstructions(): Instruction[] {
@@ -280,11 +282,12 @@ export class TransactionBuilder implements HasWrappedInstructions {
   }
 
   async buildWithLatestBlockhash(
-    context: Pick<Context, 'transactions' | 'rpc' | 'payer'>
+    context: Pick<Context, 'transactions' | 'rpc' | 'payer'>,
+    options: RpcGetLatestBlockhashOptions = {}
   ): Promise<Transaction> {
     let builder: TransactionBuilder = this;
     if (!this.options.blockhash) {
-      builder = await this.setLatestBlockhash(context);
+      builder = await this.setLatestBlockhash(context, options);
     }
     return builder.build(context);
   }
