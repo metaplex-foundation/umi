@@ -31,7 +31,7 @@ export function createHttpDownloader(
     options: DownloaderOptions = {}
   ): Promise<T> => {
     const response = await context.http.send<T>(
-      request().get(uri).asJson().withAbortSignal(options.signal)
+      request().get(uri).withAbortSignal(options.signal)
     );
     return response.data;
   };
