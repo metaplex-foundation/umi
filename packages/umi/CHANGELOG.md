@@ -1,5 +1,13 @@
 # @metaplex-foundation/umi-core
 
+## 0.8.4
+
+### Patch Changes
+
+- [`d1e0c09`](https://github.com/metaplex-foundation/umi/commit/d1e0c09550bf07fe8bc0865f9732f025c3d8dafe) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Extract confirm method in TransactionBuilder
+
+- [`99bf51d`](https://github.com/metaplex-foundation/umi/commit/99bf51d6f58d7fe5b73d7678478ac8463c87d857) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Add RPC options to builder's setLatestBlockhash method
+
 ## 0.8.2
 
 ### Patch Changes
