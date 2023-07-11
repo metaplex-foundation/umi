@@ -10,7 +10,7 @@ import { None, Some, isOption, isSome } from './common';
  *
  * @category Utils — Options
  */
-type UnwrappedOption<T, U = null> = T extends Some<infer TValue>
+export type UnwrappedOption<T, U = null> = T extends Some<infer TValue>
   ? UnwrappedOption<TValue, U>
   : T extends None
   ? U
