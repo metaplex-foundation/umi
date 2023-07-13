@@ -1,5 +1,13 @@
 # @metaplex-foundation/umi-transaction-factory-web3js
 
+## 0.8.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @metaplex-foundation/umi@0.8.5
+  - @metaplex-foundation/umi-web3js-adapters@0.8.5
+
 ## 0.8.4
 
 ### Patch Changes
