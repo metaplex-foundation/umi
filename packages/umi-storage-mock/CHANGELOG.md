@@ -1,5 +1,12 @@
 # @metaplex-foundation/umi-storage-mock
 
+## 0.8.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @metaplex-foundation/umi@0.8.5
+
 ## 0.8.4
 
 ### Patch Changes

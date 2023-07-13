@@ -1,5 +1,13 @@
 # @metaplex-foundation/umi-core
 
+## 0.8.5
+
+### Patch Changes
+
+- Updated dependencies [[`281b12f`](https://github.com/metaplex-foundation/umi/commit/281b12f052ed343c1d5ed25335a3efe283f7809f), [`f12af8e`](https://github.com/metaplex-foundation/umi/commit/f12af8e0127bea479155e73c6d4730ee94736ac7)]:
+  - @metaplex-foundation/umi-options@0.8.5
+  - @metaplex-foundation/umi-serializers@0.8.5
+
 ## 0.8.4
 
 ### Patch Changes
