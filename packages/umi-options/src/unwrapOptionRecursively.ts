@@ -14,7 +14,16 @@ export type UnwrappedOption<T, U = null> = T extends Some<infer TValue>
   ? UnwrappedOption<TValue, U>
   : T extends None
   ? U
-  : T extends string | number | boolean | symbol | bigint | undefined | null
+  : T extends
+      | string
+      | number
+      | boolean
+      | symbol
+      | bigint
+      | undefined
+      | null
+      | Uint8Array
+      | Date
   ? T
   : T extends object
   ? { [key in keyof T]: UnwrappedOption<T[key], U> }
