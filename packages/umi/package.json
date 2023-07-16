@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "description": "A JS framework for Solana clients defining core interfaces",
   "license": "MIT",
   "sideEffects": false,

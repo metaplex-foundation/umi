@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-bundle-tests",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "description": "A bundle of Umi plugins for test purposes",
   "license": "MIT",
   "sideEffects": false,

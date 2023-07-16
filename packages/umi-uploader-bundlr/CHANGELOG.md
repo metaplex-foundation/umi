@@ -1,5 +1,13 @@
 # @metaplex-foundation/umi-uploader-bundlr
 
+## 0.8.6
+
+### Patch Changes
+
+- Updated dependencies [[`aba3519`](https://github.com/metaplex-foundation/umi/commit/aba35199c9f481b5aaf81f812ce945e07796a6aa)]:
+  - @metaplex-foundation/umi@0.8.6
+  - @metaplex-foundation/umi-web3js-adapters@0.8.6
+
 ## 0.8.5
 
 ### Patch Changes
