@@ -66,7 +66,7 @@ export const formatDateTime = (
     minute: 'numeric',
   }
 ): string => {
-  const date = new Date((value * 1000n).toString());
+  const date = new Date(Number(value * 1000n));
 
   return date.toLocaleDateString(locales, options);
 };
