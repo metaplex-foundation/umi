@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-http-fetch",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "description": "An HTTP implementation relying on the fetch API",
   "license": "MIT",
   "sideEffects": false,

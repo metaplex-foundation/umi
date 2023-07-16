@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-downloader-http",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "description": "A downloader implementation relying on the HTTP interface",
   "license": "MIT",
   "sideEffects": false,
