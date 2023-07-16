@@ -39,9 +39,9 @@ export const resolveClusterFromEndpoint = (endpoint: string): Cluster => {
   if (DEVNET_DOMAINS.includes(domain)) return 'devnet';
   if (TESTNET_DOMAINS.includes(domain)) return 'testnet';
   if (LOCALNET_DOMAINS.includes(domain)) return 'localnet';
-  if (domain.includes('mainnet')) return 'mainnet-beta';
-  if (domain.includes('devnet')) return 'devnet';
-  if (domain.includes('testnet')) return 'testnet';
-  if (domain.includes('local')) return 'localnet';
+  if (endpoint.includes('mainnet')) return 'mainnet-beta';
+  if (endpoint.includes('devnet')) return 'devnet';
+  if (endpoint.includes('testnet')) return 'testnet';
+  if (endpoint.includes('local')) return 'localnet';
   return 'custom';
 };
