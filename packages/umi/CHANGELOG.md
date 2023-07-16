@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 0.8.6
+
+### Patch Changes
+
+- [`aba3519`](https://github.com/metaplex-foundation/umi/commit/aba35199c9f481b5aaf81f812ce945e07796a6aa) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Fix formatDateTime helper function
+
 ## 0.8.5
 
 ### Patch Changes
