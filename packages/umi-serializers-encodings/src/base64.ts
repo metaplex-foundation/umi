@@ -22,7 +22,7 @@ export const base64: Serializer<string> = {
   },
   deserialize(buffer, offset = 0) {
     const slice = buffer.slice(offset);
-    const value = btoa(String.fromCharCode.apply(null, [...slice]));
+    const value = btoa(String.fromCharCode(...slice));
     return [value, buffer.length];
   },
 };
