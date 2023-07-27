@@ -29,6 +29,8 @@ const getContext = (options?: NftStorageUploaderOptions): Context =>
       umi.use(nftStorageUploader(options));
     },
   });
+// Use a dummy token since the tests are skipped currently.
+const token = 'dummy';
 
 test.skip('it can upload one file', async (t) => {
   // Given a Context using NFT.Storage.
@@ -50,7 +52,7 @@ test.skip('it can upload one file', async (t) => {
 
 test.skip('it can upload one file without a Gateway URL', async (t) => {
   // Given a Context using NFT.Storage without Gateway URLs.
-  const context = getContext({ useGatewayUrls: false });
+  const context = getContext({ token, useGatewayUrls: false });
 
   // When we upload some asset.
   const [uri] = await context.uploader.upload([
@@ -64,7 +66,7 @@ test.skip('it can upload one file without a Gateway URL', async (t) => {
 
 test.skip('it can upload multiple files in batch', async (t) => {
   // Given a Context using NFT.Storage with a batch size of 1.
-  const context = getContext({ batchSize: 1 });
+  const context = getContext({ token, batchSize: 1 });
 
   // When we upload two assets.
   const uris = await context.uploader.upload([

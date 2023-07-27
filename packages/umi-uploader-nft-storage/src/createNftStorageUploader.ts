@@ -25,7 +25,7 @@ import {
 
 export type NftStorageUploaderOptions = {
   payer?: Signer;
-  token?: string;
+  token: string;
   endpoint?: URL;
   gatewayHost?: string;
   batchSize?: number;
@@ -34,7 +34,7 @@ export type NftStorageUploaderOptions = {
 
 export function createNftStorageUploader(
   context: Pick<Context, 'rpc' | 'payer'>,
-  options: NftStorageUploaderOptions = {}
+  options: NftStorageUploaderOptions = { token: '' }
 ): UploaderInterface & {
   client: () => Promise<NFTStorage | NFTStorageMetaplexor>;
 } {
@@ -44,6 +44,9 @@ export function createNftStorageUploader(
   const { gatewayHost } = options;
   const batchSize = options.batchSize ?? 50;
   const useGatewayUrls = options.useGatewayUrls ?? true;
+  if (!token) {
+    throw new Error('NFT Storage token is required');
+  }
 
   const getClient = async (): Promise<NFTStorage | NFTStorageMetaplexor> => {
     if (token) {
