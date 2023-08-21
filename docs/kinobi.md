@@ -25,7 +25,7 @@ Then, you need to create a JavaScript file — e.g. `kinobi.js` — that creates
 ```ts
 import { createFromIdls, RenderJavaScriptVisitor } from "@metaplex-foundation/kinobi";
 
-// Instanciate Kinobi.
+// Instantiate Kinobi.
 const kinobi = createFromIdls([
   path.join(__dirname, "idls", "my_idl.json"),
   path.join(__dirname, "idls", "my_other_idl.json"),
