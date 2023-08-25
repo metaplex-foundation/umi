@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-options
 
+## 0.8.8
+
+### Patch Changes
+
+- [#84](https://github.com/metaplex-foundation/umi/pull/84) [`05a4bdd`](https://github.com/metaplex-foundation/umi/commit/05a4bdd7da2c239ea9740e8ed7e496d3494709d9) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Skip Uint8Arrays on unwrapOptionRecursively
+
 ## 0.8.5
 
 ### Patch Changes

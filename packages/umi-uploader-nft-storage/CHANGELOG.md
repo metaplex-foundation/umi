@@ -1,5 +1,16 @@
 # @metaplex-foundation/umi-uploader-nft-storage
 
+## 0.8.8
+
+### Patch Changes
+
+- [#80](https://github.com/metaplex-foundation/umi/pull/80) [`e58e353`](https://github.com/metaplex-foundation/umi/commit/e58e353f5d76d668d406ba9b9b5ee285db9eef95) Thanks [@MarkSackerberg](https://github.com/MarkSackerberg)! - Require NFT Storage Token
+
+  Whilst this is technically a breaking change, NFT Storage themselves removed the ability to use their API without a token and so the breaking change would happen regardless of this upgrade. Therefore, a patch upgrade was selected.
+
+- Updated dependencies []:
+  - @metaplex-foundation/umi@0.8.8
+
 ## 0.8.7
 
 ### Patch Changes

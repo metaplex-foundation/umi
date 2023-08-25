@@ -1,5 +1,13 @@
 # @metaplex-foundation/umi-eddsa-web3js
 
+## 0.8.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @metaplex-foundation/umi@0.8.8
+  - @metaplex-foundation/umi-web3js-adapters@0.8.8
+
 ## 0.8.7
 
 ### Patch Changes

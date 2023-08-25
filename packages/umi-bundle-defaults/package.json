@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-bundle-defaults",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "description": "A bundle of default Umi plugins to get started",
   "license": "MIT",
   "sideEffects": false,

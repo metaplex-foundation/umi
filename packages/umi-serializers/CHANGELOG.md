@@ -1,5 +1,14 @@
 # @metaplex-foundation/umi-serializers
 
+## 0.8.8
+
+### Patch Changes
+
+- Updated dependencies [[`05a4bdd`](https://github.com/metaplex-foundation/umi/commit/05a4bdd7da2c239ea9740e8ed7e496d3494709d9), [`ece3e40`](https://github.com/metaplex-foundation/umi/commit/ece3e4063c792225f3fd5445c05198f3c4feeaa3)]:
+  - @metaplex-foundation/umi-options@0.8.8
+  - @metaplex-foundation/umi-serializers-encodings@0.8.8
+  - @metaplex-foundation/umi-public-keys@0.8.8
+
 ## 0.8.5
 
 ### Patch Changes

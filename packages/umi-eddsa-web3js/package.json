@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-eddsa-web3js",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "description": "An Eddsa implementation relying on Solana's web3.js",
   "license": "MIT",
   "sideEffects": false,
