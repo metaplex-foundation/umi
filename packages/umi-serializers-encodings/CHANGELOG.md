@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-serializers-encodings
 
+## 0.8.8
+
+### Patch Changes
+
+- [#85](https://github.com/metaplex-foundation/umi/pull/85) [`ece3e40`](https://github.com/metaplex-foundation/umi/commit/ece3e4063c792225f3fd5445c05198f3c4feeaa3) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Create baseXReslice serializer and use it for base64
+
 ## 0.8.2
 
 ### Patch Changes
