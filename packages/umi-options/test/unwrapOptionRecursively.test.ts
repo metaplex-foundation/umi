@@ -24,6 +24,12 @@ test('it can unwrap options recursively', (t) => {
   t.is(unwrapOptionRecursively(null), null);
   t.is(unwrapOptionRecursively(undefined), undefined);
 
+  // TypedArrays.
+  t.deepEqual(
+    unwrapOptionRecursively(new Uint8Array([1, 2, 3])),
+    new Uint8Array([1, 2, 3])
+  );
+
   // Functions.
   const fn = () => 42;
   t.is(unwrapOptionRecursively(fn), fn);
