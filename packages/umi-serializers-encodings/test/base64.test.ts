@@ -3,9 +3,11 @@ import { base16, base64 } from '../src';
 
 test('it can serialize base 64 strings', (t) => {
   t.deepEqual(base64.serialize(''), new Uint8Array([]));
+  t.deepEqual(base64.serialize('A'), new Uint8Array([]));
   t.deepEqual(base64.deserialize(new Uint8Array([])), ['', 0]);
 
   t.deepEqual(base64.serialize('AA'), new Uint8Array([0]));
+  t.deepEqual(base64.serialize('AA='), new Uint8Array([0]));
   t.deepEqual(base64.serialize('AA=='), new Uint8Array([0]));
   t.deepEqual(base64.deserialize(new Uint8Array([0])), ['AA==', 1]);
 
@@ -26,10 +28,6 @@ test('it can serialize base 64 strings', (t) => {
   t.throws(() => base64.serialize('INVALID_INPUT'), {
     message: (m) =>
       m.includes('Expected a string of base 64, got [INVALID_INPUT].'),
-  });
-
-  t.throws(() => base64.serialize('A'), {
-    message: (m) => m.includes('Expected a string of base 64, got [A].'),
   });
 
   const base64TokenData =
