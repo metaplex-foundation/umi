@@ -50,8 +50,11 @@ export function unwrapOptionRecursively<T, U = null>(
   input: T,
   fallback?: () => U
 ): UnwrappedOption<T, U> {
-  // Because null passes `typeof input === 'object'`.
-  if (!input) return input as UnwrappedOption<T, U>;
+  // Types to bypass.
+  if (!input || ArrayBuffer.isView(input)) {
+    return input as UnwrappedOption<T, U>;
+  }
+
   const next = <X>(x: X) =>
     (fallback
       ? unwrapOptionRecursively(x, fallback)
