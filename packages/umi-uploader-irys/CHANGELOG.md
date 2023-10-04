@@ -1,4 +1,4 @@
-# @metaplex-foundation/umi-uploader-bundlr
+# @metaplex-foundation/umi-uploader-irys
 
 ## 0.8.9
 

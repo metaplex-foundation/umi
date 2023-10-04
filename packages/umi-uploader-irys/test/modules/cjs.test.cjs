@@ -11,20 +11,20 @@ const exported = require('../../dist/cjs/index.cjs');
 test('it successfully exports commonjs named exports', (t) => {
   const exportedKeys = Object.keys(exported);
 
-  t.true(exportedKeys.includes('createBundlrUploader'));
+  t.true(exportedKeys.includes('createIrysUploader'));
 });
 
-test('it can import the Bundlr client', async (t) => {
-  const { createBundlrUploader } = exported;
+test('it can import the Irys client', async (t) => {
+  const { createIrysUploader } = exported;
   const context = createUmi()
     .use(web3JsRpc('http://localhost:8899'))
     .use(web3JsEddsa())
     .use(generatedSignerIdentity());
-  const bundlrUploader = createBundlrUploader(context);
-  const bundlr = await bundlrUploader.bundlr();
-  t.true(typeof bundlr === 'object', 'Bundlr is an object');
-  t.true('uploader' in bundlr, 'Bundlr can upload');
-  t.true('getLoadedBalance' in bundlr, 'Bundlr can get the loaded balance');
-  t.true('fund' in bundlr, 'Bundlr can fund');
-  t.true('withdrawBalance' in bundlr, 'Bundlr can withdraw');
+  const irysUploader = createIrysUploader(context);
+  const irys = await irysUploader.irys();
+  t.true(typeof irys === 'object', 'Irys is an object');
+  t.true('uploader' in irys, 'Irys can upload');
+  t.true('getLoadedBalance' in irys, 'Irys can get the loaded balance');
+  t.true('fund' in irys, 'Irys can fund');
+  t.true('withdrawBalance' in irys, 'Irys can withdraw');
 });

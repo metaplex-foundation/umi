@@ -11,16 +11,16 @@ import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { fetchHttp } from '@metaplex-foundation/umi-http-fetch';
 import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
 import test from 'ava';
-import { bundlrUploader, BundlrUploaderOptions } from '../src';
+import {  irysUploader,  IrysUploaderOptions } from '../src';
 
 test('example test', async (t) => {
-  t.is(typeof bundlrUploader, 'function');
+  t.is(typeof irysUploader, 'function');
 });
 
-// TODO(loris): Unskip these tests when we can mock the Bundlr API.
+// TODO(loris): Unskip these tests when we can mock the Irys API.
 
 const getContext = async (
-  options?: BundlrUploaderOptions
+  options?: IrysUploaderOptions
 ): Promise<Context> => {
   const context = createUmi().use({
     install(umi) {
@@ -28,7 +28,7 @@ const getContext = async (
       umi.use(web3JsEddsa());
       umi.use(fetchHttp());
       umi.use(httpDownloader());
-      umi.use(bundlrUploader(options));
+      umi.use(irysUploader(options));
       umi.use(generatedSignerIdentity());
     },
   });

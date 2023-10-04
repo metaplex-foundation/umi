@@ -1,54 +1,54 @@
 import { UmiError } from '@metaplex-foundation/umi';
 
-export class BundlrError extends UmiError {
-  readonly name: string = 'BundlrError';
+export class IrysError extends UmiError {
+  readonly name: string = 'IrysError';
 
   constructor(message: string, cause?: Error) {
-    super(message, 'plugin', 'Bundlr', cause);
+    super(message, 'plugin', 'Irys', cause);
   }
 }
 
-export class FailedToInitializeBundlrError extends BundlrError {
-  readonly name: string = 'FailedToInitializeBundlrError';
+export class FailedToInitializeIrysError extends IrysError {
+  readonly name: string = 'FailedToInitializeIrysError';
 
   constructor(cause: Error) {
     const message =
-      'Bundlr could not be initialized. ' +
+      'Irys could not be initialized. ' +
       'Please check the underlying error below for more details.';
     super(message, cause);
   }
 }
 
-export class FailedToConnectToBundlrAddressError extends BundlrError {
-  readonly name: string = 'FailedToConnectToBundlrAddressError';
+export class FailedToConnectToIrysAddressError extends IrysError {
+  readonly name: string = 'FailedToConnectToIrysAddressError';
 
   constructor(address: string, cause: Error) {
     const message =
-      `Bundlr could not connect to the provided address [${address}]. ` +
+      `Irys could not connect to the provided address [${address}]. ` +
       'Please ensure the provided address is valid. Some valid addresses include: ' +
-      '"https://node1.bundlr.network" for mainnet and "https://devnet.bundlr.network" for devnet';
+      '"https://node1.irys.xyz" for mainnet and "https://devnet.irys.xyz" for devnet';
     super(message, cause);
   }
 }
 
-export class AssetUploadFailedError extends BundlrError {
+export class AssetUploadFailedError extends IrysError {
   readonly name: string = 'AssetUploadFailedError';
 
   constructor(status: number) {
     const message =
-      `The asset could not be uploaded to the Bundlr network and ` +
+      `The asset could not be uploaded to the Irys network and ` +
       `returned the following status code [${status}].`;
     super(message);
   }
 }
 
-export class BundlrWithdrawError extends BundlrError {
-  readonly name: string = 'BundlrWithdrawError';
+export class IrysWithdrawError extends IrysError {
+  readonly name: string = 'IrysWithdrawError';
 
-  constructor(status: number) {
+  constructor(error: string) {
     const message =
-      `The balance could not be withdrawn from the Bundlr network and ` +
-      `returned the following status code [${status}].`;
+      `The balance could not be withdrawn from the Irys network and ` +
+      `returned the following error: ${error}.`;
     super(message);
   }
 }

@@ -1,11 +1,11 @@
 import type { UmiPlugin } from '@metaplex-foundation/umi';
 import {
-  BundlrUploaderOptions,
-  createBundlrUploader,
-} from './createBundlrUploader';
+  IrysUploaderOptions,
+  createIrysUploader,
+} from './createIrysUploader';
 
-export const bundlrUploader = (options?: BundlrUploaderOptions): UmiPlugin => ({
+export const irysUploader = (options?: IrysUploaderOptions): UmiPlugin => ({
   install(umi) {
-    umi.uploader = createBundlrUploader(umi, options);
+    umi.uploader = createIrysUploader(umi, options);
   },
 });

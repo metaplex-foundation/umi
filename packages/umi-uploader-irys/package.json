@@ -1,7 +1,7 @@
 {
-  "name": "@metaplex-foundation/umi-uploader-bundlr",
+  "name": "@metaplex-foundation/umi-uploader-irys",
   "version": "0.8.9",
-  "description": "An uploader implementation relying on Bundlr",
+  "description": "An uploader implementation relying on Irys",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -28,7 +28,7 @@
     "test": "ava"
   },
   "dependencies": {
-    "@bundlr-network/client": "^0.8.8",
+    "@irys/sdk": "^0.0.2",
     "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
     "bignumber.js": "^9.0.2",
     "buffer": "^6.0.3"
@@ -58,7 +58,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "umi-uploader-bundlr"
+    "displayName": "umi-uploader-irys"
   },
   "ava": {
     "typescript": {

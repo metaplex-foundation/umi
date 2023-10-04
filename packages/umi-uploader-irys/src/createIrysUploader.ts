@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-named-default
-import type { default as NodeBundlr, WebBundlr } from '@bundlr-network/client';
+import type { default as NodeIrys,  WebIrys } from '@irys/sdk';
 import {
   Commitment,
   Context,
@@ -36,34 +36,34 @@ import BigNumber from 'bignumber.js';
 import { Buffer } from 'buffer';
 import {
   AssetUploadFailedError,
-  BundlrWithdrawError,
-  FailedToConnectToBundlrAddressError,
-  FailedToInitializeBundlrError,
+  IrysWithdrawError,
+  FailedToConnectToIrysAddressError,
+  FailedToInitializeIrysError,
 } from './errors';
 
 /**
- * This method is necessary to import the Bundlr package on both ESM and CJS modules.
+ * This method is necessary to import the Irys package on both ESM and CJS modules.
  * Without this, we get a different structure on each module:
- * - CJS: { default: [Getter], WebBundlr: [Getter] }
- * - ESM: { default: { default: [Getter], WebBundlr: [Getter] } }
+ * - CJS: { default: [Getter], WebIrys: [Getter] }
+ * - ESM: { default: { default: [Getter], WebIrys: [Getter] } }
  * This method fixes this by ensure there is not double default in the imported package.
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
-function _removeDoubleDefault(pkg: any) {
+function _removeDoubleDefault<T>(pkg: T): T {
   if (
     pkg &&
     typeof pkg === 'object' &&
     'default' in pkg &&
-    'default' in pkg.default
+    'default' in (pkg as any).default
   ) {
-    return pkg.default;
+    return (pkg as any).default;
   }
 
   return pkg;
 }
 
-export type BundlrUploader = UploaderInterface & {
-  bundlr: () => Promise<NodeBundlr | WebBundlr>;
+export type IrysUploader = UploaderInterface & {
+  irys: () => Promise<NodeIrys | WebIrys>;
   getUploadPriceFromBytes: (bytes: number) => Promise<SolAmount>;
   getBalance: () => Promise<SolAmount>;
   fund: (amount: SolAmount, skipBalanceCheck: boolean) => Promise<void>;
@@ -71,7 +71,7 @@ export type BundlrUploader = UploaderInterface & {
   withdraw: (amount: SolAmount) => Promise<void>;
 };
 
-export type BundlrUploaderOptions = {
+export type IrysUploaderOptions = {
   address?: string;
   timeout?: number;
   providerUrl?: string;
@@ -79,7 +79,7 @@ export type BundlrUploaderOptions = {
   payer?: Signer;
 };
 
-export type BundlrWalletAdapter = {
+export type IrysWalletAdapter = {
   publicKey: Web3JsPublicKey | null;
   signMessage?: (message: Uint8Array) => Promise<Uint8Array>;
   signTransaction?: (
@@ -95,26 +95,26 @@ export type BundlrWalletAdapter = {
   ) => Promise<Web3JsTransactionSignature>;
 };
 
-// Size of Bundlr transaction header.
+// Size of Irys transaction header.
 const HEADER_SIZE = 2_000;
 
 // Minimum file size for cost calculation.
 const MINIMUM_SIZE = 80_000;
 
-export function createBundlrUploader(
+export function createIrysUploader(
   context: Pick<Context, 'rpc' | 'payer' | 'eddsa'>,
-  options: BundlrUploaderOptions = {}
-): BundlrUploader {
+  options: IrysUploaderOptions = {}
+): IrysUploader {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  let _bundlr: WebBundlr | NodeBundlr | null = null;
+  let _irys: WebIrys | NodeIrys | null = null;
   options = {
     providerUrl: context.rpc.getEndpoint(),
     ...options,
   };
 
   const getUploadPriceFromBytes = async (bytes: number): Promise<SolAmount> => {
-    const bundlr = await getBundlr();
-    const price = await bundlr.getPrice(bytes);
+    const irys = await getIrys();
+    const price = await irys.getPrice(bytes);
 
     return bigNumberToAmount(
       price.multipliedBy(options.priceMultiplier ?? 1.1)
@@ -132,15 +132,17 @@ export function createBundlrUploader(
   };
 
   const upload = async (files: GenericFile[]): Promise<string[]> => {
-    const bundlr = await getBundlr();
+    const irys = await getIrys();
     const amount = await getUploadPrice(files);
     await fund(amount);
 
     const promises = files.map(async (file) => {
       const buffer = Buffer.from(file.buffer);
-      const { status, data } = await bundlr.uploader.upload(buffer, {
-        tags: getGenericFileTagsWithContentType(file),
-      });
+      const irysTx = irys.createTransaction(buffer, { tags: getGenericFileTagsWithContentType(file)})
+      await irysTx.sign()
+
+      const { status, data } = await irys.uploader.uploadTransaction(irysTx);
+
 
       if (status >= 300) {
         throw new AssetUploadFailedError(status);
@@ -159,8 +161,8 @@ export function createBundlrUploader(
   };
 
   const getBalance = async (): Promise<SolAmount> => {
-    const bundlr = await getBundlr();
-    const balance = await bundlr.getLoadedBalance();
+    const irys = await getIrys();
+    const balance = await irys.getLoadedBalance();
 
     return bigNumberToAmount(balance);
   };
@@ -169,11 +171,11 @@ export function createBundlrUploader(
     amount: SolAmount,
     skipBalanceCheck = false
   ): Promise<void> => {
-    const bundlr = await getBundlr();
+    const irys = await getIrys();
     let toFund = amountToBigNumber(amount);
 
     if (!skipBalanceCheck) {
-      const balance = await bundlr.getLoadedBalance();
+      const balance = await irys.getLoadedBalance();
 
       toFund = toFund.isGreaterThan(balance)
         ? toFund.minus(balance)
@@ -184,13 +186,13 @@ export function createBundlrUploader(
       return;
     }
 
-    await bundlr.fund(toFund);
+    await irys.fund(toFund);
   };
 
   const withdrawAll = async (): Promise<void> => {
-    // TODO(loris): Replace with "withdrawAll" when available on Bundlr.
-    const bundlr = await getBundlr();
-    const balance = await bundlr.getLoadedBalance();
+    // TODO(loris): Replace with "withdrawAll" when available on Irys.
+    const irys = await getIrys();
+    const balance = await irys.getLoadedBalance();
     const minimumBalance = new BigNumber(5000);
 
     if (balance.isLessThan(minimumBalance)) {
@@ -202,88 +204,87 @@ export function createBundlrUploader(
   };
 
   const withdraw = async (amount: SolAmount): Promise<void> => {
-    const bundlr = await getBundlr();
-
-    const { status } = await bundlr.withdrawBalance(amountToBigNumber(amount));
-
-    if (status >= 300) {
-      throw new BundlrWithdrawError(status);
+    const irys = await getIrys();
+    try{
+      await irys.withdrawBalance(amountToBigNumber(amount));
+    }catch(e: any){
+      throw new IrysWithdrawError( (e instanceof Error) ? e.message : e.toString());
     }
   };
 
-  const getBundlr = async (): Promise<WebBundlr | NodeBundlr> => {
-    const oldPayer = _bundlr?.getSigner().publicKey;
+  const getIrys = async (): Promise<WebIrys | NodeIrys> => {
+    const oldPayer = _irys?.getSigner().publicKey;
     const newPayer = options.payer ?? context.payer;
     if (
       oldPayer &&
       publicKey(new Uint8Array(oldPayer)) !== newPayer.publicKey
     ) {
-      _bundlr = null;
+      _irys = null;
     }
 
-    if (!_bundlr) {
-      _bundlr = await initBundlr();
+    if (!_irys) {
+      _irys = await initIrys();
     }
 
-    return _bundlr;
+    return _irys;
   };
 
-  const initBundlr = async (): Promise<WebBundlr | NodeBundlr> => {
+  const initIrys = async (): Promise<WebIrys | NodeIrys> => {
     const currency = 'solana';
     const defaultAddress =
       context.rpc.getCluster() === 'devnet'
-        ? 'https://devnet.bundlr.network'
-        : 'https://node1.bundlr.network';
+        ? 'https://devnet.irys.xyz'
+        : 'https://node1.irys.xyz';
     const address = options?.address ?? defaultAddress;
-    const bundlrOptions = {
+    const irysOptions = {
       timeout: options.timeout,
       providerUrl: options.providerUrl,
     };
 
     const payer: Signer = options.payer ?? context.payer;
 
-    // If in node use node bundlr, else use web bundlr.
+    // If in node use node irys, else use web irys.
     const isNode =
       // eslint-disable-next-line no-prototype-builtins
       typeof window === 'undefined' || window.process?.hasOwnProperty('type');
 
-    let bundlr;
+    let irys;
     if (isNode && isKeypairSigner(payer))
-      bundlr = await initNodeBundlr(address, currency, payer, bundlrOptions);
+      irys = await initNodeIrys(address, currency, payer, irysOptions);
     else {
-      bundlr = await initWebBundlr(address, currency, payer, bundlrOptions);
+      irys = await initWebIrys(address, currency, payer, irysOptions);
     }
 
     try {
-      // Check for valid bundlr node.
-      await bundlr.utils.getBundlerAddress(currency);
+      // Check for valid irys node.
+      await irys.utils.getBundlerAddress(currency);
     } catch (error) {
-      throw new FailedToConnectToBundlrAddressError(address, error as Error);
+      throw new FailedToConnectToIrysAddressError(address, error as Error);
     }
 
-    return bundlr;
+    return irys;
   };
 
-  const initNodeBundlr = async (
+  const initNodeIrys = async (
     address: string,
     currency: string,
     keypair: Keypair,
     options: any
-  ): Promise<NodeBundlr> => {
+  ): Promise<NodeIrys> => {
     const bPackage = _removeDoubleDefault(
-      await import('@bundlr-network/client')
+      await import('@irys/sdk')
     );
     // eslint-disable-next-line new-cap
-    return new bPackage.default(address, currency, keypair.secretKey, options);
+    return new bPackage.default({url: address, token: currency, key: keypair.secretKey, config: options});
   };
 
-  const initWebBundlr = async (
+  const initWebIrys = async (
     address: string,
     currency: string,
     payer: Signer,
     options: any
-  ): Promise<WebBundlr> => {
-    const wallet: BundlrWalletAdapter = {
+  ): Promise<WebIrys> => {
+    const wallet: IrysWalletAdapter = {
       publicKey: toWeb3JsPublicKey(payer.publicKey),
       signMessage: (message: Uint8Array) => payer.signMessage(message),
       signTransaction: async (web3JsTransaction: Web3JsTransaction) =>
@@ -329,18 +330,18 @@ export function createBundlrUploader(
     };
 
     const bPackage = _removeDoubleDefault(
-      await import('@bundlr-network/client')
+      await import('@irys/sdk')
     );
-    const bundlr = new bPackage.WebBundlr(address, currency, wallet, options);
+    const irys = new bPackage.WebIrys({url: address, token: currency, wallet: {provider: wallet}, config: options});
 
     try {
-      // Try to initiate bundlr.
-      await bundlr.ready();
+      // Try to initiate irys.
+      await irys.ready();
     } catch (error) {
-      throw new FailedToInitializeBundlrError(error as Error);
+      throw new FailedToInitializeIrysError(error as Error);
     }
 
-    return bundlr;
+    return irys;
   };
 
   return {
@@ -352,14 +353,14 @@ export function createBundlrUploader(
     fund,
     withdrawAll,
     withdraw,
-    bundlr: getBundlr,
+    irys: getIrys,
   };
 }
 
-export const isBundlrUploader = (
+export const isIrysUploader = (
   uploader: UploaderInterface
-): uploader is BundlrUploader =>
-  'bundlr' in uploader &&
+): uploader is IrysUploader =>
+  'irys' in uploader &&
   'getBalance' in uploader &&
   'fund' in uploader &&
   'withdrawAll' in uploader;
