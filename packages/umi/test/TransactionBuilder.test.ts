@@ -1,5 +1,5 @@
 import test from 'ava';
-import { publicKey, transactionBuilder } from '../src';
+import { createNoopSigner, publicKey, transactionBuilder } from '../src';
 import { createUmi, mockInstruction, transferSol } from './_setup';
 
 test.skip('it can get the size of the transaction to build', (t) => {
@@ -118,5 +118,83 @@ test('it can add remaining accounts to a specific instruction', (t) => {
 
   // And the first and last instructions still have 1 account meta.
   t.is(mappedBuilder.items[0].instruction.keys.length, 1);
+  t.is(mappedBuilder.items[2].instruction.keys.length, 1);
+});
+
+test('it can add signer accounts to a specific instruction', (t) => {
+  // Given a signer.
+  const signer = createNoopSigner(
+    publicKey('auth9SigNpDKz4sJJ1DfCTuZrZNSAgh9sFD3rboVmgg')
+  );
+
+  // Given a transaction builder with three instructions.
+  const builder = transactionBuilder()
+    .add(mockInstruction())
+    .add(mockInstruction())
+    .add(mockInstruction());
+
+  // And given all instructions have only one account meta.
+  t.true(builder.items.every((ix) => ix.instruction.keys.length === 1));
+
+  // When we add signer accounts to the first instruction.
+  const mappedBuilder = builder.addRemainingAccounts(
+    [
+      {
+        signer,
+        isWritable: true,
+      },
+    ],
+    0
+  );
+
+  // Then the first instruction has 2 account metas.
+  t.is(mappedBuilder.items[0].instruction.keys.length, 2);
+
+  // And the second and last instructions still have 1 account meta.
+  t.is(mappedBuilder.items[1].instruction.keys.length, 1);
+  t.is(mappedBuilder.items[2].instruction.keys.length, 1);
+});
+
+test('it can add signer and remaining accounts to a specific instruction', (t) => {
+  // Given a signer.
+  const signer = createNoopSigner(
+    publicKey('auth9SigNpDKz4sJJ1DfCTuZrZNSAgh9sFD3rboVmgg')
+  );
+
+  // Given a transaction builder with three instructions.
+  const builder = transactionBuilder()
+    .add(mockInstruction())
+    .add(mockInstruction())
+    .add(mockInstruction());
+
+  // And given all instructions have only one account meta.
+  t.true(builder.items.every((ix) => ix.instruction.keys.length === 1));
+
+  // When we add signer accounts to the first instruction.
+  const mappedBuilder = builder.addRemainingAccounts(
+    [
+      {
+        pubkey: publicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'),
+        isSigner: false,
+        isWritable: false,
+      },
+      {
+        pubkey: publicKey('auth9SigNpDKz4sJJ1DfCTuZrZNSAgh9sFD3rboVmgg'),
+        isSigner: false,
+        isWritable: false,
+      },
+      {
+        signer,
+        isWritable: false,
+      },
+    ],
+    0
+  );
+
+  // Then the first instruction has 2 account metas.
+  t.is(mappedBuilder.items[0].instruction.keys.length, 4);
+
+  // And the second and last instructions still have 1 account meta.
+  t.is(mappedBuilder.items[1].instruction.keys.length, 1);
   t.is(mappedBuilder.items[2].instruction.keys.length, 1);
 });
