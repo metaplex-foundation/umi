@@ -4,6 +4,7 @@ import { SdkError } from './errors';
 import type {
   AccountMeta,
   Instruction,
+  SignerMeta,
   WrappedInstruction,
 } from './Instruction';
 import type {
@@ -114,19 +115,30 @@ export class TransactionBuilder implements HasWrappedInstructions {
   }
 
   addRemainingAccounts(
-    accountMeta: AccountMeta | AccountMeta[],
+    accountMeta: AccountMeta | SignerMeta | (AccountMeta | SignerMeta)[],
     instructionIndex?: number
   ): TransactionBuilder {
     instructionIndex = instructionIndex ?? this.items.length - 1;
+    const metas = Array.isArray(accountMeta) ? accountMeta : [accountMeta];
+    const extraKeys = metas.map((meta) =>
+      'pubkey' in meta
+        ? meta
+        : {
+            pubkey: meta.signer.publicKey,
+            isSigner: true,
+            isWritable: meta.isWritable,
+          }
+    );
+    const extraSigners = metas.flatMap((meta) =>
+      'pubkey' in meta ? [] : [meta.signer]
+    );
     return this.mapInstructions((wrappedInstruction, index) => {
       if (index !== instructionIndex) return wrappedInstruction;
-      const keys = [
-        ...wrappedInstruction.instruction.keys,
-        ...(Array.isArray(accountMeta) ? accountMeta : [accountMeta]),
-      ];
+      const keys = [...wrappedInstruction.instruction.keys, ...extraKeys];
       return {
         ...wrappedInstruction,
         instruction: { ...wrappedInstruction.instruction, keys },
+        signers: [...wrappedInstruction.signers, ...extraSigners],
       };
     });
   }
