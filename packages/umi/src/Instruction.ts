@@ -40,3 +40,15 @@ export type AccountMeta = {
   isSigner: boolean;
   isWritable: boolean;
 };
+
+/**
+ * Defines a signer account required by an instruction.
+ * It includes the signer and whether the signer account
+ * should be writable.
+ *
+ * @category Transactions
+ */
+export type SignerMeta = {
+  signer: Signer;
+  isWritable: boolean;
+};
