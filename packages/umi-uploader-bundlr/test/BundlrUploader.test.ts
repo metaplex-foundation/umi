@@ -24,7 +24,7 @@ const getContext = async (
 ): Promise<Context> => {
   const context = createUmi().use({
     install(umi) {
-      umi.use(web3JsRpc('https://metaplex.devnet.rpcpool.com/'));
+      umi.use(web3JsRpc('https://api.devnet.solana.com'));
       umi.use(web3JsEddsa());
       umi.use(fetchHttp());
       umi.use(httpDownloader());
