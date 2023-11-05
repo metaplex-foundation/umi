@@ -4,12 +4,18 @@ Contacting the Solana blockchain via an RPC is an important part of any decentra
 
 ## Configuring the RPC's endpoint
 
-When creating a new Umi instance via the default bundle, you must pass the RPC's endpoint as the first argument. Going forward, this it the endpoint that will be used every time you call a method on the RPC interface.
+When creating a new Umi instance via the default bundle, you must pass the RPC's endpoint or an instance of `@solana/web3.js`'s `Connection` class as the first argument. Going forward, this is the endpoint or `Connection` that will be used every time you call a method on the RPC interface.
 
 ```ts
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
 
 const umi = createUmi("https://api.mainnet-beta.solana.com");
+```
+```ts
+import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
+import { Connection } from '@solana/web3.js';
+
+const umi = createUmi(new Connection("https://api.mainnet-beta.solana.com"));
 ```
 
 Alternatively, you may set or update the RPC implementation explicitly by the using the plugin they provide. For instance, the `web3JsRpc` plugin will set the RPC implementation to use the `@solana/web3.js` library.
@@ -18,6 +24,12 @@ Alternatively, you may set or update the RPC implementation explicitly by the us
 import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
 
 umi.use(web3JsRpc("https://api.mainnet-beta.solana.com"));
+```
+```ts
+import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
+import { Connection } from '@solana/web3.js';
+
+umi.use(web3JsRpc(new Connection("https://api.mainnet-beta.solana.com")));
 ```
 
 ## Getting the RPC's endpoint and cluster
