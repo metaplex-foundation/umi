@@ -8,13 +8,12 @@ When creating a new Umi instance via the default bundle, you must pass the RPC's
 
 ```ts
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
-
-const umi = createUmi("https://api.mainnet-beta.solana.com");
-```
-```ts
-import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
 import { Connection } from '@solana/web3.js';
 
+// Pass in your RPC endpoint.
+const umi = createUmi("https://api.mainnet-beta.solana.com");
+
+// Or an explicit Connection instance from web3.js.
 const umi = createUmi(new Connection("https://api.mainnet-beta.solana.com"));
 ```
 
@@ -22,13 +21,9 @@ Alternatively, you may set or update the RPC implementation explicitly by the us
 
 ```ts
 import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
-
-umi.use(web3JsRpc("https://api.mainnet-beta.solana.com"));
-```
-```ts
-import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
 import { Connection } from '@solana/web3.js';
 
+umi.use(web3JsRpc("https://api.mainnet-beta.solana.com"));
 umi.use(web3JsRpc(new Connection("https://api.mainnet-beta.solana.com")));
 ```
 
