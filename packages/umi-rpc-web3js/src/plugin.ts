@@ -1,11 +1,22 @@
 import { UmiPlugin } from '@metaplex-foundation/umi';
+import { Connection as Web3JsConnection } from '@solana/web3.js';
 import { createWeb3JsRpc, Web3JsRpcOptions } from './createWeb3JsRpc';
 
-export const web3JsRpc = (
+export function web3JsRpc(
   endpoint: string,
   rpcOptions?: Web3JsRpcOptions
-): UmiPlugin => ({
-  install(umi) {
-    umi.rpc = createWeb3JsRpc(umi, endpoint, rpcOptions);
-  },
-});
+): UmiPlugin;
+export function web3JsRpc(connection: Web3JsConnection): UmiPlugin;
+export function web3JsRpc(
+  endpointOrConnection: string | Web3JsConnection,
+  rpcOptions?: Web3JsRpcOptions
+): UmiPlugin {
+  return {
+    install(umi) {
+      umi.rpc =
+        typeof endpointOrConnection === 'string'
+          ? createWeb3JsRpc(umi, endpointOrConnection, rpcOptions)
+          : createWeb3JsRpc(umi, endpointOrConnection);
+    },
+  };
+}

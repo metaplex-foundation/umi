@@ -66,16 +66,30 @@ export function createWeb3JsRpc(
   context: Pick<Context, 'programs' | 'transactions'>,
   endpoint: string,
   rpcOptions?: Web3JsRpcOptions
+): RpcInterface & { connection: Web3JsConnection };
+export function createWeb3JsRpc(
+  context: Pick<Context, 'programs' | 'transactions'>,
+  connection: Web3JsConnection
+): RpcInterface & { connection: Web3JsConnection };
+export function createWeb3JsRpc(
+  context: Pick<Context, 'programs' | 'transactions'>,
+  endpointOrConnection: string | Web3JsConnection,
+  rpcOptions?: Web3JsRpcOptions
 ): RpcInterface & { connection: Web3JsConnection } {
-  const cluster = resolveClusterFromEndpoint(endpoint);
-
   let connection: Web3JsConnection | null = null;
   const getConnection = () => {
-    if (!connection) {
-      connection = new Web3JsConnection(endpoint, rpcOptions);
+    if (connection) {
+      return connection;
+    }
+    if (typeof endpointOrConnection === 'string') {
+      connection = new Web3JsConnection(endpointOrConnection, rpcOptions);
+    } else {
+      connection = endpointOrConnection;
     }
     return connection;
   };
+
+  const cluster = resolveClusterFromEndpoint(getConnection().rpcEndpoint);
 
   const getAccount = async (
     publicKey: PublicKey,
