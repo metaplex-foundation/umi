@@ -1,5 +1,9 @@
 import { RpcInterface, chunk } from '@metaplex-foundation/umi';
 
+export interface ChunkGetAccountsRpcOptions {
+  getAccountsChunkSize?: number;
+}
+
 export const createChunkGetAccountsRpc = (
   rpc: RpcInterface,
   chunkSize = 100
