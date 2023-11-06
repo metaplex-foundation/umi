@@ -1,5 +1,12 @@
 # @metaplex-foundation/umi-web3js-adapters
 
+## 0.8.10
+
+### Patch Changes
+
+- Updated dependencies [[`4b4061a`](https://github.com/metaplex-foundation/umi/commit/4b4061a10ba615585aff9c2c4256137cc39fa68c)]:
+  - @metaplex-foundation/umi@0.8.10
+
 ## 0.8.9
 
 ### Patch Changes

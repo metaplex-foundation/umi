@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-transaction-factory-web3js",
-  "version": "0.8.9",
+  "version": "0.8.10",
   "description": "A transaction factory implementation relying on Solana's web3.js",
   "license": "MIT",
   "sideEffects": false,

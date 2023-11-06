@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 0.8.10
+
+### Patch Changes
+
+- [#92](https://github.com/metaplex-foundation/umi/pull/92) [`4b4061a`](https://github.com/metaplex-foundation/umi/commit/4b4061a10ba615585aff9c2c4256137cc39fa68c) Thanks [@febo](https://github.com/febo)! - Add signer as remaining account
+
 ## 0.8.9
 
 ### Patch Changes
