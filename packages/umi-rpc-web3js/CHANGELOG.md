@@ -1,5 +1,15 @@
 # @metaplex-foundation/umi-rpc-web3js
 
+## 0.8.10
+
+### Patch Changes
+
+- [#96](https://github.com/metaplex-foundation/umi/pull/96) [`c96d94f`](https://github.com/metaplex-foundation/umi/commit/c96d94f182129a39f8fc7d70fcbf657c3a62d77a) Thanks [@mPaella](https://github.com/mPaella)! - Allow instancing umi/RPCInterface with Connection class or RPC url
+
+- Updated dependencies [[`4b4061a`](https://github.com/metaplex-foundation/umi/commit/4b4061a10ba615585aff9c2c4256137cc39fa68c)]:
+  - @metaplex-foundation/umi@0.8.10
+  - @metaplex-foundation/umi-web3js-adapters@0.8.10
+
 ## 0.8.9
 
 ### Patch Changes
