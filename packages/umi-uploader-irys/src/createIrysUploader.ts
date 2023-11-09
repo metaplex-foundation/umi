@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-named-default
-import type { default as NodeIrys,  WebIrys } from '@irys/sdk';
+import type { default as NodeIrys, WebIrys } from '@irys/sdk';
 import {
   Commitment,
   Context,
@@ -138,11 +138,12 @@ export function createIrysUploader(
 
     const promises = files.map(async (file) => {
       const buffer = Buffer.from(file.buffer);
-      const irysTx = irys.createTransaction(buffer, { tags: getGenericFileTagsWithContentType(file)})
-      await irysTx.sign()
+      const irysTx = irys.createTransaction(buffer, {
+        tags: getGenericFileTagsWithContentType(file),
+      });
+      await irysTx.sign();
 
       const { status, data } = await irys.uploader.uploadTransaction(irysTx);
-
 
       if (status >= 300) {
         throw new AssetUploadFailedError(status);
@@ -205,10 +206,12 @@ export function createIrysUploader(
 
   const withdraw = async (amount: SolAmount): Promise<void> => {
     const irys = await getIrys();
-    try{
+    try {
       await irys.withdrawBalance(amountToBigNumber(amount));
-    }catch(e: any){
-      throw new IrysWithdrawError( (e instanceof Error) ? e.message : e.toString());
+    } catch (e: any) {
+      throw new IrysWithdrawError(
+        e instanceof Error ? e.message : e.toString()
+      );
     }
   };
 
@@ -271,11 +274,14 @@ export function createIrysUploader(
     keypair: Keypair,
     options: any
   ): Promise<NodeIrys> => {
-    const bPackage = _removeDoubleDefault(
-      await import('@irys/sdk')
-    );
+    const bPackage = _removeDoubleDefault(await import('@irys/sdk'));
     // eslint-disable-next-line new-cap
-    return new bPackage.default({url: address, token: currency, key: keypair.secretKey, config: options});
+    return new bPackage.default({
+      url: address,
+      token: currency,
+      key: keypair.secretKey,
+      config: options,
+    });
   };
 
   const initWebIrys = async (
@@ -329,10 +335,13 @@ export function createIrysUploader(
       },
     };
 
-    const bPackage = _removeDoubleDefault(
-      await import('@irys/sdk')
-    );
-    const irys = new bPackage.WebIrys({url: address, token: currency, wallet: {provider: wallet}, config: options});
+    const bPackage = _removeDoubleDefault(await import('@irys/sdk'));
+    const irys = new bPackage.WebIrys({
+      url: address,
+      token: currency,
+      wallet: { provider: wallet },
+      config: options,
+    });
 
     try {
       // Try to initiate irys.

@@ -11,7 +11,7 @@ import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { fetchHttp } from '@metaplex-foundation/umi-http-fetch';
 import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
 import test from 'ava';
-import {  irysUploader,  IrysUploaderOptions } from '../src';
+import { irysUploader, IrysUploaderOptions } from '../src';
 
 test('example test', async (t) => {
   t.is(typeof irysUploader, 'function');
@@ -19,9 +19,7 @@ test('example test', async (t) => {
 
 // TODO(loris): Unskip these tests when we can mock the Irys API.
 
-const getContext = async (
-  options?: IrysUploaderOptions
-): Promise<Context> => {
+const getContext = async (options?: IrysUploaderOptions): Promise<Context> => {
   const context = createUmi().use({
     install(umi) {
       umi.use(web3JsRpc('https://metaplex.devnet.rpcpool.com/'));
