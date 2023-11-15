@@ -15,6 +15,11 @@ export function fromWeb3JsInstruction(
     data: new Uint8Array(instruction.data),
   };
 }
+export function fromWeb3JsInstructions(
+  instructions: Web3JsTransactionInstruction[]
+) {
+  return instructions.map(fromWeb3JsInstruction);
+}
 
 export function toWeb3JsInstruction(
   instruction: Instruction
@@ -27,4 +32,7 @@ export function toWeb3JsInstruction(
     programId: toWeb3JsPublicKey(instruction.programId),
     data: Buffer.from(instruction.data),
   });
+}
+export function toWeb3JsInstructions(instructions: Instruction[]) {
+  return instructions.map(toWeb3JsInstruction);
 }

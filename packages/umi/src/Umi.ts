@@ -13,7 +13,7 @@ import type { UmiPlugin } from './UmiPlugin';
  */
 export interface Umi extends Context {
   /** Installs a Umi plugin. */
-  use(plugin: UmiPlugin): Umi;
+  use(plugins: UmiPlugin | UmiPlugin[]): Umi;
 }
 
 /**
@@ -25,8 +25,10 @@ export interface Umi extends Context {
  */
 export const createUmi = (): Umi => ({
   ...createNullContext(),
-  use(plugin: UmiPlugin) {
-    plugin.install(this);
+  use(plugins: UmiPlugin | UmiPlugin[]) {
+    plugins = Array.isArray(plugins) ? plugins : [plugins];
+    plugins.map((plugin) => plugin.install(this));
+
     return this;
   },
 });

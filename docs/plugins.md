@@ -4,13 +4,17 @@ Whilst Umi is a small zero-dependency framework, it is designed to be extended w
 
 ## Using plugins
 
-To install a Umi plugin, you may simply call the `use` method on the Umi instance. This `use` method returns the Umi instance so they can be chained together.
+To install an Umi plugin, you may simply call the `use` method on the Umi instance. This `use` method returns the Umi instance so they can be chained together. You may also pass an array of plugins to the `use` method.
 
 ```ts
 import { somePlugin } from 'some-umi-library';
 import { myLocalPlugin } from '../plugins';
 
+// Install multiple plugins using chaining
 umi.use(somePlugin).use(myLocalPlugin);
+
+// Or pass an array of plugins
+umi.use([somePlugin, myLocalPlugin]);
 ```
 
 It is worth noting that libraries will often provide a function that returns a plugin instead of the plugin itself. This is done so that we can pass any arguments to configure the behaviour of the plugin.

@@ -16,6 +16,11 @@ export function fromWeb3JsTransaction(
     signatures: web3JsTransaction.signatures,
   };
 }
+export function fromWeb3JsTransactions(
+  web3JsLegacyTransactions: Web3JsLegacyTransaction[]
+) {
+  return web3JsLegacyTransactions.map(fromWeb3JsLegacyTransaction);
+}
 
 export function toWeb3JsTransaction(
   transaction: Transaction
@@ -24,6 +29,9 @@ export function toWeb3JsTransaction(
     toWeb3JsMessage(transaction.message),
     transaction.signatures
   );
+}
+export function toWeb3JsTransactions(transactions: Transaction[]) {
+  return transactions.map(toWeb3JsLegacyTransaction);
 }
 
 export function fromWeb3JsLegacyTransaction(
@@ -53,6 +61,11 @@ export function fromWeb3JsLegacyTransaction(
     signatures,
   };
 }
+export function fromWeb3JsLegacyTransactions(
+  web3JsLegacyTransactions: Web3JsLegacyTransaction[]
+) {
+  return web3JsLegacyTransactions.map(fromWeb3JsLegacyTransaction);
+}
 
 export function toWeb3JsLegacyTransaction(
   transaction: Transaction
@@ -67,4 +80,7 @@ export function toWeb3JsLegacyTransaction(
       (signature) => base58.deserialize(signature)[0]
     )
   );
+}
+export function toWeb3JsLegacyTransactions(transactions: Transaction[]) {
+  return transactions.map(toWeb3JsLegacyTransaction);
 }

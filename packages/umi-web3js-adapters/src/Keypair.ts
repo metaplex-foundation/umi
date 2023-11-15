@@ -8,10 +8,16 @@ export function fromWeb3JsKeypair(keypair: Web3JsKeypair): Keypair {
     secretKey: keypair.secretKey,
   };
 }
+export function fromWeb3JsKeypairs(keypairs: Web3JsKeypair[]) {
+  return keypairs.map(fromWeb3JsKeypair);
+}
 
 export function toWeb3JsKeypair(keypair: Keypair): Web3JsKeypair {
   return new Web3JsKeypair({
     publicKey: publicKeyBytes(keypair.publicKey),
     secretKey: keypair.secretKey,
   });
+}
+export function toWeb3JsKeypairs(keypairs: Keypair[]) {
+  return keypairs.map(toWeb3JsKeypair);
 }

@@ -31,6 +31,11 @@ export function fromWeb3JsMessage(
     })),
   };
 }
+export function fromWeb3JsMessages(
+  messages: (Web3JsMessageLegacy | Web3JsMessageV0)[]
+) {
+  return messages.map(fromWeb3JsMessage);
+}
 
 export function toWeb3JsMessage(
   message: TransactionMessage
@@ -64,6 +69,9 @@ export function toWeb3JsMessage(
     })),
   });
 }
+export function toWeb3JsMessages(messages: TransactionMessage[]) {
+  return messages.map(toWeb3JsMessage);
+}
 
 export function toWeb3JsMessageFromInput(
   input: TransactionInput
@@ -94,4 +102,7 @@ export function toWeb3JsMessageFromInput(
         })
     ),
   });
+}
+export function toWeb3JsMessagesFromInputs(inputs: TransactionInput[]) {
+  return inputs.map(toWeb3JsMessageFromInput);
 }
