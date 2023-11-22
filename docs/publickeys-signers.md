@@ -197,7 +197,7 @@ In order to use these keypairs as signers throughout your application, you can u
 
 ```ts
 const myKeypair = umi.eddsa.generateKeypair();
-const myKeypairSigner = createSignerFromKeypair("eddsa",myKeypair);
+const myKeypairSigner = createSignerFromKeypair('eddsa',myKeypair);
 ```
 
 Note that the code snippet above is equivalent to using the `generateSigner` helper method described in the previous section.
