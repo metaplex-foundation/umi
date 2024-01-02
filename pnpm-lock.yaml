@@ -509,6 +509,21 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0(@ava/typescript@3.0.1)
 
+  packages/umi-uploader-4everland:
+    devDependencies:
+      '@ava/typescript':
+        specifier: ^3.0.1
+        version: 3.0.1
+      '@aws-sdk/client-s3':
+        specifier: ^3.54.1
+        version: 3.264.0
+      '@metaplex-foundation/umi':
+        specifier: workspace:^
+        version: link:../umi
+      ava:
+        specifier: ^5.1.0
+        version: 5.1.0(@ava/typescript@3.0.1)
+
   packages/umi-uploader-aws:
     devDependencies:
       '@ava/typescript':
