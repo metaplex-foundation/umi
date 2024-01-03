@@ -1,4 +1,8 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  HeadObjectCommand,
+} from '@aws-sdk/client-s3';
 
 import {
   createGenericFileFromJson,
@@ -33,6 +37,14 @@ export function create4everlandUploader(
     });
 
     const data = await client.send(command);
+    const headerCommand = new HeadObjectCommand({
+      Bucket: bucketName,
+      Key: file.uniqueName,
+    });
+    const headerData = await client.send(headerCommand);
+    const metadata = headerData.Metadata!;
+    const arHash = metadata['arweave-hash'];
+    if (arHash) return arHash;
     let hash = '';
     if (data.ETag) {
       hash = JSON.parse(data.ETag);

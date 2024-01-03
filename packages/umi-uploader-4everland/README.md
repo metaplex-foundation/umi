@@ -1,6 +1,6 @@
 # umi-uploader-4everland
 
-TODO
+An uploader implementation relying on 4EVERLAND.
 
 ## Installation
 
