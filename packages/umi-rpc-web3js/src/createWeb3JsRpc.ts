@@ -376,6 +376,16 @@ export function createWeb3JsRpc(
   };
 }
 
+// Had to create a new function since BigInt() don't like undefined as input
+function contvertToBigInt(number: string | number | bigint | boolean | undefined){
+  if(number !== undefined){
+    return BigInt(number);
+  }
+  else{
+    console.error("number is undefined");
+  }
+}
+
 function parseAccount(
   account: Web3JsAccountInfo<Uint8Array>,
   publicKey: PublicKey
@@ -384,7 +394,7 @@ function parseAccount(
     executable: account.executable,
     owner: fromWeb3JsPublicKey(account.owner),
     lamports: lamports(account.lamports),
-    rentEpoch: account.rentEpoch,
+    rentEpoch: contvertToBigInt(account.rentEpoch),
     publicKey,
     data: new Uint8Array(account.data),
   };
