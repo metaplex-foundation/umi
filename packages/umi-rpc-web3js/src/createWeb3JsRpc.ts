@@ -376,8 +376,6 @@ export function createWeb3JsRpc(
   };
 }
 
-
-
 function parseAccount(
   account: Web3JsAccountInfo<Uint8Array>,
   publicKey: PublicKey
