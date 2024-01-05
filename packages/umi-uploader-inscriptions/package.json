@@ -1,0 +1,64 @@
+{
+  "name": "@metaplex-foundation/umi-storage-inscriptions",
+  "version": "0.1.0",
+  "description": "An uploader program using the Metaplex Inscriptions program.",
+  "license": "MIT",
+  "sideEffects": false,
+  "module": "dist/esm/index.mjs",
+  "main": "dist/cjs/index.cjs",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    }
+  },
+  "files": [
+    "/dist/cjs",
+    "/dist/esm",
+    "/dist/types",
+    "/src"
+  ],
+  "scripts": {
+    "lint": "eslint --ext js,ts,tsx src",
+    "lint:fix": "eslint --fix --ext js,ts,tsx src",
+    "clean": "rimraf dist",
+    "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
+    "test": "ava"
+  },
+  "peerDependencies": {
+    "@metaplex-foundation/umi": "workspace:^"
+  },
+  "devDependencies": {
+    "@ava/typescript": "^3.0.1",
+    "@metaplex-foundation/umi": "workspace:^",
+    "@types/node": "^20.10.6",
+    "ava": "^5.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Metaplex Maintainers <contact@metaplex.com>",
+  "homepage": "https://metaplex.com",
+  "repository": {
+    "url": "https://github.com/metaplex-foundation/umi.git"
+  },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "readmeFile": "./README.md",
+    "displayName": "umi-uploader-inscriptions"
+  },
+  "ava": {
+    "typescript": {
+      "compile": false,
+      "rewritePaths": {
+        "src/": "dist/test/src/",
+        "test/": "dist/test/test/"
+      }
+    }
+  },
+  "dependencies": {
+    "@metaplex-foundation/mpl-inscription": "^0.5.2"
+  }
+}
