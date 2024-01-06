@@ -384,7 +384,7 @@ function parseAccount(
     executable: account.executable,
     owner: fromWeb3JsPublicKey(account.owner),
     lamports: lamports(account.lamports),
-    rentEpoch: account.rentEpoch,
+    rentEpoch: account.rentEpoch ? BigInt(account.rentEpoch) : undefined,
     publicKey,
     data: new Uint8Array(account.data),
   };
