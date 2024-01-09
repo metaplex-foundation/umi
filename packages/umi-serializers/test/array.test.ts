@@ -70,16 +70,14 @@ test('remainder (de)serialization', (t) => {
   s(t, array(string({ size: 1 }), remainder), ['a', 'b'], '6162');
   d(t, array(string({ size: 1 }), remainder), '6162', ['a', 'b'], 2);
 
+  // Variable sized items.
+  s(t, array(string({ size: u8() }), remainder), ['a', 'bc'], '0161026263');
+  d(t, array(string({ size: u8() }), remainder), '0161026263', ['a', 'bc'], 5);
+
   // Different From and To types.
   const arrayU64 = array<number | bigint, bigint>(u64(), remainder);
   s(t, arrayU64, [2], '0200000000000000');
   d(t, arrayU64, '0200000000000000', [2n], 8);
-
-  // It fails with variable size items.
-  t.throws(() => array(string(), remainder), {
-    message: (m) =>
-      m.includes('Serializers of "remainder" size must have fixed-size items'),
-  });
 });
 
 test('description', (t) => {

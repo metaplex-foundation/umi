@@ -88,6 +88,15 @@ test('remainder (de)serialization', (t) => {
   s(t, letters, lettersMap, '61016202');
   d(t, letters, '61016202', lettersMap, 4);
 
+  // Variable sized items.
+  const prefixedLetters = map(string({ size: u8() }), u8(), remainder);
+  const prefixedLettersMap = new Map([
+    ['a', 6],
+    ['bc', 7],
+  ]);
+  s(t, prefixedLetters, prefixedLettersMap, '01610602626307');
+  d(t, prefixedLetters, '01610602626307', prefixedLettersMap, 7);
+
   // Different From and To types.
   const mapU64 = map<number, number | bigint, number, bigint>(
     u8(),
@@ -96,12 +105,6 @@ test('remainder (de)serialization', (t) => {
   );
   s(t, mapU64, new Map([[1, 2]]), '010200000000000000');
   d(t, mapU64, '010200000000000000', new Map([[1, 2n]]), 9);
-
-  // It fails with variable size items.
-  t.throws(() => map(u8(), string(), remainder), {
-    message: (m) =>
-      m.includes('Serializers of "remainder" size must have fixed-size items'),
-  });
 });
 
 test('description', (t) => {

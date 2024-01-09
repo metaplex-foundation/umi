@@ -81,16 +81,15 @@ test('remainder (de)serialization', (t) => {
   s(t, set(string({ size: 1 }), remainder), new Set(['a', 'b']), '6162');
   d(t, set(string({ size: 1 }), remainder), '6162', new Set(['a', 'b']), 2);
 
+  // Variable sized items.
+  const prefixedSet = set(string({ size: u8() }), remainder);
+  s(t, prefixedSet, new Set(['a', 'bc']), '0161026263');
+  d(t, prefixedSet, '0161026263', new Set(['a', 'bc']), 5);
+
   // Different From and To types.
   const setU64 = set<number | bigint, bigint>(u64(), remainder);
   s(t, setU64, new Set([2]), '0200000000000000');
   d(t, setU64, '0200000000000000', new Set([2n]), 8);
-
-  // It fails with variable size items.
-  t.throws(() => set(string(), remainder), {
-    message: (m) =>
-      m.includes('Serializers of "remainder" size must have fixed-size items'),
-  });
 });
 
 test('description', (t) => {
