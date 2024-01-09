@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-serializers
 
+## 0.9.0
+
+### Patch Changes
+
+- [#107](https://github.com/metaplex-foundation/umi/pull/107) [`ff727cb`](https://github.com/metaplex-foundation/umi/commit/ff727cbfcb3e85d6f0c52d4adcbf836dd2546fea) Thanks [@lorisleiva](https://github.com/lorisleiva)! - Add support for variable-sized items in remainder-sized serializers
+
 ## 0.8.9
 
 ### Patch Changes

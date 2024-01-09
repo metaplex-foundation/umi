@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-serializer-beet",
-  "version": "0.8.10",
+  "version": "0.9.0",
   "description": "A serializer implementation relying on Beet",
   "license": "MIT",
   "sideEffects": false,
