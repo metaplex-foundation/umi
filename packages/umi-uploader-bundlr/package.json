@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-uploader-bundlr",
-  "version": "0.8.10",
+  "version": "0.9.0",
   "description": "An uploader implementation relying on Bundlr",
   "license": "MIT",
   "sideEffects": false,

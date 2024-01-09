@@ -1,5 +1,17 @@
 # @metaplex-foundation/umi-rpc-web3js
 
+## 0.9.0
+
+### Minor Changes
+
+- [#105](https://github.com/metaplex-foundation/umi/pull/105) [`703bace`](https://github.com/metaplex-foundation/umi/commit/703baceb19155a53923eb63b99fdb08e7bf7cce8) Thanks [@HarishPrasannaV](https://github.com/HarishPrasannaV)! - Changed rentEpoch type in AccountHeader from number to BigInt
+
+### Patch Changes
+
+- Updated dependencies [[`703bace`](https://github.com/metaplex-foundation/umi/commit/703baceb19155a53923eb63b99fdb08e7bf7cce8)]:
+  - @metaplex-foundation/umi@0.9.0
+  - @metaplex-foundation/umi-web3js-adapters@0.9.0
+
 ## 0.8.10
 
 ### Patch Changes
