@@ -33,7 +33,7 @@
     "ipfs-car": "^0.7.0",
     "ipfs-unixfs": "^6.0.9",
     "multiformats": "^9.7.0",
-    "nft.storage": "^6.4.1",
+    "nft.storage": "^7.1.1",
     "node-fetch": "^2.6.7",
     "tweetnacl": "^1.0.3"
   },
