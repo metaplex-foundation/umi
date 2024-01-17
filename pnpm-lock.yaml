@@ -628,8 +628,8 @@ importers:
         specifier: ^9.7.0
         version: 9.9.0
       nft.storage:
-        specifier: ^6.4.1
-        version: 6.4.1(node-fetch@2.6.9)
+        specifier: ^7.1.1
+        version: 7.1.1(node-fetch@2.6.9)
       node-fetch:
         specifier: ^2.6.7
         version: 2.6.9
@@ -5422,6 +5422,20 @@ packages:
       data-uri-to-buffer: 3.0.1
     dev: false
 
+  /@web-std/fetch@4.2.1:
+    resolution: {integrity: sha512-M6sgHDgKegcjuVsq8J6jb/4XvhPGui8uwp3EIoADGXUnBl9vKzKLk9H9iFzrPJ6fSV6zZzFWXPyziBJp9hxzBA==}
+    engines: {node: ^10.17 || >=12.3}
+    dependencies:
+      '@web-std/blob': 3.0.4
+      '@web-std/file': 3.0.2
+      '@web-std/form-data': 3.0.2
+      '@web-std/stream': 1.0.3
+      '@web3-storage/multipart-parser': 1.0.0
+      abort-controller: 3.0.0
+      data-uri-to-buffer: 3.0.1
+      mrmime: 1.0.1
+    dev: false
+
   /@web-std/file@1.1.4:
     resolution: {integrity: sha512-oQ/qgKpuJn8DaPl4kfhItD1hflKGwQ27I21Cq0Rf0ENfirxV10ipyiixn392W3z6WsDJ5d6CDLAFoWUCCCu2BQ==}
     dependencies:
@@ -5449,6 +5463,12 @@ packages:
 
   /@web-std/stream@1.0.0:
     resolution: {integrity: sha512-jyIbdVl+0ZJyKGTV0Ohb9E6UnxP+t7ZzX4Do3AHjZKxUXKMs9EmqnBDQgHF7bEw0EzbQygOjtt/7gvtmi//iCQ==}
+    dependencies:
+      web-streams-polyfill: 3.2.1
+    dev: false
+
+  /@web-std/stream@1.0.3:
+    resolution: {integrity: sha512-5MIngxWyq4rQiGoDAC2WhjLuDraW8+ff2LD2et4NRY933K3gL8CHlUXrh8ZZ3dC9A9Xaub8c9sl5exOJE58D9Q==}
     dependencies:
       web-streams-polyfill: 3.2.1
     dev: false
@@ -10783,6 +10803,11 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
+  /mrmime@1.0.1:
+    resolution: {integrity: sha512-hzzEagAgDyoU1Q6yg5uI+AorQgdvMCur3FcKf7NhMKWsaYg+RnbTyHRa/9IlLF9rf455MOCtcqqrQQ83pPP7Uw==}
+    engines: {node: '>=10'}
+    dev: false
+
   /ms@2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
     dev: true
@@ -10953,13 +10978,13 @@ packages:
       - supports-color
     dev: false
 
-  /nft.storage@6.4.1(node-fetch@2.6.9):
-    resolution: {integrity: sha512-UwZ+QgDCr58X+vHN4BydqdB89M8Vaza+vkWR9RatC3rXuDfIyYE5T7oOV53tbiuhA8x5Yi56tlG3NI8wLfOO1A==}
+  /nft.storage@7.1.1(node-fetch@2.6.9):
+    resolution: {integrity: sha512-OHFeRiWLcGCWHX8Kx3yvSt7qGbHwEROl0kcN2xaHWBaR0ApYH5DnjlqczXSwP9WwBDtjhyDk4IHReXSwuZkB7Q==}
     dependencies:
       '@ipld/car': 3.2.4
       '@ipld/dag-cbor': 6.0.15
       '@web-std/blob': 3.0.4
-      '@web-std/fetch': 3.0.3
+      '@web-std/fetch': 4.2.1
       '@web-std/file': 3.0.2
       '@web-std/form-data': 3.0.2
       carbites: 1.0.6
