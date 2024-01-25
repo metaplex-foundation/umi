@@ -1,5 +1,13 @@
 # @metaplex-foundation/umi-core
 
+## 0.9.1
+
+### Patch Changes
+
+- [#118](https://github.com/metaplex-foundation/umi/pull/118) [`c450559`](https://github.com/metaplex-foundation/umi/commit/c4505599778ca53695b9762f523fd39f813a0ec9) Thanks [@febo](https://github.com/febo)! - Fix builders order on append
+
+- [#112](https://github.com/metaplex-foundation/umi/pull/112) [`7c03bd1`](https://github.com/metaplex-foundation/umi/commit/7c03bd1841e14f9352d0c166e5d5e305a543c77a) Thanks [@KishiTheMechanic](https://github.com/KishiTheMechanic)! - Update nft.storage version to fix type URLSearchParams error
+
 ## 0.9.0
 
 ### Minor Changes
