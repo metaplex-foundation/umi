@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-signer-wallet-adapters",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "A Signer implementation relying on Solana's wallet adapters",
   "license": "MIT",
   "sideEffects": false,
