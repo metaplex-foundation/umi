@@ -509,6 +509,28 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0(@ava/typescript@3.0.1)
 
+  packages/umi-transaction-parser:
+    dependencies:
+      '@metaplex-foundation/umi':
+        specifier: ^0.9.1
+        version: link:../umi
+      '@metaplex-foundation/umi-bundle-defaults':
+        specifier: ^0.9.1
+        version: link:../umi-bundle-defaults
+      eventemitter3:
+        specifier: ^4.0.7
+        version: 4.0.7
+    devDependencies:
+      '@ava/typescript':
+        specifier: ^3.0.1
+        version: 3.0.1
+      '@metaplex-foundation/umi-serializers-encodings':
+        specifier: ^0.8.9
+        version: link:../umi-serializers-encodings
+      ava:
+        specifier: ^5.1.0
+        version: 5.1.0(@ava/typescript@3.0.1)
+
   packages/umi-uploader-aws:
     devDependencies:
       '@ava/typescript':

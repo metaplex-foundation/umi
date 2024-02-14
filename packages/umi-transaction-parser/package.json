@@ -1,0 +1,62 @@
+{
+  "name": "@metaplex-foundation/umi-transaction-parser",
+  "version": "0.1.0",
+  "description": "Parse transactions into a more human-readable format",
+  "license": "MIT",
+  "sideEffects": false,
+  "module": "dist/esm/index.mjs",
+  "main": "dist/cjs/index.cjs",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    }
+  },
+  "files": [
+    "/dist/cjs",
+    "/dist/esm",
+    "/dist/types",
+    "/src"
+  ],
+  "scripts": {
+    "lint": "eslint --ext js,ts,tsx src",
+    "lint:fix": "eslint --fix --ext js,ts,tsx src",
+    "clean": "rimraf dist",
+    "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
+    "test": "ava --timeout 600s"
+  },
+  "dependencies": {
+    "@metaplex-foundation/umi": "^0.9.1",
+    "@metaplex-foundation/umi-bundle-defaults": "^0.9.1",
+    "eventemitter3": "^4.0.7"
+  },
+  "devDependencies": {
+    "@ava/typescript": "^3.0.1",
+    "@metaplex-foundation/umi-serializers-encodings": "^0.8.9",
+    "ava": "^5.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Metaplex Maintainers <contact@metaplex.com>",
+  "homepage": "https://metaplex.com",
+  "repository": {
+    "url": "https://github.com/metaplex-foundation/umi.git"
+  },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "readmeFile": "./README.md",
+    "displayName": "umi-transaction-parser"
+  },
+  "ava": {
+    "typescript": {
+      "compile": false,
+      "rewritePaths": {
+        "src/": "dist/test/src/",
+        "test/": "dist/test/test/"
+      }
+    }
+  }
+}
