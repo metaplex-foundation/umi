@@ -4,7 +4,7 @@ The Umi framework provides the basis for building Solana clients in JavaScript. 
 
 [Kinobi](https://github.com/metaplex-foundation/kinobi) introduces a language-agnostic representation of Solana clients which can be composed of one or several programs. It does this by using a tree of nodes that can be visited by `Visitor` classes. Visitors can be used to update any aspect of the tree allowing developers to tailor the client to their needs. Once the tree is to the developer's liking, language-specific visitors can be used to generate the code for the target language or framework.
 
-The good news is Kinobi ships with a `RenderJavaScriptVisitor` that generates Umi-compatible libraries for us.
+The good news is Kinobi ships with a `renderJavascriptVisitor` that generates Umi-compatible libraries for us.
 
 Here's a quick overview of how to use Kinobi and Umi to create JavaScript clients for Solana programs. Note that [you might be interested in this thread](https://twitter.com/lorismatic/status/1637890024992833536) that goes through this diagram step by step.
 
@@ -20,10 +20,10 @@ First, you need to install Kinobi:
 npm install @metaplex-foundation/kinobi
 ```
 
-Then, you need to create a JavaScript file — e.g. `kinobi.js` — that creates and renders a Kinobi tree. This is done by creating a `Kinobi` instance and passing it an array of paths to IDL files. You may want to check the [Shank JS library](https://github.com/metaplex-foundation/shank-js) to generate your IDL files. You can then use visitors to update the tree and render it as a Umi-compatible library via the `RenderJavaScriptVisitor`. Here's an example.
+Then, you need to create a JavaScript file — e.g. `kinobi.js` — that creates and renders a Kinobi tree. This is done by creating a `Kinobi` instance and passing it an array of paths to IDL files. You may want to check the [Shank JS library](https://github.com/metaplex-foundation/shank-js) to generate your IDL files. You can then use visitors to update the tree and render it as a Umi-compatible library via the `renderJavascriptVisitor`. Here's an example.
 
 ```ts
-import { createFromIdls, RenderJavaScriptVisitor } from "@metaplex-foundation/kinobi";
+import { createFromIdls, renderJavascripVisitor } from "@metaplex-foundation/kinobi";
 
 // Instantiate Kinobi.
 const kinobi = createFromIdls([
@@ -35,7 +35,7 @@ const kinobi = createFromIdls([
 
 // Render JavaScript.
 const jsDir = path.join(__dirname, "clients", "js", "src", "generated");
-kinobi.accept(new RenderJavaScriptVisitor(jsDir));
+kinobi.accept(renderJavascriptVisitor(jsDir));
 ```
 
 Now, all you need to do is run this file with Node.js like so.
