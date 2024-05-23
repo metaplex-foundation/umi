@@ -192,6 +192,18 @@ export interface RpcInterface {
   ): Promise<TransactionSignature>;
 
   /**
+   * Simulate a transaction.
+   *
+   * @param transaction The transaction to simulate.
+   * @param options The options to use when simulating a transaction.
+   * @returns The signature of the sent transaction.
+   */
+  simulateTransaction(
+    transaction: Transaction,
+    options?: RpcSimulateTransactionOptions
+  ): Promise<RpcSimulateTransactionResult>;
+
+  /**
    * Confirm a sent transaction.
    *
    * @param signature The signature of the transaction to confirm.
@@ -384,6 +396,17 @@ export type RpcSendTransactionOptions = RpcBaseOptions & {
 };
 
 /**
+ * The options to use when simulating a transaction.
+ * @category Rpc
+ */
+export type RpcSimulateTransactionOptions = RpcBaseOptions & {
+  /** Optional parameter used to specify a list of base58-encoded account addresses to return post simulation state */
+  accounts?: PublicKey[],
+  /** Optional parameter used to enable signature verification before simulation */
+  verifySignatures?: boolean,
+};
+
+/**
  * The options to use when confirming a transaction.
  * @category Rpc
  */
@@ -398,16 +421,26 @@ export type RpcConfirmTransactionOptions = RpcBaseOptions & {
  */
 export type RpcConfirmTransactionStrategy =
   | {
-      type: 'blockhash';
-      blockhash: Blockhash;
-      lastValidBlockHeight: number;
-    }
+    type: 'blockhash';
+    blockhash: Blockhash;
+    lastValidBlockHeight: number;
+  }
   | {
-      type: 'durableNonce';
-      minContextSlot: number;
-      nonceAccountPubkey: PublicKey;
-      nonceValue: string;
-    };
+    type: 'durableNonce';
+    minContextSlot: number;
+    nonceAccountPubkey: PublicKey;
+    nonceValue: string;
+  };
+
+/**
+* Defines the result of a transaction simulation.
+* @category Rpc
+*/
+export type RpcSimulateTransactionResult =
+  {
+    err: TransactionError | null;
+    unitsConsumed?: number;
+  };
 
 /**
  * Defines the result of a transaction confirmation.
@@ -442,6 +475,7 @@ export function createNullRpc(): RpcInterface {
     airdrop: errorHandler,
     call: errorHandler,
     sendTransaction: errorHandler,
+    simulateTransaction: errorHandler,
     confirmTransaction: errorHandler,
   };
 }

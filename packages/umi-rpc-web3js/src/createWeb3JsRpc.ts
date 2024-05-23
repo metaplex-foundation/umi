@@ -29,6 +29,8 @@ import {
   RpcGetTransactionOptions,
   RpcInterface,
   RpcSendTransactionOptions,
+  RpcSimulateTransactionOptions,
+  RpcSimulateTransactionResult,
   SolAmount,
   Transaction,
   TransactionMetaInnerInstruction,
@@ -46,6 +48,7 @@ import {
   fromWeb3JsMessage,
   fromWeb3JsPublicKey,
   toWeb3JsPublicKey,
+  toWeb3JsTransaction,
 } from '@metaplex-foundation/umi-web3js-adapters';
 import { base58 } from '@metaplex-foundation/umi/serializers';
 import {
@@ -123,7 +126,7 @@ export function createWeb3JsRpc(
       toWeb3JsPublicKey(programId),
       {
         ...options,
-        filters: options.filters?.map((filter) => parseDataFilter(filter)),
+        filters: options.filters?.map((filter: any) => parseDataFilter(filter)),
       }
     );
     return accounts.map(({ pubkey, account }) =>
@@ -341,6 +344,30 @@ export function createWeb3JsRpc(
     }
   };
 
+  const simulateTransaction = async (
+    transaction: Transaction,
+    options: RpcSimulateTransactionOptions = {}
+  ): Promise<RpcSimulateTransactionResult> => {
+    try {
+      const tx = toWeb3JsTransaction(transaction);
+      const result = await getConnection().simulateTransaction(tx, { sigVerify: options.verifySignatures });
+      // const signature = await getConnection().sendRawTransaction(
+      // context.transactions.serialize(transaction),
+      //   options
+      // );
+      return { err: null, unitsConsumed: result.value.unitsConsumed };
+    } catch (error: any) {
+      let resolvedError: ProgramError | null = null;
+      if (error instanceof Error && 'logs' in error) {
+        resolvedError = context.programs.resolveError(
+          error as ErrorWithLogs,
+          transaction
+        );
+      }
+      throw resolvedError || error;
+    }
+  };
+
   const confirmTransaction = async (
     signature: TransactionSignature,
     options: RpcConfirmTransactionOptions
@@ -368,6 +395,7 @@ export function createWeb3JsRpc(
     airdrop,
     call,
     sendTransaction,
+    simulateTransaction,
     confirmTransaction,
 
     get connection() {
