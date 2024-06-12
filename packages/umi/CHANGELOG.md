@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 0.9.2
+
+### Patch Changes
+
+- [`6276f96`](https://github.com/metaplex-foundation/umi/commit/6276f9651f91b973b474cb63a0457917b09ed292) Thanks [@nhanphan](https://github.com/nhanphan)! - package.json compatibility for older versions of metro packaging for react-native
+
 ## 0.9.1
 
 ### Patch Changes
