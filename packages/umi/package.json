@@ -14,6 +14,7 @@
       "require": "./dist/cjs/index.cjs"
     },
     "./serializers": {
+      "react-native": "./dist/cjs/serializers.cjs",
       "types": "./dist/types/serializers.d.ts",
       "import": "./dist/esm/serializers.mjs",
       "require": "./dist/cjs/serializers.cjs"
