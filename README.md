@@ -6,6 +6,9 @@ Umi is a modular framework for building and using JavaScript clients for Solana 
 
 ## Documentation
 
+> [!TIP]
+> Just want to mint NFTs? Go straight to the [Token Metadata JS docs](https://developers.metaplex.com/token-metadata/getting-started/js).
+
 - [Installation](https://developers.metaplex.com/umi/getting-started)
 - [Umi's interfaces](https://developers.metaplex.com/umi/interfaces)
 - [Interface implementations](https://developers.metaplex.com/umi/implementations)
