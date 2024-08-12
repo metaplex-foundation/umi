@@ -13,10 +13,12 @@ import {
   toWeb3JsPublicKey,
 } from '@metaplex-foundation/umi-web3js-adapters';
 import { ed25519 } from '@noble/curves/ed25519';
+import { SolanaCliConfig } from '@soceanfi/solana-cli-config';
 import {
   Keypair as Web3JsKeypair,
   PublicKey as Web3JsPublicKey,
 } from '@solana/web3.js';
+import { readFileSync } from 'fs';
 
 export function createWeb3JsEddsa(): EddsaInterface {
   const generateKeypair = (): Keypair =>
@@ -27,6 +29,12 @@ export function createWeb3JsEddsa(): EddsaInterface {
 
   const createKeypairFromSeed = (seed: Uint8Array): Keypair =>
     fromWeb3JsKeypair(Web3JsKeypair.fromSeed(seed));
+
+  const createKeypairFromFile = (path: string): Keypair =>
+    createKeypairFromSecretKey(new Uint8Array(JSON.parse(readFileSync(path).toString())));
+
+  const createKeypairFromSolanaConfig = (): Keypair =>
+    fromWeb3JsKeypair(SolanaCliConfig.load().loadKeypair());
 
   const isOnCurve = (input: PublicKeyInput): boolean =>
     Web3JsPublicKey.isOnCurve(toWeb3JsPublicKey(publicKey(input)));
@@ -52,6 +60,8 @@ export function createWeb3JsEddsa(): EddsaInterface {
     generateKeypair,
     createKeypairFromSecretKey,
     createKeypairFromSeed,
+    createKeypairFromFile,
+    createKeypairFromSolanaConfig,
     isOnCurve,
     findPda,
     sign,

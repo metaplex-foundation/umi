@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
+    "@soceanfi/solana-cli-config": "0.2.0",
     "@noble/curves": "^1.0.0"
   },
   "peerDependencies": {
