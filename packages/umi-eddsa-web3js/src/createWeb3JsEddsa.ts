@@ -31,7 +31,9 @@ export function createWeb3JsEddsa(): EddsaInterface {
     fromWeb3JsKeypair(Web3JsKeypair.fromSeed(seed));
 
   const createKeypairFromFile = (path: string): Keypair =>
-    createKeypairFromSecretKey(new Uint8Array(JSON.parse(readFileSync(path).toString())));
+    createKeypairFromSecretKey(
+      new Uint8Array(JSON.parse(readFileSync(path).toString()))
+    );
 
   const createKeypairFromSolanaConfig = (): Keypair =>
     fromWeb3JsKeypair(SolanaCliConfig.load().loadKeypair());
