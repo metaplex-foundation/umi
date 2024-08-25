@@ -1,5 +1,13 @@
 # @metaplex-foundation/umi-rpc-web3js
 
+## 0.9.3
+
+### Patch Changes
+
+- Updated dependencies [[`7404903`](https://github.com/metaplex-foundation/umi/commit/7404903e58fe519c7d79b7c0be5389cb16398fb7), [`91a4d75`](https://github.com/metaplex-foundation/umi/commit/91a4d75484ce6d65e30e29646539c18d88ee1f80)]:
+  - @metaplex-foundation/umi@0.9.3
+  - @metaplex-foundation/umi-web3js-adapters@0.9.3
+
 ## 0.9.2
 
 ### Patch Changes
