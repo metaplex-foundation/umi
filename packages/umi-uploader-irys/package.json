@@ -28,9 +28,9 @@
     "test": "ava"
   },
   "dependencies": {
-    "@irys/sdk": "^0.0.2",
+    "@irys/sdk": "^0.2.10",
     "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
-    "bignumber.js": "^9.0.2",
+    "bignumber.js": "^9.1.2",
     "buffer": "^6.0.3"
   },
   "peerDependencies": {
