@@ -152,7 +152,7 @@ test('it can listen to status changes', async (t) => {
   }
   t.deepEqual(h3, ['running', 'canceled']);
 
-  // And we get the right history for preloaded and resetted tasks.
+  // And we get the right history for preloaded and retested tasks.
   const l4 = new Task(() => 42);
   const h4 = await useHistory(l4);
   l4.loadWith(180);

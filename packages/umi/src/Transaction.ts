@@ -12,7 +12,7 @@ export const TRANSACTION_SIZE_LIMIT = 1232;
 /**
  * The version of a transaction.
  * - Legacy is the very first iteration of Solana transactions.
- * - V0 introduces the concept of versionned transaction for
+ * - V0 introduces the concept of versioned transaction for
  * the first time and adds supports for address lookup tables.
  *
  * @category Transactions
