@@ -1,5 +1,17 @@
 # @metaplex-foundation/umi-core
 
+## 0.9.3
+
+### Patch Changes
+
+- [#145](https://github.com/metaplex-foundation/umi/pull/145) [`48bb4fd`](https://github.com/metaplex-foundation/umi/commit/48bb4fdb92cb4e131e301628796df4b6af982b89) Thanks [@blockiosaurus](https://github.com/blockiosaurus)! - Updating irys to latest
+
+- [#133](https://github.com/metaplex-foundation/umi/pull/133) [`7404903`](https://github.com/metaplex-foundation/umi/commit/7404903e58fe519c7d79b7c0be5389cb16398fb7) Thanks [@mikemaccana](https://github.com/mikemaccana)! - Add direct link to JS docs for users redirected here from older tools
+
+- [#140](https://github.com/metaplex-foundation/umi/pull/140) [`91a4d75`](https://github.com/metaplex-foundation/umi/commit/91a4d75484ce6d65e30e29646539c18d88ee1f80) Thanks [@blockiosaurus](https://github.com/blockiosaurus)! - Updating pnpm version and fixing datetime test.
+
+- [#141](https://github.com/metaplex-foundation/umi/pull/141) [`8c8aa5f`](https://github.com/metaplex-foundation/umi/commit/8c8aa5f4f2dc22872870cb4824c3672d6f8ac0ca) Thanks [@blockiosaurus](https://github.com/blockiosaurus)! - Add ability to use solana config or keypair files
+
 ## 0.9.2
 
 ### Patch Changes
