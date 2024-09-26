@@ -3,7 +3,15 @@ import {
   HttpRequest,
   HttpResponse,
 } from '@metaplex-foundation/umi';
-import fetch, { BodyInit, RequestInit } from 'node-fetch';
+import type { BodyInit, RequestInit } from 'node-fetch';
+
+let fetch: typeof globalThis.fetch;
+if (typeof window !== 'undefined' && window.fetch) {
+  fetch = window.fetch.bind(window);
+} else {
+  // eslint-disable-next-line global-require
+  fetch = require('node-fetch');
+}
 
 export function createFetchHttp(): HttpInterface {
   return {
@@ -33,7 +41,7 @@ export function createFetchHttp(): HttpInterface {
         body = request.data as BodyInit | undefined;
       }
 
-      const requestInit: RequestInit = {
+      const requestInit: globalThis.RequestInit | RequestInit = {
         method: request.method,
         body,
         headers,
@@ -42,7 +50,7 @@ export function createFetchHttp(): HttpInterface {
         timeout: request.timeout,
       };
 
-      const response = await fetch(request.url, requestInit);
+      const response = await fetch(request.url, requestInit as any);
       const isJsonResponse =
         response.headers.get('content-type')?.includes('application/json') ??
         false;

@@ -11,7 +11,8 @@
     ".": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/esm/index.mjs",
-      "require": "./dist/cjs/index.cjs"
+      "require": "./dist/cjs/index.cjs",
+      "browser": "./dist/esm/index.js"
     }
   },
   "files": [
@@ -39,6 +40,7 @@
     "@ava/typescript": "^3.0.1",
     "@metaplex-foundation/umi": "workspace:^",
     "@types/node-fetch": "^2.6.2",
+    "@types/node": "^20.11.18",
     "ava": "^5.1.0",
     "json-server": "^0.17.1"
   },
