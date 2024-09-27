@@ -149,7 +149,7 @@ export function createIrysUploader(
         throw new AssetUploadFailedError(status);
       }
 
-      return `https://arweave.net/${data.id}`;
+      return `https://gateway.iryz.xyz/${data.id}`;
     });
 
     return Promise.all(promises);
