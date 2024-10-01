@@ -3,7 +3,6 @@ import {
   createGenericFile,
   createUmi,
   generatedSignerIdentity,
-  // sol,
   usd,
 } from '@metaplex-foundation/umi';
 import { httpDownloader } from '@metaplex-foundation/umi-downloader-http';
@@ -29,9 +28,6 @@ const devNetRpcUrl = 'https://api.devnet.solana.com';
 const getContext = async (
   options?: ArweaveUploaderOptions
 ): Promise<Context> => {
-  // const keyWithDevnetBalance = '...';
-  // const sk = Uint8Array.from(base58.serialize(keyWithDevnetBalance));
-
   const context = createUmi().use({
     install(umi) {
       umi.use(web3JsRpc(devNetRpcUrl));
@@ -40,14 +36,6 @@ const getContext = async (
       umi.use(httpDownloader());
       umi.use(arweaveUploader(options));
       umi.use(generatedSignerIdentity());
-      // umi.use(
-      //   signerPayer(
-      //     createSignerFromKeypair(
-      //       { eddsa: umi.eddsa },
-      //       umi.eddsa.createKeypairFromSecretKey(sk)
-      //     )
-      //   )
-      // );
     },
   });
 
@@ -55,24 +43,45 @@ const getContext = async (
   return context;
 };
 
-test.skip('it can upload one file', async (t) => {
-  t.timeout(60_000);
+test('can upload one file', async (t) => {
   const context = await getContext({
     solRpcUrl: devNetRpcUrl,
   });
 
-  // When we upload some asset.
+  // When we upload some asset under the free byte limit with the devnet RPC.
   const [uri] = await context.uploader.upload([
     createGenericFile('some-image', 'some-image.jpg'),
   ]);
 
-  // Then the URI should be a valid arweave gateway URI.
+  // Then the URI should be a valid arweave dev gateway URI.
   t.truthy(uri);
   t.true(uri.startsWith('https://arweave.dev/'));
 
   // and it should point to the uploaded asset.
   const [asset] = await context.downloader.download([uri]);
   t.is(utf8.deserialize(asset.buffer)[0], 'some-image');
+});
+
+test.skip('can upload a file above 105 KiB in size', async (t) => {
+  // This test will require devnet SOL balance in the connected payer
+
+  const context = await getContext({
+    solRpcUrl: devNetRpcUrl,
+  });
+
+  const buffer = new Uint8Array(106 * 1024);
+  buffer.fill(1);
+
+  // Upload will transfer SOL from the payer's wallet to the connected uploader's wallet in exchange for Turbo Storage Credits which are used to pay for the upload
+  const [uri] = await context.uploader.upload([
+    createGenericFile(buffer, 'big-file.bin'),
+  ]);
+
+  t.truthy(uri);
+  t.true(uri.startsWith('https://arweave.dev/'));
+
+  const [asset] = await context.downloader.download([uri]);
+  t.deepEqual(asset.buffer, buffer);
 });
 
 test('can get a USD stripe checkout session', async (t) => {
