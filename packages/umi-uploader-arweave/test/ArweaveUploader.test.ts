@@ -22,6 +22,9 @@ test('example test', async (t) => {
 const getContext = async (
   options?: ArweaveUploaderOptions
 ): Promise<Context> => {
+  // const keyWithDevnetBalance = '...';
+  // const sk = Uint8Array.from(base58.serialize(keyWithDevnetBalance));
+
   const context = createUmi().use({
     install(umi) {
       umi.use(web3JsRpc('https://api.devnet.solana.com'));
@@ -30,8 +33,17 @@ const getContext = async (
       umi.use(httpDownloader());
       umi.use(arweaveUploader(options));
       umi.use(generatedSignerIdentity());
+      // umi.use(
+      //   signerPayer(
+      //     createSignerFromKeypair(
+      //       { eddsa: umi.eddsa },
+      //       umi.eddsa.createKeypairFromSecretKey(sk)
+      //     )
+      //   )
+      // );
     },
   });
+
   await context.rpc.airdrop(context.payer.publicKey, sol(1));
   return context;
 };
@@ -49,7 +61,7 @@ test.skip('it can upload one file', async (t) => {
 
   // Then the URI should be a valid arweave gateway URI.
   t.truthy(uri);
-  t.true(uri.startsWith('https://arweave.net/'));
+  t.true(uri.startsWith('https://arweave.dev/'));
 
   // and it should point to the uploaded asset.
   const [asset] = await context.downloader.download([uri]);

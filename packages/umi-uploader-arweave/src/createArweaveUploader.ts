@@ -1,5 +1,5 @@
 import {
-  SOLToTokenAmount,
+  lamportToTokenAmount,
   TurboAuthenticatedClient,
   TurboFactory,
   USD,
@@ -15,8 +15,8 @@ import {
   UsdAmount,
   createGenericFileFromJson,
   isKeypairSigner,
-  lamports,
   publicKey,
+  sol,
 } from '@metaplex-foundation/umi';
 import { base58 } from '@metaplex-foundation/umi/serializers';
 import { toWeb3JsPublicKey } from '@metaplex-foundation/umi-web3js-adapters';
@@ -81,6 +81,8 @@ export type ArweaveWalletAdapter = {
 // Size of Arweave transaction header.
 const HEADER_SIZE = 2_000;
 
+const FREE_UPLOAD_BYTE_LIMIT = 107_520; // 105 KiB
+
 export function createArweaveUploader(
   context: Pick<Context, 'rpc' | 'payer' | 'eddsa'>,
   options: ArweaveUploaderOptions = {}
@@ -108,13 +110,13 @@ export function createArweaveUploader(
 
     const solPriceForOneGiB =
       BigNumber(wincPriceForOneGiB).dividedBy(wincPriceForOneSol);
-
     const solPriceForOneByte = solPriceForOneGiB.dividedBy(2 ** 30);
+    const solPriceForGivenBytes = solPriceForOneByte.multipliedBy(bytes);
 
-    return bigNumberToAmount(
-      solPriceForOneByte
-        .multipliedBy(bytes)
+    return sol(
+      solPriceForGivenBytes
         .multipliedBy(options.priceMultiplier ?? 1.1)
+        .toNumber()
     );
   };
 
@@ -123,6 +125,10 @@ export function createArweaveUploader(
       (sum, file) => sum + HEADER_SIZE + file.buffer.byteLength,
       0
     );
+
+    if (bytes <= FREE_UPLOAD_BYTE_LIMIT) {
+      return sol(0);
+    }
 
     return getUploadPriceFromBytes(bytes);
   };
@@ -149,7 +155,12 @@ export function createArweaveUploader(
         throw new AssetUploadFailedError(error);
       }
 
-      return `https://arweave.net/${dataItemId}`;
+      const gateway =
+        context.rpc.getCluster() === 'devnet'
+          ? 'https://arweave.dev'
+          : 'https://arweave.net';
+
+      return `${gateway}/${dataItemId}`;
     });
 
     return Promise.all(promises);
@@ -179,29 +190,31 @@ export function createArweaveUploader(
 
     const solEquivalent = BigNumber(usersWincBalance).dividedBy(wincForOneSol);
 
-    return bigNumberToAmount(solEquivalent);
+    return sol(solEquivalent.toNumber());
   };
 
   const fund = async (
     amount: SolAmount,
     skipBalanceCheck = false
   ): Promise<void> => {
-    let toFund = amountToBigNumber(amount);
+    let toFundLamports = amountToBigNumber(amount);
 
     if (!skipBalanceCheck) {
-      const solEquivalentBalance = amountToBigNumber(await getBalance());
+      const lamportEquivalentBalance = amountToBigNumber(await getBalance());
 
-      toFund = toFund.isGreaterThan(solEquivalentBalance)
-        ? toFund.minus(solEquivalentBalance)
+      toFundLamports = toFundLamports.isGreaterThan(lamportEquivalentBalance)
+        ? toFundLamports.minus(lamportEquivalentBalance)
         : new BigNumber(0);
     }
 
-    if (toFund.isLessThanOrEqualTo(0)) {
+    if (toFundLamports.isLessThanOrEqualTo(0)) {
       return;
     }
 
-    (await getArweave()).topUpWithTokens({
-      tokenAmount: SOLToTokenAmount(toFund),
+    await (
+      await getArweave()
+    ).topUpWithTokens({
+      tokenAmount: lamportToTokenAmount(toFundLamports),
     });
   };
 
@@ -246,17 +259,32 @@ export function createArweaveUploader(
   const initArweave = async (): Promise<TurboAuthenticatedClient> => {
     const payer: Signer = options.payer ?? context.payer;
 
+    const defaultAddresses =
+      context.rpc.getCluster() === 'devnet'
+        ? {
+            uploadServiceUrl: 'https://upload.ardrive.dev',
+            paymentServiceUrl: 'https://payment.ardrive.dev',
+          }
+        : {
+            uploadServiceUrl: 'https://upload.ardrive.io',
+            paymentServiceUrl: 'https://payment.ardrive.io',
+          };
+
     let arweave;
     if (isKeypairSigner(payer)) {
       arweave = TurboFactory.authenticated({
         token: 'solana',
         privateKey: base58.deserialize(payer.secretKey)[0],
         gatewayUrl: options.solRpcUrl,
-        uploadServiceConfig: { url: options.uploadServiceUrl },
-        paymentServiceConfig: { url: options.paymentServiceUrl },
+        uploadServiceConfig: {
+          url: options.uploadServiceUrl ?? defaultAddresses.uploadServiceUrl,
+        },
+        paymentServiceConfig: {
+          url: options.paymentServiceUrl ?? defaultAddresses.paymentServiceUrl,
+        },
       });
     } else {
-      arweave = await initWebTurbo(payer, options);
+      arweave = await initWebArweave(payer, options);
     }
 
     try {
@@ -273,7 +301,7 @@ export function createArweaveUploader(
     return arweave;
   };
 
-  const initWebTurbo = async (
+  const initWebArweave = async (
     payer: Signer,
     options: any
   ): Promise<TurboAuthenticatedClient> => {
@@ -308,9 +336,6 @@ export const isArweaveUploader = (
   uploader: UploaderInterface
 ): uploader is ArweaveUploader =>
   'Arweave' in uploader && 'getBalance' in uploader && 'fund' in uploader;
-
-const bigNumberToAmount = (bigNumber: BigNumber): SolAmount =>
-  lamports(bigNumber.decimalPlaces(0).toString());
 
 const amountToBigNumber = (amount: SolAmount): BigNumber =>
   new BigNumber(amount.basisPoints.toString());
