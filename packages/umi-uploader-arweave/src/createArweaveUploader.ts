@@ -6,6 +6,7 @@ import {
 } from '@ardrive/turbo-sdk';
 
 import {
+  Amount,
   Context,
   GenericFile,
   GenericFileTag,
@@ -226,8 +227,10 @@ export function createArweaveUploader(
   }> => {
     const arweave = await getArweave();
 
+    const usdAmount = amountToBigNumber(amount).shiftedBy(-2).toNumber();
+
     const { winc, url } = await arweave.createCheckoutSession({
-      amount: USD(+amount.basisPoints.toString()),
+      amount: USD(usdAmount),
       owner: toWeb3JsPublicKey(context.payer.publicKey).toBase58(),
     });
     if (!url) {
@@ -335,9 +338,9 @@ export function createArweaveUploader(
 export const isArweaveUploader = (
   uploader: UploaderInterface
 ): uploader is ArweaveUploader =>
-  'Arweave' in uploader && 'getBalance' in uploader && 'fund' in uploader;
+  'arweave' in uploader && 'getBalance' in uploader && 'fund' in uploader;
 
-const amountToBigNumber = (amount: SolAmount): BigNumber =>
+const amountToBigNumber = (amount: Amount): BigNumber =>
   new BigNumber(amount.basisPoints.toString());
 
 const getGenericFileTagsWithContentType = (

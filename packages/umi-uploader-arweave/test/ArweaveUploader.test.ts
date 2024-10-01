@@ -3,14 +3,19 @@ import {
   createGenericFile,
   createUmi,
   generatedSignerIdentity,
-  sol,
+  // sol,
+  usd,
 } from '@metaplex-foundation/umi';
 import { httpDownloader } from '@metaplex-foundation/umi-downloader-http';
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { fetchHttp } from '@metaplex-foundation/umi-http-fetch';
 import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
 import test from 'ava';
-import { arweaveUploader, ArweaveUploaderOptions } from '../src';
+import {
+  ArweaveUploader,
+  arweaveUploader,
+  ArweaveUploaderOptions,
+} from '../src';
 import { utf8 } from '@metaplex-foundation/umi/serializers';
 
 test('example test', async (t) => {
@@ -18,6 +23,8 @@ test('example test', async (t) => {
 });
 
 // TODO(loris): Unskip these tests when we can mock the Arweave API.
+
+const devNetRpcUrl = 'https://api.devnet.solana.com';
 
 const getContext = async (
   options?: ArweaveUploaderOptions
@@ -27,7 +34,7 @@ const getContext = async (
 
   const context = createUmi().use({
     install(umi) {
-      umi.use(web3JsRpc('https://api.devnet.solana.com'));
+      umi.use(web3JsRpc(devNetRpcUrl));
       umi.use(web3JsEddsa());
       umi.use(fetchHttp());
       umi.use(httpDownloader());
@@ -44,14 +51,14 @@ const getContext = async (
     },
   });
 
-  await context.rpc.airdrop(context.payer.publicKey, sol(1));
+  // await context.rpc.airdrop(context.payer.publicKey, sol(1));
   return context;
 };
 
 test.skip('it can upload one file', async (t) => {
   t.timeout(60_000);
   const context = await getContext({
-    solRpcUrl: 'https://api.devnet.solana.com',
+    solRpcUrl: devNetRpcUrl,
   });
 
   // When we upload some asset.
@@ -66,4 +73,37 @@ test.skip('it can upload one file', async (t) => {
   // and it should point to the uploaded asset.
   const [asset] = await context.downloader.download([uri]);
   t.is(utf8.deserialize(asset.buffer)[0], 'some-image');
+});
+
+test('can get a USD stripe checkout session', async (t) => {
+  const context = await getContext({
+    solRpcUrl: devNetRpcUrl,
+  });
+
+  const { checkoutSessionUrl, turboStorageCredits } = await (
+    context.uploader as ArweaveUploader
+  ).getStripeCheckoutSession(usd(10));
+
+  t.assert(checkoutSessionUrl);
+  t.true(+turboStorageCredits > 0);
+});
+
+test('can get a balance in Turbo Storage Credits', async (t) => {
+  const context = await getContext({
+    solRpcUrl: devNetRpcUrl,
+  });
+
+  const balance = await (
+    context.uploader as ArweaveUploader
+  ).getTurboStorageCreditBalance();
+  t.true(+balance.valueOf() > -1);
+});
+
+test('can get a balance in SOL Equivalent', async (t) => {
+  const context = await getContext({
+    solRpcUrl: devNetRpcUrl,
+  });
+
+  const balance = await (context.uploader as ArweaveUploader).getBalance();
+  t.true(balance.basisPoints.valueOf() > -1);
 });
