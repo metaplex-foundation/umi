@@ -315,7 +315,6 @@ export function createArweaveUploader(
 
     return TurboFactory.authenticated({
       token: 'solana',
-      // @ts-ignore -- to be released in the next version of @ardrive/turbo-sdk
       walletAdapter: wallet,
       gatewayUrl: options.solRpcUrl,
       uploadServiceConfig: { url: options.uploadServiceUrl },

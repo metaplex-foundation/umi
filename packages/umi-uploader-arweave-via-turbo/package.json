@@ -1,5 +1,5 @@
 {
-  "name": "@metaplex-foundation/umi-uploader-arweave",
+  "name": "@metaplex-foundation/umi-uploader-arweave-via-turbo",
   "version": "0.9.2",
   "description": "An uploader implementation relying on Arweave",
   "license": "MIT",
@@ -28,7 +28,7 @@
     "test": "ava"
   },
   "dependencies": {
-    "@ardrive/turbo-sdk": "alpha",
+    "@ardrive/turbo-sdk": "1.19.0-alpha.1",
     "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
     "bignumber.js": "^9.1.2",
     "buffer": "^6.0.3"
@@ -58,7 +58,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "umi-uploader-arweave"
+    "displayName": "umi-uploader-arweave-via-turbo"
   },
   "ava": {
     "typescript": {
