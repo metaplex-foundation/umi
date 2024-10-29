@@ -1,4 +1,4 @@
-import { Nullable, Option, isSome, none, some } from './common';
+import { Nullable, Nullish, Option, isSome, none, some } from './common';
 
 /**
  * Unwraps the value of an {@link Option} of type `T`
@@ -23,6 +23,14 @@ export function unwrapOption<T, U = null>(
  */
 export const wrapNullable = <T>(nullable: Nullable<T>): Option<T> =>
   nullable !== null ? some(nullable) : none<T>();
+
+/**
+ * Wraps a nullish value into an {@link Option}.
+ *
+ * @category Utils — Options
+ */
+export const wrapNullish = <T>(nullish: Nullish<T>): Option<T> =>
+  nullish !== null && nullish !== undefined ? some(nullish) : none<T>();
 
 /**
  * Unwraps the value of an {@link Option} of type `T`.

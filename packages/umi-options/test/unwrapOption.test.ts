@@ -1,5 +1,5 @@
 import test from 'ava';
-import { none, some, unwrapOption, wrapNullable } from '../src';
+import { none, some, unwrapOption, wrapNullable, wrapNullish } from '../src';
 
 test('it can unwrap an Option as a Nullable', (t) => {
   t.is(unwrapOption(some(42)), 42);
@@ -33,4 +33,13 @@ test('it can wrap a Nullable as an Option', (t) => {
   t.deepEqual(wrapNullable(undefined), some(undefined));
   t.deepEqual(wrapNullable<string>(null), none<string>());
   t.deepEqual(wrapNullable<number>(null), none<number>());
+});
+
+test('it can wrap a Nullish as an Option', (t) => {
+  t.deepEqual(wrapNullish(42), some(42));
+  t.deepEqual(wrapNullish('hello'), some('hello'));
+  t.deepEqual(wrapNullish(false), some(false));
+  t.deepEqual(wrapNullish(undefined), none<undefined>());
+  t.deepEqual(wrapNullish<string>(null), none<string>());
+  t.deepEqual(wrapNullish<number>(null), none<number>());
 });
