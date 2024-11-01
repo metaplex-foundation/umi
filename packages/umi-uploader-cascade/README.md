@@ -1,4 +1,4 @@
-# umi-uploader-nft-storage
+# umi-uploader-cascade
 
 An uploader implementation relying on Cascade Protocol.
 

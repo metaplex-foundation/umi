@@ -1,7 +1,7 @@
 {
   "name": "@metaplex-foundation/umi-uploader-cascade",
-  "version": "0.9.1",
-  "description": "An uploader implementation relying on NFT.Storage",
+  "version": "0.1.1",
+  "description": "An uploader implementation relying on Cascade",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",

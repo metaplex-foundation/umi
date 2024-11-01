@@ -16,7 +16,7 @@ test('example test', async (t) => {
   t.is(typeof cascadeUploader, 'function');
 });
 
-// TODO(loris): Unskip these tests when we can mock the NFT Storage API.
+// TODO(loris): Unskip these tests when we can mock the Cascade API.
 
 const getContext = (options?: CascadeUploaderOptions): Context =>
   createUmi().use({
@@ -33,7 +33,7 @@ const getContext = (options?: CascadeUploaderOptions): Context =>
 const apiKey = 'testKey';
 
 test.skip('it can upload one file', async (t) => {
-  // Given a Context using NFT.Storage.
+  // Given a Context using Cascade.Storage.
   const context = getContext({ apiKey });
 
   // When we upload some asset.
@@ -51,7 +51,7 @@ test.skip('it can upload one file', async (t) => {
 });
 
 test.skip('it can upload multiple files in batch', async (t) => {
-  // Given a Context using NFT.Storage with a batch size of 1.
+  // Given a Context using Cascade with a batch size of 1.
   const context = getContext({ apiKey });
 
   // When we upload two assets.
