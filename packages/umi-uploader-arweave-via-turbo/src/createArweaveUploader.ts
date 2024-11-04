@@ -15,6 +15,7 @@ import {
   UploaderInterface,
   UsdAmount,
   createGenericFileFromJson,
+  createSignerFromKeypair,
   isKeypairSigner,
   publicKey,
   sol,
@@ -40,8 +41,10 @@ import {
 export type ArweaveUploader = UploaderInterface & {
   /** Get the current Arweave Turbo client */
   arweave: () => Promise<TurboAuthenticatedClient>;
-  /** Get the SOL estimated price for an amount of bytes */
-  getUploadPriceFromBytes: (bytes: number) => Promise<SolAmount>;
+  /** Get the SOL and winc estimated price for an amount of bytes */
+  getUploadPriceFromBytes: (
+    bytes: number
+  ) => Promise<{ solAmount: SolAmount; wincAmount: BigNumber }>;
   /** Get the  current SOL equivalent balance from connected Arweave Bundler */
   getBalance: () => Promise<SolAmount>;
   /** Get the current Turbo Storage Credit balance from connected Arweave Bundler */
@@ -95,7 +98,9 @@ export function createArweaveUploader(
     ...options,
   };
 
-  const getUploadPriceFromBytes = async (bytes: number): Promise<SolAmount> => {
+  const getUploadPriceFromBytes = async (
+    bytes: number
+  ): Promise<{ solAmount: SolAmount; wincAmount: BigNumber }> => {
     const arweave = await getArweave();
     const wincPriceForOneSol = (
       await arweave.getWincForToken({
@@ -113,38 +118,65 @@ export function createArweaveUploader(
       BigNumber(wincPriceForOneGiB).dividedBy(wincPriceForOneSol);
     const solPriceForOneByte = solPriceForOneGiB.dividedBy(2 ** 30);
     const solPriceForGivenBytes = solPriceForOneByte.multipliedBy(bytes);
+    const wincPriceForGivenBytes = BigNumber(wincPriceForOneGiB)
+      .multipliedBy(bytes / 2 ** 30)
+      .integerValue(BigNumber.ROUND_CEIL);
 
-    return sol(
+    const solAmount = sol(
       solPriceForGivenBytes
         .multipliedBy(options.priceMultiplier ?? 1.1)
         .toNumber()
     );
+    return { solAmount, wincAmount: wincPriceForGivenBytes };
   };
 
-  const getUploadPrice = async (files: GenericFile[]): Promise<SolAmount> => {
-    const bytes: number = files.reduce(
-      (sum, file) => sum + HEADER_SIZE + file.buffer.byteLength,
-      0
-    );
+  const getBytesFromFiles = (files: GenericFile[]): number =>
+    files.reduce((sum, file) => sum + HEADER_SIZE + file.buffer.byteLength, 0);
+
+  const getUploadSolAndWincPrice = async (
+    files: GenericFile[]
+  ): Promise<{ solAmount: SolAmount; wincAmount: BigNumber }> => {
+    const bytes = getBytesFromFiles(files);
 
     if (bytes <= FREE_UPLOAD_BYTE_LIMIT) {
-      return sol(0);
+      return { solAmount: sol(0), wincAmount: new BigNumber(0) };
     }
 
     return getUploadPriceFromBytes(bytes);
   };
 
+  const getUploadPrice = async (files: GenericFile[]): Promise<SolAmount> => {
+    const { solAmount } = await getUploadSolAndWincPrice(files);
+    return solAmount;
+  };
+
   const upload = async (files: GenericFile[]): Promise<string[]> => {
     const arweave = await getArweave();
-    const amount = await getUploadPrice(files);
-    await fund(amount);
+    const { solAmount, wincAmount } = await getUploadSolAndWincPrice(files);
+    await fund(solAmount);
+
+    const ephemeralKey = context.eddsa.generateKeypair();
+    const ephemeralArweave = await initArweave(
+      createSignerFromKeypair(context, ephemeralKey)
+    );
+
+    if (wincAmount.isGreaterThan(0)) {
+      // Share credits to ephemeral key
+      await arweave.shareCredits({
+        approvedAddress: await ephemeralArweave.signer.getNativeAddress(),
+        approvedWincAmount: wincAmount,
+        // TODO: Could make configurable to prevent upload timeouts
+        expiresBySeconds: 60 * 20, // Provides 20 minutes to upload, expiring any un-used credits back to the payer.
+      });
+    }
 
     const promises = files.map(async (file) => {
       const buffer = Buffer.from(file.buffer);
 
       let dataItemId;
       try {
-        const { id } = await arweave.uploadFile({
+        // Send uploads with ephemeral key to avoid signing each upload with the payer's key.
+        const { id } = await ephemeralArweave.uploadFile({
           fileStreamFactory: () => buffer,
           fileSizeFactory: () => buffer.byteLength,
           dataItemOpts: {
@@ -259,20 +291,20 @@ export function createArweaveUploader(
     return _arweave;
   };
 
-  const initArweave = async (): Promise<TurboAuthenticatedClient> => {
-    const payer: Signer = options.payer ?? context.payer;
+  const defaultAddresses =
+    context.rpc.getCluster() === 'devnet'
+      ? {
+          uploadServiceUrl: 'https://upload.ardrive.dev',
+          paymentServiceUrl: 'https://payment.ardrive.dev',
+        }
+      : {
+          uploadServiceUrl: 'https://upload.ardrive.io',
+          paymentServiceUrl: 'https://payment.ardrive.io',
+        };
 
-    const defaultAddresses =
-      context.rpc.getCluster() === 'devnet'
-        ? {
-            uploadServiceUrl: 'https://upload.ardrive.dev',
-            paymentServiceUrl: 'https://payment.ardrive.dev',
-          }
-        : {
-            uploadServiceUrl: 'https://upload.ardrive.io',
-            paymentServiceUrl: 'https://payment.ardrive.io',
-          };
-
+  const initArweave = async (
+    payer: Signer = options.payer ?? context.payer
+  ): Promise<TurboAuthenticatedClient> => {
     let arweave;
     if (isKeypairSigner(payer)) {
       arweave = TurboFactory.authenticated({
@@ -317,8 +349,12 @@ export function createArweaveUploader(
       token: 'solana',
       walletAdapter: wallet,
       gatewayUrl: options.solRpcUrl,
-      uploadServiceConfig: { url: options.uploadServiceUrl },
-      paymentServiceConfig: { url: options.paymentServiceUrl },
+      uploadServiceConfig: {
+        url: options.uploadServiceUrl ?? defaultAddresses.uploadServiceUrl,
+      },
+      paymentServiceConfig: {
+        url: options.paymentServiceUrl ?? defaultAddresses.paymentServiceUrl,
+      },
     });
   };
 

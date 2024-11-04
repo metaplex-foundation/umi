@@ -28,7 +28,7 @@
     "test": "ava"
   },
   "dependencies": {
-    "@ardrive/turbo-sdk": "^1.19.0",
+    "@ardrive/turbo-sdk": "^1.20.0",
     "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
     "bignumber.js": "^9.1.2",
     "buffer": "^6.0.3"
