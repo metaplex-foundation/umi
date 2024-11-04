@@ -170,6 +170,7 @@ export function createArweaveUploader(
       });
     }
 
+    const paidBy = await arweave.signer.getNativeAddress();
     const promises = files.map(async (file) => {
       const buffer = Buffer.from(file.buffer);
 
@@ -181,6 +182,7 @@ export function createArweaveUploader(
           fileSizeFactory: () => buffer.byteLength,
           dataItemOpts: {
             tags: getGenericFileTagsWithContentType(file),
+            paidBy,
           },
         });
         dataItemId = id;
