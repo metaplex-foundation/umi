@@ -55,7 +55,7 @@ test('can upload one file', async (t) => {
 
   // Then the URI should be a valid arweave dev gateway URI.
   t.truthy(uri);
-  t.true(uri.startsWith('https://arweave.dev/'));
+  t.true(uri.startsWith('https://turbo.ardrive.dev/'));
 
   // and it should point to the uploaded asset.
   const [asset] = await context.downloader.download([uri]);
@@ -78,7 +78,7 @@ test.skip('can upload a file above 105 KiB in size', async (t) => {
   ]);
 
   t.truthy(uri);
-  t.true(uri.startsWith('https://arweave.dev/'));
+  t.true(uri.startsWith('https://turbo.ardrive.dev/'));
 
   const [asset] = await context.downloader.download([uri]);
   t.deepEqual(asset.buffer, buffer);

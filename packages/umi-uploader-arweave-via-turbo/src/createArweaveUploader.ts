@@ -192,7 +192,7 @@ export function createArweaveUploader(
 
       const gateway =
         context.rpc.getCluster() === 'devnet'
-          ? 'https://arweave.dev'
+          ? 'https://turbo.ardrive.dev/raw'
           : 'https://arweave.net';
 
       return `${gateway}/${dataItemId}`;
