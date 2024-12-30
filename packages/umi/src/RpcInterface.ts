@@ -463,7 +463,7 @@ export type RpcSimulateTransactionResult = {
 };
 
 /**
- * Defines the result of a transaction simulation.
+ * Defines the result of a transaction simulation accounts info.
  * @category Rpc
  */
 export type RpcSimulateTransactionAccountInfo = {
