@@ -357,11 +357,16 @@ export function createWeb3JsRpc(
       const tx = toWeb3JsTransaction(transaction);
       const result = await getConnection().simulateTransaction(tx, {
         sigVerify: options.verifySignatures,
+        accounts: {
+          addresses: options.accounts || [],
+          encoding: 'base64',
+        },
       });
       return {
         err: result.value.err,
         unitsConsumed: result.value.unitsConsumed,
         logs: result.value.logs,
+        accounts: result.value.accounts,
       };
     } catch (error: any) {
       let resolvedError: ProgramError | null = null;

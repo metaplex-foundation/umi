@@ -459,6 +459,19 @@ export type RpcSimulateTransactionResult = {
   err: TransactionError | null;
   unitsConsumed?: number;
   logs: Array<string> | null;
+  accounts?: Array<RpcSimulateTransactionAccountInfo | null> | null;
+};
+
+/**
+ * Defines the result of a transaction simulation.
+ * @category Rpc
+ */
+export type RpcSimulateTransactionAccountInfo = {
+  executable: boolean;
+  owner: string;
+  lamports: number;
+  data: string[];
+  rentEpoch?: number;
 };
 
 /**
