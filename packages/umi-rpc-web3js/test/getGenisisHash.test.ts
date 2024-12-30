@@ -14,4 +14,3 @@ test('fetches and returns a geneisis hash', async (t) => {
   // check hash is equal to string
   t.assert(typeof hash === 'string');
 });
- 
