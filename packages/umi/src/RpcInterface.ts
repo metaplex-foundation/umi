@@ -89,6 +89,13 @@ export interface RpcInterface {
   ): Promise<SolAmount>;
 
   /**
+   * Get the genesis hash.
+   *
+   * @returns The genesis hash.
+   */
+  getGenesisHash(): Promise<string>;
+
+  /**
    * Get the amount of rent-exempt SOL required to create an account of the given size.
    *
    * @param bytes The size of the account in bytes.
@@ -306,6 +313,18 @@ export type RpcGetProgramAccountsOptions = RpcBaseOptions & {
 };
 
 /**
+ * The options to use when fetching a block.
+ * @category Rpc
+ */
+export type RpcGetVersionedBlockOptions = RpcBaseOptions & {
+  /** The level of finality desired */
+  commitment?: Commitment;
+  maxSupportedTransactionVersion?: number;
+  rewards?: boolean;
+  transactionDetails?: 'accounts' | 'full' | 'none' | 'signatures';
+};
+
+/**
  * The options to use when getting the block time of a slot.
  * @category Rpc
  */
@@ -401,9 +420,9 @@ export type RpcSendTransactionOptions = RpcBaseOptions & {
  */
 export type RpcSimulateTransactionOptions = RpcBaseOptions & {
   /** Optional parameter used to specify a list of base58-encoded account addresses to return post simulation state */
-  accounts?: PublicKey[],
+  accounts?: PublicKey[];
   /** Optional parameter used to enable signature verification before simulation */
-  verifySignatures?: boolean,
+  verifySignatures?: boolean;
 };
 
 /**
@@ -421,26 +440,26 @@ export type RpcConfirmTransactionOptions = RpcBaseOptions & {
  */
 export type RpcConfirmTransactionStrategy =
   | {
-    type: 'blockhash';
-    blockhash: Blockhash;
-    lastValidBlockHeight: number;
-  }
+      type: 'blockhash';
+      blockhash: Blockhash;
+      lastValidBlockHeight: number;
+    }
   | {
-    type: 'durableNonce';
-    minContextSlot: number;
-    nonceAccountPubkey: PublicKey;
-    nonceValue: string;
-  };
+      type: 'durableNonce';
+      minContextSlot: number;
+      nonceAccountPubkey: PublicKey;
+      nonceValue: string;
+    };
 
 /**
-* Defines the result of a transaction simulation.
-* @category Rpc
-*/
-export type RpcSimulateTransactionResult =
-  {
-    err: TransactionError | null;
-    unitsConsumed?: number;
-  };
+ * Defines the result of a transaction simulation.
+ * @category Rpc
+ */
+export type RpcSimulateTransactionResult = {
+  err: TransactionError | null;
+  unitsConsumed?: number;
+  logs: Array<string> | null;
+};
 
 /**
  * Defines the result of a transaction confirmation.
@@ -468,6 +487,7 @@ export function createNullRpc(): RpcInterface {
     getBalance: errorHandler,
     getRent: errorHandler,
     getSlot: errorHandler,
+    getGenesisHash: errorHandler,
     getLatestBlockhash: errorHandler,
     getTransaction: errorHandler,
     getSignatureStatuses: errorHandler,

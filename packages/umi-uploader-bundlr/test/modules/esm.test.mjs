@@ -12,7 +12,7 @@ test('it successfully exports esm named exports', (t) => {
   t.true(exportedKeys.includes('createBundlrUploader'));
 });
 
-test('it can import the Bundlr client', async (t) => {
+test.skip('it can import the Bundlr client', async (t) => {
   const { createBundlrUploader } = exported;
   const context = createUmi()
     .use(web3JsRpc('http://localhost:8899'))

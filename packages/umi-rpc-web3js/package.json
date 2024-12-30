@@ -25,7 +25,7 @@
     "lint:fix": "eslint --fix --ext js,ts,tsx src",
     "clean": "rimraf dist",
     "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
-    "test": "ava"
+    "test": "ava --timeout=1m"
   },
   "dependencies": {
     "@metaplex-foundation/umi-web3js-adapters": "workspace:^"

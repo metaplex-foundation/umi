@@ -5,11 +5,16 @@ import {
   Commitment,
   CompiledInstruction,
   Context,
+  createAmount,
   DateTime,
+  dateTime,
   ErrorWithLogs,
+  isZeroAmount,
+  lamports,
   MaybeRpcAccount,
   ProgramError,
   PublicKey,
+  resolveClusterFromEndpoint,
   RpcAccount,
   RpcAccountExistsOptions,
   RpcAirdropOptions,
@@ -38,11 +43,6 @@ import {
   TransactionSignature,
   TransactionStatus,
   TransactionWithMeta,
-  createAmount,
-  dateTime,
-  isZeroAmount,
-  lamports,
-  resolveClusterFromEndpoint,
 } from '@metaplex-foundation/umi';
 import {
   fromWeb3JsMessage,
@@ -152,6 +152,11 @@ export function createWeb3JsRpc(
       options
     );
     return lamports(balanceInLamports);
+  };
+
+  const getGenesisHash = async (): Promise<string> => {
+    const genesisHash = await getConnection().getGenesisHash();
+    return genesisHash;
   };
 
   const getRent = async (
@@ -350,12 +355,14 @@ export function createWeb3JsRpc(
   ): Promise<RpcSimulateTransactionResult> => {
     try {
       const tx = toWeb3JsTransaction(transaction);
-      const result = await getConnection().simulateTransaction(tx, { sigVerify: options.verifySignatures });
-      // const signature = await getConnection().sendRawTransaction(
-      // context.transactions.serialize(transaction),
-      //   options
-      // );
-      return { err: null, unitsConsumed: result.value.unitsConsumed };
+      const result = await getConnection().simulateTransaction(tx, {
+        sigVerify: options.verifySignatures,
+      });
+      return {
+        err: result.value.err,
+        unitsConsumed: result.value.unitsConsumed,
+        logs: result.value.logs,
+      };
     } catch (error: any) {
       let resolvedError: ProgramError | null = null;
       if (error instanceof Error && 'logs' in error) {
@@ -384,6 +391,7 @@ export function createWeb3JsRpc(
     getAccounts,
     getProgramAccounts,
     getBlockTime,
+    getGenesisHash,
     getBalance,
     getRent,
     getSlot: async (options: RpcGetSlotOptions = {}) =>
@@ -397,7 +405,6 @@ export function createWeb3JsRpc(
     sendTransaction,
     simulateTransaction,
     confirmTransaction,
-
     get connection() {
       return getConnection();
     },
