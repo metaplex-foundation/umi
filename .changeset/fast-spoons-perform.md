@@ -4,4 +4,4 @@
 '@metaplex-foundation/umi': minor
 ---
 
-added transactionSimulation and getGenisisHash to rpc methods
+added transactionSimulation and getGenesisHash to rpc methods

@@ -4,7 +4,7 @@ import { createWeb3JsRpc } from '../src';
 
 const LOCALHOST = 'http://127.0.0.1:8899';
 
-test('fetches and returns a geneisis hash', async (t) => {
+test('fetches and returns a genesis hash', async (t) => {
   // Given an RPC client.
   const rpc = createWeb3JsRpc(createNullContext(), LOCALHOST);
 
