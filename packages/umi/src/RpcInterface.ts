@@ -460,6 +460,7 @@ export type RpcSimulateTransactionResult = {
   unitsConsumed?: number;
   logs: Array<string> | null;
   accounts?: Array<RpcSimulateTransactionAccountInfo | null> | null;
+  returnData?: RpcSimulateTransactionTransactionReturnData | null;
 };
 
 /**
@@ -481,6 +482,15 @@ export type RpcSimulateTransactionAccountInfo = {
 export type RpcConfirmTransactionResult = RpcResultWithContext<{
   err: TransactionError | null;
 }>;
+
+/**
+ * Defines the Transaction Return Data from Simulate Transaction.
+ * @category Rpc
+ */
+export type RpcSimulateTransactionTransactionReturnData = {
+  data: [string, 'base64'];
+  programId: string;
+};
 
 /**
  * An implementation of the {@link RpcInterface} that throws an error when called.

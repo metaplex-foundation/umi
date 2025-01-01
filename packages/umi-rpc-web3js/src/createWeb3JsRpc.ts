@@ -126,7 +126,7 @@ export function createWeb3JsRpc(
       toWeb3JsPublicKey(programId),
       {
         ...options,
-        filters: options.filters?.map((filter: any) => parseDataFilter(filter)),
+        filters: options.filters?.map((filter) => parseDataFilter(filter)),
       }
     );
     return accounts.map(({ pubkey, account }) =>
@@ -362,12 +362,7 @@ export function createWeb3JsRpc(
           encoding: 'base64',
         },
       });
-      return {
-        err: result.value.err,
-        unitsConsumed: result.value.unitsConsumed,
-        logs: result.value.logs,
-        accounts: result.value.accounts,
-      };
+      return result.value;
     } catch (error: any) {
       let resolvedError: ProgramError | null = null;
       if (error instanceof Error && 'logs' in error) {
