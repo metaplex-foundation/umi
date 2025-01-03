@@ -123,7 +123,7 @@ test('simulates a V0 transaction', async (t) => {
   );
 });
 
-test('simulates a transaction and fails with insufficant rent err', async (t) => {
+test('simulates a transaction and fails with Insufficient rent err', async (t) => {
   // Given an RPC client.
 
   const context = createNullContext();
