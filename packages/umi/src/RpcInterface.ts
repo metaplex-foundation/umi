@@ -89,6 +89,13 @@ export interface RpcInterface {
   ): Promise<SolAmount>;
 
   /**
+   * Get the genesis hash.
+   *
+   * @returns The genesis hash.
+   */
+  getGenesisHash(): Promise<string>;
+
+  /**
    * Get the amount of rent-exempt SOL required to create an account of the given size.
    *
    * @param bytes The size of the account in bytes.
@@ -190,6 +197,18 @@ export interface RpcInterface {
     transaction: Transaction,
     options?: RpcSendTransactionOptions
   ): Promise<TransactionSignature>;
+
+  /**
+   * Simulate a transaction.
+   *
+   * @param transaction The transaction to simulate.
+   * @param options The options to use when simulating a transaction.
+   * @returns The signature of the sent transaction.
+   */
+  simulateTransaction(
+    transaction: Transaction,
+    options?: RpcSimulateTransactionOptions
+  ): Promise<RpcSimulateTransactionResult>;
 
   /**
    * Confirm a sent transaction.
@@ -294,6 +313,18 @@ export type RpcGetProgramAccountsOptions = RpcBaseOptions & {
 };
 
 /**
+ * The options to use when fetching a block.
+ * @category Rpc
+ */
+export type RpcGetVersionedBlockOptions = RpcBaseOptions & {
+  /** The level of finality desired */
+  commitment?: Commitment;
+  maxSupportedTransactionVersion?: number;
+  rewards?: boolean;
+  transactionDetails?: 'accounts' | 'full' | 'none' | 'signatures';
+};
+
+/**
  * The options to use when getting the block time of a slot.
  * @category Rpc
  */
@@ -384,6 +415,17 @@ export type RpcSendTransactionOptions = RpcBaseOptions & {
 };
 
 /**
+ * The options to use when simulating a transaction.
+ * @category Rpc
+ */
+export type RpcSimulateTransactionOptions = RpcBaseOptions & {
+  /** Optional parameter used to specify a list of base58-encoded account addresses to return post simulation state */
+  accounts?: PublicKey[];
+  /** Optional parameter used to enable signature verification before simulation */
+  verifySignatures?: boolean;
+};
+
+/**
  * The options to use when confirming a transaction.
  * @category Rpc
  */
@@ -410,12 +452,45 @@ export type RpcConfirmTransactionStrategy =
     };
 
 /**
+ * Defines the result of a transaction simulation.
+ * @category Rpc
+ */
+export type RpcSimulateTransactionResult = {
+  err: TransactionError | null;
+  unitsConsumed?: number;
+  logs: Array<string> | null;
+  accounts?: Array<RpcSimulateTransactionAccountInfo | null> | null;
+  returnData?: RpcSimulateTransactionTransactionReturnData | null;
+};
+
+/**
+ * Defines the result of a transaction simulation accounts info.
+ * @category Rpc
+ */
+export type RpcSimulateTransactionAccountInfo = {
+  executable: boolean;
+  owner: string;
+  lamports: number;
+  data: string[];
+  rentEpoch?: number;
+};
+
+/**
  * Defines the result of a transaction confirmation.
  * @category Rpc
  */
 export type RpcConfirmTransactionResult = RpcResultWithContext<{
   err: TransactionError | null;
 }>;
+
+/**
+ * Defines the Transaction Return Data from Simulate Transaction.
+ * @category Rpc
+ */
+export type RpcSimulateTransactionTransactionReturnData = {
+  data: [string, 'base64'];
+  programId: string;
+};
 
 /**
  * An implementation of the {@link RpcInterface} that throws an error when called.
@@ -435,6 +510,7 @@ export function createNullRpc(): RpcInterface {
     getBalance: errorHandler,
     getRent: errorHandler,
     getSlot: errorHandler,
+    getGenesisHash: errorHandler,
     getLatestBlockhash: errorHandler,
     getTransaction: errorHandler,
     getSignatureStatuses: errorHandler,
@@ -442,6 +518,7 @@ export function createNullRpc(): RpcInterface {
     airdrop: errorHandler,
     call: errorHandler,
     sendTransaction: errorHandler,
+    simulateTransaction: errorHandler,
     confirmTransaction: errorHandler,
   };
 }
