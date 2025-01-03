@@ -1,5 +1,12 @@
 # @metaplex-foundation/umi-serializers
 
+## 0.10.0
+
+### Patch Changes
+
+- Updated dependencies [[`f9033fa`](https://github.com/metaplex-foundation/umi/commit/f9033faf62b896b8b85d31138ce1b832200846ea)]:
+  - @metaplex-foundation/umi-options@0.10.0
+
 ## 0.9.0
 
 ### Patch Changes
