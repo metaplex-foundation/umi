@@ -41,6 +41,7 @@ export type UploaderGetUploadPriceOptions = {
 export type UploaderUploadOptions = {
   onProgress?: (percent: number, ...args: any) => void;
   signal?: GenericAbortSignal;
+  manifest?: boolean;
 };
 
 /**
