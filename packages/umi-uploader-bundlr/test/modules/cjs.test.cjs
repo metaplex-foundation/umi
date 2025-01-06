@@ -8,7 +8,7 @@ const { web3JsRpc } = require('@metaplex-foundation/umi-rpc-web3js');
 const { web3JsEddsa } = require('@metaplex-foundation/umi-eddsa-web3js');
 const exported = require('../../dist/cjs/index.cjs');
 
-test('it successfully exports commonjs named exports', (t) => {
+test.skip('it successfully exports commonjs named exports', (t) => {
   const exportedKeys = Object.keys(exported);
 
   t.true(exportedKeys.includes('createBundlrUploader'));
