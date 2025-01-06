@@ -9,6 +9,7 @@ import {
   UploaderUploadOptions,
 } from '@metaplex-foundation/umi';
 import fetch from 'node-fetch';
+
 const FormData = require('form-data');
 
 const CASCADE_API_URL = 'https://gateway-api.pastel.network/';
@@ -65,7 +66,7 @@ export function createCascadeUploader(
             Api_key: apiKey,
           },
           method: 'POST',
-          body: body,
+          body,
         }
       );
 
@@ -80,6 +81,7 @@ export function createCascadeUploader(
     } catch (e) {
       return [];
     }
+    // eslint-disable-next-line no-console
     console.log(uris);
     return uris;
   };

@@ -28,7 +28,8 @@
     "test": "ava"
   },
   "dependencies": {
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.7",
+    "form-data": "^3.0.0"
   },
   "peerDependencies": {
     "@metaplex-foundation/umi": "workspace:^"
@@ -42,8 +43,7 @@
     "@metaplex-foundation/umi-rpc-web3js": "workspace:^",
     "ava": "^5.1.0",
     "typescript": "^4.5.4",
-    "@types/node-fetch": "^2.6.2",
-    "form-data": "^3.0.0"
+    "@types/node-fetch": "^2.6.2"
   },
   "publishConfig": {
     "access": "public"
