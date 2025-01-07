@@ -266,7 +266,7 @@ export function createIrysUploader(
   };
 
   const initIrys = async (): Promise<BaseWebIrys | BaseNodeIrys> => {
-    const currency = 'solana';
+    const token = 'solana';
     const defaultAddress =
       context.rpc.getCluster() === 'devnet'
         ? 'https://devnet.irys.xyz'
@@ -293,7 +293,7 @@ export function createIrysUploader(
 
     try {
       // Check for valid irys node.
-      await irys.utils.getBundlerAddress(currency);
+      await irys.utils.getBundlerAddress(token);
     } catch (error) {
       throw new FailedToConnectToIrysAddressError(address, error as Error);
     }
