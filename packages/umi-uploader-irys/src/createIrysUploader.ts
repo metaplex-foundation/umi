@@ -1,5 +1,5 @@
 import type { BaseWebIrys } from '@irys/web-upload/dist/types/base';
-import type { BaseNodeIrys } from "@irys/upload/dist/types/base";
+import type { BaseNodeIrys } from '@irys/upload/dist/types/base';
 import {
   Commitment,
   Context,
@@ -35,6 +35,7 @@ import {
 } from '@solana/web3.js';
 import BigNumber from 'bignumber.js';
 import { Buffer } from 'buffer';
+import PromisePool from '@supercharge/promise-pool';
 import {
   AssetUploadFailedError,
   IrysWithdrawError,
@@ -43,7 +44,6 @@ import {
   IrysAbortError,
 } from './errors';
 // this is a dependency the irys client already requires, so using it here has no extra cost.
-import PromisePool from '@supercharge/promise-pool';
 
 /**
  * This method is necessary to import the Irys package on both ESM and CJS modules.
@@ -81,7 +81,7 @@ export type IrysUploaderOptions = {
   providerUrl?: string;
   priceMultiplier?: number;
   payer?: Signer;
-  uploadConcurrency?: number
+  uploadConcurrency?: number;
 };
 
 export type IrysWalletAdapter = {
@@ -106,7 +106,7 @@ const HEADER_SIZE = 2_000;
 // Minimum file size for cost calculation.
 const MINIMUM_SIZE = 80_000;
 
-const gatewayUrl = (id: string) => `https://gateway.irys.xyz/${id}`
+const gatewayUrl = (id: string) => `https://gateway.irys.xyz/${id}`;
 
 export function createIrysUploader(
   context: Pick<Context, 'rpc' | 'payer' | 'eddsa'>,
@@ -138,43 +138,56 @@ export function createIrysUploader(
     return getUploadPriceFromBytes(bytes);
   };
 
-  const upload = async (files: GenericFile[], options?: UploaderUploadOptions): Promise<string[]> => {
+  const upload = async (
+    files: GenericFile[],
+    options?: UploaderUploadOptions
+  ): Promise<string[]> => {
     const irys = await getIrys();
     const amount = await getUploadPrice(files);
     await fund(amount);
-    
-    const manifestMap = (options?.manifest === true) ? new Map() : undefined
 
-    const result = await PromisePool.for(files).withConcurrency(uploaderOptions.uploadConcurrency ?? 10)
-      .onTaskFinished((_, pool) => options?.onProgress?.(pool.processedPercentage()))
+    const manifestMap = options?.manifest === true ? new Map() : undefined;
+
+    const result = await PromisePool.for(files)
+      .withConcurrency(uploaderOptions.uploadConcurrency ?? 10)
+      .onTaskFinished((_, pool) =>
+        options?.onProgress?.(pool.processedPercentage())
+      )
       .process(async (file) => {
-        if(options?.signal?.aborted) throw new IrysAbortError;
+        if (options?.signal?.aborted) throw new IrysAbortError();
 
         const buffer = Buffer.from(file.buffer);
-          const irysTx = irys.createTransaction(buffer, {
-            tags: getGenericFileTagsWithContentType(file),
-          });
-          await irysTx.sign();
-        const { status, data: {id} } = await irys.uploader.uploadTransaction(irysTx);
+        const irysTx = irys.createTransaction(buffer, {
+          tags: getGenericFileTagsWithContentType(file),
+        });
+        await irysTx.sign();
+        const {
+          status,
+          data: { id },
+        } = await irys.uploader.uploadTransaction(irysTx);
 
-      if (status >= 300)  throw new AssetUploadFailedError(status);
-      
-      manifestMap?.set(file.fileName, id)
+        if (status >= 300) throw new AssetUploadFailedError(status);
 
-      return id
-    })
+        manifestMap?.set(file.fileName, id);
+
+        return id;
+      });
 
     if (manifestMap) {
-      const manifest = await irys.uploader.generateFolder({items: manifestMap});
-      const {id} = await irys.upload(JSON.stringify(manifest), {tags: [
-        { name: "Type", value: "manifest" },
-        { name: "Content-Type", value: "application/x.irys-manifest+json" },
-        // ...(options?.manifestTags ?? []),
-      ],})
-      return [gatewayUrl(id)]
+      const manifest = await irys.uploader.generateFolder({
+        items: manifestMap,
+      });
+      const { id } = await irys.upload(JSON.stringify(manifest), {
+        tags: [
+          { name: 'Type', value: 'manifest' },
+          { name: 'Content-Type', value: 'application/x.irys-manifest+json' },
+          // ...(options?.manifestTags ?? []),
+        ],
+      });
+      return [gatewayUrl(id)];
     }
 
-    return result.results.map(gatewayUrl)
+    return result.results.map(gatewayUrl);
   };
 
   const uploadJson = async <T>(json: T): Promise<string> => {
@@ -221,7 +234,7 @@ export function createIrysUploader(
       return;
     }
 
-    await irys.withdrawAll()
+    await irys.withdrawAll();
   };
 
   const withdraw = async (amount: SolAmount): Promise<void> => {
@@ -273,7 +286,7 @@ export function createIrysUploader(
 
     let irys;
     if (isNode && isKeypairSigner(payer))
-      irys = await initNodeIrys(address,  payer, irysOptions);
+      irys = await initNodeIrys(address, payer, irysOptions);
     else {
       irys = await initWebIrys(address, payer, irysOptions);
     }
@@ -294,8 +307,13 @@ export function createIrysUploader(
     options: any
   ): Promise<BaseNodeIrys> => {
     const bPackage = _removeDoubleDefault(await import('@irys/upload'));
-    const cPackage = _removeDoubleDefault(await import('@irys/upload-solana'))
-    return bPackage.Uploader(cPackage.Solana).bundlerUrl(address).withWallet(keypair).withIrysConfig(options).build()   
+    const cPackage = _removeDoubleDefault(await import('@irys/upload-solana'));
+    return bPackage
+      .Uploader(cPackage.Solana)
+      .bundlerUrl(address)
+      .withWallet(keypair)
+      .withIrysConfig(options)
+      .build();
   };
 
   const initWebIrys = async (
@@ -349,9 +367,16 @@ export function createIrysUploader(
     };
 
     const bPackage = _removeDoubleDefault(await import('@irys/web-upload'));
-    const cPackage = _removeDoubleDefault(await import('@irys/web-upload-solana'));
+    const cPackage = _removeDoubleDefault(
+      await import('@irys/web-upload-solana')
+    );
 
-    const irys = await bPackage.WebUploader(cPackage.WebSolana).withProvider(wallet).bundlerUrl(address).withIrysConfig(options).build()
+    const irys = await bPackage
+      .WebUploader(cPackage.WebSolana)
+      .withProvider(wallet)
+      .bundlerUrl(address)
+      .withIrysConfig(options)
+      .build();
 
     try {
       // Try to initiate irys.

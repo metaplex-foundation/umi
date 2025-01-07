@@ -57,6 +57,6 @@ export class IrysAbortError extends IrysError {
   readonly name: string = 'IrysAbortError';
 
   constructor() {
-    super("The upload was aborted");
+    super('The upload was aborted');
   }
 }
