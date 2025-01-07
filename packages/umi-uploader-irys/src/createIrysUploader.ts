@@ -43,7 +43,7 @@ import {
   FailedToInitializeIrysError,
   IrysAbortError,
 } from './errors';
-// this is a dependency the irys client already requires, so using it here has no extra cost.
+// PromisePool is a dependency the Irys client already requires, so using it here has no extra cost.
 
 /**
  * This method is necessary to import the Irys package on both ESM and CJS modules.
