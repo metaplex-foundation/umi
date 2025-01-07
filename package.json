@@ -26,7 +26,7 @@
     "lint:fix": "turbo run lint:fix",
     "format": "prettier --check packages/",
     "format:fix": "prettier --write packages/",
-    "validator": "DEBUG='amman:(info|error|debug)' CI=1 amman start",
+    "validator": "amman start",
     "validator:stop": "amman stop",
     "packages:new": "node configs/generate-new-package.mjs",
     "packages:change": "changeset",

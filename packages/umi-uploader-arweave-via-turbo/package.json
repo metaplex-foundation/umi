@@ -1,7 +1,7 @@
 {
-  "name": "@metaplex-foundation/umi-rpc-web3js",
+  "name": "@metaplex-foundation/umi-uploader-arweave-via-turbo",
   "version": "0.9.2",
-  "description": "An RPC implementation relying on Solana's web3.js",
+  "description": "An uploader implementation relying on Arweave",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -25,10 +25,13 @@
     "lint:fix": "eslint --fix --ext js,ts,tsx src",
     "clean": "rimraf dist",
     "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
-    "test": "ava --timeout=1m"
+    "test": "ava"
   },
   "dependencies": {
-    "@metaplex-foundation/umi-web3js-adapters": "workspace:^"
+    "@ardrive/turbo-sdk": "^1.20.0",
+    "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
+    "bignumber.js": "^9.1.2",
+    "buffer": "^6.0.3"
   },
   "peerDependencies": {
     "@metaplex-foundation/umi": "workspace:^",
@@ -37,9 +40,12 @@
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
     "@metaplex-foundation/umi": "workspace:^",
+    "@metaplex-foundation/umi-downloader-http": "workspace:^",
+    "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
+    "@metaplex-foundation/umi-http-fetch": "workspace:^",
+    "@metaplex-foundation/umi-rpc-web3js": "workspace:^",
     "@solana/web3.js": "^1.72.0",
-    "ava": "^5.1.0",
-    "jayson": "^3.4.4"
+    "ava": "^5.1.0"
   },
   "publishConfig": {
     "access": "public"
@@ -52,7 +58,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "umi-rpc-web3js"
+    "displayName": "umi-uploader-arweave-via-turbo"
   },
   "ava": {
     "typescript": {
