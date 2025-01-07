@@ -1,5 +1,5 @@
-// eslint-disable-next-line import/no-named-default
-import type { default as NodeIrys, WebIrys } from '@irys/sdk';
+import type { BaseWebIrys } from '@irys/web-upload/dist/types/base';
+import type { BaseNodeIrys } from "@irys/upload/dist/types/base";
 import {
   Commitment,
   Context,
@@ -9,6 +9,7 @@ import {
   Signer,
   SolAmount,
   UploaderInterface,
+  UploaderUploadOptions,
   base58,
   createGenericFileFromJson,
   createSignerFromKeypair,
@@ -39,7 +40,10 @@ import {
   IrysWithdrawError,
   FailedToConnectToIrysAddressError,
   FailedToInitializeIrysError,
+  IrysAbortError,
 } from './errors';
+// this is a dependency the irys client already requires, so using it here has no extra cost.
+import PromisePool from '@supercharge/promise-pool';
 
 /**
  * This method is necessary to import the Irys package on both ESM and CJS modules.
@@ -63,7 +67,7 @@ function _removeDoubleDefault<T>(pkg: T): T {
 }
 
 export type IrysUploader = UploaderInterface & {
-  irys: () => Promise<NodeIrys | WebIrys>;
+  irys: () => Promise<BaseNodeIrys | BaseWebIrys>;
   getUploadPriceFromBytes: (bytes: number) => Promise<SolAmount>;
   getBalance: () => Promise<SolAmount>;
   fund: (amount: SolAmount, skipBalanceCheck: boolean) => Promise<void>;
@@ -77,6 +81,7 @@ export type IrysUploaderOptions = {
   providerUrl?: string;
   priceMultiplier?: number;
   payer?: Signer;
+  uploadConcurrency?: number
 };
 
 export type IrysWalletAdapter = {
@@ -101,15 +106,17 @@ const HEADER_SIZE = 2_000;
 // Minimum file size for cost calculation.
 const MINIMUM_SIZE = 80_000;
 
+const gatewayUrl = (id: string) => `https://gateway.irys.xyz/${id}`
+
 export function createIrysUploader(
   context: Pick<Context, 'rpc' | 'payer' | 'eddsa'>,
-  options: IrysUploaderOptions = {}
+  uploaderOptions: IrysUploaderOptions = {}
 ): IrysUploader {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  let _irys: WebIrys | NodeIrys | null = null;
-  options = {
+  let _irys: BaseNodeIrys | BaseWebIrys | null = null;
+  uploaderOptions = {
     providerUrl: context.rpc.getEndpoint(),
-    ...options,
+    ...uploaderOptions,
   };
 
   const getUploadPriceFromBytes = async (bytes: number): Promise<SolAmount> => {
@@ -117,7 +124,7 @@ export function createIrysUploader(
     const price = await irys.getPrice(bytes);
 
     return bigNumberToAmount(
-      price.multipliedBy(options.priceMultiplier ?? 1.1)
+      price.multipliedBy(uploaderOptions.priceMultiplier ?? 1.1)
     );
   };
 
@@ -131,28 +138,43 @@ export function createIrysUploader(
     return getUploadPriceFromBytes(bytes);
   };
 
-  const upload = async (files: GenericFile[]): Promise<string[]> => {
+  const upload = async (files: GenericFile[], options?: UploaderUploadOptions): Promise<string[]> => {
     const irys = await getIrys();
     const amount = await getUploadPrice(files);
     await fund(amount);
+    
+    const manifestMap = (options?.manifest === true) ? new Map() : undefined
 
-    const promises = files.map(async (file) => {
-      const buffer = Buffer.from(file.buffer);
-      const irysTx = irys.createTransaction(buffer, {
-        tags: getGenericFileTagsWithContentType(file),
-      });
-      await irysTx.sign();
+    const result = await PromisePool.for(files).withConcurrency(uploaderOptions.uploadConcurrency ?? 10)
+      .onTaskFinished((_, pool) => options?.onProgress?.(pool.processedPercentage()))
+      .process(async (file) => {
+        if(options?.signal?.aborted) throw new IrysAbortError;
 
-      const { status, data } = await irys.uploader.uploadTransaction(irysTx);
+        const buffer = Buffer.from(file.buffer);
+          const irysTx = irys.createTransaction(buffer, {
+            tags: getGenericFileTagsWithContentType(file),
+          });
+          await irysTx.sign();
+        const { status, data: {id} } = await irys.uploader.uploadTransaction(irysTx);
 
-      if (status >= 300) {
-        throw new AssetUploadFailedError(status);
-      }
+      if (status >= 300)  throw new AssetUploadFailedError(status);
+      
+      manifestMap?.set(file.fileName, id)
 
-      return `https://gateway.irys.xyz/${data.id}`;
-    });
+      return id
+    })
 
-    return Promise.all(promises);
+    if (manifestMap) {
+      const manifest = await irys.uploader.generateFolder({items: manifestMap});
+      const {id} = await irys.upload(JSON.stringify(manifest), {tags: [
+        { name: "Type", value: "manifest" },
+        { name: "Content-Type", value: "application/x.irys-manifest+json" },
+        // ...(options?.manifestTags ?? []),
+      ],})
+      return [gatewayUrl(id)]
+    }
+
+    return result.results.map(gatewayUrl)
   };
 
   const uploadJson = async <T>(json: T): Promise<string> => {
@@ -163,7 +185,7 @@ export function createIrysUploader(
 
   const getBalance = async (): Promise<SolAmount> => {
     const irys = await getIrys();
-    const balance = await irys.getLoadedBalance();
+    const balance = await irys.getBalance();
 
     return bigNumberToAmount(balance);
   };
@@ -176,7 +198,7 @@ export function createIrysUploader(
     let toFund = amountToBigNumber(amount);
 
     if (!skipBalanceCheck) {
-      const balance = await irys.getLoadedBalance();
+      const balance = await irys.getBalance();
 
       toFund = toFund.isGreaterThan(balance)
         ? toFund.minus(balance)
@@ -191,17 +213,15 @@ export function createIrysUploader(
   };
 
   const withdrawAll = async (): Promise<void> => {
-    // TODO(loris): Replace with "withdrawAll" when available on Irys.
     const irys = await getIrys();
-    const balance = await irys.getLoadedBalance();
+    const balance = await irys.getBalance();
     const minimumBalance = new BigNumber(5000);
 
     if (balance.isLessThan(minimumBalance)) {
       return;
     }
 
-    const balanceToWithdraw = balance.minus(minimumBalance);
-    await withdraw(bigNumberToAmount(balanceToWithdraw));
+    await irys.withdrawAll()
   };
 
   const withdraw = async (amount: SolAmount): Promise<void> => {
@@ -215,9 +235,9 @@ export function createIrysUploader(
     }
   };
 
-  const getIrys = async (): Promise<WebIrys | NodeIrys> => {
+  const getIrys = async (): Promise<BaseWebIrys | BaseNodeIrys> => {
     const oldPayer = _irys?.getSigner().publicKey;
-    const newPayer = options.payer ?? context.payer;
+    const newPayer = uploaderOptions.payer ?? context.payer;
     if (
       oldPayer &&
       publicKey(new Uint8Array(oldPayer)) !== newPayer.publicKey
@@ -232,19 +252,19 @@ export function createIrysUploader(
     return _irys;
   };
 
-  const initIrys = async (): Promise<WebIrys | NodeIrys> => {
+  const initIrys = async (): Promise<BaseWebIrys | BaseNodeIrys> => {
     const currency = 'solana';
     const defaultAddress =
       context.rpc.getCluster() === 'devnet'
         ? 'https://devnet.irys.xyz'
-        : 'https://node1.irys.xyz';
-    const address = options?.address ?? defaultAddress;
+        : 'https://uploader.irys.xyz';
+    const address = uploaderOptions?.address ?? defaultAddress;
     const irysOptions = {
-      timeout: options.timeout,
-      providerUrl: options.providerUrl,
+      timeout: uploaderOptions.timeout,
+      providerUrl: uploaderOptions.providerUrl,
     };
 
-    const payer: Signer = options.payer ?? context.payer;
+    const payer: Signer = uploaderOptions.payer ?? context.payer;
 
     // If in node use node irys, else use web irys.
     const isNode =
@@ -253,9 +273,9 @@ export function createIrysUploader(
 
     let irys;
     if (isNode && isKeypairSigner(payer))
-      irys = await initNodeIrys(address, currency, payer, irysOptions);
+      irys = await initNodeIrys(address,  payer, irysOptions);
     else {
-      irys = await initWebIrys(address, currency, payer, irysOptions);
+      irys = await initWebIrys(address, payer, irysOptions);
     }
 
     try {
@@ -270,26 +290,19 @@ export function createIrysUploader(
 
   const initNodeIrys = async (
     address: string,
-    currency: string,
     keypair: Keypair,
     options: any
-  ): Promise<NodeIrys> => {
-    const bPackage = _removeDoubleDefault(await import('@irys/sdk'));
-    // eslint-disable-next-line new-cap
-    return new bPackage.default({
-      url: address,
-      token: currency,
-      key: keypair.secretKey,
-      config: options,
-    });
+  ): Promise<BaseNodeIrys> => {
+    const bPackage = _removeDoubleDefault(await import('@irys/upload'));
+    const cPackage = _removeDoubleDefault(await import('@irys/upload-solana'))
+    return bPackage.Uploader(cPackage.Solana).bundlerUrl(address).withWallet(keypair).withIrysConfig(options).build()   
   };
 
   const initWebIrys = async (
     address: string,
-    currency: string,
     payer: Signer,
     options: any
-  ): Promise<WebIrys> => {
+  ): Promise<BaseWebIrys> => {
     const wallet: IrysWalletAdapter = {
       publicKey: toWeb3JsPublicKey(payer.publicKey),
       signMessage: (message: Uint8Array) => payer.signMessage(message),
@@ -335,13 +348,10 @@ export function createIrysUploader(
       },
     };
 
-    const bPackage = _removeDoubleDefault(await import('@irys/sdk'));
-    const irys = new bPackage.WebIrys({
-      url: address,
-      token: currency,
-      wallet: { provider: wallet },
-      config: options,
-    });
+    const bPackage = _removeDoubleDefault(await import('@irys/web-upload'));
+    const cPackage = _removeDoubleDefault(await import('@irys/web-upload-solana'));
+
+    const irys = await bPackage.WebUploader(cPackage.WebSolana).withProvider(wallet).bundlerUrl(address).withIrysConfig(options).build()
 
     try {
       // Try to initiate irys.
