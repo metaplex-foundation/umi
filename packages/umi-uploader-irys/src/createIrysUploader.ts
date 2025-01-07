@@ -311,7 +311,7 @@ export function createIrysUploader(
     return bPackage
       .Uploader(cPackage.Solana)
       .bundlerUrl(address)
-      .withWallet(keypair)
+      .withWallet(keypair.secretKey)
       .withIrysConfig(options)
       .build();
   };
