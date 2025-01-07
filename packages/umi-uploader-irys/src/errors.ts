@@ -26,7 +26,7 @@ export class FailedToConnectToIrysAddressError extends IrysError {
     const message =
       `Irys could not connect to the provided address [${address}]. ` +
       'Please ensure the provided address is valid. Some valid addresses include: ' +
-      '"https://node1.irys.xyz" for mainnet and "https://devnet.irys.xyz" for devnet';
+      '"https://uploader.irys.xyz" for mainnet and "https://devnet.irys.xyz" for devnet';
     super(message, cause);
   }
 }
@@ -50,5 +50,13 @@ export class IrysWithdrawError extends IrysError {
       `The balance could not be withdrawn from the Irys network and ` +
       `returned the following error: ${error}.`;
     super(message);
+  }
+}
+
+export class IrysAbortError extends IrysError {
+  readonly name: string = 'IrysAbortError';
+
+  constructor() {
+    super('The upload was aborted');
   }
 }
