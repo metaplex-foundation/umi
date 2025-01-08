@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-serializers-encodings",
-  "version": "0.8.9",
+  "version": "1.0.0",
   "description": "A set of serializers that encode and decode strings",
   "license": "MIT",
   "sideEffects": false,
