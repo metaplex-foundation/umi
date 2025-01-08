@@ -573,6 +573,43 @@ importers:
         specifier: ^13.0.1
         version: 13.0.2
 
+  packages/umi-uploader-cascade:
+    dependencies:
+      form-data:
+        specifier: ^3.0.0
+        version: 3.0.1
+      node-fetch:
+        specifier: ^2.6.7
+        version: 2.6.9
+    devDependencies:
+      '@ava/typescript':
+        specifier: ^3.0.1
+        version: 3.0.1
+      '@metaplex-foundation/umi':
+        specifier: workspace:^
+        version: link:../umi
+      '@metaplex-foundation/umi-downloader-http':
+        specifier: workspace:^
+        version: link:../umi-downloader-http
+      '@metaplex-foundation/umi-eddsa-web3js':
+        specifier: workspace:^
+        version: link:../umi-eddsa-web3js
+      '@metaplex-foundation/umi-http-fetch':
+        specifier: workspace:^
+        version: link:../umi-http-fetch
+      '@metaplex-foundation/umi-rpc-web3js':
+        specifier: workspace:^
+        version: link:../umi-rpc-web3js
+      '@types/node-fetch':
+        specifier: ^2.6.2
+        version: 2.6.2
+      ava:
+        specifier: ^5.1.0
+        version: 5.1.0(@ava/typescript@3.0.1)
+      typescript:
+        specifier: ^4.5.4
+        version: 4.9.5
+
   packages/umi-uploader-irys:
     dependencies:
       '@irys/upload':
@@ -8910,7 +8947,6 @@ packages:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       mime-types: 2.1.35
-    dev: true
 
   /form-data@4.0.0:
     resolution: {integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==}
