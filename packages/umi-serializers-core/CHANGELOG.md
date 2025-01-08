@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-serializers-core
 
+## 1.0.0
+
+### Major Changes
+
+- [`d50553a`](https://github.com/metaplex-foundation/umi/commit/d50553a419b7c9beac996a7c0b4d5942c91b5b4e) Thanks [@blockiosaurus](https://github.com/blockiosaurus)! - Release 1.0
+
 ## 0.8.9
 
 ### Patch Changes

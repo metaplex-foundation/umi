@@ -64,6 +64,7 @@ export const formatDateTime = (
     year: 'numeric',
     hour: 'numeric',
     minute: 'numeric',
+    timeZone: 'UTC',
   }
 ): string => {
   const date = new Date(Number(value * 1000n));

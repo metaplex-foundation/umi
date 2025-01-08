@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-uploader-irys",
-  "version": "0.9.1",
+  "version": "1.0.0",
   "description": "An uploader implementation relying on Irys",
   "license": "MIT",
   "sideEffects": false,
@@ -28,9 +28,13 @@
     "test": "ava"
   },
   "dependencies": {
-    "@irys/sdk": "^0.0.2",
+    "@irys/upload": "^0.0.14",
+    "@irys/upload-solana": "^0.1.7",
+    "@irys/web-upload": "^0.0.14",
+    "@irys/web-upload-solana": "^0.1.7",
     "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
-    "bignumber.js": "^9.0.2",
+    "@supercharge/promise-pool": "^3.2.0",
+    "bignumber.js": "^9.1.2",
     "buffer": "^6.0.3"
   },
   "peerDependencies": {

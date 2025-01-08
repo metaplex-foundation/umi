@@ -1,5 +1,36 @@
 # @metaplex-foundation/umi-core
 
+## 1.0.0
+
+### Major Changes
+
+- [`d50553a`](https://github.com/metaplex-foundation/umi/commit/d50553a419b7c9beac996a7c0b4d5942c91b5b4e) Thanks [@blockiosaurus](https://github.com/blockiosaurus)! - Release 1.0
+
+### Minor Changes
+
+- [#154](https://github.com/metaplex-foundation/umi/pull/154) [`e192236`](https://github.com/metaplex-foundation/umi/commit/e1922366470201bb51639a3a2660fee3a4cc7f17) Thanks [@tonyboylehub](https://github.com/tonyboylehub)! - Introduces a non breaking change to umi uploader interface and adds and optional manifest arg to the UploaderUploadOptions type.
+
+### Patch Changes
+
+- [#145](https://github.com/metaplex-foundation/umi/pull/145) [`48bb4fd`](https://github.com/metaplex-foundation/umi/commit/48bb4fdb92cb4e131e301628796df4b6af982b89) Thanks [@blockiosaurus](https://github.com/blockiosaurus)! - Updating irys to latest
+
+- [#133](https://github.com/metaplex-foundation/umi/pull/133) [`7404903`](https://github.com/metaplex-foundation/umi/commit/7404903e58fe519c7d79b7c0be5389cb16398fb7) Thanks [@mikemaccana](https://github.com/mikemaccana)! - Add direct link to JS docs for users redirected here from older tools
+
+- [#140](https://github.com/metaplex-foundation/umi/pull/140) [`91a4d75`](https://github.com/metaplex-foundation/umi/commit/91a4d75484ce6d65e30e29646539c18d88ee1f80) Thanks [@blockiosaurus](https://github.com/blockiosaurus)! - Updating pnpm version and fixing datetime test.
+
+- [#141](https://github.com/metaplex-foundation/umi/pull/141) [`8c8aa5f`](https://github.com/metaplex-foundation/umi/commit/8c8aa5f4f2dc22872870cb4824c3672d6f8ac0ca) Thanks [@blockiosaurus](https://github.com/blockiosaurus)! - Add ability to use solana config or keypair files
+
+- Updated dependencies [[`d50553a`](https://github.com/metaplex-foundation/umi/commit/d50553a419b7c9beac996a7c0b4d5942c91b5b4e), [`f9033fa`](https://github.com/metaplex-foundation/umi/commit/f9033faf62b896b8b85d31138ce1b832200846ea)]:
+  - @metaplex-foundation/umi-options@1.0.0
+  - @metaplex-foundation/umi-public-keys@1.0.0
+  - @metaplex-foundation/umi-serializers@1.0.0
+
+## 0.9.2
+
+### Patch Changes
+
+- [`6276f96`](https://github.com/metaplex-foundation/umi/commit/6276f9651f91b973b474cb63a0457917b09ed292) Thanks [@nhanphan](https://github.com/nhanphan)! - package.json compatibility for older versions of metro packaging for react-native
+
 ## 0.9.1
 
 ### Patch Changes

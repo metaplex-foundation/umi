@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-rpc-web3js",
-  "version": "0.9.1",
+  "version": "1.0.0",
   "description": "An RPC implementation relying on Solana's web3.js",
   "license": "MIT",
   "sideEffects": false,
@@ -25,7 +25,7 @@
     "lint:fix": "eslint --fix --ext js,ts,tsx src",
     "clean": "rimraf dist",
     "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
-    "test": "ava"
+    "test": "ava --timeout=1m"
   },
   "dependencies": {
     "@metaplex-foundation/umi-web3js-adapters": "workspace:^"

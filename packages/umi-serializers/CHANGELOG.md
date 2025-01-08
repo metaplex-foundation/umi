@@ -1,5 +1,20 @@
 # @metaplex-foundation/umi-serializers
 
+## 1.0.0
+
+### Major Changes
+
+- [`d50553a`](https://github.com/metaplex-foundation/umi/commit/d50553a419b7c9beac996a7c0b4d5942c91b5b4e) Thanks [@blockiosaurus](https://github.com/blockiosaurus)! - Release 1.0
+
+### Patch Changes
+
+- Updated dependencies [[`d50553a`](https://github.com/metaplex-foundation/umi/commit/d50553a419b7c9beac996a7c0b4d5942c91b5b4e), [`f9033fa`](https://github.com/metaplex-foundation/umi/commit/f9033faf62b896b8b85d31138ce1b832200846ea)]:
+  - @metaplex-foundation/umi-options@1.0.0
+  - @metaplex-foundation/umi-public-keys@1.0.0
+  - @metaplex-foundation/umi-serializers-core@1.0.0
+  - @metaplex-foundation/umi-serializers-encodings@1.0.0
+  - @metaplex-foundation/umi-serializers-numbers@1.0.0
+
 ## 0.9.0
 
 ### Patch Changes

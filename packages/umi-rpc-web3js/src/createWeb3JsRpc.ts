@@ -5,11 +5,16 @@ import {
   Commitment,
   CompiledInstruction,
   Context,
+  createAmount,
   DateTime,
+  dateTime,
   ErrorWithLogs,
+  isZeroAmount,
+  lamports,
   MaybeRpcAccount,
   ProgramError,
   PublicKey,
+  resolveClusterFromEndpoint,
   RpcAccount,
   RpcAccountExistsOptions,
   RpcAirdropOptions,
@@ -29,6 +34,8 @@ import {
   RpcGetTransactionOptions,
   RpcInterface,
   RpcSendTransactionOptions,
+  RpcSimulateTransactionOptions,
+  RpcSimulateTransactionResult,
   SolAmount,
   Transaction,
   TransactionMetaInnerInstruction,
@@ -36,16 +43,12 @@ import {
   TransactionSignature,
   TransactionStatus,
   TransactionWithMeta,
-  createAmount,
-  dateTime,
-  isZeroAmount,
-  lamports,
-  resolveClusterFromEndpoint,
 } from '@metaplex-foundation/umi';
 import {
   fromWeb3JsMessage,
   fromWeb3JsPublicKey,
   toWeb3JsPublicKey,
+  toWeb3JsTransaction,
 } from '@metaplex-foundation/umi-web3js-adapters';
 import { base58 } from '@metaplex-foundation/umi/serializers';
 import {
@@ -149,6 +152,11 @@ export function createWeb3JsRpc(
       options
     );
     return lamports(balanceInLamports);
+  };
+
+  const getGenesisHash = async (): Promise<string> => {
+    const genesisHash = await getConnection().getGenesisHash();
+    return genesisHash;
   };
 
   const getRent = async (
@@ -341,6 +349,32 @@ export function createWeb3JsRpc(
     }
   };
 
+  const simulateTransaction = async (
+    transaction: Transaction,
+    options: RpcSimulateTransactionOptions = {}
+  ): Promise<RpcSimulateTransactionResult> => {
+    try {
+      const tx = toWeb3JsTransaction(transaction);
+      const result = await getConnection().simulateTransaction(tx, {
+        sigVerify: options.verifySignatures,
+        accounts: {
+          addresses: options.accounts || [],
+          encoding: 'base64',
+        },
+      });
+      return result.value;
+    } catch (error: any) {
+      let resolvedError: ProgramError | null = null;
+      if (error instanceof Error && 'logs' in error) {
+        resolvedError = context.programs.resolveError(
+          error as ErrorWithLogs,
+          transaction
+        );
+      }
+      throw resolvedError || error;
+    }
+  };
+
   const confirmTransaction = async (
     signature: TransactionSignature,
     options: RpcConfirmTransactionOptions
@@ -357,6 +391,7 @@ export function createWeb3JsRpc(
     getAccounts,
     getProgramAccounts,
     getBlockTime,
+    getGenesisHash,
     getBalance,
     getRent,
     getSlot: async (options: RpcGetSlotOptions = {}) =>
@@ -368,8 +403,8 @@ export function createWeb3JsRpc(
     airdrop,
     call,
     sendTransaction,
+    simulateTransaction,
     confirmTransaction,
-
     get connection() {
       return getConnection();
     },

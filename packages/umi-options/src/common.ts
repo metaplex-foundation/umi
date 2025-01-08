@@ -5,6 +5,12 @@
 export type Nullable<T> = T | null;
 
 /**
+ * Defines a type `T` that can also be `null` or `undefined`.
+ * @category Utils — Options
+ */
+export type Nullish<T> = T | null | undefined;
+
+/**
  * An implementation of the Rust Option type in JavaScript.
  * It can be one of the following:
  * - <code>{@link Some}<T></code>: Meaning there is a value of type T.

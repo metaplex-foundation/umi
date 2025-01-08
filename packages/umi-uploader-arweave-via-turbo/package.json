@@ -1,7 +1,7 @@
 {
-  "name": "@metaplex-foundation/umi-uploader-bundlr",
-  "version": "0.9.1",
-  "description": "An uploader implementation relying on Bundlr",
+  "name": "@metaplex-foundation/umi-uploader-arweave-via-turbo",
+  "version": "1.0.0",
+  "description": "An uploader implementation relying on Arweave",
   "license": "MIT",
   "sideEffects": false,
   "module": "dist/esm/index.mjs",
@@ -28,9 +28,9 @@
     "test": "ava"
   },
   "dependencies": {
-    "@bundlr-network/client": "^0.8.8",
+    "@ardrive/turbo-sdk": "^1.20.0",
     "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
-    "bignumber.js": "^9.0.2",
+    "bignumber.js": "^9.1.2",
     "buffer": "^6.0.3"
   },
   "peerDependencies": {
@@ -58,7 +58,7 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "readmeFile": "./README.md",
-    "displayName": "umi-uploader-bundlr"
+    "displayName": "umi-uploader-arweave-via-turbo"
   },
   "ava": {
     "typescript": {
