@@ -1,5 +1,31 @@
 # @metaplex-foundation/umi-options
 
+## 1.0.0
+
+### Major Changes
+
+- [`d50553a`](https://github.com/metaplex-foundation/umi/commit/d50553a419b7c9beac996a7c0b4d5942c91b5b4e) Thanks [@blockiosaurus](https://github.com/blockiosaurus)! - Release 1.0
+
+### Minor Changes
+
+- [#153](https://github.com/metaplex-foundation/umi/pull/153) [`f9033fa`](https://github.com/metaplex-foundation/umi/commit/f9033faf62b896b8b85d31138ce1b832200846ea) Thanks [@tonyboylehub](https://github.com/tonyboylehub)! - `wrapNullable` didn't account for an undefined input and would result in a return value of `some(undefined)` causing `isNone` checks to not pass if `undefined` was the `nullable` value.
+
+  ```ts
+  export const wrapNullable = <T>(nullable: Nullable<T>): Option<T> =>
+    nullable !== null ? some(nullable) : none<T>();
+  ```
+
+  Added a `wrapNullish` function to check for both `null` and undefined which will return the value of `none()` if `null` or `undefined` is the presented `nullish` value.
+
+  ```ts
+  export const wrapNullish = <T>(nullish: Nullish<T>): Option<T> =>
+    nullish !== null && nullish !== undefined ? some(nullish) : none<T>();
+  ```
+
+  - `Nullish` type added.
+  - `wrapNullish` function added.
+  - Tests for `wrapNullish` added.
+
 ## 0.8.9
 
 ### Patch Changes
