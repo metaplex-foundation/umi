@@ -13,7 +13,7 @@ import {
   createNullSerializer,
   SerializerInterface,
 } from './SerializerInterface';
-import { createNullSigner, Signer } from './Signer';
+import { createNullSigner, MobileSigner, Signer } from './Signer';
 import {
   createNullTransactionFactory,
   TransactionFactoryInterface,
@@ -35,7 +35,7 @@ export interface Context {
   /** An interface for sending HTTP requests. */
   http: HttpInterface;
   /** The signer using your app. */
-  identity: Signer;
+  identity: Signer | MobileSigner;
   /** The signer paying for things, usually the same as the `identity`. */
   payer: Signer;
   /** An interface for registering and retrieving programs. */

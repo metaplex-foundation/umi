@@ -1,0 +1,75 @@
+{
+  "name": "@metaplex-foundation/umi-signer-mobile-wallet-adapter",
+  "version": "0.1.0",
+  "description": "UMI signer implementation for Solana Mobile Wallet Adapter",
+  "license": "MIT",
+  "sideEffects": false,
+  "module": "dist/esm/index.mjs",
+  "main": "dist/cjs/index.cjs",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    }
+  },
+  "files": [
+    "/dist/cjs",
+    "/dist/esm",
+    "/dist/types",
+    "/src"
+  ],
+  "scripts": {
+    "lint": "eslint --ext js,ts,tsx src",
+    "lint:fix": "eslint --fix --ext js,ts,tsx src",
+    "clean": "rimraf dist",
+    "build": "pnpm clean && tsc && rollup -c",
+    "test": "ava"
+  },
+  "dependencies": {
+    "@metaplex-foundation/umi": "workspace:^",
+    "@metaplex-foundation/umi-public-keys": "workspace:^",
+    "@metaplex-foundation/umi-serializers": "workspace:^",
+    "@metaplex-foundation/umi-serializers-core": "workspace:^",
+    "@metaplex-foundation/umi-serializers-encodings": "workspace:^",
+    "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
+    "@solana-mobile/mobile-wallet-adapter-protocol": "^2.0.0",
+    "@solana-mobile/mobile-wallet-adapter-protocol-web3js": "^2.1.4",
+    "@solana/web3.js": "^1.74.0",
+    "bs58": "^5.0.0",
+    "js-base64": "^3.7.5"
+  },
+  "peerDependencies": {
+    "@metaplex-foundation/umi": "workspace:^",
+    "@solana/web3.js": "^1.74.0"
+  },
+  "devDependencies": {
+    "@ava/typescript": "^3.0.1",
+    "@metaplex-foundation/umi": "workspace:^",
+    "@rollup/plugin-node-resolve": "^13.0.6",
+    "@rollup/plugin-typescript": "^8.3.0",
+    "ava": "^5.1.0",
+    "typescript": "^4.9.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Metaplex Maintainers <contact@metaplex.com>",
+  "homepage": "https://metaplex.com",
+  "repository": {
+    "url": "https://github.com/metaplex-foundation/umi.git"
+  },
+  "ava": {
+    "files": [
+      "test/**/*.test.ts"
+    ],
+    "typescript": {
+      "compile": false,
+      "rewritePaths": {
+        "src/": "dist/src/",
+        "test/": "dist/test/"
+      }
+    }
+  }
+}

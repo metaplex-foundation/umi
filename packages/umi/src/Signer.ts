@@ -23,6 +23,17 @@ export interface Signer {
 }
 
 /**
+ * Defines a public key that can connect, disconnect, and sign transactions and messages for mobile wallets.
+ * @category Context and Interfaces
+ */
+export interface MobileSigner extends Signer {
+  authToken: string;
+  isConnected: () => boolean;
+  connect: () => Promise<void>;
+  disconnect: () => Promise<void>;
+}
+
+/**
  * Signs a transaction using the provided signers.
  * @category Signers and PublicKeys
  */
