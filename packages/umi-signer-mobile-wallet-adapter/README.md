@@ -1,3 +1,5 @@
+Generated with AI to see how well it could document the package, will be old and outdated!
+
 # UMI Signer Mobile Wallet Adapter
 
 This package provides a UMI signer implementation for the Solana Mobile Wallet Adapter, allowing you to use mobile wallets with UMI in React Native applications.

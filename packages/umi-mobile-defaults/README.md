@@ -1,3 +1,5 @@
+Generated with AI to see how well it could document the package, will be old and outdated info!
+
 # @metaplex-foundation/umi-mobile-defaults
 
 This package provides a convenient way to create a Umi instance with all the default plugins needed for mobile wallet adapter integration.
