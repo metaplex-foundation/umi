@@ -35,7 +35,7 @@ import {
 } from '@solana/web3.js';
 import BigNumber from 'bignumber.js';
 import { Buffer } from 'buffer';
-import PromisePool from '@supercharge/promise-pool';
+import { PromisePool } from '@supercharge/promise-pool';
 import {
   AssetUploadFailedError,
   IrysWithdrawError,
