@@ -229,9 +229,9 @@ importers:
       '@noble/curves':
         specifier: ^1.0.0
         version: 1.0.0
-      '@soceanfi/solana-cli-config':
-        specifier: 0.2.0
-        version: 0.2.0(@solana/web3.js@1.72.0)
+      yaml:
+        specifier: ^2.7.0
+        version: 2.7.0
     devDependencies:
       '@ava/typescript':
         specifier: ^3.0.1
@@ -4945,16 +4945,6 @@ packages:
   /@sinonjs/text-encoding@0.7.2:
     resolution: {integrity: sha512-sXXKG+uL9IrKqViTtao2Ws6dy0znu9sOaP1di/jKGW1M6VssO8vlpXCQcpZ+jisQ1tTFAC5Jo/EOzFbggBagFQ==}
     dev: true
-
-  /@soceanfi/solana-cli-config@0.2.0(@solana/web3.js@1.72.0):
-    resolution: {integrity: sha512-te44VYk+a5NpYu3Cek6wGo+Lou8zT5DUCos3FA6spr/WBfXb4L1SsmOtxgDCB9GRIuBQJgwDFcydAC+G9oL2PQ==}
-    hasBin: true
-    peerDependencies:
-      '@solana/web3.js': ^1
-    dependencies:
-      '@solana/web3.js': 1.72.0
-      yaml: 2.7.0
-    dev: false
 
   /@socket.io/component-emitter@3.1.0:
     resolution: {integrity: sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==}
