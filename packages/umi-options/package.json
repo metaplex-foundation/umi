@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-options",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A TypeScript implementation of Rust Options",
   "license": "MIT",
   "sideEffects": false,
