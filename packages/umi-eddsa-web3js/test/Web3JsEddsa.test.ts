@@ -16,10 +16,10 @@ test('it can create a new private key', async (t) => {
   // And the secret key is valid.
   t.true(
     typeof keypair.secretKey === 'object' &&
-    typeof keypair.secretKey.BYTES_PER_ELEMENT === 'number' &&
-    typeof keypair.secretKey.length === 'number' &&
-    keypair.secretKey.BYTES_PER_ELEMENT === 1 &&
-    keypair.secretKey.length === 64
+      typeof keypair.secretKey.BYTES_PER_ELEMENT === 'number' &&
+      typeof keypair.secretKey.length === 'number' &&
+      keypair.secretKey.BYTES_PER_ELEMENT === 1 &&
+      keypair.secretKey.length === 64
   );
 });
 
