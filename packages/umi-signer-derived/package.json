@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-signer-derived",
-  "version": "2.0.0",
+  "version": "1.1.0",
   "description": "A Signer implementation using the derived identity pattern",
   "license": "MIT",
   "sideEffects": false,

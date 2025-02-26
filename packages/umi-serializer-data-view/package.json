@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-serializer-data-view",
-  "version": "2.0.0",
+  "version": "1.1.0",
   "description": "A serializer implementation relying on the native DataView API",
   "license": "MIT",
   "sideEffects": false,
