@@ -33,6 +33,6 @@ export function createIrysUploader(
     .withIrysConfig(options)
     .build()
     }
-    throw new FailedToInitializeIrysError(new Error("expected signer to key a keypair"))
+    throw new FailedToInitializeIrysError(new Error("Expected signer to be a keypair (try importing @metaplex-foundation/umi-uploader-irys/web to use a browser/external wallet?)"))
   }
     
