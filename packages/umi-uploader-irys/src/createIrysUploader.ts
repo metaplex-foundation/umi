@@ -1,32 +1,20 @@
 import type { BaseWebIrys } from '@irys/web-upload/dist/types/base';
 import type { BaseNodeIrys } from '@irys/upload/dist/types/base';
 import {
-  Commitment,
   Context,
   GenericFile,
   GenericFileTag,
-  Keypair,
   Signer,
   SolAmount,
   UploaderInterface,
   UploaderUploadOptions,
-  base58,
   createGenericFileFromJson,
-  createSignerFromKeypair,
-  isKeypairSigner,
   lamports,
   publicKey,
-  signTransaction,
 } from '@metaplex-foundation/umi';
-import {
-  fromWeb3JsKeypair,
-  fromWeb3JsLegacyTransaction,
-  toWeb3JsLegacyTransaction,
-  toWeb3JsPublicKey,
-} from '@metaplex-foundation/umi-web3js-adapters';
+
 import {
   Connection as Web3JsConnection,
-  Keypair as Web3JsKeypair,
   PublicKey as Web3JsPublicKey,
   SendOptions as Web3JsSendOptions,
   Signer as Web3JsSigner,
@@ -40,31 +28,31 @@ import {
   AssetUploadFailedError,
   IrysWithdrawError,
   FailedToConnectToIrysAddressError,
-  FailedToInitializeIrysError,
   IrysAbortError,
 } from './errors';
+
 // PromisePool is a dependency the Irys client already requires, so using it here has no extra cost.
 
-/**
- * This method is necessary to import the Irys package on both ESM and CJS modules.
- * Without this, we get a different structure on each module:
- * - CJS: { default: [Getter], WebIrys: [Getter] }
- * - ESM: { default: { default: [Getter], WebIrys: [Getter] } }
- * This method fixes this by ensure there is not double default in the imported package.
- */
-// eslint-disable-next-line @typescript-eslint/naming-convention
-function _removeDoubleDefault<T>(pkg: T): T {
-  if (
-    pkg &&
-    typeof pkg === 'object' &&
-    'default' in pkg &&
-    'default' in (pkg as any).default
-  ) {
-    return (pkg as any).default;
-  }
+// /**
+//  * This method is necessary to import the Irys package on both ESM and CJS modules.
+//  * Without this, we get a different structure on each module:
+//  * - CJS: { default: [Getter], WebIrys: [Getter] }
+//  * - ESM: { default: { default: [Getter], WebIrys: [Getter] } }
+//  * This method fixes this by ensure there is not double default in the imported package.
+//  */
+// // eslint-disable-next-line @typescript-eslint/naming-convention
+// function _removeDoubleDefault<T>(pkg: T): T {
+//   if (
+//     pkg &&
+//     typeof pkg === 'object' &&
+//     'default' in pkg &&
+//     'default' in (pkg as any).default
+//   ) {
+//     return (pkg as any).default;
+//   }
 
-  return pkg;
-}
+//   return pkg;
+// }
 
 export type IrysUploader = UploaderInterface & {
   irys: () => Promise<BaseNodeIrys | BaseWebIrys>;
@@ -108,7 +96,11 @@ const MINIMUM_SIZE = 80_000;
 
 const gatewayUrl = (id: string) => `https://gateway.irys.xyz/${id}`;
 
-export function createIrysUploader(
+export function createBaseIrysUploader(
+  initFn: (    address: string,
+    payer: Signer,
+    options: any,
+    context: any) => Promise<BaseWebIrys | BaseNodeIrys>,
   context: Pick<Context, 'rpc' | 'payer' | 'eddsa'>,
   uploaderOptions: IrysUploaderOptions = {}
 ): IrysUploader {
@@ -279,18 +271,19 @@ export function createIrysUploader(
 
     const payer: Signer = uploaderOptions.payer ?? context.payer;
 
-    // If in node use node irys, else use web irys.
-    const isNode =
-      // eslint-disable-next-line no-prototype-builtins
-      typeof window === 'undefined' || window.process?.hasOwnProperty('type');
+    // // If in node use node irys, else use web irys.
+    // const isNode =
+    //   // eslint-disable-next-line no-prototype-builtins
+    //   typeof window === 'undefined' || window.process?.hasOwnProperty('type');
 
-    let irys;
-    if (isNode && isKeypairSigner(payer))
-      irys = await initNodeIrys(address, payer, irysOptions);
-    else {
-      irys = await initWebIrys(address, payer, irysOptions);
-    }
+    // let irys;
+    // if (isNode && isKeypairSigner(payer))
+    //   irys = await initNodeIrys(address, payer, irysOptions);
+    // else {
+    //   irys = await initWebIrys(address, payer, irysOptions, context);
+    // }
 
+    const irys = await initFn(address, payer, irysOptions, context);
     try {
       // Check for valid irys node.
       await irys.utils.getBundlerAddress(token);
@@ -301,92 +294,9 @@ export function createIrysUploader(
     return irys;
   };
 
-  const initNodeIrys = async (
-    address: string,
-    keypair: Keypair,
-    options: any
-  ): Promise<BaseNodeIrys> => {
-    const bPackage = _removeDoubleDefault(await import('@irys/upload'));
-    const cPackage = _removeDoubleDefault(await import('@irys/upload-solana'));
-    return bPackage
-      .Uploader(cPackage.Solana)
-      .bundlerUrl(address)
-      .withWallet(keypair.secretKey)
-      .withIrysConfig(options)
-      .build();
-  };
 
-  const initWebIrys = async (
-    address: string,
-    payer: Signer,
-    options: any
-  ): Promise<BaseWebIrys> => {
-    const wallet: IrysWalletAdapter = {
-      publicKey: toWeb3JsPublicKey(payer.publicKey),
-      signMessage: (message: Uint8Array) => payer.signMessage(message),
-      signTransaction: async (web3JsTransaction: Web3JsTransaction) =>
-        toWeb3JsLegacyTransaction(
-          await payer.signTransaction(
-            fromWeb3JsLegacyTransaction(web3JsTransaction)
-          )
-        ),
-      signAllTransactions: async (web3JsTransactions: Web3JsTransaction[]) => {
-        const transactions = web3JsTransactions.map(
-          fromWeb3JsLegacyTransaction
-        );
-        const signedTransactions = await payer.signAllTransactions(
-          transactions
-        );
-        return signedTransactions.map(toWeb3JsLegacyTransaction);
-      },
-      sendTransaction: async (
-        web3JsTransaction: Web3JsTransaction,
-        connection: Web3JsConnection,
-        options: Web3JsSendOptions & { signers?: Web3JsSigner[] } = {}
-      ): Promise<Web3JsTransactionSignature> => {
-        const { signers: web3JsSigners = [], ...sendOptions } = options;
-        const signers = web3JsSigners.map((web3JsSigner) =>
-          createSignerFromKeypair(
-            context,
-            fromWeb3JsKeypair(
-              Web3JsKeypair.fromSecretKey(web3JsSigner.secretKey)
-            )
-          )
-        );
 
-        let transaction = fromWeb3JsLegacyTransaction(web3JsTransaction);
-        transaction = await signTransaction(transaction, [payer, ...signers]);
 
-        const signature = await context.rpc.sendTransaction(transaction, {
-          ...sendOptions,
-          preflightCommitment: sendOptions.preflightCommitment as Commitment,
-        });
-
-        return base58.deserialize(signature)[0];
-      },
-    };
-
-    const bPackage = _removeDoubleDefault(await import('@irys/web-upload'));
-    const cPackage = _removeDoubleDefault(
-      await import('@irys/web-upload-solana')
-    );
-
-    const irys = await bPackage
-      .WebUploader(cPackage.WebSolana)
-      .withProvider(wallet)
-      .bundlerUrl(address)
-      .withIrysConfig(options)
-      .build();
-
-    try {
-      // Try to initiate irys.
-      await irys.ready();
-    } catch (error) {
-      throw new FailedToInitializeIrysError(error as Error);
-    }
-
-    return irys;
-  };
 
   return {
     getUploadPriceFromBytes,

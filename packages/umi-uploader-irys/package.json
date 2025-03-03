@@ -4,6 +4,7 @@
   "description": "An uploader implementation relying on Irys",
   "license": "MIT",
   "sideEffects": false,
+  "browser": "dist/esm/webIndex.mjs",
   "module": "dist/esm/index.mjs",
   "main": "dist/cjs/index.cjs",
   "types": "dist/types/index.d.ts",
@@ -11,7 +12,35 @@
     ".": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs",
+      "browser": "./dist/esm/webIndex.mjs"
+    },
+    "./web": {
+      "types": "./dist/types/webIndex.d.ts",
+      "browser": "./dist/esm/webIndex.mjs",
+      "import": "./dist/esm/webIndex.mjs",
+      "require": "./dist/cjs/webIndex.cjs"
+    },
+    "./node": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs"
+    },
+    "./plugin": {
+      "types": "./dist/types/index.d.ts",
+      "browser": "./dist/esm/pluginWeb.mjs",
+      "import": "./dist/esm/node.mjs",
+      "require": "./dist/cjs/node.cjs"
+    },
+    "./plugin/node": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/node.mjs",
+      "require": "./dist/cjs/node.cjs"
+    },
+    "./plugin/web": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/web.mjs",
+      "require": "./dist/cjs/web.cjs"
     }
   },
   "files": [
