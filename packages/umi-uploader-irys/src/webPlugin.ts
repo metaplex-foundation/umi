@@ -97,23 +97,12 @@ export const initWebIrys = async (
       },
     };
 
-    // const bPackage = _removeDoubleDefault(await import('@irys/web-upload'));
-    // const cPackage = _removeDoubleDefault(
-    //   await import('@irys/web-upload-solana')
-    // );
-
     try {
-    const irys = await WebUploader(WebSolana)
-    //   .WebUploader(cPackage.WebSolana)
+    return await WebUploader(WebSolana)
       .withProvider(wallet)
       .bundlerUrl(address)
       .withIrysConfig(options)
       .build();
-
-
-      // Try to initiate irys.
-      await irys.ready();
-      return irys
     } catch (error) {
       throw new FailedToInitializeIrysError(error as Error);
     }

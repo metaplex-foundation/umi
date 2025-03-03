@@ -33,26 +33,6 @@ import {
 
 // PromisePool is a dependency the Irys client already requires, so using it here has no extra cost.
 
-// /**
-//  * This method is necessary to import the Irys package on both ESM and CJS modules.
-//  * Without this, we get a different structure on each module:
-//  * - CJS: { default: [Getter], WebIrys: [Getter] }
-//  * - ESM: { default: { default: [Getter], WebIrys: [Getter] } }
-//  * This method fixes this by ensure there is not double default in the imported package.
-//  */
-// // eslint-disable-next-line @typescript-eslint/naming-convention
-// function _removeDoubleDefault<T>(pkg: T): T {
-//   if (
-//     pkg &&
-//     typeof pkg === 'object' &&
-//     'default' in pkg &&
-//     'default' in (pkg as any).default
-//   ) {
-//     return (pkg as any).default;
-//   }
-
-//   return pkg;
-// }
 
 export type IrysUploader = UploaderInterface & {
   irys: () => Promise<BaseNodeIrys | BaseWebIrys>;
@@ -270,18 +250,6 @@ export function createBaseIrysUploader(
     };
 
     const payer: Signer = uploaderOptions.payer ?? context.payer;
-
-    // // If in node use node irys, else use web irys.
-    // const isNode =
-    //   // eslint-disable-next-line no-prototype-builtins
-    //   typeof window === 'undefined' || window.process?.hasOwnProperty('type');
-
-    // let irys;
-    // if (isNode && isKeypairSigner(payer))
-    //   irys = await initNodeIrys(address, payer, irysOptions);
-    // else {
-    //   irys = await initWebIrys(address, payer, irysOptions, context);
-    // }
 
     const irys = await initFn(address, payer, irysOptions, context);
     try {
