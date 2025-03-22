@@ -442,16 +442,16 @@ export type RpcConfirmTransactionOptions = RpcBaseOptions & {
  */
 export type RpcConfirmTransactionStrategy =
   | {
-    type: 'blockhash';
-    blockhash: Blockhash;
-    lastValidBlockHeight: number;
-  }
+      type: 'blockhash';
+      blockhash: Blockhash;
+      lastValidBlockHeight: number;
+    }
   | {
-    type: 'durableNonce';
-    minContextSlot: number;
-    nonceAccountPubkey: PublicKey;
-    nonceValue: string;
-  };
+      type: 'durableNonce';
+      minContextSlot: number;
+      nonceAccountPubkey: PublicKey;
+      nonceValue: string;
+    };
 
 /**
  * Defines the result of a transaction simulation.

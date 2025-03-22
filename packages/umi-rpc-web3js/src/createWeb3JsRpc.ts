@@ -305,25 +305,28 @@ export function createWeb3JsRpc(
     });
   };
 
-  const call = async <Result, Params extends any[] | Record<string, any> = any[]>(
+  const call = async <
+    Result,
+    Params extends any[] | Record<string, any> = any[]
+  >(
     method: string,
     params?: Params,
     options: RpcCallOptions = {}
   ): Promise<Result> => {
     const client = (getConnection() as any)._rpcClient as RpcClient;
 
-    // Handle both array and object params 
+    // Handle both array and object params
     const resolvedParams = Array.isArray(params)
       ? resolveCallParams(
-        [...params] as any[],
-        options.commitment,
-        options.extra
-      )
+          [...params] as any[],
+          options.commitment,
+          options.extra
+        )
       : resolveNamedCallParams(
-        params as Record<string, any>,
-        options.commitment,
-        options.extra
-      );
+          params as Record<string, any>,
+          options.commitment,
+          options.extra
+        );
 
     return new Promise((resolve, reject) => {
       const callback: JSONRPCCallbackTypePlain = (error, response) => {
