@@ -176,13 +176,15 @@ export interface RpcInterface {
    * Send a custom RPC request to the node.
    *
    * @param method The method to call.
-   * @param params The parameters to pass to the method.
+   * @param params The parameters to pass to the method. Can be either:
+   *               - An array for positional parameters
+   *               - An object for named parameters
    * @param options The options to use when sending a custom RPC request.
    * @returns The generic result of the RPC call.
    */
-  call<R, P extends any[] = any[]>(
+  call<R, P extends any[] | Record<string, any> = any[]>(
     method: string,
-    params?: [...P],
+    params?: P,
     options?: RpcCallOptions
   ): Promise<R>;
 
