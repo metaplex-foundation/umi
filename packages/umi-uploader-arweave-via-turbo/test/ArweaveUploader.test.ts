@@ -9,13 +9,13 @@ import { httpDownloader } from '@metaplex-foundation/umi-downloader-http';
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { fetchHttp } from '@metaplex-foundation/umi-http-fetch';
 import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
+import { utf8 } from '@metaplex-foundation/umi/serializers';
 import test from 'ava';
 import {
   ArweaveUploader,
   arweaveUploader,
   ArweaveUploaderOptions,
 } from '../src';
-import { utf8 } from '@metaplex-foundation/umi/serializers';
 
 test('example test', async (t) => {
   t.is(typeof arweaveUploader, 'function');

@@ -19,8 +19,9 @@ import {
   isKeypairSigner,
   publicKey,
   sol,
+  base58,
 } from '@metaplex-foundation/umi';
-import { base58 } from '@metaplex-foundation/umi/serializers';
+
 import { toWeb3JsPublicKey } from '@metaplex-foundation/umi-web3js-adapters';
 import {
   LAMPORTS_PER_SOL,
