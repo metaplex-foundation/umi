@@ -40,7 +40,6 @@
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
     "@metaplex-foundation/umi": "workspace:^",
-    "@metaplex-foundation/umi-serializers-encodings": "workspace:^",
     "@metaplex-foundation/umi-downloader-http": "workspace:^",
     "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
     "@metaplex-foundation/umi-http-fetch": "workspace:^",
