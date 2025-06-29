@@ -4,14 +4,14 @@
   "description": "An uploader implementation relying on Arweave",
   "license": "MIT",
   "sideEffects": false,
-  "module": "dist/esm/index.mjs",
-  "main": "dist/cjs/index.cjs",
+  "module": "dist/esm/umi-uploader-arweave-via-turbo/src/index.mjs",
+  "main": "dist/cjs/umi-uploader-arweave-via-turbo/src/index.cjs",
   "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/index.mjs",
-      "require": "./dist/cjs/index.cjs"
+      "import": "./dist/esm/umi-uploader-arweave-via-turbo/src/index.mjs",
+      "require": "./dist/cjs/umi-uploader-arweave-via-turbo/src/index.cjs"
     }
   },
   "files": [
