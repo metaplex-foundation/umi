@@ -4,14 +4,14 @@
   "description": "An uploader implementation relying on Arweave",
   "license": "MIT",
   "sideEffects": false,
-  "module": "dist/esm/umi-uploader-arweave-via-turbo/src/index.mjs",
-  "main": "dist/cjs/umi-uploader-arweave-via-turbo/src/index.cjs",
+  "module": "dist/esm/index.mjs",
+  "main": "dist/cjs/index.cjs",
   "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/umi-uploader-arweave-via-turbo/src/index.mjs",
-      "require": "./dist/cjs/umi-uploader-arweave-via-turbo/src/index.cjs"
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
     }
   },
   "files": [
@@ -40,6 +40,7 @@
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
     "@metaplex-foundation/umi": "workspace:^",
+    "@metaplex-foundation/umi-serializers-encodings": "workspace:^",
     "@metaplex-foundation/umi-downloader-http": "workspace:^",
     "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
     "@metaplex-foundation/umi-http-fetch": "workspace:^",
