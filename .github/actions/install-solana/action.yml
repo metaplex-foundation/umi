@@ -11,7 +11,7 @@ runs:
     - name: Cache Solana Install
       if: ${{ !env.ACT }}
       id: cache-solana-install
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: "$HOME/.local/share/solana/install/releases/${{ inputs.solana_version }}"
         key: ${{ runner.os }}-Solana-v${{ inputs.solana_version  }}
