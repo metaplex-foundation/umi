@@ -1,5 +1,5 @@
 import { publicKey, PublicKey } from '@metaplex-foundation/umi';
-import { address, Address } from "@solana/kit";
+import { address, Address } from '@solana/kit';
 
 // Conversion utilities for Address between @solana/kit and umi
 // Kit and umi both use base58 strings for addresses/public keys.
@@ -10,7 +10,7 @@ import { address, Address } from "@solana/kit";
  * In practice, this is just an identity function.
  */
 export function fromKitAddress(kitAddress: Address): PublicKey {
-    return publicKey(kitAddress.toString());
+  return publicKey(kitAddress.toString());
 }
 
 /**
@@ -18,5 +18,5 @@ export function fromKitAddress(kitAddress: Address): PublicKey {
  * In practice, this is just an identity function.
  */
 export function toKitAddress(umiPublicKey: PublicKey): Address {
-    return address(umiPublicKey.toString());
-} 
+  return address(umiPublicKey.toString());
+}
