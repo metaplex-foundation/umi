@@ -58,6 +58,6 @@ export async function fromKitKeypair(
  * Uses Kit's createKeyPairFromBytes utility.
  */
 export function toKitKeypair(umiKeypair: Keypair): Promise<CryptoKeyPair> {
-    // The secretKey already contains both secret (32 bytes) and public (32 bytes)  
-    return createKeyPairFromBytes(umiKeypair.secretKey, true);
-} 
+  // The secretKey already contains both secret (32 bytes) and public (32 bytes)
+  return createKeyPairFromBytes(umiKeypair.secretKey, true);
+}
