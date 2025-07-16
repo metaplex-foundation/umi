@@ -1,4 +1,4 @@
-import { webcrypto } from 'crypto';
+import { webcrypto } from 'node:crypto';
 
 if (!globalThis.crypto) {
     // @ts-expect-error: Node.js webcrypto assignment for test polyfill

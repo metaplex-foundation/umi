@@ -1,4 +1,4 @@
-import { Keypair, publicKeyBytes, publicKey } from '@metaplex-foundation/umi';
+import { Keypair, publicKey } from '@metaplex-foundation/umi';
 import { createKeyPairFromBytes } from '@solana/keys';
 import { getAddressDecoder } from '@solana/kit';
 
@@ -44,8 +44,6 @@ export async function fromKitKeypair(kitKeypair: CryptoKeyPair): Promise<Keypair
  * Uses Kit's createKeyPairFromBytes utility.
  */
 export function toKitKeypair(umiKeypair: Keypair): Promise<CryptoKeyPair> {
-    const bytes = new Uint8Array(64);
-    bytes.set(umiKeypair.secretKey);
-    bytes.set(publicKeyBytes(umiKeypair.publicKey), 32);
-    return createKeyPairFromBytes(bytes, true);
+    // The secretKey already contains both secret (32 bytes) and public (32 bytes)  
+    return createKeyPairFromBytes(umiKeypair.secretKey, true);
 } 
