@@ -271,13 +271,13 @@ importers:
   packages/umi-kit-adapters:
     dependencies:
       '@solana/instructions':
-        specifier: ^2.1.1
+        specifier: 2.x
         version: 2.1.1(typescript@5.7.2)
       '@solana/keys':
-        specifier: ^2.1.1
+        specifier: 2.x
         version: 2.1.1(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.2)
       '@solana/transactions':
-        specifier: ^2.1.1
+        specifier: 2.x
         version: 2.1.1(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.2)
       buffer:
         specifier: ^6.0.3
@@ -302,10 +302,10 @@ importers:
         specifier: ^0.8.0
         version: 0.8.0(@solana/kit@2.1.1)
       '@solana/compat':
-        specifier: ^2.1.1
+        specifier: 2.x
         version: 2.1.1(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.2)
       '@solana/kit':
-        specifier: ^2.1.1
+        specifier: 2.x
         version: 2.1.1(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.2)(ws@8.18.2)
       ava:
         specifier: ^5.1.0
