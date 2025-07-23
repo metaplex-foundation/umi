@@ -1,0 +1,77 @@
+{
+    "name": "@metaplex-foundation/umi-kit-adapters",
+    "version": "1.0.0",
+    "description": "A helper package to transform @solana/kit types to and from umi types",
+    "license": "MIT",
+    "sideEffects": false,
+    "module": "dist/esm/index.mjs",
+    "main": "dist/cjs/index.cjs",
+    "types": "dist/types/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/types/index.d.ts",
+            "import": "./dist/esm/index.mjs",
+            "require": "./dist/cjs/index.cjs"
+        }
+    },
+    "files": [
+        "/dist/cjs",
+        "/dist/esm",
+        "/dist/types",
+        "/src"
+    ],
+    "scripts": {
+        "lint": "eslint --ext js,ts,tsx src",
+        "lint:fix": "eslint --fix --ext js,ts,tsx src",
+        "clean": "rimraf dist",
+        "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
+        "test": "ava"
+    },
+    "dependencies": {
+        "buffer": "^6.0.3"
+    },
+    "peerDependencies": {
+        "@metaplex-foundation/umi": "workspace:^",
+        "@solana/compat": "2.x",
+        "@solana/instructions": "2.x",
+        "@solana/kit": "2.x",
+        "@solana/keys": "2.x",
+        "@solana/transactions": "2.x"
+    },
+    "devDependencies": {
+        "@ava/typescript": "^3.0.1",
+        "@metaplex-foundation/umi": "workspace:^",
+        "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
+        "@metaplex-foundation/umi-bundle-defaults": "workspace:^",
+        "@metaplex-foundation/mpl-toolbox": "0.10.0",
+        "@solana/kit": "2.x",
+        "@solana/compat": "2.x",
+        "@solana-program/compute-budget": "^0.8.0",
+        "ava": "^5.1.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "author": "Metaplex Maintainers <contact@metaplex.com>",
+    "homepage": "https://metaplex.com",
+    "repository": {
+        "url": "https://github.com/metaplex-foundation/umi.git"
+    },
+    "typedoc": {
+        "entryPoint": "./src/index.ts",
+        "readmeFile": "./README.md",
+        "displayName": "umi-kit-adapters"
+    },
+    "ava": {
+        "require": [
+            "./test/_setup.ts"
+        ],
+        "typescript": {
+            "compile": false,
+            "rewritePaths": {
+                "src/": "dist/test/src/",
+                "test/": "dist/test/test/"
+            }
+        }
+    }
+}
