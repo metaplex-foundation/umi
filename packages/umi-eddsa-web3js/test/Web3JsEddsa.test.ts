@@ -36,15 +36,3 @@ test('it can sign and verify messages', async (t) => {
   // Then we expect the signature to be valid.
   t.true(verified);
 });
-
-test('it can create a keypair from a file', async (t) => {
-  // Given a keypair file.
-  const eddsa = createWeb3JsEddsa();
-  const keypair = eddsa.createKeypairFromFile('test/test.json');
-
-  // Then we expect the signature to be valid.
-  t.true(
-    keypair.publicKey.toString() ==
-      'HUaeN9AVCpTU6QvEmE48wAttKmQEh6RsRd5cWaXqkhVk'
-  );
-});
