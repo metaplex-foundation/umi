@@ -379,6 +379,7 @@ export function createWeb3JsRpc(
           addresses: options.accounts || [],
           encoding: 'base64',
         },
+        replaceRecentBlockhash: options.replaceRecentBlockhash,
       });
       return result.value;
     } catch (error: any) {
