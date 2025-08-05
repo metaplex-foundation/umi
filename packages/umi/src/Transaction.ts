@@ -133,6 +133,7 @@ export type TransactionMeta = {
   readonly innerInstructions: TransactionMetaInnerInstruction[] | null;
   readonly loadedAddresses: TransactionMetaLoadedAddresses;
   readonly computeUnitsConsumed: bigint | null;
+  readonly costUnits: bigint | null;
   readonly err: TransactionError | null;
 };
 

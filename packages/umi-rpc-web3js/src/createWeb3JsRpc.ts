@@ -254,6 +254,9 @@ export function createWeb3JsRpc(
         computeUnitsConsumed: meta.computeUnitsConsumed
           ? BigInt(meta.computeUnitsConsumed)
           : null,
+        costUnits: (meta as any).costUnits
+          ? BigInt((meta as any).costUnits)
+          : null,
         err: meta.err,
       },
     };
