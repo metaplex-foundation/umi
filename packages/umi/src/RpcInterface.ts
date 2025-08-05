@@ -505,7 +505,7 @@ export type RpcSimulateTransactionReplacementBlockhash = {
   /** The replacement blockhash used for simulation */
   blockhash: string;
   /** The last valid block height for the replacement blockhash */
-  lastValidBlockHeight: number;
+  lastValidBlockHeight: bigint;
 };
 
 /**
