@@ -1,5 +1,5 @@
 import test from 'ava';
-import { createUmi, generateSigner } from '@metaplex-foundation/umi';
+import { createNullUmi, generateSigner } from '@metaplex-foundation/umi';
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { generateKeyPair } from '@solana/keys';
 import { getAddressFromPublicKey } from '@solana/kit';
@@ -15,13 +15,13 @@ test('fromKitAddress converts Kit Address to umi PublicKey', async (t) => {
 });
 
 test('toKitAddress converts umi PublicKey to Kit Address', (t) => {
-  const umi = createUmi().use(web3JsEddsa());
+  const umi = createNullUmi().use(web3JsEddsa());
   const { publicKey } = generateSigner(umi);
   t.deepEqual(publicKey.toString(), toKitAddress(publicKey).toString());
 });
 
 test('it can roundtrip a public key back to Umi', async (t) => {
-  const umi = createUmi().use(web3JsEddsa());
+  const umi = createNullUmi().use(web3JsEddsa());
   const { publicKey } = generateSigner(umi);
   t.deepEqual(
     publicKey.toString(),

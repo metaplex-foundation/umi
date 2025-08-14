@@ -5,7 +5,7 @@ import {
   Signer,
   Umi,
   WrappedInstruction,
-  createUmi as baseCreateUmi,
+  createNullUmi,
   generateSigner,
   generatedSignerIdentity,
   publicKey,
@@ -13,7 +13,7 @@ import {
 import { base10 } from '../src/serializers';
 
 export const createUmi = (): Umi =>
-  baseCreateUmi().use(generatedSignerIdentity());
+  createNullUmi().use(generatedSignerIdentity());
 
 export const mockInstruction = (): WrappedInstruction => ({
   instruction: {

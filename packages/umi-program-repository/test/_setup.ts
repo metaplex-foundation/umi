@@ -2,14 +2,14 @@ import {
   Cluster,
   PublicKeyInput,
   RpcInterface,
-  createUmi as baseCreateUmi,
+  createNullUmi,
   defaultPublicKey,
   publicKey,
 } from '@metaplex-foundation/umi';
 import { defaultProgramRepository } from '../src';
 
 export const createUmi = (cluster: Cluster = 'localnet') => {
-  const umi = baseCreateUmi().use(defaultProgramRepository());
+  const umi = createNullUmi().use(defaultProgramRepository());
   umi.rpc = { getCluster: () => cluster } as RpcInterface;
   return umi;
 };
