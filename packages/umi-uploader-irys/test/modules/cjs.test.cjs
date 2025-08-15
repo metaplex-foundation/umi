@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const test = require('ava');
 const {
-  createNullUmi,
+  createBaseUmi,
   generatedSignerIdentity,
 } = require('@metaplex-foundation/umi');
 const { web3JsRpc } = require('@metaplex-foundation/umi-rpc-web3js');
@@ -16,7 +16,7 @@ test('it successfully exports commonjs named exports', (t) => {
 
 test('it can import the Irys client', async (t) => {
   const { createIrysUploader } = exported;
-  const context = createNullUmi()
+  const context = createBaseUmi()
     .use(web3JsRpc('http://localhost:8899'))
     .use(web3JsEddsa())
     .use(generatedSignerIdentity());

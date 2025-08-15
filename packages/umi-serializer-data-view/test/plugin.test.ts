@@ -1,8 +1,8 @@
-import { createNullUmi } from '@metaplex-foundation/umi';
+import { createBaseUmi } from '@metaplex-foundation/umi';
 import test from 'ava';
 import { dataViewSerializer } from '../src';
 
 test('it can use a DataView serializer', (t) => {
-  const umi = createNullUmi().use(dataViewSerializer());
+  const umi = createBaseUmi().use(dataViewSerializer());
   t.deepEqual(umi.serializer.u16().serialize(42), new Uint8Array([42, 0]));
 });
