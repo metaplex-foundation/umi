@@ -1,6 +1,6 @@
 import {
   Umi,
-  createUmi as baseCreateUmi,
+  createBaseUmi,
   sol,
   Context,
   generateSigner,
@@ -13,7 +13,7 @@ export const createUmi = async (
   rpcOptions?: Web3JsRpcOptions,
   airdropAmount = sol(100)
 ): Promise<Umi> => {
-  const umi = baseCreateUmi().use(testPlugins(endpoint, rpcOptions));
+  const umi = createBaseUmi().use(testPlugins(endpoint, rpcOptions));
   await umi.rpc.airdrop(umi.identity.publicKey, airdropAmount);
   return umi;
 };

@@ -1,6 +1,6 @@
 import test from 'ava';
 import {
-  createUmi,
+  createBaseUmi,
   generateSigner,
   publicKeyBytes,
 } from '@metaplex-foundation/umi';
@@ -12,7 +12,7 @@ import {
 } from '../src';
 
 test('fromKitKeypair converts Kit CryptoKeyPair to umi Keypair and back', async (t) => {
-  const umi = createUmi().use(web3JsEddsa());
+  const umi = createBaseUmi().use(web3JsEddsa());
   const originalKeypair = generateSigner(umi);
   const kitKeypair = await toKitKeypair(originalKeypair);
   const convertedKeypair = await fromKitKeypair(kitKeypair);
@@ -24,7 +24,7 @@ test('fromKitKeypair converts Kit CryptoKeyPair to umi Keypair and back', async 
 });
 
 test('toKitKeypair converts umi Keypair to Kit CryptoKeyPair and back', async (t) => {
-  const umi = createUmi().use(web3JsEddsa());
+  const umi = createBaseUmi().use(web3JsEddsa());
   const keypair = generateSigner(umi);
   const kitKeypair = await toKitKeypair(keypair);
   const exportedPublicKey = new Uint8Array(

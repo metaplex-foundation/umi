@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {
-  createUmi as baseCreateUmi,
+  createBaseUmi,
   generateSigner,
   Instruction,
   KeypairSigner,
@@ -28,7 +28,7 @@ import {
 import { web3JsTransactionFactory } from '../src';
 
 export const createUmi = (): Umi =>
-  baseCreateUmi().use(web3JsEddsa()).use(web3JsTransactionFactory());
+  createBaseUmi().use(web3JsEddsa()).use(web3JsTransactionFactory());
 
 export const createTransferInstruction = (
   umi: Umi
