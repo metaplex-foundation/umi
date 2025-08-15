@@ -21,14 +21,14 @@ export interface Umi extends Context {
  * `@metaplex-foundation/umi-bundle-defaults` instead. If
  * you're sure you want to use the base Umi without any plugins,
  * you can use `createBaseUmi` instead.
- *  
- * @example Using defaults bundle:  
- * import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';  
- * const umi = createUmi('https://...');  
  *
- * @example Base only (no plugins):  
- * import { createBaseUmi } from '@metaplex-foundation/umi';  
- * const umi = createBaseUmi(); 
+ * @example Using defaults bundle:
+ * import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
+ * const umi = createUmi('https://...');
+ *
+ * @example Base only (no plugins):
+ * import { createBaseUmi } from '@metaplex-foundation/umi';
+ * const umi = createBaseUmi();
  */
 export const createUmi = (): Umi => createBaseUmi();
 
