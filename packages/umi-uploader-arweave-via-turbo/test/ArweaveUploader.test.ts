@@ -1,7 +1,7 @@
 import {
   Context,
   createGenericFile,
-  createUmi,
+  createBaseUmi,
   generatedSignerIdentity,
   usd,
 } from '@metaplex-foundation/umi';
@@ -28,7 +28,7 @@ const devNetRpcUrl = 'https://api.devnet.solana.com';
 const getContext = async (
   options?: ArweaveUploaderOptions
 ): Promise<Context> => {
-  const context = createUmi().use({
+  const context = createBaseUmi().use({
     install(umi) {
       umi.use(web3JsRpc(devNetRpcUrl));
       umi.use(web3JsEddsa());

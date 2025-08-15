@@ -1,7 +1,7 @@
 import {
   Context,
   createGenericFile,
-  createUmi,
+  createBaseUmi,
   generatedSignerIdentity,
   sol,
   utf8,
@@ -20,7 +20,7 @@ test('example test', async (t) => {
 // TODO(loris): Unskip these tests when we can mock the Irys API.
 
 const getContext = async (options?: IrysUploaderOptions): Promise<Context> => {
-  const context = createUmi().use({
+  const context = createBaseUmi().use({
     install(umi) {
       umi.use(web3JsRpc('https://metaplex.devnet.rpcpool.com/'));
       umi.use(web3JsEddsa());
