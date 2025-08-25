@@ -69,14 +69,16 @@ export async function assertSolBalanceChanges(
   const aggregatedChanges: { [pubkey: string]: bigint } = {};
 
   const transactions = await Promise.all(
-    signatures.map(signature =>
+    signatures.map((signature) =>
       umi.rpc.getTransaction(signature, { commitment: 'confirmed' })
     )
   );
 
   transactions.forEach((transaction, index) => {
     if (!transaction) {
-      throw new Error(`Transaction not found for signature: ${signatures[index]}`);
+      throw new Error(
+        `Transaction not found for signature: ${signatures[index]}`
+      );
     }
 
     const txChanges = getSolBalanceChanges(transaction);
