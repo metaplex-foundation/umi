@@ -11,6 +11,7 @@ import type {
   TransactionError,
   TransactionSignature,
   TransactionStatus,
+  TransactionVersion,
   TransactionWithMeta,
 } from './Transaction';
 import { InterfaceImplementationMissingError } from './errors';
@@ -132,7 +133,7 @@ export interface RpcInterface {
   getTransaction(
     signature: TransactionSignature,
     options?: RpcGetTransactionOptions
-  ): Promise<TransactionWithMeta | null>;
+  ): Promise<(TransactionWithMeta & RpcGetTransactionResponseOther) | null>;
 
   /**
    * Fetch transaction commitments from an array of signatures.
@@ -364,6 +365,18 @@ export type RpcGetLatestBlockhashOptions = RpcBaseOptions;
  * @category Rpc
  */
 export type RpcGetTransactionOptions = RpcBaseOptions;
+
+/**
+ * The other fields of getTransaction response.
+ * @category Rpc
+ */
+export type RpcGetTransactionResponseOther = {
+  response: {
+    blockTime?: bigint;
+    slot: bigint;
+    version?: TransactionVersion;
+  };
+};
 
 /**
  * The options to use when fetching transaction statuses.
