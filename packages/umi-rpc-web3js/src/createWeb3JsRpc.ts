@@ -223,7 +223,8 @@ export function createWeb3JsRpc(
 
     return {
       response: {
-        blockTime: response.blockTime != null? BigInt(response.blockTime) : undefined,
+        blockTime:
+          response.blockTime != null ? BigInt(response.blockTime) : undefined,
         slot: BigInt(response.slot),
         version: response.version as TransactionVersion,
       },

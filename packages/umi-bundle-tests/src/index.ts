@@ -40,7 +40,6 @@ export function getSolBalanceChanges(
 ): SolBalanceChanges {
   const changes: SolBalanceChanges = {};
 
-
   const { preBalances, postBalances } = transaction.meta;
   const accountKeys = transaction.message.accounts;
 
@@ -75,7 +74,9 @@ export async function assertSolBalanceChanges(
   transactions.forEach((transaction, index) => {
     if (!transaction) {
       throw new Error(
-        `Transaction not found for signature: ${base58.deserialize(signatures[index])[0]}`
+        `Transaction not found for signature: ${
+          base58.deserialize(signatures[index])[0]
+        }`
       );
     }
 
