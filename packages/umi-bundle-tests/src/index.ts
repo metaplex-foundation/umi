@@ -63,7 +63,7 @@ export async function assertSolBalanceChanges(
   expectedChanges: SolBalanceChanges,
   exclusive: boolean = false
 ): Promise<void> {
-  const aggregatedChanges: { [pubkey: string]: bigint } = {};
+  const aggregatedChanges: Record<string, bigint> = {};
 
   const transactions = await Promise.all(
     signatures.map((signature) =>
