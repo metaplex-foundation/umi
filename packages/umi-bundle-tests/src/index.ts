@@ -9,6 +9,7 @@ import {
   lamports,
   TransactionSignature,
 } from '@metaplex-foundation/umi';
+import { base58 } from '@metaplex-foundation/umi/serializers';
 import { Web3JsRpcOptions } from '@metaplex-foundation/umi-rpc-web3js';
 import { testPlugins } from './plugin';
 
@@ -31,7 +32,7 @@ export const generateSignerWithSol = async (
   return signer;
 };
 
-export type SolBalanceChanges = { [pubkey: string]: SolAmount };
+export type SolBalanceChanges = Record<string, SolAmount>;
 
 // Helper function to extract SOL balance changes from a transaction
 export function getSolBalanceChanges(
@@ -39,9 +40,6 @@ export function getSolBalanceChanges(
 ): SolBalanceChanges {
   const changes: SolBalanceChanges = {};
 
-  if (!transaction.meta) {
-    return changes;
-  }
 
   const { preBalances, postBalances } = transaction.meta;
   const accountKeys = transaction.message.accounts;
@@ -77,7 +75,7 @@ export async function assertSolBalanceChanges(
   transactions.forEach((transaction, index) => {
     if (!transaction) {
       throw new Error(
-        `Transaction not found for signature: ${signatures[index]}`
+        `Transaction not found for signature: ${base58.deserialize(signatures[index])[0]}`
       );
     }
 
