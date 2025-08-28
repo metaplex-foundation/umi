@@ -8,6 +8,7 @@ import {
   SolAmount,
   lamports,
   TransactionSignature,
+  Commitment,
 } from '@metaplex-foundation/umi';
 import { base58 } from '@metaplex-foundation/umi/serializers';
 import { Web3JsRpcOptions } from '@metaplex-foundation/umi-rpc-web3js';
@@ -61,13 +62,14 @@ export async function assertSolBalanceChanges(
   umi: Pick<Context, 'rpc'>,
   signatures: TransactionSignature[],
   expectedChanges: SolBalanceChanges,
-  exclusive: boolean = false
+  exclusive: boolean = false,
+  commitment: Commitment = 'confirmed'
 ): Promise<void> {
   const aggregatedChanges: Record<string, bigint> = {};
 
   const transactions = await Promise.all(
     signatures.map((signature) =>
-      umi.rpc.getTransaction(signature, { commitment: 'confirmed' })
+      umi.rpc.getTransaction(signature, { commitment })
     )
   );
 
