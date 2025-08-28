@@ -32,6 +32,7 @@ import {
   RpcGetSignatureStatusesOptions,
   RpcGetSlotOptions,
   RpcGetTransactionOptions,
+  RpcGetTransactionResponseOther,
   RpcInterface,
   RpcSendTransactionOptions,
   RpcSimulateTransactionOptions,
@@ -42,6 +43,7 @@ import {
   TransactionMetaTokenBalance,
   TransactionSignature,
   TransactionStatus,
+  TransactionVersion,
   TransactionWithMeta,
 } from '@metaplex-foundation/umi';
 import {
@@ -184,7 +186,7 @@ export function createWeb3JsRpc(
   const getTransaction = async (
     signature: TransactionSignature,
     options: RpcGetTransactionOptions = {}
-  ): Promise<TransactionWithMeta | null> => {
+  ): Promise<(TransactionWithMeta & RpcGetTransactionResponseOther) | null> => {
     const response = await getConnection().getTransaction(
       base58.deserialize(signature)[0],
       {
@@ -220,6 +222,12 @@ export function createWeb3JsRpc(
     });
 
     return {
+      response: {
+        blockTime:
+          response.blockTime != null ? BigInt(response.blockTime) : undefined,
+        slot: BigInt(response.slot),
+        version: response.version as TransactionVersion,
+      },
       message,
       serializedMessage: context.transactions.serializeMessage(message),
       signatures: transaction.signatures.map(base58.serialize),
