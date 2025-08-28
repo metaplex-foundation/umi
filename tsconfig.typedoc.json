@@ -11,6 +11,6 @@
     "excludeProtected": true,
     "excludeNotDocumented": false,
     "categorizeByGroup": false,
-    "defaultCategory": "Other",
+    "defaultCategory": "Other"
   }
 }
