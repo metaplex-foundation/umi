@@ -57,6 +57,12 @@ export type SolAmount = Amount<'SOL', 9>;
 export type UsdAmount = Amount<'USD', 2>;
 
 /**
+ * An amount of SOL represented using the micro units — i.e. microlamports.
+ * @category Utils — Amounts
+ */
+export type MicroSolAmount = Amount<'mSOL', 15>;
+
+/**
  * An percentage represented in basis points using a given number of decimals.
  * @category Utils — Amounts
  */
@@ -148,6 +154,20 @@ export const sol = (sol: number): SolAmount =>
  */
 export const usd = (usd: number): UsdAmount =>
   createAmountFromDecimals(usd, 'USD', 2);
+
+/**
+ * Creates a {@link MicroSolAmount} from the provided micro lamports.
+ * @category Utils — Amounts
+ */
+export const microLamports = (microLamports: BigIntInput): MicroSolAmount =>
+  createAmount(microLamports, 'mSOL', 15);
+
+/**
+ * Creates a {@link MicroSolAmount} from the provided decimal value in SOL.
+ * @category Utils — Amounts
+ */
+export const microSol = (sol: number): MicroSolAmount =>
+  createAmountFromDecimals(sol, 'mSOL', 15);
 
 /**
  * Determines whether a given amount has the provided identifier and decimals.
