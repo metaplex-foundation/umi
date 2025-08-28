@@ -1,8 +1,11 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.typedoc.json",
   "include": ["src"],
   "compilerOptions": {
     "outDir": "dist/esm",
     "declarationDir": "dist/types"
+  },
+  "typedocOptions": {
+    "name": "umi-signer-derived"
   }
 }

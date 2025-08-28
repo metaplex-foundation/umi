@@ -42,11 +42,6 @@
   "repository": {
     "url": "https://github.com/metaplex-foundation/umi.git"
   },
-  "typedoc": {
-    "entryPoint": "./src/index.ts",
-    "readmeFile": "./README.md",
-    "displayName": "umi-tasks"
-  },
   "ava": {
     "typescript": {
       "compile": false,

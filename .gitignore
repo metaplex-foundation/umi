@@ -27,3 +27,4 @@ typedoc
 # Bundle stats file
 stats.html
 .vercel
+.claude/
