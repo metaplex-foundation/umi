@@ -1,8 +1,3 @@
-/**
- * @packageDocumentation
- * @module umi-serializers-numbers
- */
-
 export * from './common';
 export * from './errors';
 export * from './f32';

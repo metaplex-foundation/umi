@@ -1,8 +1,3 @@
-/**
- * @packageDocumentation
- * @module umi-serializers-encodings
- */
-
 export * from './base10';
 export * from './base16';
 export * from './base58';

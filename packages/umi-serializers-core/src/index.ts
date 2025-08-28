@@ -1,8 +1,3 @@
-/**
- * @packageDocumentation
- * @module umi-serializers-core
- */
-
 export * from './bytes';
 export * from './common';
 export * from './errors';
