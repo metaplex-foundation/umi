@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module umi
+ */
+
 export * from '@metaplex-foundation/umi-options';
 export * from '@metaplex-foundation/umi-public-keys';
 

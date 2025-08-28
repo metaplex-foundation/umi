@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module umi-serializer-beet
+ */
+
 export * from './array';
 export * from './createBeetSerializer';
 export * from './bool';

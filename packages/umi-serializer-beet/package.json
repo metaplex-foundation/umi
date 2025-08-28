@@ -49,11 +49,6 @@
   "repository": {
     "url": "https://github.com/metaplex-foundation/umi.git"
   },
-  "typedoc": {
-    "entryPoint": "./src/index.ts",
-    "readmeFile": "./README.md",
-    "displayName": "umi-serializer-beet"
-  },
   "ava": {
     "typescript": {
       "compile": false,

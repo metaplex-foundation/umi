@@ -63,8 +63,7 @@
     "rollup": "^2.72.0",
     "rollup-plugin-polyfill-node": "^0.9.0",
     "turbo": "^1.9.1",
-    "typedoc": "^0.23.0",
-    "typedoc-plugin-resolve-crossmodule-references": "^0.3.3",
+    "typedoc": "^0.28.11",
     "typescript": "^5.3.3",
     "vercel": "^28.16.1"
   },

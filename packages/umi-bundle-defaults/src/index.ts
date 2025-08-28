@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module umi-bundle-defaults
+ */
+
 import { Umi, createBaseUmi } from '@metaplex-foundation/umi';
 import type { ChunkGetAccountsRpcOptions } from '@metaplex-foundation/umi-rpc-chunk-get-accounts';
 import type { Web3JsRpcOptions } from '@metaplex-foundation/umi-rpc-web3js';

@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module umi-bundle-tests
+ */
+
 import {
   Umi,
   createBaseUmi,

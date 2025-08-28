@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module umi-serializer-data-view
+ */
+
 export {
   array,
   bool,

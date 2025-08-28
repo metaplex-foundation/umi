@@ -48,11 +48,6 @@
   "repository": {
     "url": "https://github.com/metaplex-foundation/umi.git"
   },
-  "typedoc": {
-    "entryPoint": "./src/index.ts",
-    "readmeFile": "./README.md",
-    "displayName": "umi-signer-wallet-adapters"
-  },
   "ava": {
     "typescript": {
       "compile": false,

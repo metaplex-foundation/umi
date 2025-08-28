@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "typedocOptions": {
+    "entryPoints": ["./src/index.ts"],
+    "entryPointStrategy": "resolve",
+    "readme": "./README.md",
+    "exclude": ["dist", "node_modules", "test", "test-fixtures", "test-fixtures-data"],
+    "includeVersion": true,
+    "excludeExternals": true,
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "excludeNotDocumented": false,
+    "categorizeByGroup": false,
+    "defaultCategory": "Other",
+  }
+}

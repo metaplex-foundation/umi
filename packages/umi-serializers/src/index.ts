@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module umi-serializers
+ */
+
 export * from '@metaplex-foundation/umi-serializers-core';
 export * from '@metaplex-foundation/umi-serializers-encodings';
 export * from '@metaplex-foundation/umi-serializers-numbers';

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-Umi is a modular JavaScript framework for building Solana clients. It uses a zero-dependency core library that defines interfaces, with pluggable implementations provided via packages. The repository is a monorepo managed with pnpm workspaces and Turbo for build orchestration.
+Umi is a modular JavaScript framework for building Solana clients. It uses a zero-dependency core library that defines interfaces, with pluggable implementations provided via packages. The repository is a monorepo managed with pnpm workspaces (pnpm 8.15.9) and Turbo for build orchestration.
 
 ## Common Commands
 
@@ -97,6 +97,8 @@ const umi = createUmi('https://api.mainnet-beta.solana.com');
 // Custom setup
 import { createBaseUmi } from '@metaplex-foundation/umi';
 const umi = createBaseUmi().use(customPlugins());
+
+// Note: createUmi from core package is deprecated - use createBaseUmi instead
 ```
 
 ### Package Structure
@@ -130,7 +132,13 @@ Each package follows consistent structure:
 
 - Extends: `airbnb-base`, `airbnb-typescript/base`, `prettier`
 - Uses Prettier for formatting
-- Disabled rules: `@typescript-eslint/no-use-before-define`, `import/prefer-default-export`
+- Key disabled rules:
+  - `@typescript-eslint/no-use-before-define`
+  - `@typescript-eslint/no-shadow`
+  - `import/prefer-default-export`
+  - `import/no-cycle`
+  - `class-methods-use-this`
+- Ignored patterns: `.eslintrc.js`, `rollup.config.js`, `dist`, `configs`
 
 ### TypeScript
 
@@ -157,11 +165,16 @@ Each package follows consistent structure:
 
 - Uses Changesets for version management
 - `pnpm packages:change` to document changes
+- `pnpm packages:version` to version packages
+- `pnpm packages:publish` to build and publish (includes `turbo run build`)
 - Automated publishing workflow available
 
 ### Build System
 
 - Turbo for orchestrated builds across packages
+- Build dependencies: `build` depends on `^build` (upstream dependencies)
+- Test depends on `build` task completion
 - Individual packages use Rollup for bundling
 - CommonJS and ES modules support
 - Browser and Node.js compatibility
+- TypeScript compilation runs before Rollup bundling
