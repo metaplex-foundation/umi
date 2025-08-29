@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-uploader-cascade",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "An uploader implementation relying on Cascade",
   "license": "MIT",
   "sideEffects": false,
