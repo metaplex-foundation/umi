@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-storage-mock",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A mock implementation of the uploader and downloader interfaces for test purposes",
   "license": "MIT",
   "sideEffects": false,

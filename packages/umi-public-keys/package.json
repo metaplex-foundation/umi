@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-public-keys",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Defines public keys for the Umi framework",
   "license": "MIT",
   "sideEffects": false,
