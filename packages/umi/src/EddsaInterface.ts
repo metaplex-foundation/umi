@@ -15,10 +15,6 @@ export interface EddsaInterface {
   createKeypairFromSecretKey: (secretKey: Uint8Array) => Keypair;
   /** Restores a keypair from a seed. */
   createKeypairFromSeed: (seed: Uint8Array) => Keypair;
-  /** Restores a keypair from a file. */
-  createKeypairFromFile: (path: string) => Keypair;
-  /** Restore a keypair from the solana config file. */
-  createKeypairFromSolanaConfig: (path: string) => Keypair;
   /** Whether the given public key is on the EdDSA elliptic curve. */
   isOnCurve: (publicKey: PublicKey) => boolean;
   /** Finds a Program-Derived Address from the given programId and seeds. */
@@ -45,8 +41,6 @@ export function createNullEddsa(): EddsaInterface {
     generateKeypair: errorHandler,
     createKeypairFromSecretKey: errorHandler,
     createKeypairFromSeed: errorHandler,
-    createKeypairFromFile: errorHandler,
-    createKeypairFromSolanaConfig: errorHandler,
     isOnCurve: errorHandler,
     findPda: errorHandler,
     sign: errorHandler,

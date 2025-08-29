@@ -17,8 +17,6 @@ import {
   Keypair as Web3JsKeypair,
   PublicKey as Web3JsPublicKey,
 } from '@solana/web3.js';
-import { readFileSync } from 'node:fs';
-import { loadSolanaKeypair } from './loadSolanaKeypair';
 
 export function createWeb3JsEddsa(): EddsaInterface {
   const generateKeypair = (): Keypair =>
@@ -29,14 +27,6 @@ export function createWeb3JsEddsa(): EddsaInterface {
 
   const createKeypairFromSeed = (seed: Uint8Array): Keypair =>
     fromWeb3JsKeypair(Web3JsKeypair.fromSeed(seed));
-
-  const createKeypairFromFile = (path: string): Keypair =>
-    createKeypairFromSecretKey(
-      new Uint8Array(JSON.parse(readFileSync(path).toString()))
-    );
-
-  const createKeypairFromSolanaConfig = (): Keypair =>
-    fromWeb3JsKeypair(loadSolanaKeypair());
 
   const isOnCurve = (input: PublicKeyInput): boolean =>
     Web3JsPublicKey.isOnCurve(toWeb3JsPublicKey(publicKey(input)));
@@ -62,8 +52,6 @@ export function createWeb3JsEddsa(): EddsaInterface {
     generateKeypair,
     createKeypairFromSecretKey,
     createKeypairFromSeed,
-    createKeypairFromFile,
-    createKeypairFromSolanaConfig,
     isOnCurve,
     findPda,
     sign,
