@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-uploader-cascade
 
+## 1.3.1
+
+### Patch Changes
+
+- [#125](https://github.com/metaplex-foundation/umi/pull/125) [`2585837`](https://github.com/metaplex-foundation/umi/commit/25858375053ef657422174e5fb444f215dc7ecaf) Thanks [@mastercodercat](https://github.com/mastercodercat)! - Add umi-uploader-cascade plugin
+
 ## 0.0.1
 
 ### Patch Changes
