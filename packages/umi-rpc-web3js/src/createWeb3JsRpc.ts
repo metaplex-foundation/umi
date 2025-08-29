@@ -32,6 +32,7 @@ import {
   RpcGetSignatureStatusesOptions,
   RpcGetSlotOptions,
   RpcGetTransactionOptions,
+  RpcGetTransactionResponseOther,
   RpcInterface,
   RpcSendTransactionOptions,
   RpcSimulateTransactionOptions,
@@ -42,6 +43,7 @@ import {
   TransactionMetaTokenBalance,
   TransactionSignature,
   TransactionStatus,
+  TransactionVersion,
   TransactionWithMeta,
 } from '@metaplex-foundation/umi';
 import {
@@ -184,7 +186,7 @@ export function createWeb3JsRpc(
   const getTransaction = async (
     signature: TransactionSignature,
     options: RpcGetTransactionOptions = {}
-  ): Promise<TransactionWithMeta | null> => {
+  ): Promise<(TransactionWithMeta & RpcGetTransactionResponseOther) | null> => {
     const response = await getConnection().getTransaction(
       base58.deserialize(signature)[0],
       {
@@ -220,6 +222,12 @@ export function createWeb3JsRpc(
     });
 
     return {
+      response: {
+        blockTime:
+          response.blockTime != null ? BigInt(response.blockTime) : undefined,
+        slot: BigInt(response.slot),
+        version: response.version as TransactionVersion,
+      },
       message,
       serializedMessage: context.transactions.serializeMessage(message),
       signatures: transaction.signatures.map(base58.serialize),
@@ -305,20 +313,38 @@ export function createWeb3JsRpc(
     });
   };
 
-  const call = async <Result, Params extends any[] = any[]>(
+  const call = async <
+    Result,
+    Params extends any[] | Record<string, any> = any[]
+  >(
     method: string,
-    params?: [...Params],
+    params?: Params,
     options: RpcCallOptions = {}
   ): Promise<Result> => {
     const client = (getConnection() as any)._rpcClient as RpcClient;
-    const resolvedParams = resolveCallParams(
-      (params ? [...params] : []) as [...Params],
-      options.commitment,
-      options.extra
-    );
+
+    // Handle both array and object params
+    const resolvedParams = Array.isArray(params)
+      ? resolveCallParams(
+          [...params] as any[],
+          options.commitment,
+          options.extra
+        )
+      : resolveNamedCallParams(
+          params as Record<string, any>,
+          options.commitment,
+          options.extra
+        );
+
     return new Promise((resolve, reject) => {
-      const callback: JSONRPCCallbackTypePlain = (error, response) =>
-        error ? reject(error) : resolve(response.result);
+      const callback: JSONRPCCallbackTypePlain = (error, response) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(response.result);
+        }
+      };
+
       if (options.id) {
         client.request(method, resolvedParams, options.id, callback);
       } else {
@@ -470,4 +496,21 @@ function resolveCallParams<Params extends any[]>(
   if (extra) options = { ...options, ...extra };
   args.push(options);
   return args;
+}
+
+function resolveNamedCallParams(
+  params: Record<string, any> = {},
+  commitment?: Commitment,
+  extra?: object
+): Record<string, any> {
+  if (!commitment && !extra) return params;
+
+  // Create a new object with all original parameters
+  const result = { ...params };
+
+  // Add commitment and extra options directly into the params object
+  if (commitment) result.commitment = commitment;
+  if (extra) Object.assign(result, extra);
+
+  return result;
 }

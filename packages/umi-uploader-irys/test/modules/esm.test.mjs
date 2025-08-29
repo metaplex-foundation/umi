@@ -1,7 +1,10 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-extraneous-dependencies */
 import test from 'ava';
-import { createUmi, generatedSignerIdentity } from '@metaplex-foundation/umi';
+import {
+  createBaseUmi,
+  generatedSignerIdentity,
+} from '@metaplex-foundation/umi';
 import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import * as exported from '../../dist/esm/index.mjs';
@@ -14,7 +17,7 @@ test('it successfully exports esm named exports', (t) => {
 
 test('it can import the Irys client', async (t) => {
   const { createIrysUploader } = exported;
-  const context = createUmi()
+  const context = createBaseUmi()
     .use(web3JsRpc('http://localhost:8899'))
     .use(web3JsEddsa())
     .use(generatedSignerIdentity());

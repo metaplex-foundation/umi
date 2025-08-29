@@ -8,20 +8,21 @@ import {
 import {
   Amount,
   Context,
+  createGenericFileFromJson,
+  createSignerFromKeypair,
   GenericFile,
   GenericFileTag,
+  isKeypairSigner,
+  publicKey,
   Signer,
+  sol,
   SolAmount,
   UploaderInterface,
   UsdAmount,
-  createGenericFileFromJson,
-  createSignerFromKeypair,
-  isKeypairSigner,
-  publicKey,
-  sol,
 } from '@metaplex-foundation/umi';
-import { base58 } from '@metaplex-foundation/umi/serializers';
+
 import { toWeb3JsPublicKey } from '@metaplex-foundation/umi-web3js-adapters';
+import { base58 } from '@metaplex-foundation/umi/serializers';
 import {
   LAMPORTS_PER_SOL,
   Connection as Web3JsConnection,

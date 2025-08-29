@@ -1,7 +1,7 @@
 import {
   Context,
   createGenericFile,
-  createUmi,
+  createBaseUmi,
   generatedSignerIdentity,
   utf8,
 } from '@metaplex-foundation/umi';
@@ -19,7 +19,7 @@ test('example test', async (t) => {
 // TODO(loris): Unskip these tests when we can mock the NFT Storage API.
 
 const getContext = (options?: NftStorageUploaderOptions): Context =>
-  createUmi().use({
+  createBaseUmi().use({
     install(umi) {
       umi.use(web3JsRpc('https://api.devnet.solana.com'));
       umi.use(web3JsEddsa());

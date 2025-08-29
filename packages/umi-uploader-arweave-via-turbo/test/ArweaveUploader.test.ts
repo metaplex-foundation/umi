@@ -1,7 +1,7 @@
 import {
   Context,
   createGenericFile,
-  createUmi,
+  createBaseUmi,
   generatedSignerIdentity,
   usd,
 } from '@metaplex-foundation/umi';
@@ -9,13 +9,13 @@ import { httpDownloader } from '@metaplex-foundation/umi-downloader-http';
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { fetchHttp } from '@metaplex-foundation/umi-http-fetch';
 import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
+import { utf8 } from '@metaplex-foundation/umi/serializers';
 import test from 'ava';
 import {
   ArweaveUploader,
   arweaveUploader,
   ArweaveUploaderOptions,
 } from '../src';
-import { utf8 } from '@metaplex-foundation/umi/serializers';
 
 test('example test', async (t) => {
   t.is(typeof arweaveUploader, 'function');
@@ -28,7 +28,7 @@ const devNetRpcUrl = 'https://api.devnet.solana.com';
 const getContext = async (
   options?: ArweaveUploaderOptions
 ): Promise<Context> => {
-  const context = createUmi().use({
+  const context = createBaseUmi().use({
     install(umi) {
       umi.use(web3JsRpc(devNetRpcUrl));
       umi.use(web3JsEddsa());

@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-serializers-numbers",
-  "version": "1.1.0",
+  "version": "1.3.0",
   "description": "A set of serializers for numbers",
   "license": "MIT",
   "sideEffects": false,
@@ -41,11 +41,6 @@
   "homepage": "https://metaplex.com",
   "repository": {
     "url": "https://github.com/metaplex-foundation/umi.git"
-  },
-  "typedoc": {
-    "entryPoint": "./src/index.ts",
-    "readmeFile": "./README.md",
-    "displayName": "umi-serializers-numbers"
   },
   "ava": {
     "typescript": {

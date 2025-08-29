@@ -30,7 +30,7 @@
     "stripInternal": true
   },
   "typedocOptions": {
-    "entryPoints": ".",
+    "entryPoints": ["packages/*"],
     "entryPointStrategy": "packages",
     "out": "typedoc",
     "readme": "README.md",

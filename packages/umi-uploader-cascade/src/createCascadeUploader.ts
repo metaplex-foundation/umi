@@ -8,9 +8,8 @@ import {
   UploaderInterface,
   UploaderUploadOptions,
 } from '@metaplex-foundation/umi';
+import FormData from 'form-data';
 import fetch from 'node-fetch';
-
-const FormData = require('form-data');
 
 const CASCADE_API_URL = 'https://gateway-api.pastel.network/';
 

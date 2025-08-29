@@ -11,6 +11,7 @@ import type {
   TransactionError,
   TransactionSignature,
   TransactionStatus,
+  TransactionVersion,
   TransactionWithMeta,
 } from './Transaction';
 import { InterfaceImplementationMissingError } from './errors';
@@ -132,7 +133,7 @@ export interface RpcInterface {
   getTransaction(
     signature: TransactionSignature,
     options?: RpcGetTransactionOptions
-  ): Promise<TransactionWithMeta | null>;
+  ): Promise<(TransactionWithMeta & RpcGetTransactionResponseOther) | null>;
 
   /**
    * Fetch transaction commitments from an array of signatures.
@@ -176,13 +177,15 @@ export interface RpcInterface {
    * Send a custom RPC request to the node.
    *
    * @param method The method to call.
-   * @param params The parameters to pass to the method.
+   * @param params The parameters to pass to the method. Can be either:
+   *               - An array for positional parameters
+   *               - An object for named parameters
    * @param options The options to use when sending a custom RPC request.
    * @returns The generic result of the RPC call.
    */
-  call<R, P extends any[] = any[]>(
+  call<R, P extends any[] | Record<string, any> = any[]>(
     method: string,
-    params?: [...P],
+    params?: P,
     options?: RpcCallOptions
   ): Promise<R>;
 
@@ -362,6 +365,18 @@ export type RpcGetLatestBlockhashOptions = RpcBaseOptions;
  * @category Rpc
  */
 export type RpcGetTransactionOptions = RpcBaseOptions;
+
+/**
+ * The other fields of getTransaction response.
+ * @category Rpc
+ */
+export type RpcGetTransactionResponseOther = {
+  response: {
+    blockTime?: bigint;
+    slot: bigint;
+    version?: TransactionVersion;
+  };
+};
 
 /**
  * The options to use when fetching transaction statuses.
