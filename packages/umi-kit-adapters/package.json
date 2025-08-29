@@ -1,6 +1,6 @@
 {
     "name": "@metaplex-foundation/umi-kit-adapters",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "description": "A helper package to transform @solana/kit types to and from umi types",
     "license": "MIT",
     "sideEffects": false,
