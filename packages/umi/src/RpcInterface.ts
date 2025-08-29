@@ -438,6 +438,8 @@ export type RpcSimulateTransactionOptions = RpcBaseOptions & {
   accounts?: PublicKey[];
   /** Optional parameter used to enable signature verification before simulation */
   verifySignatures?: boolean;
+  /** Optional parameter used to replace the transaction's recent blockhash with the latest blockhash */
+  replaceRecentBlockhash?: boolean;
 };
 
 /**
@@ -476,6 +478,7 @@ export type RpcSimulateTransactionResult = {
   logs: Array<string> | null;
   accounts?: Array<RpcSimulateTransactionAccountInfo | null> | null;
   returnData?: RpcSimulateTransactionTransactionReturnData | null;
+  replacementBlockhash?: RpcSimulateTransactionReplacementBlockhash | null;
 };
 
 /**
@@ -505,6 +508,17 @@ export type RpcConfirmTransactionResult = RpcResultWithContext<{
 export type RpcSimulateTransactionTransactionReturnData = {
   data: [string, 'base64'];
   programId: string;
+};
+
+/**
+ * Defines the replacement blockhash information returned when replaceRecentBlockhash is used.
+ * @category Rpc
+ */
+export type RpcSimulateTransactionReplacementBlockhash = {
+  /** The replacement blockhash used for simulation */
+  blockhash: string;
+  /** The last valid block height for the replacement blockhash */
+  lastValidBlockHeight: bigint;
 };
 
 /**
