@@ -186,6 +186,9 @@ importers:
       '@metaplex-foundation/umi-serializer-data-view':
         specifier: workspace:^
         version: link:../umi-serializer-data-view
+      '@metaplex-foundation/umi-serializers-encodings':
+        specifier: workspace:^
+        version: link:../umi-serializers-encodings
       '@metaplex-foundation/umi-storage-mock':
         specifier: workspace:^
         version: link:../umi-storage-mock
