@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-bundle-tests",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A bundle of Umi plugins for test purposes",
   "license": "MIT",
   "sideEffects": false,
@@ -33,6 +33,7 @@
     "@metaplex-foundation/umi-program-repository": "workspace:^",
     "@metaplex-foundation/umi-rpc-web3js": "workspace:^",
     "@metaplex-foundation/umi-serializer-data-view": "workspace:^",
+    "@metaplex-foundation/umi-serializers-encodings": "workspace:^",
     "@metaplex-foundation/umi-storage-mock": "workspace:^",
     "@metaplex-foundation/umi-transaction-factory-web3js": "workspace:^"
   },
