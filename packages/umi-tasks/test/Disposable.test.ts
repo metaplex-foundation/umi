@@ -28,7 +28,7 @@ test('it can cancel callbacks', async (t) => {
     // And the last part of the callback was not executed.
     t.false(endOfCallbackExecuted, 'end of callback not executed');
 
-    // And the disposable kepts track of the cancellation error.
+    // And the disposable keeps track of the cancellation error.
     t.true(disposable.isCanceled(), 'disposable is cancelled');
     t.is(error, disposable.getCancelationError());
   }
