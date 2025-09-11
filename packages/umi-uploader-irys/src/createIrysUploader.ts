@@ -281,8 +281,8 @@ export function createIrysUploader(
 
     // If in node use node irys, else use web irys.
     const isNode =
-      // eslint-disable-next-line no-prototype-builtins
-      typeof window === 'undefined' || window.process?.hasOwnProperty('type');
+      typeof window === 'undefined' || (typeof process !== 'undefined' && process.versions && 
+      process.versions.node);
 
     let irys;
     if (isNode && isKeypairSigner(payer))
@@ -306,8 +306,13 @@ export function createIrysUploader(
     keypair: Keypair,
     options: any
   ): Promise<BaseNodeIrys> => {
-    const bPackage = _removeDoubleDefault(await import('@irys/upload'));
-    const cPackage = _removeDoubleDefault(await import('@irys/upload-solana'));
+
+    // Need to ignore these imports for Vite and Webpack for browser builds.
+    // eslint-disable-next-line no-eval
+    const bPackage = _removeDoubleDefault(await (0, eval)('import("@irys/upload")'));
+    // eslint-disable-next-line no-eval
+    const cPackage = _removeDoubleDefault(await (0, eval)('import("@irys/upload-solana")'));
+
     return bPackage
       .Uploader(cPackage.Solana)
       .bundlerUrl(address)
