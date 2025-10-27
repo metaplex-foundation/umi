@@ -307,7 +307,8 @@ export function createIrysUploader(
     options: any
   ): Promise<BaseNodeIrys> => {
 
-    // Need to ignore these imports for Vite and Webpack for browser builds.
+    // OPTION 3: Use eval() to hide imports from static bundler analysis
+    // This prevents bundlers (especially Webpack) from including Node.js packages in browser builds
     // eslint-disable-next-line no-eval
     const bPackage = _removeDoubleDefault(await (0, eval)('import("@irys/upload")'));
     // eslint-disable-next-line no-eval
