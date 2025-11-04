@@ -36,6 +36,7 @@ export default {
     alias: {
       process: path.resolve(__dirname, '../../node_modules/.pnpm/process@0.11.10/node_modules/process/browser.js'),
     },
+    // NOTE: No custom conditionNames needed - webpack respects package.json export order by default
     fallback: {
       buffer: 'buffer',
       crypto: 'crypto-browserify',
@@ -45,6 +46,14 @@ export default {
       https: false,
       zlib: false,
       util: false,
+      fs: false,
+      path: false,
+      os: false,
+      tty: false,
+      readline: false,
+      assert: false,
+      'child_process': false,
+      'stream/promises': false,
     },
   },
   plugins: [

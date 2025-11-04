@@ -1,3 +1,3 @@
 export * from './createIrysUploader';
 export * from './errors';
-export * from './plugin';
+export * from './nodePlugin';

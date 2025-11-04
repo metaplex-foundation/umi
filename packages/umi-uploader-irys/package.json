@@ -11,9 +11,9 @@
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
+      "browser": "./dist/esm/webIndex.mjs",
       "import": "./dist/esm/index.mjs",
-      "require": "./dist/cjs/index.cjs",
-      "browser": "./dist/esm/webIndex.mjs"
+      "require": "./dist/cjs/index.cjs"
     },
     "./web": {
       "types": "./dist/types/webIndex.d.ts",

@@ -8,6 +8,13 @@
   </head>
   <body>
     <div id="app"></div>
+    <!-- Load polyfills FIRST - before any other modules that might need Buffer/process -->
+    <script type="module">
+      import { Buffer } from 'buffer';
+      import process from 'process';
+      window.Buffer = Buffer;
+      window.process = process;
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

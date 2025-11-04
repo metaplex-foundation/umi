@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite';
-import { resolve } from 'path';
 
 export default defineConfig({
   define: {
@@ -14,6 +13,7 @@ export default defineConfig({
       crypto: 'crypto-browserify',
       stream: 'stream-browserify',
     },
+    // NOTE: No custom conditions needed - Vite respects package.json export order by default
   },
   optimizeDeps: {
     esbuildOptions: {

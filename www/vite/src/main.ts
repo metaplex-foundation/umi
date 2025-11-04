@@ -1,13 +1,7 @@
 import './style.css';
-import { Buffer } from 'buffer';
-import process from 'process';
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
 import { irysUploader } from '@metaplex-foundation/umi-uploader-irys';
 import { generateSigner, signerIdentity } from '@metaplex-foundation/umi';
-
-// Polyfill Buffer and process globally for browser
-globalThis.Buffer = Buffer;
-globalThis.process = process;
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
