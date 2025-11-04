@@ -13,5 +13,5 @@ export default createConfigs({
       format: 'cjs',
     },
   ],
-  input: ["src/index.ts", "src/webIndex.ts"]
+  input: ['src/index.ts', 'src/webIndex.ts'],
 });

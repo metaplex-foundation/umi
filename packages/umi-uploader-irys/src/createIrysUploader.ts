@@ -33,7 +33,6 @@ import {
 
 // PromisePool is a dependency the Irys client already requires, so using it here has no extra cost.
 
-
 export type IrysUploader = UploaderInterface & {
   irys: () => Promise<BaseNodeIrys | BaseWebIrys>;
   getUploadPriceFromBytes: (bytes: number) => Promise<SolAmount>;
@@ -77,10 +76,12 @@ const MINIMUM_SIZE = 80_000;
 const gatewayUrl = (id: string) => `https://gateway.irys.xyz/${id}`;
 
 export function createBaseIrysUploader(
-  initFn: (    address: string,
+  initFn: (
+    address: string,
     payer: Signer,
     options: any,
-    context: any) => Promise<BaseWebIrys | BaseNodeIrys>,
+    context: any
+  ) => Promise<BaseWebIrys | BaseNodeIrys>,
   context: Pick<Context, 'rpc' | 'payer' | 'eddsa'>,
   uploaderOptions: IrysUploaderOptions = {}
 ): IrysUploader {
@@ -261,10 +262,6 @@ export function createBaseIrysUploader(
 
     return irys;
   };
-
-
-
-
 
   return {
     getUploadPriceFromBytes,
