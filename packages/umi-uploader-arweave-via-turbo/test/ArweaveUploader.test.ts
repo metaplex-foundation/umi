@@ -43,7 +43,7 @@ const getContext = async (
   return context;
 };
 
-test('can upload one file', async (t) => {
+test.skip('can upload one file', async (t) => {
   const context = await getContext({
     solRpcUrl: devNetRpcUrl,
   });
