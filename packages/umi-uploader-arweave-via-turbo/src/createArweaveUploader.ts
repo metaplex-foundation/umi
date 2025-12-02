@@ -46,7 +46,7 @@ export type ArweaveUploader = UploaderInterface & {
   getUploadPriceFromBytes: (
     bytes: number
   ) => Promise<{ solAmount: SolAmount; wincAmount: BigNumber }>;
-  /** Get the  current SOL equivalent balance from connected Arweave Bundler */
+  /** Get the current SOL equivalent balance from connected Arweave Bundler */
   getBalance: () => Promise<SolAmount>;
   /** Get the current Turbo Storage Credit balance from connected Arweave Bundler */
   getTurboStorageCreditBalance: () => Promise<BigNumber.Value>;
