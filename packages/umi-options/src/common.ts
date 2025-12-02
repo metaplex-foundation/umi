@@ -75,7 +75,7 @@ export const none = <T>(): Option<T> => ({ __option: 'None' });
  * @category Utils — Options
  */
 export const isOption = <T = unknown>(input: any): input is Option<T> =>
-  input &&
+  !!input &&
   typeof input === 'object' &&
   '__option' in input &&
   ((input.__option === 'Some' && 'value' in input) ||

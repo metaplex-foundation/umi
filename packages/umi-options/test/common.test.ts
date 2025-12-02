@@ -39,13 +39,13 @@ test('it can check if an option is Some or None', (t) => {
 test('it can check if a value is an Option', (t) => {
   t.true(isOption(some(42)));
   t.true(isOption(none()));
-  t.falsy(isOption(null));
-  t.falsy(isOption(undefined));
-  t.falsy(isOption(42));
-  t.falsy(isOption('hello'));
-  t.falsy(isOption({ value: 42 }));
-  t.falsy(isOption({ __option: 'Some' })); // missing value
-  t.falsy(isOption({ __option: 'Invalid', value: 42 }));
+  t.false(isOption(null));
+  t.false(isOption(undefined));
+  t.false(isOption(42));
+  t.false(isOption('hello'));
+  t.false(isOption({ value: 42 }));
+  t.false(isOption({ __option: 'Some' })); // missing value
+  t.false(isOption({ __option: 'Invalid', value: 42 }));
 });
 
 test('Nullable type accepts value or null', (t) => {
