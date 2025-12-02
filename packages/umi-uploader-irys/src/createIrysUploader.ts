@@ -50,8 +50,7 @@ import {
  * Without this, we get a different structure on each module:
  * - CJS: { default: [Getter], WebIrys: [Getter] }
  * - ESM: { default: { default: [Getter], WebIrys: [Getter] } }
- * This method fixes this by ensuring there is not double default in the imported package.
- */
+ * This method fixes this by ensuring there is no double default in the imported package.
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function _removeDoubleDefault<T>(pkg: T): T {
   if (
