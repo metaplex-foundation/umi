@@ -84,6 +84,61 @@ export class GpaBuilder<
     return this.registerFields(fields);
   }
 
+  /**
+   * Registers nested struct fields with a parent path prefix.
+   * This allows filtering on nested fields using dot-notation paths.
+   *
+   * @example
+   * ```ts
+   * gpaBuilder
+   *   .registerFieldsFromStruct([
+   *     ['authority', publicKeySerializer],
+   *     ['metadata', metadataSerializer],
+   *   ])
+   *   .registerNestedFieldsFromStruct('metadata', 32, [
+   *     ['name', stringSerializer],
+   *     ['creator', publicKeySerializer],
+   *   ])
+   *   .whereField('metadata.creator', somePublicKey)
+   * ```
+   *
+   * @param parentPath - The dot-notation path prefix for the nested fields
+   * @param parentOffset - The byte offset where the parent struct starts
+   * @param structFields - The nested struct's field definitions
+   */
+  registerNestedFieldsFromStruct<T extends object>(
+    parentPath: string,
+    parentOffset: number,
+    structFields: StructToSerializerTuple<T, T>
+  ): GpaBuilder<Account, Fields & { [K in keyof T as `${typeof parentPath}.${K & string}`]: T[K] }> {
+    let offset: number | null = parentOffset;
+    const nestedFields = structFields.reduce((acc, [field, serializer]) => {
+      const nestedPath = `${parentPath}.${field as string}`;
+      acc[nestedPath as keyof typeof acc] = [offset, serializer] as any;
+      offset =
+        offset === null || serializer.fixedSize === null
+          ? null
+          : offset + serializer.fixedSize;
+      return acc;
+    }, {} as Record<string, [number | null, Serializer<any>]>);
+
+    const mergedFields = {
+      ...this.options.fields,
+      ...nestedFields,
+    } as GpaBuilderFieldSerializers<
+      Fields & { [K in keyof T as `${typeof parentPath}.${K & string}`]: T[K] },
+      Fields & { [K in keyof T as `${typeof parentPath}.${K & string}`]: T[K] }
+    >;
+
+    return new GpaBuilder<
+      Account,
+      Fields & { [K in keyof T as `${typeof parentPath}.${K & string}`]: T[K] }
+    >(this.context, this.programId, {
+      ...this.options,
+      fields: mergedFields,
+    });
+  }
+
   deserializeUsing<T extends object>(
     callback: GpaBuilderMapCallback<T>
   ): GpaBuilder<T, Fields> {
