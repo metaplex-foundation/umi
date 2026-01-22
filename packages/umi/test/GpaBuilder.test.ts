@@ -164,19 +164,28 @@ test('it can register and filter nested struct fields', (t) => {
   });
 
   // Filter on nested field: metadata.name (offset = 32)
-  t.deepEqual(builder.whereField('metadata.name', 'test').options.filters?.[0], {
-    memcmp: { offset: 32, bytes: new Uint8Array([4]) },
-  });
+  t.deepEqual(
+    builder.whereField('metadata.name', 'test').options.filters?.[0],
+    {
+      memcmp: { offset: 32, bytes: new Uint8Array([4]) },
+    }
+  );
 
   // Filter on nested field: metadata.symbol (offset = 32 + 32 = 64)
-  t.deepEqual(builder.whereField('metadata.symbol', 'SYM').options.filters?.[0], {
-    memcmp: { offset: 64, bytes: new Uint8Array([5]) },
-  });
+  t.deepEqual(
+    builder.whereField('metadata.symbol', 'SYM').options.filters?.[0],
+    {
+      memcmp: { offset: 64, bytes: new Uint8Array([5]) },
+    }
+  );
 
   // Filter on nested field: metadata.creator (offset = 32 + 32 + 10 = 74)
-  t.deepEqual(builder.whereField('metadata.creator', 'creator').options.filters?.[0], {
-    memcmp: { offset: 74, bytes: new Uint8Array([6]) },
-  });
+  t.deepEqual(
+    builder.whereField('metadata.creator', 'creator').options.filters?.[0],
+    {
+      memcmp: { offset: 74, bytes: new Uint8Array([6]) },
+    }
+  );
 });
 
 test('it can slice nested struct fields', (t) => {
@@ -229,24 +238,34 @@ test('it handles nested fields after variable-length fields', (t) => {
     ]);
 
   // First nested field has fixed offset
-  t.deepEqual(builder.whereField('nested.fixedField', 42).options.filters?.[0], {
-    memcmp: { offset: 0, bytes: new Uint8Array([2]) },
-  });
+  t.deepEqual(
+    builder.whereField('nested.fixedField', 42).options.filters?.[0],
+    {
+      memcmp: { offset: 0, bytes: new Uint8Array([2]) },
+    }
+  );
 
   // Variable-length field has fixed offset (it's the second field)
-  t.deepEqual(builder.whereField('nested.variableField', ['a', 'b']).options.filters?.[0], {
-    memcmp: { offset: 8, bytes: new Uint8Array([3]) },
-  });
+  t.deepEqual(
+    builder.whereField('nested.variableField', ['a', 'b']).options.filters?.[0],
+    {
+      memcmp: { offset: 8, bytes: new Uint8Array([3]) },
+    }
+  );
 
   // Field after variable-length field has null offset
   t.throws(() => builder.whereField('nested.afterVariable', 100), {
-    message: (m) => m.includes('Field [nested.afterVariable] does not have a fixed offset'),
+    message: (m) =>
+      m.includes('Field [nested.afterVariable] does not have a fixed offset'),
   });
 
   // Can still filter with explicit offset
-  t.deepEqual(builder.whereField('nested.afterVariable', 100, 50).options.filters?.[0], {
-    memcmp: { offset: 50, bytes: new Uint8Array([4]) },
-  });
+  t.deepEqual(
+    builder.whereField('nested.afterVariable', 100, 50).options.filters?.[0],
+    {
+      memcmp: { offset: 50, bytes: new Uint8Array([4]) },
+    }
+  );
 });
 
 test('it can chain multiple nested struct registrations', (t) => {
@@ -288,9 +307,12 @@ test('it can chain multiple nested struct registrations', (t) => {
   });
 
   // Second-level nested field: outer.inner.value (offset = 8)
-  t.deepEqual(builder.whereField('outer.inner.value', 42).options.filters?.[0], {
-    memcmp: { offset: 8, bytes: new Uint8Array([5]) },
-  });
+  t.deepEqual(
+    builder.whereField('outer.inner.value', 42).options.filters?.[0],
+    {
+      memcmp: { offset: 8, bytes: new Uint8Array([5]) },
+    }
+  );
 });
 
 function getTestGpaBuilder(): GpaBuilder {

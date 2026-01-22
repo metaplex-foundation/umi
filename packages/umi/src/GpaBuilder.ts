@@ -110,7 +110,10 @@ export class GpaBuilder<
     parentPath: string,
     parentOffset: number,
     structFields: StructToSerializerTuple<T, T>
-  ): GpaBuilder<Account, Fields & { [K in keyof T as `${typeof parentPath}.${K & string}`]: T[K] }> {
+  ): GpaBuilder<
+    Account,
+    Fields & { [K in keyof T as `${typeof parentPath}.${K & string}`]: T[K] }
+  > {
     let offset: number | null = parentOffset;
     const nestedFields = structFields.reduce((acc, [field, serializer]) => {
       const nestedPath = `${parentPath}.${field as string}`;
