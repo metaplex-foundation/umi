@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-web3js-adapters",
-  "version": "1.4.1",
+  "version": "1.5.1",
   "description": "A helper package to transform web3.js types to and from umi types",
   "license": "MIT",
   "sideEffects": false,

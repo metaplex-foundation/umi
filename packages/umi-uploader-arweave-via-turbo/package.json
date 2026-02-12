@@ -1,6 +1,6 @@
 {
   "name": "@metaplex-foundation/umi-uploader-arweave-via-turbo",
-  "version": "1.4.1",
+  "version": "1.5.1",
   "description": "An uploader implementation relying on Arweave",
   "license": "MIT",
   "sideEffects": false,
