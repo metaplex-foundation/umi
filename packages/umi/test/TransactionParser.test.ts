@@ -6,9 +6,12 @@ import {
   InstructionDiscriminator,
   ParsedInstruction,
   parseInstruction,
+  parseTransaction,
   Instruction,
   ProgramRepositoryInterface,
   Program,
+  Transaction,
+  TransactionMessage,
 } from '../src';
 
 test('InstructionDiscriminator type has bytes and size', (t) => {
@@ -256,4 +259,119 @@ test('parseInstruction handles more accounts than accountNames', (t) => {
   const result = parseInstruction(context, instruction);
   t.is(result.accounts[0].name, 'first');
   t.is(result.accounts[1].name, undefined);
+});
+
+// Helper: create a minimal Transaction from compiled instructions.
+function createTestTransaction(
+  accounts: PublicKey[],
+  instructions: { programIndex: number; accountIndexes: number[]; data: Uint8Array }[],
+  header?: { numRequiredSignatures: number; numReadonlySignedAccounts: number; numReadonlyUnsignedAccounts: number }
+): Transaction {
+  const message: TransactionMessage = {
+    version: 'legacy',
+    header: header ?? { numRequiredSignatures: 1, numReadonlySignedAccounts: 0, numReadonlyUnsignedAccounts: 0 },
+    accounts,
+    blockhash: 'test-blockhash',
+    instructions,
+    addressLookupTables: [],
+  };
+  return {
+    message,
+    serializedMessage: new Uint8Array(),
+    signatures: [],
+  };
+}
+
+test('parseTransaction parses all instructions in a transaction', (t) => {
+  const programKey = publicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+  const acc1 = publicKey('So11111111111111111111111111111111111111112');
+  const acc2 = publicKey('SysvarRent111111111111111111111111111111111');
+
+  const program = createTestProgram({
+    name: 'splToken',
+    publicKey: programKey,
+    instructions: [
+      {
+        name: 'transfer',
+        discriminator: { bytes: new Uint8Array([3]), size: 1 },
+        dataSerializer: {
+          description: 'transferData',
+          fixedSize: 8,
+          maxSize: 8,
+          serialize: () => new Uint8Array(8),
+          deserialize: (_bytes: Uint8Array, offset = 0): [{ amount: bigint }, number] => [{ amount: 42n }, offset + 8],
+        },
+        accountNames: ['source', 'destination'],
+      },
+    ],
+  });
+  const context = { programs: createTestProgramRepository([program]) };
+
+  const transaction = createTestTransaction(
+    [acc1, acc2, programKey],
+    [
+      { programIndex: 2, accountIndexes: [0, 1], data: new Uint8Array([3, ...new Array(8).fill(0)]) },
+    ]
+  );
+
+  const result = parseTransaction(context, transaction);
+  t.is(result.length, 1);
+  t.is(result[0].programName, 'splToken');
+  t.is(result[0].instructionName, 'transfer');
+  t.deepEqual(result[0].data, { amount: 42n });
+  t.is(result[0].accounts[0].pubkey, acc1);
+  t.is(result[0].accounts[0].name, 'source');
+  t.is(result[0].accounts[1].pubkey, acc2);
+  t.is(result[0].accounts[1].name, 'destination');
+});
+
+test('parseTransaction handles multiple instructions', (t) => {
+  const program1Key = publicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
+  const program2Key = publicKey('cndy3Z4yapfJBmL3ShUp5exZKqR3z33thTzeNMm2gRZ');
+  const acc1 = publicKey('So11111111111111111111111111111111111111112');
+
+  const program1 = createTestProgram({
+    name: 'program1',
+    publicKey: program1Key,
+    instructions: [
+      {
+        name: 'ix1',
+        discriminator: { bytes: new Uint8Array([1]), size: 1 },
+        dataSerializer: {
+          description: 'test',
+          fixedSize: 0,
+          maxSize: 0,
+          serialize: () => new Uint8Array(),
+          deserialize: (_bytes: Uint8Array, offset = 0): [{ val: string }, number] => [{ val: 'one' }, offset],
+        },
+      },
+    ],
+  });
+  const program2 = createTestProgram({
+    name: 'program2',
+    publicKey: program2Key,
+  });
+  const context = { programs: createTestProgramRepository([program1, program2]) };
+
+  const transaction = createTestTransaction(
+    [acc1, program1Key, program2Key],
+    [
+      { programIndex: 1, accountIndexes: [0], data: new Uint8Array([1]) },
+      { programIndex: 2, accountIndexes: [0], data: new Uint8Array([99]) },
+    ]
+  );
+
+  const result = parseTransaction(context, transaction);
+  t.is(result.length, 2);
+  t.is(result[0].programName, 'program1');
+  t.is(result[0].instructionName, 'ix1');
+  t.is(result[1].programName, 'program2');
+  t.is(result[1].instructionName, 'unknown');
+});
+
+test('parseTransaction handles empty transaction', (t) => {
+  const context = { programs: createTestProgramRepository([]) };
+  const transaction = createTestTransaction([], []);
+  const result = parseTransaction(context, transaction);
+  t.is(result.length, 0);
 });

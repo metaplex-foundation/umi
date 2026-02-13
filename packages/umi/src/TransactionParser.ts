@@ -2,6 +2,7 @@ import type { PublicKey } from '@metaplex-foundation/umi-public-keys';
 import type { Serializer } from '@metaplex-foundation/umi-serializers';
 import type { Context } from './Context';
 import type { AccountMeta, Instruction } from './Instruction';
+import type { Transaction } from './Transaction';
 
 /**
  * Defines the discriminator bytes used to identify an instruction.
@@ -147,4 +148,38 @@ export function parseInstruction(
     data: parsedData,
     accounts,
   };
+}
+
+/**
+ * Parses all instructions in a transaction by decompiling compiled instructions
+ * and running each through {@link parseInstruction}.
+ *
+ * @category Transaction Parser
+ */
+export function parseTransaction(
+  context: Pick<Context, 'programs'>,
+  transaction: Transaction
+): ParsedInstruction[] {
+  const { message } = transaction;
+  return message.instructions.map((compiledIx) => {
+    // Decompile: resolve program ID and account keys from indexes.
+    const programId = message.accounts[compiledIx.programIndex];
+    const keys = compiledIx.accountIndexes.map((index) => {
+      const pubkey = message.accounts[index];
+      const numSigners = message.header.numRequiredSignatures;
+      const numReadonlySigned = message.header.numReadonlySignedAccounts;
+      const numReadonlyUnsigned = message.header.numReadonlyUnsignedAccounts;
+      const isSigner = index < numSigners;
+      const isWritable = isSigner
+        ? index < numSigners - numReadonlySigned
+        : index < message.accounts.length - numReadonlyUnsigned;
+      return { pubkey, isSigner, isWritable };
+    });
+
+    return parseInstruction(context, {
+      programId,
+      keys,
+      data: compiledIx.data,
+    });
+  });
 }
