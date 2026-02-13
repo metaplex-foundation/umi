@@ -30,6 +30,15 @@ export type Option<T> = Some<T> | None;
 export type OptionOrNullable<T> = Option<T> | Nullable<T>;
 
 /**
+ * Defines a looser type that can be used when serializing an {@link Option}.
+ * This allows us to pass null, undefined, or the Option value directly whilst still
+ * supporting the Option type for use-cases that need more type safety.
+ *
+ * @category Utils — Options
+ */
+export type OptionOrNullish<T> = Option<T> | Nullish<T>;
+
+/**
  * Represents an option of type `T` that has a value.
  *
  * @see {@link Option}
@@ -66,7 +75,7 @@ export const none = <T>(): Option<T> => ({ __option: 'None' });
  * @category Utils — Options
  */
 export const isOption = <T = unknown>(input: any): input is Option<T> =>
-  input &&
+  !!input &&
   typeof input === 'object' &&
   '__option' in input &&
   ((input.__option === 'Some' && 'value' in input) ||
