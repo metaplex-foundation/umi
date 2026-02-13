@@ -72,23 +72,20 @@ export function parseInstruction(
 ): ParsedInstruction {
   const { programId, keys, data } = instruction;
 
-  // Try to find the program in the repository.
-  let programName = 'unknown';
-  let instructionDescriptors: InstructionDescriptor[] | undefined;
-  try {
-    const program = context.programs.get(programId);
-    programName = program.name;
-    instructionDescriptors = program.instructions;
-  } catch {
-    // Program not registered — return unknown fallback.
+  // Check if the program is registered in the repository.
+  if (!context.programs.has(programId)) {
     return {
-      programName,
+      programName: 'unknown',
       programId,
       instructionName: 'unknown',
       data,
       accounts: keys.map((key) => ({ ...key })),
     };
   }
+
+  const program = context.programs.get(programId);
+  const programName = program.name;
+  const instructionDescriptors = program.instructions;
 
   // If no instruction descriptors are registered, return with known program but unknown instruction.
   if (!instructionDescriptors || instructionDescriptors.length === 0) {
