@@ -48,7 +48,12 @@ test('ParsedInstruction type has expected shape', (t) => {
     instructionName: 'transfer',
     data: { amount: 100n },
     accounts: [
-      { pubkey: publicKey('11111111111111111111111111111111'), isSigner: false, isWritable: true, name: 'source' },
+      {
+        pubkey: publicKey('11111111111111111111111111111111'),
+        isSigner: false,
+        isWritable: true,
+        name: 'source',
+      },
     ],
   };
   t.is(parsed.programName, 'splToken');
@@ -56,7 +61,9 @@ test('ParsedInstruction type has expected shape', (t) => {
 });
 
 // Helper: create a minimal program repository for testing.
-function createTestProgramRepository(programs: Program[]): ProgramRepositoryInterface {
+function createTestProgramRepository(
+  programs: Program[]
+): ProgramRepositoryInterface {
   return {
     has: (id) => programs.some((p) => p.publicKey === id || p.name === id),
     get: <T extends Program = Program>(id: string | PublicKey): T => {
@@ -78,7 +85,9 @@ function createTestProgramRepository(programs: Program[]): ProgramRepositoryInte
   };
 }
 
-function createTestProgram(overrides: Partial<Program> & Pick<Program, 'name' | 'publicKey'>): Program {
+function createTestProgram(
+  overrides: Partial<Program> & Pick<Program, 'name' | 'publicKey'>
+): Program {
   return {
     getErrorFromCode: () => null,
     getErrorFromName: () => null,
@@ -93,7 +102,13 @@ test('parseInstruction returns unknown for unregistered program', (t) => {
   };
   const instruction: Instruction = {
     programId: publicKey('Sysvar1nstructions1111111111111111111111111'),
-    keys: [{ pubkey: publicKey('11111111111111111111111111111111'), isSigner: false, isWritable: true }],
+    keys: [
+      {
+        pubkey: publicKey('11111111111111111111111111111111'),
+        isSigner: false,
+        isWritable: true,
+      },
+    ],
     data: new Uint8Array([1, 2, 3]),
   };
   const result = parseInstruction(context, instruction);
@@ -129,7 +144,10 @@ test('parseInstruction deserializes matching instruction', (t) => {
     fixedSize: 8,
     maxSize: 8,
     serialize: () => new Uint8Array(8),
-    deserialize: (_bytes: Uint8Array, offset = 0): [{ amount: bigint }, number] => [{ amount: 42n }, offset + 8],
+    deserialize: (
+      _bytes: Uint8Array,
+      offset = 0
+    ): [{ amount: bigint }, number] => [{ amount: 42n }, offset + 8],
   };
   const program = createTestProgram({
     name: 'splToken',
@@ -149,9 +167,21 @@ test('parseInstruction deserializes matching instruction', (t) => {
   const instruction: Instruction = {
     programId: publicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
     keys: [
-      { pubkey: publicKey('So11111111111111111111111111111111111111112'), isSigner: false, isWritable: true },
-      { pubkey: publicKey('SysvarRent111111111111111111111111111111111'), isSigner: false, isWritable: true },
-      { pubkey: publicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'), isSigner: true, isWritable: false },
+      {
+        pubkey: publicKey('So11111111111111111111111111111111111111112'),
+        isSigner: false,
+        isWritable: true,
+      },
+      {
+        pubkey: publicKey('SysvarRent111111111111111111111111111111111'),
+        isSigner: false,
+        isWritable: true,
+      },
+      {
+        pubkey: publicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'),
+        isSigner: true,
+        isWritable: false,
+      },
     ],
     data: new Uint8Array([3, ...new Array(8).fill(0)]),
   };
@@ -177,7 +207,10 @@ test('parseInstruction returns unknown for non-matching discriminator', (t) => {
           fixedSize: 8,
           maxSize: 8,
           serialize: () => new Uint8Array(),
-          deserialize: (_bytes: Uint8Array, offset = 0): [object, number] => [{}, offset + 8],
+          deserialize: (_bytes: Uint8Array, offset = 0): [object, number] => [
+            {},
+            offset + 8,
+          ],
         },
       },
     ],
@@ -196,7 +229,9 @@ test('parseInstruction returns unknown for non-matching discriminator', (t) => {
 });
 
 test('parseInstruction matches 8-byte Anchor discriminator', (t) => {
-  const anchorDiscriminator = new Uint8Array([181, 157, 89, 67, 143, 58, 109, 14]);
+  const anchorDiscriminator = new Uint8Array([
+    181, 157, 89, 67, 143, 58, 109, 14,
+  ]);
   const program = createTestProgram({
     name: 'myAnchorProgram',
     publicKey: publicKey('cndy3Z4yapfJBmL3ShUp5exZKqR3z33thTzeNMm2gRZ'),
@@ -209,7 +244,13 @@ test('parseInstruction matches 8-byte Anchor discriminator', (t) => {
           fixedSize: 0,
           maxSize: 0,
           serialize: () => new Uint8Array(),
-          deserialize: (_bytes: Uint8Array, offset = 0): [{ initialized: boolean }, number] => [{ initialized: true }, offset],
+          deserialize: (
+            _bytes: Uint8Array,
+            offset = 0
+          ): [{ initialized: boolean }, number] => [
+            { initialized: true },
+            offset,
+          ],
         },
       },
     ],
@@ -240,7 +281,10 @@ test('parseInstruction handles more accounts than accountNames', (t) => {
           fixedSize: 0,
           maxSize: 0,
           serialize: () => new Uint8Array(),
-          deserialize: (_bytes: Uint8Array, offset = 0): [object, number] => [{}, offset],
+          deserialize: (_bytes: Uint8Array, offset = 0): [object, number] => [
+            {},
+            offset,
+          ],
         },
         accountNames: ['first'],
       },
@@ -252,8 +296,16 @@ test('parseInstruction handles more accounts than accountNames', (t) => {
   const instruction: Instruction = {
     programId: publicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'),
     keys: [
-      { pubkey: publicKey('So11111111111111111111111111111111111111112'), isSigner: false, isWritable: true },
-      { pubkey: publicKey('SysvarRent111111111111111111111111111111111'), isSigner: false, isWritable: false },
+      {
+        pubkey: publicKey('So11111111111111111111111111111111111111112'),
+        isSigner: false,
+        isWritable: true,
+      },
+      {
+        pubkey: publicKey('SysvarRent111111111111111111111111111111111'),
+        isSigner: false,
+        isWritable: false,
+      },
     ],
     data: new Uint8Array([1]),
   };
@@ -299,12 +351,24 @@ test('parseInstruction falls back to raw data on deserialization failure', (t) =
 // Helper: create a minimal Transaction from compiled instructions.
 function createTestTransaction(
   accounts: PublicKey[],
-  instructions: { programIndex: number; accountIndexes: number[]; data: Uint8Array }[],
-  header?: { numRequiredSignatures: number; numReadonlySignedAccounts: number; numReadonlyUnsignedAccounts: number }
+  instructions: {
+    programIndex: number;
+    accountIndexes: number[];
+    data: Uint8Array;
+  }[],
+  header?: {
+    numRequiredSignatures: number;
+    numReadonlySignedAccounts: number;
+    numReadonlyUnsignedAccounts: number;
+  }
 ): Transaction {
   const message: TransactionMessage = {
     version: 'legacy',
-    header: header ?? { numRequiredSignatures: 1, numReadonlySignedAccounts: 0, numReadonlyUnsignedAccounts: 0 },
+    header: header ?? {
+      numRequiredSignatures: 1,
+      numReadonlySignedAccounts: 0,
+      numReadonlyUnsignedAccounts: 0,
+    },
     accounts,
     blockhash: 'test-blockhash',
     instructions,
@@ -334,7 +398,10 @@ test('parseTransaction parses all instructions in a transaction', (t) => {
           fixedSize: 8,
           maxSize: 8,
           serialize: () => new Uint8Array(8),
-          deserialize: (_bytes: Uint8Array, offset = 0): [{ amount: bigint }, number] => [{ amount: 42n }, offset + 8],
+          deserialize: (
+            _bytes: Uint8Array,
+            offset = 0
+          ): [{ amount: bigint }, number] => [{ amount: 42n }, offset + 8],
         },
         accountNames: ['source', 'destination'],
       },
@@ -345,7 +412,11 @@ test('parseTransaction parses all instructions in a transaction', (t) => {
   const transaction = createTestTransaction(
     [acc1, acc2, programKey],
     [
-      { programIndex: 2, accountIndexes: [0, 1], data: new Uint8Array([3, ...new Array(8).fill(0)]) },
+      {
+        programIndex: 2,
+        accountIndexes: [0, 1],
+        data: new Uint8Array([3, ...new Array(8).fill(0)]),
+      },
     ]
   );
 
@@ -377,7 +448,10 @@ test('parseTransaction handles multiple instructions', (t) => {
           fixedSize: 0,
           maxSize: 0,
           serialize: () => new Uint8Array(),
-          deserialize: (_bytes: Uint8Array, offset = 0): [{ val: string }, number] => [{ val: 'one' }, offset],
+          deserialize: (
+            _bytes: Uint8Array,
+            offset = 0
+          ): [{ val: string }, number] => [{ val: 'one' }, offset],
         },
       },
     ],
@@ -386,7 +460,9 @@ test('parseTransaction handles multiple instructions', (t) => {
     name: 'program2',
     publicKey: program2Key,
   });
-  const context = { programs: createTestProgramRepository([program1, program2]) };
+  const context = {
+    programs: createTestProgramRepository([program1, program2]),
+  };
 
   const transaction = createTestTransaction(
     [acc1, program1Key, program2Key],
@@ -448,8 +524,8 @@ const MAINNET_ACCOUNTS: PublicKey[] = [
   publicKey('DbaE54PG2G84egZ9kQWKTEEhBoNptAnQCPk67B1dw19P'), // 7
   publicKey('DXfkEGoo6WFsdL7x6gLZ7r6Hw2S6HrtrAQVPWYx2A1s9'), // 8
   publicKey('Hs1vtw5paaVEw71gkkP3SAXFsznP1ErAWuD2EgKXawfV'), // 9
-  publicKey('X5QPJcpph4mBAJDzc4hRziFftSbcygV59kRb2Fu6Je1'),  // 10
-  publicKey('11111111111111111111111111111111'),               // 11
+  publicKey('X5QPJcpph4mBAJDzc4hRziFftSbcygV59kRb2Fu6Je1'), // 10
+  publicKey('11111111111111111111111111111111'), // 11
   publicKey('5PHirr8joyTMp9JMm6nW7hNDVyEYdkzDqazxPD7RaTjx'), // 12
   publicKey('5T17aqgJ8cM39SNuVBu2LK2cq5MWUpZxcQnnuwNjpump'), // 13
   publicKey('7hTckgnGnLQR6sdH7YkqFTAA7VwTfYFaZ6EhEsU3saCX'), // 14
@@ -457,14 +533,14 @@ const MAINNET_ACCOUNTS: PublicKey[] = [
   publicKey('ADyA8hdefvWN2dbGGWFotbzWxrAvLW83WG6QCVXvJKqw'), // 16
   publicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'), // 17
   publicKey('C2aFPdENg4A2HQsmrd5rTw5TaYBX5Ku887cWjbFKtZpw'), // 18
-  publicKey('ComputeBudget111111111111111111111111111111'),    // 19
+  publicKey('ComputeBudget111111111111111111111111111111'), // 19
   publicKey('GS4CU59F31iL7aR2Q8zVS8DRrcRnXX1yjQ66TqNVQnaR'), // 20
-  publicKey('jitodontfront111111111116111111111111165521'),    // 21 - not valid base58
-  publicKey('pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA'),  // 22
-  publicKey('pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ'),  // 23
-  publicKey('So11111111111111111111111111111111111111112'),     // 24
-  publicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),  // 25
-  publicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'),  // 26
+  publicKey('jitodontfront111111111116111111111111165521'), // 21 - not valid base58
+  publicKey('pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA'), // 22
+  publicKey('pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ'), // 23
+  publicKey('So11111111111111111111111111111111111111112'), // 24
+  publicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), // 25
+  publicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'), // 26
 ];
 
 const MAINNET_HEADER = {
@@ -559,7 +635,10 @@ test('parseTransaction parses real mainnet SPL Token CloseAccount', (t) => {
           fixedSize: 0,
           maxSize: 0,
           serialize: () => new Uint8Array(),
-          deserialize: (_bytes: Uint8Array, offset = 0): [object, number] => [{}, offset],
+          deserialize: (_bytes: Uint8Array, offset = 0): [object, number] => [
+            {},
+            offset,
+          ],
         },
         accountNames: ['account', 'destination', 'owner'],
       },

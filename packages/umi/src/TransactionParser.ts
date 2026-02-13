@@ -120,7 +120,9 @@ export function parseInstruction(
   const dataAfterDiscriminator = data.slice(descriptor.discriminator.size);
   let parsedData: object;
   try {
-    [parsedData] = descriptor.dataSerializer.deserialize(dataAfterDiscriminator);
+    [parsedData] = descriptor.dataSerializer.deserialize(
+      dataAfterDiscriminator
+    );
   } catch {
     // If deserialization fails, return raw data.
     return {
