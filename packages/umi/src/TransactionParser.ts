@@ -1,6 +1,7 @@
 import type { PublicKey } from '@metaplex-foundation/umi-public-keys';
 import type { Serializer } from '@metaplex-foundation/umi-serializers';
-import type { AccountMeta } from './Instruction';
+import type { Context } from './Context';
+import type { AccountMeta, Instruction } from './Instruction';
 
 /**
  * Defines the discriminator bytes used to identify an instruction.
@@ -53,3 +54,97 @@ export type ParsedInstruction = {
   /** The accounts used by the instruction, with optional names. */
   accounts: ParsedAccountMeta[];
 };
+
+/**
+ * Parses a raw instruction into a {@link ParsedInstruction} by looking up
+ * the program and matching the instruction discriminator.
+ *
+ * @param context - A context containing a program repository.
+ * @param instruction - The raw instruction to parse.
+ * @returns A fully parsed instruction with program name, instruction name,
+ *          deserialized data, and named accounts when available.
+ * @category Transaction Parser
+ */
+export function parseInstruction(
+  context: Pick<Context, 'programs'>,
+  instruction: Instruction
+): ParsedInstruction {
+  const { programId, keys, data } = instruction;
+
+  // Try to find the program in the repository.
+  let programName = 'unknown';
+  let instructionDescriptors: InstructionDescriptor[] | undefined;
+  try {
+    const program = context.programs.get(programId);
+    programName = program.name;
+    instructionDescriptors = program.instructions;
+  } catch {
+    // Program not registered — return unknown fallback.
+    return {
+      programName,
+      programId,
+      instructionName: 'unknown',
+      data,
+      accounts: keys.map((key) => ({ ...key })),
+    };
+  }
+
+  // If no instruction descriptors are registered, return with known program but unknown instruction.
+  if (!instructionDescriptors || instructionDescriptors.length === 0) {
+    return {
+      programName,
+      programId,
+      instructionName: 'unknown',
+      data,
+      accounts: keys.map((key) => ({ ...key })),
+    };
+  }
+
+  // Find matching descriptor by comparing discriminator bytes.
+  const descriptor = instructionDescriptors.find((desc) => {
+    if (data.length < desc.discriminator.size) return false;
+    const dataSlice = data.slice(0, desc.discriminator.size);
+    return dataSlice.every((byte, i) => byte === desc.discriminator.bytes[i]);
+  });
+
+  // No matching discriminator found.
+  if (!descriptor) {
+    return {
+      programName,
+      programId,
+      instructionName: 'unknown',
+      data,
+      accounts: keys.map((key) => ({ ...key })),
+    };
+  }
+
+  // Deserialize instruction data after the discriminator.
+  const dataAfterDiscriminator = data.slice(descriptor.discriminator.size);
+  let parsedData: object;
+  try {
+    [parsedData] = descriptor.dataSerializer.deserialize(dataAfterDiscriminator);
+  } catch {
+    // If deserialization fails, return raw data.
+    return {
+      programName,
+      programId,
+      instructionName: descriptor.name,
+      data,
+      accounts: keys.map((key) => ({ ...key })),
+    };
+  }
+
+  // Map account names positionally.
+  const accounts: ParsedAccountMeta[] = keys.map((key, index) => ({
+    ...key,
+    name: descriptor.accountNames?.[index],
+  }));
+
+  return {
+    programName,
+    programId,
+    instructionName: descriptor.name,
+    data: parsedData,
+    accounts,
+  };
+}
