@@ -5,7 +5,7 @@ import { createDasLiteIndexer } from './createDasLiteIndexer';
 
 export const dasLite = (): UmiPlugin => ({
   install(umi) {
-    umi.rpc = createDasLiteIndexer(umi.rpc);
+    umi.rpc = createDasLiteIndexer(umi);
   },
 });
 
