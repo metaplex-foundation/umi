@@ -365,7 +365,9 @@ test('safeGetDeserialized collects failures and still returns successful account
   t.truthy(results[1].error);
   t.is(results[1].rpcAccount.publicKey, testKey2);
   t.is(results[1].error!.name, 'SdkError');
-  t.true(results[1].error!.message.includes(`Cannot deserialize account ${testKey2}`));
+  t.true(
+    results[1].error!.message.includes(`Cannot deserialize account ${testKey2}`)
+  );
 
   // Third account succeeds
   t.truthy(results[2].account);
@@ -403,7 +405,9 @@ test('safeGetDeserialized handles all accounts failing', async (t) => {
   t.falsy(results[1].account);
 });
 
-function createTestRpcAccount(pubkey: ReturnType<typeof publicKey>): RpcAccount {
+function createTestRpcAccount(
+  pubkey: ReturnType<typeof publicKey>
+): RpcAccount {
   return {
     publicKey: pubkey,
     data: new Uint8Array([1, 2, 3]),
