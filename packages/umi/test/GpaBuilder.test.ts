@@ -1,11 +1,14 @@
 import test from 'ava';
 import {
+  Context,
   createNullContext,
   defaultPublicKey,
   GpaBuilder,
   gpaBuilder,
+  publicKey,
   publicKeyBytes,
   RpcAccount,
+  sol,
 } from '../src';
 import { base58, Serializer } from '../src/serializers';
 
@@ -314,6 +317,92 @@ test('it can chain multiple nested struct registrations', (t) => {
     }
   );
 });
+
+// Valid base58 public keys for testing.
+const testKey1 = publicKey('11111111111111111111111111111111');
+const testKey2 = publicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+const testKey3 = publicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
+
+test('safeGetDeserialized returns all accounts when none fail', async (t) => {
+  const rpcAccounts = [createTestRpcAccount(testKey1)];
+  const builder = getGpaBuilderWithAccounts(rpcAccounts).deserializeUsing(
+    (account) => ({ publicKey: account.publicKey, value: 'ok' })
+  );
+
+  const result = await builder.safeGetDeserialized();
+  t.is(result.accounts.length, 1);
+  t.is(result.failures.length, 0);
+  t.is(result.accounts[0].value, 'ok');
+});
+
+test('safeGetDeserialized collects failures and still returns successful accounts', async (t) => {
+  const rpcAccounts = [
+    createTestRpcAccount(testKey1),
+    createTestRpcAccount(testKey2),
+    createTestRpcAccount(testKey3),
+  ];
+
+  const builder = getGpaBuilderWithAccounts(rpcAccounts).deserializeUsing(
+    (account) => {
+      if (account.publicKey === testKey2) {
+        throw new Error('Corrupted account');
+      }
+      return { publicKey: account.publicKey, value: 'ok' };
+    }
+  );
+
+  const result = await builder.safeGetDeserialized();
+  t.is(result.accounts.length, 2);
+  t.is(result.failures.length, 1);
+  t.is(result.failures[0].rpcAccount.publicKey, testKey2);
+  t.true(result.failures[0].error instanceof Error);
+});
+
+test('safeGetDeserialized returns raw accounts when no deserialize callback is set', async (t) => {
+  const rpcAccounts = [createTestRpcAccount(testKey1)];
+  const builder = getGpaBuilderWithAccounts(rpcAccounts);
+
+  const result = await builder.safeGetDeserialized();
+  t.is(result.accounts.length, 1);
+  t.is(result.failures.length, 0);
+});
+
+test('safeGetDeserialized handles all accounts failing', async (t) => {
+  const rpcAccounts = [
+    createTestRpcAccount(testKey1),
+    createTestRpcAccount(testKey2),
+  ];
+
+  const builder = getGpaBuilderWithAccounts(rpcAccounts).deserializeUsing(
+    () => {
+      throw new Error('Cannot deserialize');
+    }
+  );
+
+  const result = await builder.safeGetDeserialized();
+  t.is(result.accounts.length, 0);
+  t.is(result.failures.length, 2);
+});
+
+function createTestRpcAccount(pubkey: ReturnType<typeof publicKey>): RpcAccount {
+  return {
+    publicKey: pubkey,
+    data: new Uint8Array([1, 2, 3]),
+    executable: false,
+    owner: defaultPublicKey(),
+    lamports: sol(0),
+  };
+}
+
+function getGpaBuilderWithAccounts(accounts: RpcAccount[]): GpaBuilder {
+  const context: Pick<Context, 'rpc'> = {
+    rpc: {
+      ...createNullContext().rpc,
+      getProgramAccounts: async () => accounts,
+    },
+  };
+  return gpaBuilder(context, defaultPublicKey());
+}
 
 function getTestGpaBuilder(): GpaBuilder {
   return gpaBuilder(createNullContext(), defaultPublicKey());

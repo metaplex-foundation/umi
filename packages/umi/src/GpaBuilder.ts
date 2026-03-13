@@ -26,6 +26,25 @@ export type GpaBuilderSortCallback = (a: RpcAccount, b: RpcAccount) => number;
 export type GpaBuilderMapCallback<T> = (account: RpcAccount) => T;
 
 /**
+ * Describes a failed deserialization attempt for a single account.
+ * @category Utils — GpaBuilder
+ */
+export type GpaBuilderDeserializationFailure = {
+  rpcAccount: RpcAccount;
+  error: unknown;
+};
+
+/**
+ * The result of a safe deserialization that collects failures
+ * instead of failing outright.
+ * @category Utils — GpaBuilder
+ */
+export type SafeGpaBuilderDeserializationResult<Account extends object> = {
+  accounts: Account[];
+  failures: GpaBuilderDeserializationFailure[];
+};
+
+/**
  * Get the GPA field offsets and serializers from their object definition.
  * @category Utils — GpaBuilder
  */
@@ -249,6 +268,27 @@ export class GpaBuilder<
     const rpcAccounts = await this.get(options);
     if (!this.options.deserializeCallback) return rpcAccounts as Account[];
     return rpcAccounts.map(this.options.deserializeCallback);
+  }
+
+  async safeGetDeserialized(
+    options: RpcGetProgramAccountsOptions = {}
+  ): Promise<SafeGpaBuilderDeserializationResult<Account>> {
+    const rpcAccounts = await this.get(options);
+    if (!this.options.deserializeCallback) {
+      return { accounts: rpcAccounts as Account[], failures: [] };
+    }
+
+    const accounts: Account[] = [];
+    const failures: GpaBuilderDeserializationFailure[] = [];
+    for (const rpcAccount of rpcAccounts) {
+      try {
+        accounts.push(this.options.deserializeCallback(rpcAccount));
+      } catch (error) {
+        failures.push({ rpcAccount, error });
+      }
+    }
+
+    return { accounts, failures };
   }
 
   async getPublicKeys(
