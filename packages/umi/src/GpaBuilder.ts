@@ -26,23 +26,19 @@ export type GpaBuilderSortCallback = (a: RpcAccount, b: RpcAccount) => number;
 export type GpaBuilderMapCallback<T> = (account: RpcAccount) => T;
 
 /**
- * Describes a failed deserialization attempt for a single account.
+ * The result of a safe deserialization attempt for a single account.
+ * Each entry preserves the index from the original `getProgramAccounts` response.
+ * On success, `account` is populated and `error` is undefined.
+ * On failure, `error` is a {@link SdkError} and `account` is undefined.
  * @category Utils — GpaBuilder
  */
-export type GpaBuilderDeserializationFailure = {
+export interface SafeGpaBuilderDeserializationResult<
+  Account extends object = RpcAccount
+> {
   rpcAccount: RpcAccount;
-  error: unknown;
-};
-
-/**
- * The result of a safe deserialization that collects failures
- * instead of failing outright.
- * @category Utils — GpaBuilder
- */
-export type SafeGpaBuilderDeserializationResult<Account extends object> = {
-  accounts: Account[];
-  failures: GpaBuilderDeserializationFailure[];
-};
+  account?: Account;
+  error?: SdkError;
+}
 
 /**
  * Get the GPA field offsets and serializers from their object definition.
@@ -272,23 +268,31 @@ export class GpaBuilder<
 
   async safeGetDeserialized(
     options: RpcGetProgramAccountsOptions = {}
-  ): Promise<SafeGpaBuilderDeserializationResult<Account>> {
+  ): Promise<SafeGpaBuilderDeserializationResult<Account>[]> {
     const rpcAccounts = await this.get(options);
     if (!this.options.deserializeCallback) {
-      return { accounts: rpcAccounts as Account[], failures: [] };
+      return rpcAccounts.map((rpcAccount) => ({
+        rpcAccount,
+        account: rpcAccount as Account,
+      }));
     }
 
-    const accounts: Account[] = [];
-    const failures: GpaBuilderDeserializationFailure[] = [];
-    for (const rpcAccount of rpcAccounts) {
+    return rpcAccounts.map((rpcAccount) => {
       try {
-        accounts.push(this.options.deserializeCallback(rpcAccount));
-      } catch (error) {
-        failures.push({ rpcAccount, error });
+        return {
+          rpcAccount,
+          account: this.options.deserializeCallback!(rpcAccount),
+        };
+      } catch (e) {
+        return {
+          rpcAccount,
+          error: new SdkError(
+            `Cannot deserialize account ${rpcAccount.publicKey}`,
+            e instanceof Error ? e : undefined
+          ),
+        };
       }
-    }
-
-    return { accounts, failures };
+    });
   }
 
   async getPublicKeys(

@@ -329,10 +329,12 @@ test('safeGetDeserialized returns all accounts when none fail', async (t) => {
     (account) => ({ publicKey: account.publicKey, value: 'ok' })
   );
 
-  const result = await builder.safeGetDeserialized();
-  t.is(result.accounts.length, 1);
-  t.is(result.failures.length, 0);
-  t.is(result.accounts[0].value, 'ok');
+  const results = await builder.safeGetDeserialized();
+  t.is(results.length, 1);
+  t.truthy(results[0].account);
+  t.falsy(results[0].error);
+  t.is(results[0].account!.value, 'ok');
+  t.is(results[0].rpcAccount.publicKey, testKey1);
 });
 
 test('safeGetDeserialized collects failures and still returns successful accounts', async (t) => {
@@ -351,20 +353,34 @@ test('safeGetDeserialized collects failures and still returns successful account
     }
   );
 
-  const result = await builder.safeGetDeserialized();
-  t.is(result.accounts.length, 2);
-  t.is(result.failures.length, 1);
-  t.is(result.failures[0].rpcAccount.publicKey, testKey2);
-  t.true(result.failures[0].error instanceof Error);
+  const results = await builder.safeGetDeserialized();
+  t.is(results.length, 3);
+
+  // First account succeeds
+  t.truthy(results[0].account);
+  t.falsy(results[0].error);
+
+  // Second account fails with SdkError
+  t.falsy(results[1].account);
+  t.truthy(results[1].error);
+  t.is(results[1].rpcAccount.publicKey, testKey2);
+  t.is(results[1].error!.name, 'SdkError');
+  t.true(results[1].error!.message.includes(`Cannot deserialize account ${testKey2}`));
+
+  // Third account succeeds
+  t.truthy(results[2].account);
+  t.falsy(results[2].error);
 });
 
 test('safeGetDeserialized returns raw accounts when no deserialize callback is set', async (t) => {
   const rpcAccounts = [createTestRpcAccount(testKey1)];
   const builder = getGpaBuilderWithAccounts(rpcAccounts);
 
-  const result = await builder.safeGetDeserialized();
-  t.is(result.accounts.length, 1);
-  t.is(result.failures.length, 0);
+  const results = await builder.safeGetDeserialized();
+  t.is(results.length, 1);
+  t.truthy(results[0].account);
+  t.falsy(results[0].error);
+  t.is(results[0].rpcAccount.publicKey, testKey1);
 });
 
 test('safeGetDeserialized handles all accounts failing', async (t) => {
@@ -379,9 +395,12 @@ test('safeGetDeserialized handles all accounts failing', async (t) => {
     }
   );
 
-  const result = await builder.safeGetDeserialized();
-  t.is(result.accounts.length, 0);
-  t.is(result.failures.length, 2);
+  const results = await builder.safeGetDeserialized();
+  t.is(results.length, 2);
+  t.truthy(results[0].error);
+  t.falsy(results[0].account);
+  t.truthy(results[1].error);
+  t.falsy(results[1].account);
 });
 
 function createTestRpcAccount(pubkey: ReturnType<typeof publicKey>): RpcAccount {
