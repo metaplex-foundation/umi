@@ -32,6 +32,7 @@ export * from './SignerPlugins';
 export * from './Transaction';
 export * from './TransactionBuilder';
 export * from './TransactionBuilderGroup';
+export * from './TransactionParser';
 export * from './TransactionFactoryInterface';
 export * from './Umi';
 export * from './UmiPlugin';
