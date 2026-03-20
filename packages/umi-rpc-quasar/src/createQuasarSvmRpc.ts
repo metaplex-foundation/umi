@@ -200,33 +200,35 @@ export function createQuasarSvmRpc(
 
     // Gather all unique accounts referenced by the transaction
     const seenKeys = new Set<string>();
-    const keyedAccounts: QuasarKeyedAccount[] = [];
+    const keyedAccounts: QuasarKeyedAccount[] = allAccountKeys.reduce(
+      (acc: QuasarKeyedAccount[], key) => {
+        const keyStr = key.toBase58();
+        if (seenKeys.has(keyStr)) return acc;
+        seenKeys.add(keyStr);
 
-    for (const key of allAccountKeys) {
-      const keyStr = key.toBase58();
-      if (seenKeys.has(keyStr)) continue;
-      seenKeys.add(keyStr);
-
-      const stored = accountStore.get(
-        fromWeb3JsPublicKey(key) as string
-      );
-      keyedAccounts.push({
-        accountId: key,
-        accountInfo: stored
-          ? {
-              owner: stored.owner,
-              lamports: stored.lamports,
-              data: stored.data,
-              executable: stored.executable,
-            }
-          : {
-              owner: SYSTEM_PROGRAM_ID,
-              lamports: BigInt(0),
-              data: Buffer.alloc(0),
-              executable: false,
-            },
-      });
-    }
+        const stored = accountStore.get(
+          fromWeb3JsPublicKey(key) as string
+        );
+        acc.push({
+          accountId: key,
+          accountInfo: stored
+            ? {
+                owner: stored.owner,
+                lamports: stored.lamports,
+                data: stored.data,
+                executable: stored.executable,
+              }
+            : {
+                owner: SYSTEM_PROGRAM_ID,
+                lamports: BigInt(0),
+                data: Buffer.alloc(0),
+                executable: false,
+              },
+        });
+        return acc;
+      },
+      []
+    );
 
     return { instructions, keyedAccounts };
   }
@@ -261,14 +263,14 @@ export function createQuasarSvmRpc(
 
     // Update account store with result accounts if persisting
     if (persist && result.status === 0) {
-      for (const acct of result.accounts) {
+      result.accounts.forEach((acct) => {
         setStoredAccount(acct.accountId, {
           owner: acct.accountInfo.owner,
           lamports: BigInt(acct.accountInfo.lamports),
           data: Buffer.from(acct.accountInfo.data),
           executable: acct.accountInfo.executable,
         });
-      }
+      });
     }
 
     // Record post-balances
@@ -315,42 +317,35 @@ export function createQuasarSvmRpc(
     programId: PublicKey,
     options: RpcGetProgramAccountsOptions = {}
   ): Promise<RpcAccount[]> => {
-    const results: RpcAccount[] = [];
     const programIdStr = programId as string;
 
-    for (const [key, account] of accountStore.entries()) {
-      if (fromWeb3JsPublicKey(account.owner) !== programIdStr) continue;
-
-      // Apply filters
-      if (options.filters) {
-        let matches = true;
-        for (const filter of options.filters) {
-          if ('dataSize' in filter) {
-            if (account.data.length !== filter.dataSize) {
-              matches = false;
-              break;
-            }
-          } else if ('memcmp' in filter) {
-            const { offset, bytes } = filter.memcmp;
-            const slice = account.data.subarray(
-              offset,
-              offset + bytes.length
-            );
-            if (
-              slice.length !== bytes.length ||
-              !slice.every((b, i) => b === bytes[i])
-            ) {
-              matches = false;
-              break;
-            }
-          }
+    const matchesFilters = (account: {
+      data: Buffer;
+    }): boolean => {
+      if (!options.filters) return true;
+      return options.filters.every((filter) => {
+        if ('dataSize' in filter) {
+          return account.data.length === filter.dataSize;
         }
-        if (!matches) continue;
-      }
+        if ('memcmp' in filter) {
+          const { offset, bytes } = filter.memcmp;
+          const slice = account.data.subarray(offset, offset + bytes.length);
+          return (
+            slice.length === bytes.length &&
+            slice.every((b: number, i: number) => b === bytes[i])
+          );
+        }
+        return true;
+      });
+    };
 
-      results.push(toRpcAccount(key as PublicKey, account));
-    }
-    return results;
+    return Array.from(accountStore.entries())
+      .filter(
+        ([, account]) =>
+          fromWeb3JsPublicKey(account.owner) === programIdStr &&
+          matchesFilters(account)
+      )
+      .map(([key, account]) => toRpcAccount(key as PublicKey, account));
   };
 
   const getBalance = async (

@@ -42,7 +42,7 @@ export function quasarSvmRpc(
 ): UmiPlugin {
   return {
     install(umi) {
-      // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+      // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires, import/extensions
       const { QuasarSvm } = require('@blueshift-gg/quasar-svm/web3.js');
       const svmInstance: QuasarSvmInstance = new QuasarSvm();
 
@@ -59,13 +59,13 @@ export function quasarSvmRpc(
 
       // Load custom programs
       if (options.programs) {
-        for (const program of options.programs) {
+        options.programs.forEach((program) => {
           svmInstance.addProgram(
             new PublicKey(program.programId),
             program.elf,
             program.loaderVersion
           );
-        }
+        });
       }
 
       umi.rpc = createQuasarSvmRpc(umi, svmInstance, options);
