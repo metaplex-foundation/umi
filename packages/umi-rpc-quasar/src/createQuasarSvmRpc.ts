@@ -47,10 +47,7 @@ import {
   PublicKey as Web3JsPublicKey,
   TransactionInstruction as Web3JsTransactionInstruction,
 } from '@solana/web3.js';
-import type {
-  QuasarSvmInstance,
-  QuasarKeyedAccount,
-} from './quasar-svm';
+import type { QuasarSvmInstance, QuasarKeyedAccount } from './quasar-svm';
 
 /**
  * Internal representation of an account in the QuasarSVM store.
@@ -166,7 +163,11 @@ export function createQuasarSvmRpc(
   } {
     const { message } = transaction;
     const allAccountKeys = message.accounts.map(toWeb3JsPublicKey);
-    const { numRequiredSignatures, numReadonlySignedAccounts, numReadonlyUnsignedAccounts } = message.header;
+    const {
+      numRequiredSignatures,
+      numReadonlySignedAccounts,
+      numReadonlyUnsignedAccounts,
+    } = message.header;
 
     // Determine writable and signer status for each account
     const numWritableSigned = numRequiredSignatures - numReadonlySignedAccounts;
@@ -180,8 +181,7 @@ export function createQuasarSvmRpc(
       return index - numRequiredSignatures < numWritableUnsigned;
     };
 
-    const isSigner = (index: number): boolean =>
-      index < numRequiredSignatures;
+    const isSigner = (index: number): boolean => index < numRequiredSignatures;
 
     // Decompile instructions
     const instructions = message.instructions.map((compiled) => {
@@ -206,9 +206,7 @@ export function createQuasarSvmRpc(
         if (seenKeys.has(keyStr)) return acc;
         seenKeys.add(keyStr);
 
-        const stored = accountStore.get(
-          fromWeb3JsPublicKey(key) as string
-        );
+        const stored = accountStore.get(fromWeb3JsPublicKey(key) as string);
         acc.push({
           accountId: key,
           accountInfo: stored
@@ -259,7 +257,8 @@ export function createQuasarSvmRpc(
     // Execute through QuasarSVM
     const result = svm.processTransaction(instructions, keyedAccounts);
 
-    const err = result.status !== 0 ? (result.errorMessage ?? 'Transaction failed') : null;
+    const err =
+      result.status !== 0 ? result.errorMessage ?? 'Transaction failed' : null;
 
     // Update account store with result accounts if persisting
     if (persist && result.status === 0) {
@@ -319,9 +318,7 @@ export function createQuasarSvmRpc(
   ): Promise<RpcAccount[]> => {
     const programIdStr = programId as string;
 
-    const matchesFilters = (account: {
-      data: Buffer;
-    }): boolean => {
+    const matchesFilters = (account: { data: Buffer }): boolean => {
       if (!options.filters) return true;
       return options.filters.every((filter) => {
         if ('dataSize' in filter) {

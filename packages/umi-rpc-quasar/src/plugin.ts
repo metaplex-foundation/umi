@@ -1,10 +1,7 @@
 import { UmiPlugin } from '@metaplex-foundation/umi';
 import { PublicKey } from '@solana/web3.js';
 import type { QuasarSvmInstance } from './quasar-svm';
-import {
-  createQuasarSvmRpc,
-  QuasarSvmRpcOptions,
-} from './createQuasarSvmRpc';
+import { createQuasarSvmRpc, QuasarSvmRpcOptions } from './createQuasarSvmRpc';
 
 /**
  * Options for configuring the QuasarSVM RPC plugin.
@@ -37,9 +34,7 @@ export type QuasarSvmPluginOptions = QuasarSvmRpcOptions & {
  *   .use(quasarSvmRpc());
  * ```
  */
-export function quasarSvmRpc(
-  options: QuasarSvmPluginOptions = {}
-): UmiPlugin {
+export function quasarSvmRpc(options: QuasarSvmPluginOptions = {}): UmiPlugin {
   return {
     install(umi) {
       // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires, import/extensions
