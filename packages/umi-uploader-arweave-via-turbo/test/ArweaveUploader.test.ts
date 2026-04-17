@@ -15,10 +15,48 @@ import {
   ArweaveUploader,
   arweaveUploader,
   ArweaveUploaderOptions,
+  resolveGatewayBaseUrl,
 } from '../src';
 
 test('example test', async (t) => {
   t.is(typeof arweaveUploader, 'function');
+});
+
+test('resolveGatewayBaseUrl defaults to turbo-gateway.com on non-devnet', (t) => {
+  t.is(
+    resolveGatewayBaseUrl(undefined, 'mainnet-beta'),
+    'https://turbo-gateway.com'
+  );
+  t.is(resolveGatewayBaseUrl(undefined, 'custom'), 'https://turbo-gateway.com');
+});
+
+test('resolveGatewayBaseUrl defaults to turbo.ardrive.dev/raw on devnet', (t) => {
+  t.is(
+    resolveGatewayBaseUrl(undefined, 'devnet'),
+    'https://turbo.ardrive.dev/raw'
+  );
+});
+
+test('resolveGatewayBaseUrl uses the user-supplied gateway on any cluster', (t) => {
+  t.is(
+    resolveGatewayBaseUrl('https://example.org', 'mainnet-beta'),
+    'https://example.org'
+  );
+  t.is(
+    resolveGatewayBaseUrl('https://example.org', 'devnet'),
+    'https://example.org'
+  );
+});
+
+test('resolveGatewayBaseUrl strips trailing slashes so URI composition is clean', (t) => {
+  t.is(
+    resolveGatewayBaseUrl('https://example.org/', 'mainnet-beta'),
+    'https://example.org'
+  );
+  t.is(
+    resolveGatewayBaseUrl('https://example.org///', 'mainnet-beta'),
+    'https://example.org'
+  );
 });
 
 // TODO(loris): Unskip these tests when we can mock the Arweave API.

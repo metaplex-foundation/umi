@@ -65,7 +65,30 @@ export type ArweaveUploaderOptions = {
   paymentServiceUrl?: string;
   priceMultiplier?: number;
   payer?: Signer;
+  /**
+   * Base URL of the Arweave gateway used to compose the asset URIs
+   * returned from `upload()` / `uploadJson()`. These URIs are typically
+   * written into on-chain NFT metadata, so choose a gateway you intend
+   * to rely on long-term (e.g. `https://turbo-gateway.com`,
+   * `https://arweave.net`, `https://ar.io`, or a self-hosted gateway).
+   * A trailing slash is tolerated.
+   *
+   * Defaults: `https://turbo-gateway.com` on mainnet/non-devnet clusters
+   * and `https://turbo.ardrive.dev/raw` on devnet.
+   */
+  gatewayUrl?: string;
 };
+
+export const resolveGatewayBaseUrl = (
+  gatewayUrl: string | undefined,
+  cluster: string
+): string =>
+  (
+    gatewayUrl ??
+    (cluster === 'devnet'
+      ? 'https://turbo.ardrive.dev/raw'
+      : 'https://turbo-gateway.com')
+  ).replace(/\/+$/, '');
 
 export type ArweaveWalletAdapter = {
   publicKey: Web3JsPublicKey | null;
@@ -191,10 +214,10 @@ export function createArweaveUploader(
         throw new AssetUploadFailedError(error);
       }
 
-      const gateway =
-        context.rpc.getCluster() === 'devnet'
-          ? 'https://turbo.ardrive.dev/raw'
-          : 'https://arweave.net';
+      const gateway = resolveGatewayBaseUrl(
+        options.gatewayUrl,
+        context.rpc.getCluster()
+      );
 
       return `${gateway}/${dataItemId}`;
     });
