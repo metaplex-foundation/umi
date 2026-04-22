@@ -15,46 +15,25 @@ import {
   ArweaveUploader,
   arweaveUploader,
   ArweaveUploaderOptions,
-  resolveGatewayBaseUrl,
+  resolveArweaveGatewayUrl,
 } from '../src';
 
 test('example test', async (t) => {
   t.is(typeof arweaveUploader, 'function');
 });
 
-test('resolveGatewayBaseUrl defaults to turbo-gateway.com on non-devnet', (t) => {
-  t.is(
-    resolveGatewayBaseUrl(undefined, 'mainnet-beta'),
-    'https://turbo-gateway.com'
-  );
-  t.is(resolveGatewayBaseUrl(undefined, 'custom'), 'https://turbo-gateway.com');
+test('resolveArweaveGatewayUrl defaults to turbo-gateway.com', (t) => {
+  t.is(resolveArweaveGatewayUrl(undefined), 'https://turbo-gateway.com');
 });
 
-test('resolveGatewayBaseUrl defaults to turbo.ardrive.dev/raw on devnet', (t) => {
-  t.is(
-    resolveGatewayBaseUrl(undefined, 'devnet'),
-    'https://turbo.ardrive.dev/raw'
-  );
+test('resolveArweaveGatewayUrl uses the user-supplied gateway when provided', (t) => {
+  t.is(resolveArweaveGatewayUrl('https://example.org'), 'https://example.org');
 });
 
-test('resolveGatewayBaseUrl uses the user-supplied gateway on any cluster', (t) => {
+test('resolveArweaveGatewayUrl strips trailing slashes so URI composition is clean', (t) => {
+  t.is(resolveArweaveGatewayUrl('https://example.org/'), 'https://example.org');
   t.is(
-    resolveGatewayBaseUrl('https://example.org', 'mainnet-beta'),
-    'https://example.org'
-  );
-  t.is(
-    resolveGatewayBaseUrl('https://example.org', 'devnet'),
-    'https://example.org'
-  );
-});
-
-test('resolveGatewayBaseUrl strips trailing slashes so URI composition is clean', (t) => {
-  t.is(
-    resolveGatewayBaseUrl('https://example.org/', 'mainnet-beta'),
-    'https://example.org'
-  );
-  t.is(
-    resolveGatewayBaseUrl('https://example.org///', 'mainnet-beta'),
+    resolveArweaveGatewayUrl('https://example.org///'),
     'https://example.org'
   );
 });
@@ -91,9 +70,9 @@ test.skip('can upload one file', async (t) => {
     createGenericFile('some-image', 'some-image.jpg'),
   ]);
 
-  // Then the URI should be a valid arweave dev gateway URI.
+  // Then the URI should be composed via the default turbo-gateway.com host.
   t.truthy(uri);
-  t.true(uri.startsWith('https://turbo.ardrive.dev/'));
+  t.true(uri.startsWith('https://turbo-gateway.com/'));
 
   // and it should point to the uploaded asset.
   const [asset] = await context.downloader.download([uri]);
@@ -116,7 +95,7 @@ test.skip('can upload a file above 105 KiB in size', async (t) => {
   ]);
 
   t.truthy(uri);
-  t.true(uri.startsWith('https://turbo.ardrive.dev/'));
+  t.true(uri.startsWith('https://turbo-gateway.com/'));
 
   const [asset] = await context.downloader.download([uri]);
   t.deepEqual(asset.buffer, buffer);
