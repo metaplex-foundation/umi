@@ -65,6 +65,51 @@ export type ArweaveUploaderOptions = {
   paymentServiceUrl?: string;
   priceMultiplier?: number;
   payer?: Signer;
+  /**
+   * Base URL of the Arweave gateway used to compose the asset URIs
+   * returned from `upload()` / `uploadJson()`. These URIs are typically
+   * written into on-chain NFT metadata, so choose a gateway you intend
+   * to rely on long-term (e.g. `https://turbo-gateway.com`,
+   * `https://arweave.net`, `https://ar.io`, or a self-hosted gateway).
+   * A trailing slash is tolerated.
+   *
+   * Defaults to `https://turbo-gateway.com`, a full AR.IO gateway
+   * operated alongside Turbo. The same gateway is used on every
+   * cluster — Turbo does not run a separate devnet content gateway.
+   *
+   * Note: not to be confused with the Turbo SDK's own `gatewayUrl`
+   * field (the Solana RPC endpoint) — that one is controlled by
+   * `solRpcUrl` above.
+   */
+  arweaveGatewayUrl?: string;
+};
+
+const DEFAULT_ARWEAVE_GATEWAY_URL = 'https://turbo-gateway.com';
+
+export const resolveArweaveGatewayUrl = (
+  arweaveGatewayUrl: string | undefined
+): string => {
+  const gateway = (arweaveGatewayUrl ?? DEFAULT_ARWEAVE_GATEWAY_URL).replace(
+    /\/+$/,
+    ''
+  );
+
+  let parsed: URL;
+  try {
+    parsed = new URL(gateway);
+  } catch {
+    throw new Error(
+      `Invalid arweaveGatewayUrl: expected an absolute http(s) URL, got "${arweaveGatewayUrl}"`
+    );
+  }
+
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    throw new Error(
+      `Invalid arweaveGatewayUrl: expected http: or https:, got "${parsed.protocol}"`
+    );
+  }
+
+  return gateway;
 };
 
 export type ArweaveWalletAdapter = {
@@ -87,6 +132,14 @@ export type ArweaveWalletAdapter = {
 const HEADER_SIZE = 2_000;
 
 const FREE_UPLOAD_BYTE_LIMIT = 107_520; // 105 KiB
+
+// Turbo has a single production environment — there is no devnet-specific
+// upload or payment service. Free-tier uploads (under FREE_UPLOAD_BYTE_LIMIT)
+// work for any cluster because no SOL payment is required. Paid uploads
+// need a mainnet-signed SOL transaction to buy Turbo Storage Credits. Both
+// defaults can be overridden via `uploadServiceUrl` / `paymentServiceUrl`.
+const DEFAULT_UPLOAD_SERVICE_URL = 'https://upload.ardrive.io';
+const DEFAULT_PAYMENT_SERVICE_URL = 'https://payment.ardrive.io';
 
 export function createArweaveUploader(
   context: Pick<Context, 'rpc' | 'payer' | 'eddsa'>,
@@ -191,10 +244,7 @@ export function createArweaveUploader(
         throw new AssetUploadFailedError(error);
       }
 
-      const gateway =
-        context.rpc.getCluster() === 'devnet'
-          ? 'https://turbo.ardrive.dev/raw'
-          : 'https://arweave.net';
+      const gateway = resolveArweaveGatewayUrl(options.arweaveGatewayUrl);
 
       return `${gateway}/${dataItemId}`;
     });
@@ -294,17 +344,6 @@ export function createArweaveUploader(
     return _arweave;
   };
 
-  const defaultAddresses =
-    context.rpc.getCluster() === 'devnet'
-      ? {
-          uploadServiceUrl: 'https://upload.ardrive.dev',
-          paymentServiceUrl: 'https://payment.ardrive.dev',
-        }
-      : {
-          uploadServiceUrl: 'https://upload.ardrive.io',
-          paymentServiceUrl: 'https://payment.ardrive.io',
-        };
-
   const initArweave = async (
     payer: Signer = options.payer ?? context.payer
   ): Promise<TurboAuthenticatedClient> => {
@@ -315,10 +354,10 @@ export function createArweaveUploader(
         privateKey: base58.deserialize(payer.secretKey)[0],
         gatewayUrl: options.solRpcUrl,
         uploadServiceConfig: {
-          url: options.uploadServiceUrl ?? defaultAddresses.uploadServiceUrl,
+          url: options.uploadServiceUrl ?? DEFAULT_UPLOAD_SERVICE_URL,
         },
         paymentServiceConfig: {
-          url: options.paymentServiceUrl ?? defaultAddresses.paymentServiceUrl,
+          url: options.paymentServiceUrl ?? DEFAULT_PAYMENT_SERVICE_URL,
         },
       });
     } else {
@@ -330,8 +369,8 @@ export function createArweaveUploader(
       await arweave.getTurboCryptoWallets();
     } catch (error) {
       throw new FailedToConnectToArweaveAddressError(
-        options.uploadServiceUrl ?? '',
-        options.paymentServiceUrl ?? '',
+        options.uploadServiceUrl ?? DEFAULT_UPLOAD_SERVICE_URL,
+        options.paymentServiceUrl ?? DEFAULT_PAYMENT_SERVICE_URL,
         error as Error
       );
     }
@@ -353,10 +392,10 @@ export function createArweaveUploader(
       walletAdapter: wallet,
       gatewayUrl: options.solRpcUrl,
       uploadServiceConfig: {
-        url: options.uploadServiceUrl ?? defaultAddresses.uploadServiceUrl,
+        url: options.uploadServiceUrl ?? DEFAULT_UPLOAD_SERVICE_URL,
       },
       paymentServiceConfig: {
-        url: options.paymentServiceUrl ?? defaultAddresses.paymentServiceUrl,
+        url: options.paymentServiceUrl ?? DEFAULT_PAYMENT_SERVICE_URL,
       },
     });
   };
