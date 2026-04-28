@@ -84,10 +84,33 @@ export type ArweaveUploaderOptions = {
   arweaveGatewayUrl?: string;
 };
 
+const DEFAULT_ARWEAVE_GATEWAY_URL = 'https://turbo-gateway.com';
+
 export const resolveArweaveGatewayUrl = (
   arweaveGatewayUrl: string | undefined
-): string =>
-  (arweaveGatewayUrl ?? 'https://turbo-gateway.com').replace(/\/+$/, '');
+): string => {
+  const gateway = (arweaveGatewayUrl ?? DEFAULT_ARWEAVE_GATEWAY_URL).replace(
+    /\/+$/,
+    ''
+  );
+
+  let parsed: URL;
+  try {
+    parsed = new URL(gateway);
+  } catch {
+    throw new Error(
+      `Invalid arweaveGatewayUrl: expected an absolute http(s) URL, got "${arweaveGatewayUrl}"`
+    );
+  }
+
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    throw new Error(
+      `Invalid arweaveGatewayUrl: expected http: or https:, got "${parsed.protocol}"`
+    );
+  }
+
+  return gateway;
+};
 
 export type ArweaveWalletAdapter = {
   publicKey: Web3JsPublicKey | null;
@@ -346,8 +369,8 @@ export function createArweaveUploader(
       await arweave.getTurboCryptoWallets();
     } catch (error) {
       throw new FailedToConnectToArweaveAddressError(
-        options.uploadServiceUrl ?? '',
-        options.paymentServiceUrl ?? '',
+        options.uploadServiceUrl ?? DEFAULT_UPLOAD_SERVICE_URL,
+        options.paymentServiceUrl ?? DEFAULT_PAYMENT_SERVICE_URL,
         error as Error
       );
     }

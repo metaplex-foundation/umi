@@ -38,6 +38,37 @@ test('resolveArweaveGatewayUrl strips trailing slashes so URI composition is cle
   );
 });
 
+test('resolveArweaveGatewayUrl rejects empty strings so we never write a relative URI on-chain', (t) => {
+  t.throws(() => resolveArweaveGatewayUrl(''), {
+    message: /Invalid arweaveGatewayUrl/,
+  });
+});
+
+test('resolveArweaveGatewayUrl rejects slash-only inputs that normalise to empty', (t) => {
+  t.throws(() => resolveArweaveGatewayUrl('/'), {
+    message: /Invalid arweaveGatewayUrl/,
+  });
+});
+
+test('resolveArweaveGatewayUrl rejects schemeless hosts', (t) => {
+  t.throws(() => resolveArweaveGatewayUrl('turbo-gateway.com'), {
+    message: /Invalid arweaveGatewayUrl/,
+  });
+});
+
+test('resolveArweaveGatewayUrl rejects non-http(s) protocols', (t) => {
+  t.throws(() => resolveArweaveGatewayUrl('ftp://turbo-gateway.com'), {
+    message: /expected http: or https:/,
+  });
+});
+
+test('resolveArweaveGatewayUrl allows plain http for self-hosted/dev gateways', (t) => {
+  t.is(
+    resolveArweaveGatewayUrl('http://localhost:3000'),
+    'http://localhost:3000'
+  );
+});
+
 // TODO(loris): Unskip these tests when we can mock the Arweave API.
 
 const devNetRpcUrl = 'https://api.devnet.solana.com';
