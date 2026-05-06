@@ -208,7 +208,9 @@ export function parseInstruction(
   const dataAfterDiscriminator = data.subarray(discSize);
   let parsedData: Record<string, unknown>;
   try {
-    [parsedData] = descriptor.dataSerializer.deserialize(dataAfterDiscriminator);
+    [parsedData] = descriptor.dataSerializer.deserialize(
+      dataAfterDiscriminator
+    );
   } catch {
     return {
       index,
@@ -257,10 +259,17 @@ export function parseTransaction(
     const programId = message.accounts[compiledIx.programIndex];
     const keys = compiledIx.accountIndexes.map((accountIndex) => {
       const pubkey = message.accounts[accountIndex];
-      const { isSigner, isWritable } = resolveAccountMeta(accountIndex, message);
+      const { isSigner, isWritable } = resolveAccountMeta(
+        accountIndex,
+        message
+      );
       return { pubkey, isSigner, isWritable };
     });
-    return parseInstruction(context, { programId, keys, data: compiledIx.data }, ixIndex);
+    return parseInstruction(
+      context,
+      { programId, keys, data: compiledIx.data },
+      ixIndex
+    );
   });
 
   return {

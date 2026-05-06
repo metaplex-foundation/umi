@@ -412,7 +412,11 @@ test('parseTransaction returns ParsedTransaction with metadata fields', (t) => {
   const transaction = createTestTransaction(
     [feePayer, programKey],
     [{ programIndex: 1, accountIndexes: [], data: new Uint8Array([9]) }],
-    { numRequiredSignatures: 1, numReadonlySignedAccounts: 0, numReadonlyUnsignedAccounts: 1 },
+    {
+      numRequiredSignatures: 1,
+      numReadonlySignedAccounts: 0,
+      numReadonlyUnsignedAccounts: 1,
+    },
     { version: 'legacy', blockhash: 'my-blockhash', signatures: [sig] }
   );
 
@@ -565,15 +569,29 @@ test('parseTransaction correctly derives isSigner and isWritable for legacy acco
   //   Readonly signers: [1]
   //   Writable non-signers: [2]  (numStaticAccounts(5) - numReadonlyUnsigned(2) = 3 → indices < 3)
   //   Readonly non-signers: [3, 4]
-  const writableSigner = publicKey('3GQMfaCNDRirN24DTYRK5XZLyZjoMgHPvyPxgHKAXiAu');
-  const readonlySigner = publicKey('29S9SK4gMpWrLHGBgrRJTSkNdfuZjq6Pqxv3tesuAx8s');
-  const writableNonSigner = publicKey('So11111111111111111111111111111111111111112');
-  const readonlyNonSigner = publicKey('SysvarRent111111111111111111111111111111111');
+  const writableSigner = publicKey(
+    '3GQMfaCNDRirN24DTYRK5XZLyZjoMgHPvyPxgHKAXiAu'
+  );
+  const readonlySigner = publicKey(
+    '29S9SK4gMpWrLHGBgrRJTSkNdfuZjq6Pqxv3tesuAx8s'
+  );
+  const writableNonSigner = publicKey(
+    'So11111111111111111111111111111111111111112'
+  );
+  const readonlyNonSigner = publicKey(
+    'SysvarRent111111111111111111111111111111111'
+  );
   const programKey = publicKey('11111111111111111111111111111111');
 
   const context = { programs: createTestProgramRepository([]) };
   const transaction = createTestTransaction(
-    [writableSigner, readonlySigner, writableNonSigner, readonlyNonSigner, programKey],
+    [
+      writableSigner,
+      readonlySigner,
+      writableNonSigner,
+      readonlyNonSigner,
+      programKey,
+    ],
     [
       {
         programIndex: 4,
@@ -581,7 +599,11 @@ test('parseTransaction correctly derives isSigner and isWritable for legacy acco
         data: new Uint8Array([0]),
       },
     ],
-    { numRequiredSignatures: 2, numReadonlySignedAccounts: 1, numReadonlyUnsignedAccounts: 2 }
+    {
+      numRequiredSignatures: 2,
+      numReadonlySignedAccounts: 1,
+      numReadonlyUnsignedAccounts: 2,
+    }
   );
 
   const result = parseTransaction(context, transaction);
@@ -603,8 +625,12 @@ test('parseTransaction correctly derives isWritable for v0 address lookup table 
   // Flat index layout: 0=signer(w), 1=staticNonSigner(w), 2=staticNonSigner(r), 3=program,
   //                    4=lutWritable1, 5=lutWritable2, 6=lutReadonly
   const signerKey = publicKey('3GQMfaCNDRirN24DTYRK5XZLyZjoMgHPvyPxgHKAXiAu');
-  const staticWritable = publicKey('29S9SK4gMpWrLHGBgrRJTSkNdfuZjq6Pqxv3tesuAx8s');
-  const staticReadonly = publicKey('SysvarRent111111111111111111111111111111111');
+  const staticWritable = publicKey(
+    '29S9SK4gMpWrLHGBgrRJTSkNdfuZjq6Pqxv3tesuAx8s'
+  );
+  const staticReadonly = publicKey(
+    'SysvarRent111111111111111111111111111111111'
+  );
   const programKey = publicKey('11111111111111111111111111111111');
   const lutKey = publicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
   const lutWritable1 = publicKey('So11111111111111111111111111111111111111112');
@@ -614,7 +640,15 @@ test('parseTransaction correctly derives isWritable for v0 address lookup table 
   const context = { programs: createTestProgramRepository([]) };
   const transaction = createTestTransaction(
     // All 7 accounts flat (static first, then LUT-resolved in order)
-    [signerKey, staticWritable, staticReadonly, programKey, lutWritable1, lutWritable2, lutReadonly],
+    [
+      signerKey,
+      staticWritable,
+      staticReadonly,
+      programKey,
+      lutWritable1,
+      lutWritable2,
+      lutReadonly,
+    ],
     [
       {
         programIndex: 3,
@@ -623,7 +657,11 @@ test('parseTransaction correctly derives isWritable for v0 address lookup table 
       },
     ],
     // numReadonlyUnsigned=2 → static non-signers at indices [1,2,3]: last 2 are readonly → index 1 writable, indices 2,3 readonly
-    { numRequiredSignatures: 1, numReadonlySignedAccounts: 0, numReadonlyUnsignedAccounts: 2 },
+    {
+      numRequiredSignatures: 1,
+      numReadonlySignedAccounts: 0,
+      numReadonlyUnsignedAccounts: 2,
+    },
     {
       version: 0,
       addressLookupTables: [
