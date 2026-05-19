@@ -46,7 +46,8 @@ export interface RpcInterface {
    *
    * @param publicKey The public keys of the accounts to fetch.
    * @param options The options to use when fetching multiple accounts.
-   * @returns An array of raw accounts that may or may not exist.
+   * @returns An array of raw accounts that may or may not exist, in the same
+   * order as the provided `publicKeys`.
    */
   getAccounts(
     publicKeys: PublicKey[],
