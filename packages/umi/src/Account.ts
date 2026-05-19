@@ -153,9 +153,7 @@ export async function fetchAllMixedAccounts<
   inputs: [...T],
   options?: RpcGetAccountsOptions
 ): Promise<DeserializedAccounts<T>> {
-  const publicKeys = inputs.map((input) =>
-    toPublicKey(input.publicKey, false)
-  );
+  const publicKeys = inputs.map((input) => toPublicKey(input.publicKey, false));
   const maybeAccounts = await context.rpc.getAccounts(publicKeys, options);
   return maybeAccounts.map((maybeAccount, index) => {
     assertAccountExists(maybeAccount);
@@ -191,9 +189,7 @@ export async function safeFetchAllMixedAccounts<
   inputs: [...T],
   options?: RpcGetAccountsOptions
 ): Promise<MaybeDeserializedAccounts<T>> {
-  const publicKeys = inputs.map((input) =>
-    toPublicKey(input.publicKey, false)
-  );
+  const publicKeys = inputs.map((input) => toPublicKey(input.publicKey, false));
   const maybeAccounts = await context.rpc.getAccounts(publicKeys, options);
   return maybeAccounts.map((maybeAccount, index) => {
     if (!maybeAccount.exists) return null;
