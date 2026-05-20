@@ -15,10 +15,58 @@ import {
   ArweaveUploader,
   arweaveUploader,
   ArweaveUploaderOptions,
+  resolveArweaveGatewayUrl,
 } from '../src';
 
 test('example test', async (t) => {
   t.is(typeof arweaveUploader, 'function');
+});
+
+test('resolveArweaveGatewayUrl defaults to turbo-gateway.com', (t) => {
+  t.is(resolveArweaveGatewayUrl(undefined), 'https://turbo-gateway.com');
+});
+
+test('resolveArweaveGatewayUrl uses the user-supplied gateway when provided', (t) => {
+  t.is(resolveArweaveGatewayUrl('https://example.org'), 'https://example.org');
+});
+
+test('resolveArweaveGatewayUrl strips trailing slashes so URI composition is clean', (t) => {
+  t.is(resolveArweaveGatewayUrl('https://example.org/'), 'https://example.org');
+  t.is(
+    resolveArweaveGatewayUrl('https://example.org///'),
+    'https://example.org'
+  );
+});
+
+test('resolveArweaveGatewayUrl rejects empty strings so we never write a relative URI on-chain', (t) => {
+  t.throws(() => resolveArweaveGatewayUrl(''), {
+    message: /Invalid arweaveGatewayUrl/,
+  });
+});
+
+test('resolveArweaveGatewayUrl rejects slash-only inputs that normalise to empty', (t) => {
+  t.throws(() => resolveArweaveGatewayUrl('/'), {
+    message: /Invalid arweaveGatewayUrl/,
+  });
+});
+
+test('resolveArweaveGatewayUrl rejects schemeless hosts', (t) => {
+  t.throws(() => resolveArweaveGatewayUrl('turbo-gateway.com'), {
+    message: /Invalid arweaveGatewayUrl/,
+  });
+});
+
+test('resolveArweaveGatewayUrl rejects non-http(s) protocols', (t) => {
+  t.throws(() => resolveArweaveGatewayUrl('ftp://turbo-gateway.com'), {
+    message: /expected http: or https:/,
+  });
+});
+
+test('resolveArweaveGatewayUrl allows plain http for self-hosted/dev gateways', (t) => {
+  t.is(
+    resolveArweaveGatewayUrl('http://localhost:3000'),
+    'http://localhost:3000'
+  );
 });
 
 // TODO(loris): Unskip these tests when we can mock the Arweave API.
@@ -53,9 +101,9 @@ test.skip('can upload one file', async (t) => {
     createGenericFile('some-image', 'some-image.jpg'),
   ]);
 
-  // Then the URI should be a valid arweave dev gateway URI.
+  // Then the URI should be composed via the default turbo-gateway.com host.
   t.truthy(uri);
-  t.true(uri.startsWith('https://turbo.ardrive.dev/'));
+  t.true(uri.startsWith('https://turbo-gateway.com/'));
 
   // and it should point to the uploaded asset.
   const [asset] = await context.downloader.download([uri]);
@@ -78,7 +126,7 @@ test.skip('can upload a file above 105 KiB in size', async (t) => {
   ]);
 
   t.truthy(uri);
-  t.true(uri.startsWith('https://turbo.ardrive.dev/'));
+  t.true(uri.startsWith('https://turbo-gateway.com/'));
 
   const [asset] = await context.downloader.download([uri]);
   t.deepEqual(asset.buffer, buffer);
