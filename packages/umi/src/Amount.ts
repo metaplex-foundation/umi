@@ -432,7 +432,7 @@ export const isZeroAmount = (value: Amount): boolean =>
  * @category Utils — Amounts
  */
 export const isPositiveAmount = (value: Amount): boolean =>
-  value.basisPoints >= BigInt(0);
+  value.basisPoints > BigInt(0);
 
 /**
  * Whether the amount is negative.
