@@ -33,7 +33,16 @@ export function createHttpDownloader(
     const response = await context.http.send<T>(
       request().get(uri).withAbortSignal(options.signal)
     );
-    return response.data;
+
+    let json = response.data;
+    if (typeof json === 'string')
+      try {
+        json = JSON.parse(response.body);
+      } catch {
+        console.warn(`could not parse response from ${uri} as json: ${json}`);
+      }
+
+    return json;
   };
 
   return { download, downloadJson };
