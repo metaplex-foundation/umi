@@ -30,7 +30,7 @@
     "server:stop": "kill $(lsof -t -i:3000) 2> /dev/null || true"
   },
   "dependencies": {
-    "node-fetch": "^2.6.7"
+    "cross-fetch": "^3.1.5"
   },
   "peerDependencies": {
     "@metaplex-foundation/umi": "workspace:^"
@@ -38,7 +38,6 @@
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
     "@metaplex-foundation/umi": "workspace:^",
-    "@types/node-fetch": "^2.6.2",
     "ava": "^5.1.0",
     "json-server": "^0.17.1"
   },
