@@ -5,6 +5,7 @@ import {
   Commitment,
   CompiledInstruction,
   Context,
+  chunk,
   createAmount,
   DateTime,
   dateTime,
@@ -67,6 +68,15 @@ import type RpcClient from 'jayson/lib/client/browser';
 
 export type Web3JsRpcOptions = Commitment | Web3JsConnectionConfig;
 
+/** Solana RPC limit for `getMultipleAccounts` pubkeys per request. */
+export const GET_MULTIPLE_ACCOUNTS_LIMIT = 100;
+
+/**
+ * Default page size when falling back to `getProgramAccountsV2` pagination
+ * (Helius and other providers that enforce result-set limits on GPA).
+ */
+export const GET_PROGRAM_ACCOUNTS_V2_PAGE_LIMIT = 10_000;
+
 export function createWeb3JsRpc(
   context: Pick<Context, 'programs' | 'transactions'>,
   endpoint: string,
@@ -107,7 +117,7 @@ export function createWeb3JsRpc(
     return parseMaybeAccount(account, publicKey);
   };
 
-  const getAccounts = async (
+  const getAccountsChunk = async (
     publicKeys: PublicKey[],
     options: RpcGetAccountsOptions = {}
   ): Promise<MaybeRpcAccount[]> => {
@@ -120,20 +130,123 @@ export function createWeb3JsRpc(
     );
   };
 
+  /**
+   * Fetch multiple accounts, automatically chunking requests to stay within
+   * the Solana RPC `getMultipleAccounts` limit (100 pubkeys per request).
+   */
+  const getAccounts = async (
+    publicKeys: PublicKey[],
+    options: RpcGetAccountsOptions = {}
+  ): Promise<MaybeRpcAccount[]> => {
+    if (publicKeys.length <= GET_MULTIPLE_ACCOUNTS_LIMIT) {
+      return getAccountsChunk(publicKeys, options);
+    }
+
+    const batches = chunk(publicKeys, GET_MULTIPLE_ACCOUNTS_LIMIT);
+    const results = await Promise.all(
+      batches.map((batch) => getAccountsChunk(batch, options))
+    );
+    return results.flat();
+  };
+
+  type ProgramAccountsV2Result = {
+    accounts: Array<{
+      pubkey: string;
+      account: {
+        lamports: number;
+        owner: string;
+        data: [string, string] | string;
+        executable: boolean;
+        rentEpoch?: number;
+      };
+    }>;
+    paginationKey: string | null;
+  };
+
+  const getProgramAccountsViaV2 = async (
+    programId: PublicKey,
+    options: RpcGetProgramAccountsOptions = {}
+  ): Promise<RpcAccount[]> => {
+    const allAccounts: RpcAccount[] = [];
+    let paginationKey: string | null = null;
+
+    /* Sequential pages are required: each request needs the previous cursor. */
+    /* eslint-disable no-await-in-loop */
+    do {
+      const config: Record<string, unknown> = {
+        encoding: 'base64',
+        limit: GET_PROGRAM_ACCOUNTS_V2_PAGE_LIMIT,
+      };
+      if (options.commitment) config.commitment = options.commitment;
+      if (options.dataSlice) config.dataSlice = options.dataSlice;
+      if (options.filters) {
+        config.filters = options.filters.map((filter) =>
+          parseDataFilter(filter)
+        );
+      }
+      if (paginationKey) config.paginationKey = paginationKey;
+
+      // Commitment is embedded in the config object (Solana GPA config shape).
+      // Do not pass it via RpcCallOptions or `call` will append a third param.
+      const result = await call<ProgramAccountsV2Result>(
+        'getProgramAccountsV2',
+        [programId, config]
+      );
+
+      const page = result?.accounts ?? [];
+      page.forEach(({ pubkey, account }) => {
+        const rawData = Array.isArray(account.data)
+          ? account.data[0]
+          : account.data;
+        const data = Uint8Array.from(Buffer.from(rawData, 'base64'));
+        allAccounts.push(
+          parseAccount(
+            {
+              executable: account.executable,
+              owner: new Web3JsPublicKey(account.owner),
+              lamports: account.lamports,
+              data,
+              rentEpoch: account.rentEpoch,
+            } as Web3JsAccountInfo<Uint8Array>,
+            fromWeb3JsPublicKey(new Web3JsPublicKey(pubkey))
+          )
+        );
+      });
+
+      // Continue while a cursor is present. Empty pages with a null cursor end the loop.
+      paginationKey = result?.paginationKey ?? null;
+      if (page.length === 0 && !paginationKey) {
+        break;
+      }
+    } while (paginationKey);
+    /* eslint-enable no-await-in-loop */
+
+    return allAccounts;
+  };
+
   const getProgramAccounts = async (
     programId: PublicKey,
     options: RpcGetProgramAccountsOptions = {}
   ): Promise<RpcAccount[]> => {
-    const accounts = await getConnection().getProgramAccounts(
-      toWeb3JsPublicKey(programId),
-      {
-        ...options,
-        filters: options.filters?.map((filter) => parseDataFilter(filter)),
+    try {
+      const accounts = await getConnection().getProgramAccounts(
+        toWeb3JsPublicKey(programId),
+        {
+          ...options,
+          filters: options.filters?.map((filter) => parseDataFilter(filter)),
+        }
+      );
+      return accounts.map(({ pubkey, account }) =>
+        parseAccount(account, fromWeb3JsPublicKey(pubkey))
+      );
+    } catch (error) {
+      // Providers such as Helius reject oversized GPA result sets and recommend
+      // getProgramAccountsV2 with cursor-based pagination (see umi#200).
+      if (!isTooManyAccountsError(error)) {
+        throw error;
       }
-    );
-    return accounts.map(({ pubkey, account }) =>
-      parseAccount(account, fromWeb3JsPublicKey(pubkey))
-    );
+      return getProgramAccountsViaV2(programId, options);
+    }
   };
 
   const getBlockTime = async (
@@ -462,6 +575,23 @@ function parseMaybeAccount(
   return account
     ? { ...parseAccount(account, publicKey), exists: true }
     : { exists: false, publicKey };
+}
+
+function isTooManyAccountsError(error: unknown): boolean {
+  let message = '';
+  if (error instanceof Error) {
+    message = error.message;
+  } else if (typeof error === 'string') {
+    message = error;
+  } else if (error && typeof error === 'object' && 'message' in error) {
+    message = String((error as { message: unknown }).message);
+  } else {
+    message = String(error);
+  }
+  return (
+    /too many accounts requested/i.test(message) ||
+    /getProgramAccountsV2/i.test(message)
+  );
 }
 
 function parseDataFilter(
