@@ -1,5 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const test = require('ava');
+
+// Skipped unless UMI_RPC_NETWORK_TESTS is set (hits a live Irys node).
+const testWithNetwork = process.env.UMI_RPC_NETWORK_TESTS ? test : test.skip;
 const {
   createBaseUmi,
   generatedSignerIdentity,
@@ -14,7 +17,7 @@ test('it successfully exports commonjs named exports', (t) => {
   t.true(exportedKeys.includes('createIrysUploader'));
 });
 
-test('it can import the Irys client', async (t) => {
+testWithNetwork('it can import the Irys client', async (t) => {
   const { createIrysUploader } = exported;
   const context = createBaseUmi()
     .use(web3JsRpc('http://localhost:8899'))

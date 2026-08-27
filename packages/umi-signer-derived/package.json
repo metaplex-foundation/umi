@@ -36,6 +36,7 @@
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
     "@metaplex-foundation/umi": "workspace:^",
+    "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
     "ava": "^5.1.0"
   },
   "publishConfig": {

@@ -1,6 +1,11 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-extraneous-dependencies */
 import test from 'ava';
+
+// These tests hit live services (Turbo/Irys, devnet). They are skipped
+// unless UMI_RPC_NETWORK_TESTS is set, so offline runs stay green; CI
+// sets the variable and runs them.
+const testWithNetwork = process.env.UMI_RPC_NETWORK_TESTS ? test : test.skip;
 import {
   createBaseUmi,
   generatedSignerIdentity,
@@ -15,7 +20,7 @@ test('it successfully exports esm named exports', (t) => {
   t.true(exportedKeys.includes('createIrysUploader'));
 });
 
-test('it can import the Irys client', async (t) => {
+testWithNetwork('it can import the Irys client', async (t) => {
   const { createIrysUploader } = exported;
   const context = createBaseUmi()
     .use(web3JsRpc('http://localhost:8899'))

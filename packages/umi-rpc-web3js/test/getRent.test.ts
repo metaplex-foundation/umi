@@ -1,4 +1,9 @@
 import test from 'ava';
+
+// These tests require a reachable RPC node (local validator or devnet).
+// They are skipped unless UMI_RPC_NETWORK_TESTS is set, so offline runs
+// and coverage stay green; CI sets the variable and runs them.
+const testWithNetwork = process.env.UMI_RPC_NETWORK_TESTS ? test : test.skip;
 import {
   ACCOUNT_HEADER_SIZE,
   createNullContext,
@@ -9,7 +14,7 @@ import { createWeb3JsRpc } from '../src';
 
 const LOCALHOST = 'http://127.0.0.1:8899';
 
-test('it returns the rent-exemption for a given amount of bytes', async (t) => {
+testWithNetwork('it returns the rent-exemption for a given amount of bytes', async (t) => {
   // Given an RPC client.
   const rpc = createWeb3JsRpc(createNullContext(), LOCALHOST);
 
@@ -24,7 +29,7 @@ test('it returns the rent-exemption for a given amount of bytes', async (t) => {
   t.deepEqual(rent, expectedRent);
 });
 
-test('it returns the rent-exemption for byte amounts that already include account headers', async (t) => {
+testWithNetwork('it returns the rent-exemption for byte amounts that already include account headers', async (t) => {
   // Given an RPC client.
   const rpc = createWeb3JsRpc(createNullContext(), LOCALHOST);
 

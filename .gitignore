@@ -28,3 +28,6 @@ typedoc
 stats.html
 .vercel
 .claude/
+
+# Code coverage
+coverage/

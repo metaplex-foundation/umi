@@ -11,6 +11,11 @@ import { fetchHttp } from '@metaplex-foundation/umi-http-fetch';
 import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
 import { utf8 } from '@metaplex-foundation/umi/serializers';
 import test from 'ava';
+
+// These tests hit live services (Turbo/Irys, devnet). They are skipped
+// unless UMI_RPC_NETWORK_TESTS is set, so offline runs stay green; CI
+// sets the variable and runs them.
+const testWithNetwork = process.env.UMI_RPC_NETWORK_TESTS ? test : test.skip;
 import {
   ArweaveUploader,
   arweaveUploader,
@@ -84,7 +89,7 @@ test.skip('can upload a file above 105 KiB in size', async (t) => {
   t.deepEqual(asset.buffer, buffer);
 });
 
-test('can get a USD stripe checkout session', async (t) => {
+testWithNetwork('can get a USD stripe checkout session', async (t) => {
   const context = await getContext({
     solRpcUrl: devNetRpcUrl,
   });
@@ -97,7 +102,7 @@ test('can get a USD stripe checkout session', async (t) => {
   t.true(+turboStorageCredits > 0);
 });
 
-test('can get a balance in Turbo Storage Credits', async (t) => {
+testWithNetwork('can get a balance in Turbo Storage Credits', async (t) => {
   const context = await getContext({
     solRpcUrl: devNetRpcUrl,
   });
@@ -108,7 +113,7 @@ test('can get a balance in Turbo Storage Credits', async (t) => {
   t.true(+balance.valueOf() > -1);
 });
 
-test('can get a balance in SOL Equivalent', async (t) => {
+testWithNetwork('can get a balance in SOL Equivalent', async (t) => {
   const context = await getContext({
     solRpcUrl: devNetRpcUrl,
   });

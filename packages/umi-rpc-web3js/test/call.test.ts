@@ -1,10 +1,15 @@
 import { createNullContext } from '@metaplex-foundation/umi';
 import test from 'ava';
+
+// These tests require a reachable RPC node (local validator or devnet).
+// They are skipped unless UMI_RPC_NETWORK_TESTS is set, so offline runs
+// and coverage stay green; CI sets the variable and runs them.
+const testWithNetwork = process.env.UMI_RPC_NETWORK_TESTS ? test : test.skip;
 import { createWeb3JsRpc } from '../src';
 
 const DEVNET_ENDPOINT = 'https://api.devnet.solana.com';
 
-test('it calls RPC methods with positional parameters', async (t) => {
+testWithNetwork('it calls RPC methods with positional parameters', async (t) => {
   // Given an RPC client
   const rpc = createWeb3JsRpc(createNullContext(), DEVNET_ENDPOINT);
 
@@ -15,7 +20,7 @@ test('it calls RPC methods with positional parameters', async (t) => {
   t.is(result, 'ok');
 });
 
-test('it calls RPC methods with positional parameters and commitment', async (t) => {
+testWithNetwork('it calls RPC methods with positional parameters and commitment', async (t) => {
   // Given an RPC client
   const rpc = createWeb3JsRpc(createNullContext(), DEVNET_ENDPOINT);
 
@@ -29,7 +34,7 @@ test('it calls RPC methods with positional parameters and commitment', async (t)
   t.true(result > 356940296);
 });
 
-test('it calls RPC methods with named parameters', async (t) => {
+testWithNetwork('it calls RPC methods with named parameters', async (t) => {
   // Given an RPC client
   const rpc = createWeb3JsRpc(createNullContext(), DEVNET_ENDPOINT);
 
@@ -46,7 +51,7 @@ test('it calls RPC methods with named parameters', async (t) => {
 });
 
 // Test to directly compare positional and named parameter formats
-test('it handles both positional and named parameters correctly', async (t) => {
+testWithNetwork('it handles both positional and named parameters correctly', async (t) => {
   // Given an RPC client
   const rpc = createWeb3JsRpc(createNullContext(), DEVNET_ENDPOINT);
 

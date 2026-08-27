@@ -102,6 +102,8 @@ jobs:
 
     - name: Build and run tests
       run: pnpm test
+      env:
+        UMI_RPC_NETWORK_TESTS: '1'
 
   release:
     name: Release

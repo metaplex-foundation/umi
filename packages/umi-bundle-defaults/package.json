@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
+    "@solana/web3.js": "^1.72.0",
     "@metaplex-foundation/umi": "workspace:^",
     "ava": "^5.1.0"
   },

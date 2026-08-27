@@ -12,13 +12,18 @@ import {
   VersionedTransaction,
 } from '@solana/web3.js';
 import test from 'ava';
+
+// These tests require a reachable RPC node (local validator or devnet).
+// They are skipped unless UMI_RPC_NETWORK_TESTS is set, so offline runs
+// and coverage stay green; CI sets the variable and runs them.
+const testWithNetwork = process.env.UMI_RPC_NETWORK_TESTS ? test : test.skip;
 import { createWeb3JsRpc } from '../src';
 
 const LOCALHOST = 'http://127.0.0.1:8899';
 
 // transaction simulation needs a greater ava timeout than the default 10s due to airdrop.
 
-test('simulates a legacy transaction', async (t) => {
+testWithNetwork('simulates a legacy transaction', async (t) => {
   // Given an RPC client.
 
   const context = createNullContext();
@@ -68,7 +73,7 @@ test('simulates a legacy transaction', async (t) => {
   );
 });
 
-test('simulates a V0 transaction', async (t) => {
+testWithNetwork('simulates a V0 transaction', async (t) => {
   // Given an RPC client.
 
   const context = createNullContext();
@@ -123,7 +128,7 @@ test('simulates a V0 transaction', async (t) => {
   );
 });
 
-test('simulates a transaction and fails with Insufficient rent err', async (t) => {
+testWithNetwork('simulates a transaction and fails with Insufficient rent err', async (t) => {
   // Given an RPC client.
 
   const context = createNullContext();
