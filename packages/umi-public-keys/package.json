@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
+    "@solana/addresses": "^8.1.0",
     "ava": "^5.1.0"
   },
   "publishConfig": {

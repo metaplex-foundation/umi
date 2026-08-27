@@ -8,12 +8,31 @@ import { InvalidPublicKeyError } from './errors';
 export const PUBLIC_KEY_LENGTH = 32;
 
 /**
+ * Structural equivalent of `@solana/kit`'s `NominalType` marker
+ * (from `@solana/nominal-types`, Kit 3.x and above). Declaring it
+ * locally keeps this package dependency-free while remaining fully
+ * assignable to and from Kit's branded types: TypeScript compares
+ * these mapped template-literal keys structurally, so no import of
+ * Kit's own declaration is required. Compatibility is enforced by
+ * the type-level tests in `test/kitInterop.test.ts`.
+ */
+type KitNominalType<TKey extends string, TMarker extends string> = {
+  readonly [K in `__${TKey}:@solana/kit`]: TMarker;
+};
+
+/**
  * Defines a public key as a base58 string.
+ *
+ * This type is mutually assignable with `@solana/kit`'s `Address`
+ * type (Kit 3.x and above): a Umi `PublicKey` can be passed directly
+ * to Kit and Codama-generated APIs, and a Kit `Address` can be used
+ * anywhere Umi expects a `PublicKey`, with no conversion.
+ *
  * @category Signers and PublicKeys
  */
-export type PublicKey<TAddress extends string = string> = TAddress & {
-  readonly __publicKey: unique symbol;
-};
+export type PublicKey<TAddress extends string = string> = TAddress &
+  KitNominalType<'brand', 'Address'> &
+  KitNominalType<'stringEncoding', 'base58'>;
 
 /**
  * Defines a Program-Derived Address.
