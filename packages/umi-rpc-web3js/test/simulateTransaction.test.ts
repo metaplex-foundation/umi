@@ -1,4 +1,5 @@
-import { createNullContext, sol } from '@metaplex-foundation/umi';
+import { Context, createNullContext, sol } from '@metaplex-foundation/umi';
+import { createWeb3JsTransactionFactory } from '@metaplex-foundation/umi-transaction-factory-web3js';
 import {
   fromWeb3JsLegacyTransaction,
   fromWeb3JsPublicKey,
@@ -16,12 +17,17 @@ import { createWeb3JsRpc } from '../src';
 
 const LOCALHOST = 'http://127.0.0.1:8899';
 
+const createContext = (): Context => ({
+  ...createNullContext(),
+  transactions: createWeb3JsTransactionFactory(),
+});
+
 // transaction simulation needs a greater ava timeout than the default 10s due to airdrop.
 
 test('simulates a legacy transaction', async (t) => {
   // Given an RPC client.
 
-  const context = createNullContext();
+  const context = createContext();
   const rpc = createWeb3JsRpc(context, LOCALHOST);
 
   const key1 = Keypair.generate();
@@ -71,7 +77,7 @@ test('simulates a legacy transaction', async (t) => {
 test('simulates a V0 transaction', async (t) => {
   // Given an RPC client.
 
-  const context = createNullContext();
+  const context = createContext();
   const rpc = createWeb3JsRpc(context, LOCALHOST);
 
   const key1 = Keypair.generate();
@@ -123,10 +129,39 @@ test('simulates a V0 transaction', async (t) => {
   );
 });
 
+test('simulates a transaction with a replaced blockhash', async (t) => {
+  const context = createContext();
+  const rpc = createWeb3JsRpc(context, LOCALHOST);
+  const key1 = Keypair.generate();
+  const key2 = Keypair.generate();
+  await rpc.airdrop(fromWeb3JsPublicKey(key1.publicKey), sol(1), {
+    commitment: 'finalized',
+  });
+
+  const legacyTransaction = new Transaction().add(
+    SystemProgram.transfer({
+      fromPubkey: key1.publicKey,
+      toPubkey: key2.publicKey,
+      lamports: 500000000,
+    })
+  );
+  legacyTransaction.recentBlockhash = '11111111111111111111111111111111';
+  legacyTransaction.feePayer = key1.publicKey;
+
+  const result = await rpc.simulateTransaction(
+    fromWeb3JsLegacyTransaction(legacyTransaction),
+    { replaceRecentBlockhash: true, verifySignatures: false }
+  );
+
+  t.is(result.err, null);
+  t.is(typeof result.replacementBlockhash?.blockhash, 'string');
+  t.is(typeof result.replacementBlockhash?.lastValidBlockHeight, 'bigint');
+});
+
 test('simulates a transaction and fails with Insufficient rent err', async (t) => {
   // Given an RPC client.
 
-  const context = createNullContext();
+  const context = createContext();
   const rpc = createWeb3JsRpc(context, LOCALHOST);
 
   const key1 = Keypair.generate();

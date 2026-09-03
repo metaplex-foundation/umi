@@ -11,9 +11,11 @@ import {
   ErrorWithLogs,
   isZeroAmount,
   lamports,
+  MAX_SUPPORTED_TRANSACTION_VERSION,
   MaybeRpcAccount,
   ProgramError,
   PublicKey,
+  publicKey,
   resolveClusterFromEndpoint,
   RpcAccount,
   RpcAccountExistsOptions,
@@ -37,8 +39,10 @@ import {
   RpcSendTransactionOptions,
   RpcSimulateTransactionOptions,
   RpcSimulateTransactionResult,
+  SdkError,
   SolAmount,
   Transaction,
+  TransactionError,
   TransactionMetaInnerInstruction,
   TransactionMetaTokenBalance,
   TransactionSignature,
@@ -47,25 +51,66 @@ import {
   TransactionWithMeta,
 } from '@metaplex-foundation/umi';
 import {
-  fromWeb3JsMessage,
   fromWeb3JsPublicKey,
   toWeb3JsPublicKey,
-  toWeb3JsTransaction,
 } from '@metaplex-foundation/umi-web3js-adapters';
-import { base58 } from '@metaplex-foundation/umi/serializers';
+import { base58, base64 } from '@metaplex-foundation/umi/serializers';
 import {
   AccountInfo as Web3JsAccountInfo,
   Connection as Web3JsConnection,
   ConnectionConfig as Web3JsConnectionConfig,
   GetProgramAccountsFilter as Web3JsGetProgramAccountsFilter,
-  PublicKey as Web3JsPublicKey,
-  TokenBalance as Web3JsTokenBalance,
   TransactionConfirmationStrategy as Web3JsTransactionConfirmationStrategy,
 } from '@solana/web3.js';
-import type { JSONRPCCallbackTypePlain } from 'jayson';
+import type { JSONRPCCallbackTypeSugared, JSONRPCError } from 'jayson';
 import type RpcClient from 'jayson/lib/client/browser';
+import { RpcError } from './errors';
 
 export type Web3JsRpcOptions = Commitment | Web3JsConnectionConfig;
+
+type RpcSimulateTransactionJson = Omit<
+  RpcSimulateTransactionResult,
+  'replacementBlockhash'
+> & {
+  replacementBlockhash?: {
+    blockhash: string;
+    lastValidBlockHeight: number;
+  } | null;
+};
+
+type RpcTransactionJson = {
+  slot: number;
+  blockTime?: number | null;
+  version?: TransactionVersion;
+  transaction: [string, 'base64'];
+  meta: {
+    err: TransactionError | null;
+    fee: number;
+    preBalances: number[];
+    postBalances: number[];
+    logMessages?: string[] | null;
+    preTokenBalances?: RpcTokenBalanceJson[] | null;
+    postTokenBalances?: RpcTokenBalanceJson[] | null;
+    innerInstructions?: Array<{
+      index: number;
+      instructions: Array<{
+        programIdIndex: number;
+        accounts: number[];
+        data: string;
+      }>;
+    }> | null;
+    loadedAddresses?: { writable: string[]; readonly: string[] } | null;
+    computeUnitsConsumed?: number | null;
+    costUnits?: number | null;
+  } | null;
+};
+
+type RpcTokenBalanceJson = {
+  accountIndex: number;
+  mint: string;
+  owner?: string | null;
+  uiTokenAmount: { amount: string; decimals: number };
+};
 
 export function createWeb3JsRpc(
   context: Pick<Context, 'programs' | 'transactions'>,
@@ -187,29 +232,38 @@ export function createWeb3JsRpc(
     signature: TransactionSignature,
     options: RpcGetTransactionOptions = {}
   ): Promise<(TransactionWithMeta & RpcGetTransactionResponseOther) | null> => {
-    const response = await getConnection().getTransaction(
+    const commitment = options.commitment ?? getConnection().commitment;
+    if (
+      commitment !== undefined &&
+      commitment !== 'confirmed' &&
+      commitment !== 'finalized'
+    ) {
+      throw new SdkError(
+        `Transactions can only be fetched with the confirmed or finalized ` +
+          `commitment but got ${commitment}.`
+      );
+    }
+
+    const result = await call<RpcTransactionJson | null>('getTransaction', [
       base58.deserialize(signature)[0],
       {
-        commitment: options.commitment as 'confirmed' | 'finalized' | undefined,
-        maxSupportedTransactionVersion: 0,
-      }
-    );
-
-    if (!response) {
+        encoding: 'base64',
+        commitment,
+        maxSupportedTransactionVersion: MAX_SUPPORTED_TRANSACTION_VERSION,
+      },
+    ]);
+    if (result === null) {
       return null;
     }
 
-    if (!response.meta) {
+    if (!result.meta) {
       // TODO: Custom error.
       throw new Error('Transaction meta is missing.');
     }
 
-    const { transaction, meta } = response;
-    const message = fromWeb3JsMessage(transaction.message);
-    const mapPublicKey = (key: string) =>
-      fromWeb3JsPublicKey(new Web3JsPublicKey(key));
+    const { meta } = result;
     const mapTokenBalance = (
-      tokenBalance: Web3JsTokenBalance
+      tokenBalance: RpcTokenBalanceJson
     ): TransactionMetaTokenBalance => ({
       accountIndex: tokenBalance.accountIndex,
       amount: createAmount(
@@ -217,20 +271,20 @@ export function createWeb3JsRpc(
         'splToken',
         tokenBalance.uiTokenAmount.decimals
       ),
-      mint: mapPublicKey(tokenBalance.mint),
-      owner: tokenBalance.owner ? mapPublicKey(tokenBalance.owner) : null,
+      mint: publicKey(tokenBalance.mint),
+      owner: tokenBalance.owner ? publicKey(tokenBalance.owner) : null,
     });
 
     return {
       response: {
         blockTime:
-          response.blockTime != null ? BigInt(response.blockTime) : undefined,
-        slot: BigInt(response.slot),
-        version: response.version as TransactionVersion,
+          result.blockTime == null ? undefined : BigInt(result.blockTime),
+        slot: BigInt(result.slot),
+        version: result.version,
       },
-      message,
-      serializedMessage: context.transactions.serializeMessage(message),
-      signatures: transaction.signatures.map(base58.serialize),
+      ...context.transactions.deserialize(
+        base64.serialize(result.transaction[0])
+      ),
       meta: {
         fee: lamports(meta.fee),
         logs: meta.logMessages ?? [],
@@ -252,19 +306,17 @@ export function createWeb3JsRpc(
             })
           ) ?? null,
         loadedAddresses: {
-          writable: (meta.loadedAddresses?.writable ?? []).map(
-            fromWeb3JsPublicKey
+          writable: (meta.loadedAddresses?.writable ?? []).map((address) =>
+            publicKey(address)
           ),
-          readonly: (meta.loadedAddresses?.readonly ?? []).map(
-            fromWeb3JsPublicKey
+          readonly: (meta.loadedAddresses?.readonly ?? []).map((address) =>
+            publicKey(address)
           ),
         },
         computeUnitsConsumed: meta.computeUnitsConsumed
           ? BigInt(meta.computeUnitsConsumed)
           : null,
-        costUnits: (meta as any).costUnits
-          ? BigInt((meta as any).costUnits)
-          : null,
+        costUnits: meta.costUnits ? BigInt(meta.costUnits) : null,
         err: meta.err,
       },
     };
@@ -340,11 +392,19 @@ export function createWeb3JsRpc(
         );
 
     return new Promise((resolve, reject) => {
-      const callback: JSONRPCCallbackTypePlain = (error, response) => {
+      // With three parameters, jayson splits the parsed response into its
+      // JSON-RPC error object and its result rather than passing it whole.
+      const callback: JSONRPCCallbackTypeSugared = (
+        error,
+        rpcError,
+        result
+      ) => {
         if (error) {
           reject(error);
+        } else if (rpcError) {
+          reject(new RpcError(rpcError as JSONRPCError));
         } else {
-          resolve(response.result);
+          resolve(result);
         }
       };
 
@@ -383,16 +443,24 @@ export function createWeb3JsRpc(
     options: RpcSimulateTransactionOptions = {}
   ): Promise<RpcSimulateTransactionResult> => {
     try {
-      const tx = toWeb3JsTransaction(transaction);
-      const result = await getConnection().simulateTransaction(tx, {
-        sigVerify: options.verifySignatures,
-        accounts: {
-          addresses: options.accounts || [],
-          encoding: 'base64',
-        },
-        replaceRecentBlockhash: options.replaceRecentBlockhash,
-      });
-      return result.value;
+      const { value } = await call<{ value: RpcSimulateTransactionJson }>(
+        'simulateTransaction',
+        [
+          base64.deserialize(context.transactions.serialize(transaction))[0],
+          {
+            encoding: 'base64',
+            commitment: options.commitment ?? getConnection().commitment,
+            sigVerify: options.verifySignatures,
+            replaceRecentBlockhash: options.replaceRecentBlockhash,
+            minContextSlot: options.minContextSlot,
+            accounts: {
+              addresses: options.accounts || [],
+              encoding: 'base64',
+            },
+          },
+        ]
+      );
+      return parseSimulationResult(value);
     } catch (error: any) {
       let resolvedError: ProgramError | null = null;
       if (error instanceof Error && 'logs' in error) {
@@ -464,6 +532,22 @@ function parseMaybeAccount(
     : { exists: false, publicKey };
 }
 
+function parseSimulationResult(
+  value: RpcSimulateTransactionJson
+): RpcSimulateTransactionResult {
+  const { replacementBlockhash, ...result } = value;
+  if (!replacementBlockhash) {
+    return { ...result, replacementBlockhash };
+  }
+  return {
+    ...result,
+    replacementBlockhash: {
+      ...replacementBlockhash,
+      lastValidBlockHeight: BigInt(replacementBlockhash.lastValidBlockHeight),
+    },
+  };
+}
+
 function parseDataFilter(
   filter: RpcDataFilter
 ): Web3JsGetProgramAccountsFilter {
@@ -498,8 +582,19 @@ function resolveCallParams<Params extends any[]>(
   let options: any = {};
   if (commitment) options.commitment = commitment;
   if (extra) options = { ...options, ...extra };
-  args.push(options);
+  const last = args[args.length - 1];
+  if (isPlainObject(last)) {
+    args[args.length - 1] = { ...last, ...options };
+  } else {
+    args.push(options);
+  }
   return args;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (typeof value !== 'object' || value === null) return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
 }
 
 function resolveNamedCallParams(

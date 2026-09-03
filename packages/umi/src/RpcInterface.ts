@@ -409,10 +409,10 @@ export type RpcAirdropOptions = Partial<RpcConfirmTransactionOptions>;
  */
 export type RpcCallOptions = RpcBaseOptions & {
   /**
-   * By default, the RPC client pushes an additional `options`
-   * parameter to the RPC request when a commitment is specified.
-   * This `extra` parameter can be used to add more data to the
-   * `options` parameter.
+   * Extra fields for the config object of the RPC request.
+   * The RPC client merges them, along with the `commitment`,
+   * into the trailing request parameter when it is a plain object,
+   * or appends a new config object otherwise.
    */
   extra?: object;
 };
@@ -476,6 +476,8 @@ export type RpcConfirmTransactionStrategy =
 export type RpcSimulateTransactionResult = {
   err: TransactionError | null;
   unitsConsumed?: number;
+  /** Bytes of account data loaded by the simulation; use it to size `TransactionConfig.loadedAccountsDataSizeLimit`. */
+  loadedAccountsDataSize?: number;
   logs: Array<string> | null;
   accounts?: Array<RpcSimulateTransactionAccountInfo | null> | null;
   returnData?: RpcSimulateTransactionTransactionReturnData | null;

@@ -1,10 +1,11 @@
-import { base58, Transaction } from '@metaplex-foundation/umi';
+import { base58, SdkError, Transaction } from '@metaplex-foundation/umi';
 import {
   SIGNATURE_LENGTH_IN_BYTES,
   Transaction as Web3JsLegacyTransaction,
   Message as Web3JsMessage,
   VersionedTransaction as Web3JsTransaction,
 } from '@solana/web3.js';
+import { Web3JsTransactionVersionError } from './errors';
 import { fromWeb3JsMessage, toWeb3JsMessage } from './TransactionMessage';
 
 export function fromWeb3JsTransaction(
@@ -57,14 +58,29 @@ export function fromWeb3JsLegacyTransaction(
 export function toWeb3JsLegacyTransaction(
   transaction: Transaction
 ): Web3JsLegacyTransaction {
-  const web3JsTransaction = toWeb3JsTransaction({
-    ...transaction,
-    message: { ...transaction.message, version: 'legacy' },
-  });
-  return Web3JsLegacyTransaction.populate(
-    web3JsTransaction.message as Web3JsMessage,
-    web3JsTransaction.signatures.map(
-      (signature) => base58.deserialize(signature)[0]
-    )
-  );
+  const { version } = transaction.message;
+  switch (version) {
+    case 'legacy':
+    case 0: {
+      const web3JsTransaction = toWeb3JsTransaction({
+        ...transaction,
+        message: { ...transaction.message, version: 'legacy' },
+      });
+      return Web3JsLegacyTransaction.populate(
+        web3JsTransaction.message as Web3JsMessage,
+        web3JsTransaction.signatures.map(
+          (signature) => base58.deserialize(signature)[0]
+        )
+      );
+    }
+    case 1:
+      throw new Web3JsTransactionVersionError(
+        'toWeb3JsLegacyTransaction',
+        version
+      );
+    default: {
+      const never: never = version;
+      throw new SdkError(`Unsupported transaction version: ${never}.`);
+    }
+  }
 }

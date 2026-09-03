@@ -1,8 +1,25 @@
 import { createNullContext } from '@metaplex-foundation/umi';
+import { PublicKey as Web3JsPublicKey } from '@solana/web3.js';
 import test from 'ava';
-import { createWeb3JsRpc } from '../src';
+import { createWeb3JsRpc, RpcError } from '../src';
 
 const DEVNET_ENDPOINT = 'https://api.devnet.solana.com';
+const LOCALHOST = 'http://127.0.0.1:8899';
+
+type AccountInfoResponse = {
+  value: { data: unknown; executable: boolean; owner: string };
+};
+
+test('it rejects JSON-RPC errors', async (t) => {
+  const rpc = createWeb3JsRpc(createNullContext(), LOCALHOST);
+
+  const promise = rpc.call('getTransaction', ['not-a-signature']);
+
+  const error = await t.throwsAsync(promise, { instanceOf: RpcError });
+  t.like(error, { name: 'RpcError', source: 'rpc', code: -32602 });
+  t.false('logs' in (error ?? {}));
+  t.regex(error?.message ?? '', /Source: RPC/);
+});
 
 test('it calls RPC methods with positional parameters', async (t) => {
   // Given an RPC client
@@ -45,28 +62,47 @@ test('it calls RPC methods with named parameters', async (t) => {
   t.true(result.interface === 'V1_NFT');
 });
 
-// Test to directly compare positional and named parameter formats
-test('it handles both positional and named parameters correctly', async (t) => {
-  // Given an RPC client
+test('it merges the commitment option into a trailing config object', async (t) => {
   const rpc = createWeb3JsRpc(createNullContext(), DEVNET_ENDPOINT);
-
-  // Testing with getAccountInfo method
   const address = '11111111111111111111111111111111';
 
-  // Call with positional parameters
-  const resultPositional = await rpc.call(
+  const inline = await rpc.call<AccountInfoResponse>('getAccountInfo', [
+    address,
+    { encoding: 'base64', commitment: 'confirmed' },
+  ]);
+  const merged = await rpc.call<AccountInfoResponse>(
+    'getAccountInfo',
+    [address, { encoding: 'base64' }],
+    { commitment: 'confirmed' }
+  );
+  const appended = await rpc.call<AccountInfoResponse>(
+    'getAccountInfo',
+    [address],
+    { commitment: 'confirmed' }
+  );
+
+  [inline, merged, appended].forEach((result) => {
+    t.is(result.value.owner, 'NativeLoader1111111111111111111111111111111');
+    t.true(result.value.executable);
+  });
+  t.deepEqual(merged.value.data, inline.value.data);
+});
+
+test('it does not merge call options into a trailing class instance', async (t) => {
+  const rpc = createWeb3JsRpc(createNullContext(), LOCALHOST);
+  const address = '11111111111111111111111111111111';
+
+  const fromInstance = await rpc.call<AccountInfoResponse>(
+    'getAccountInfo',
+    [new Web3JsPublicKey(address)],
+    { commitment: 'confirmed' }
+  );
+  const fromString = await rpc.call<AccountInfoResponse>(
     'getAccountInfo',
     [address, { encoding: 'base64' }],
     { commitment: 'confirmed' }
   );
 
-  // Call with the same parameters but as named parameters
-  const resultNamed = await rpc.call<any, Record<string, any>>(
-    'getAccountInfo',
-    { address, encoding: 'base64' },
-    { commitment: 'confirmed' }
-  );
-
-  // Both calls should succeed and return the same result
-  t.deepEqual(resultNamed, resultPositional);
+  t.is(fromInstance.value.owner, 'NativeLoader1111111111111111111111111111111');
+  t.is(fromString.value.owner, fromInstance.value.owner);
 });

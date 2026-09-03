@@ -1,4 +1,4 @@
-import { SolAmount } from './Amount';
+import { lamports, SolAmount } from './Amount';
 import type { Context } from './Context';
 import { SdkError } from './errors';
 import type {
@@ -13,18 +13,39 @@ import type {
   RpcConfirmTransactionStrategy,
   RpcGetLatestBlockhashOptions,
   RpcSendTransactionOptions,
+  RpcSimulateTransactionOptions,
 } from './RpcInterface';
 import { Signer, signTransaction, uniqueSigners } from './Signer';
 import {
   AddressLookupTableInput,
   Blockhash,
   BlockhashWithExpiryBlockHeight,
+  getTransactionSizeLimit,
   Transaction,
   TransactionInput,
   TransactionSignature,
   TransactionVersion,
-  TRANSACTION_SIZE_LIMIT,
+  TRANSACTION_V1_MAX_ACCOUNTS,
+  TRANSACTION_V1_MAX_INSTRUCTIONS,
+  TRANSACTION_V1_MAX_SIGNATURES,
 } from './Transaction';
+import {
+  estimateTransactionConfig,
+  foldComputeBudgetInstructions,
+  TransactionConfig,
+  TransactionConfigInput,
+  TRANSACTION_CONFIG_MAX,
+  TRANSACTION_V1_MIN_HEAP_SIZE,
+} from './TransactionConfig';
+
+const MICRO_LAMPORTS_PER_LAMPORT = 1_000_000n;
+const TRANSACTION_V1_MAX_ENCODABLE_INSTRUCTIONS = 255;
+/** What the runtime grants a non-builtin instruction that requests no limit. */
+const DEFAULT_COMPUTE_UNIT_LIMIT_PER_INSTRUCTION = 200_000;
+const V1_SIZING_CONFIG_PADDING: TransactionConfig = {
+  priorityFee: lamports(0),
+  heapSize: TRANSACTION_V1_MIN_HEAP_SIZE,
+};
 
 /**
  * Defines an generic object with wrapped instructions,
@@ -52,8 +73,10 @@ export type TransactionBuilderOptions = {
   feePayer?: Signer;
   /** The version of the transaction to build. */
   version?: TransactionVersion;
-  /** The address lookup tables to attach to the built transaction. */
+  /** The address lookup tables to attach to the built transaction. Only V0 transactions use them. */
   addressLookupTables?: AddressLookupTableInput[];
+  /** The compute budget to attach to the built transaction. Only V1 transactions use it. */
+  transactionConfig?: TransactionConfig;
   /** The blockhash that should be associated with the built transaction. */
   blockhash?: Blockhash | BlockhashWithExpiryBlockHeight;
 };
@@ -196,12 +219,23 @@ export class TransactionBuilder implements HasWrappedInstructions {
     return new TransactionBuilder(this.items, { ...this.options, version });
   }
 
+  getVersion(): TransactionVersion {
+    return this.options.version ?? 0;
+  }
+
   useLegacyVersion(): TransactionBuilder {
     return this.setVersion('legacy');
   }
 
   useV0(): TransactionBuilder {
     return this.setVersion(0);
+  }
+
+  useV1(transactionConfig?: TransactionConfig): TransactionBuilder {
+    const builder = this.setVersion(1);
+    return transactionConfig
+      ? builder.setTransactionConfig(transactionConfig)
+      : builder;
   }
 
   setAddressLookupTables(
@@ -211,6 +245,61 @@ export class TransactionBuilder implements HasWrappedInstructions {
       ...this.options,
       addressLookupTables,
     });
+  }
+
+  /**
+   * Merges the given compute budget into the one already set, so fields
+   * set earlier are kept unless overridden here. Fields given as
+   * `undefined` are ignored rather than erasing an earlier value.
+   */
+  setTransactionConfig(
+    transactionConfig: TransactionConfig
+  ): TransactionBuilder {
+    const definedFields = Object.fromEntries(
+      Object.entries(transactionConfig).filter(
+        ([, value]) => value !== undefined
+      )
+    );
+    return new TransactionBuilder(this.items, {
+      ...this.options,
+      transactionConfig: {
+        ...this.options.transactionConfig,
+        ...definedFields,
+      },
+    });
+  }
+
+  /**
+   * Switches to V1 and sets the compute budget to what a simulation of
+   * the transaction reports it needs, see {@link estimateTransactionConfig}.
+   * Config fields already set, such as a priority fee, are kept.
+   */
+  async setEstimatedTransactionConfig(
+    context: Pick<Context, 'rpc' | 'transactions' | 'payer'>,
+    options: {
+      computeUnitMargin?: number;
+      simulate?: Omit<
+        RpcSimulateTransactionOptions,
+        'replaceRecentBlockhash' | 'verifySignatures'
+      >;
+    } = {}
+  ): Promise<TransactionBuilder> {
+    const probe = this.useV1({
+      ...this.options.transactionConfig,
+      ...TRANSACTION_CONFIG_MAX,
+    })
+      .setBlockhash('11111111111111111111111111111111')
+      .build(context);
+    const simulation = await context.rpc.simulateTransaction(probe, {
+      ...options.simulate,
+      replaceRecentBlockhash: true,
+      verifySignatures: false,
+    });
+    return this.useV1(
+      estimateTransactionConfig(simulation, {
+        computeUnitMargin: options.computeUnitMargin,
+      })
+    );
   }
 
   getBlockhash(): Blockhash | undefined {
@@ -255,16 +344,53 @@ export class TransactionBuilder implements HasWrappedInstructions {
     });
   }
 
+  /**
+   * The size in bytes of the transaction to build. V1 transactions are
+   * measured with every config field present, so their size can exceed
+   * the one `build` emits by the fields it leaves unset.
+   */
   getTransactionSize(context: Pick<Context, 'transactions' | 'payer'>): number {
-    return context.transactions.serialize(
-      this.setBlockhash('11111111111111111111111111111111').build(context)
-    ).length;
+    return context.transactions.serialize(this.buildForSizing(context)).length;
   }
 
+  /**
+   * The number of transactions the items need at least, given the size
+   * limit of the version and, for V1, its limits on accounts,
+   * instructions and signatures.
+   */
   minimumTransactionsRequired(
     context: Pick<Context, 'transactions' | 'payer'>
   ): number {
-    return Math.ceil(this.getTransactionSize(context) / TRANSACTION_SIZE_LIMIT);
+    const version = this.getVersion();
+    switch (version) {
+      case 'legacy':
+      case 0:
+        return Math.ceil(
+          this.getTransactionSize(context) / getTransactionSizeLimit(version)
+        );
+      case 1: {
+        if (this.items.length > TRANSACTION_V1_MAX_ENCODABLE_INSTRUCTIONS) {
+          return Math.ceil(this.items.length / TRANSACTION_V1_MAX_INSTRUCTIONS);
+        }
+        const transaction = this.buildForSizing(context);
+        const { accounts, instructions, header } = transaction.message;
+        return Math.max(
+          Math.ceil(
+            context.transactions.serialize(transaction).length /
+              getTransactionSizeLimit(version)
+          ),
+          Math.ceil(accounts.length / TRANSACTION_V1_MAX_ACCOUNTS),
+          Math.ceil(instructions.length / TRANSACTION_V1_MAX_INSTRUCTIONS),
+          Math.ceil(
+            header.numRequiredSignatures / TRANSACTION_V1_MAX_SIGNATURES
+          )
+        );
+      }
+      default: {
+        const never: never = version;
+        throw new SdkError(`Unsupported transaction version: ${never}.`);
+      }
+    }
   }
 
   fitsInOneTransaction(
@@ -281,14 +407,66 @@ export class TransactionBuilder implements HasWrappedInstructions {
           'Please use the `setBlockhash` or `setLatestBlockhash` methods.'
       );
     }
-    const input: TransactionInput = {
-      version: this.options.version ?? 0,
+    const base = {
       payer: this.getFeePayer(context).publicKey,
       instructions: this.getInstructions(),
       blockhash,
     };
-    if (input.version === 0 && this.options.addressLookupTables) {
-      input.addressLookupTables = this.options.addressLookupTables;
+    const version = this.getVersion();
+    let input: TransactionInput;
+    switch (version) {
+      case 'legacy':
+        input = { ...base, version };
+        break;
+      case 0:
+        input = { ...base, version };
+        if (this.options.addressLookupTables) {
+          input.addressLookupTables = this.options.addressLookupTables;
+        }
+        break;
+      case 1: {
+        const folded = foldComputeBudgetInstructions(base.instructions);
+        const merged: TransactionConfig = {
+          ...folded.transactionConfig,
+          ...this.options.transactionConfig,
+        };
+        const transactionConfig: TransactionConfigInput = {
+          ...merged,
+          computeUnitLimit:
+            merged.computeUnitLimit ??
+            Math.min(
+              DEFAULT_COMPUTE_UNIT_LIMIT_PER_INSTRUCTION *
+                folded.instructions.length,
+              TRANSACTION_CONFIG_MAX.computeUnitLimit
+            ),
+          loadedAccountsDataSizeLimit:
+            merged.loadedAccountsDataSizeLimit ??
+            TRANSACTION_CONFIG_MAX.loadedAccountsDataSizeLimit,
+        };
+        if (
+          transactionConfig.priorityFee === undefined &&
+          folded.computeUnitPrice !== undefined
+        ) {
+          const microLamports =
+            folded.computeUnitPrice *
+            BigInt(transactionConfig.computeUnitLimit);
+          transactionConfig.priorityFee = lamports(
+            (microLamports + MICRO_LAMPORTS_PER_LAMPORT - 1n) /
+              MICRO_LAMPORTS_PER_LAMPORT
+          );
+        }
+        input = {
+          ...base,
+          instructions: folded.instructions,
+          version,
+          transactionConfig,
+        };
+        break;
+      }
+      default: {
+        const never: never = version;
+        throw new SdkError(`Unsupported transaction version: ${never}.`);
+      }
     }
     return context.transactions.create(input);
   }
@@ -359,6 +537,21 @@ export class TransactionBuilder implements HasWrappedInstructions {
     const signature = await builder.send(context, options.send);
     const result = await builder.confirm(context, signature, options.confirm);
     return { signature, result };
+  }
+
+  protected buildForSizing(
+    context: Pick<Context, 'transactions' | 'payer'>
+  ): Transaction {
+    const builder =
+      this.getVersion() === 1
+        ? this.setTransactionConfig({
+            ...V1_SIZING_CONFIG_PADDING,
+            ...this.options.transactionConfig,
+          })
+        : this;
+    return builder
+      .setBlockhash('11111111111111111111111111111111')
+      .build(context);
   }
 
   protected parseItems(
