@@ -1,3 +1,4 @@
+export * from './errors';
 export * from './Instruction';
 export * from './Keypair';
 export * from './PublicKey';

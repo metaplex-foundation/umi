@@ -1,23 +1,84 @@
 import { PublicKey } from '@metaplex-foundation/umi-public-keys';
 import { Amount, SolAmount } from './Amount';
+import { SdkError } from './errors';
 import type { Instruction } from './Instruction';
 import type { Commitment } from './RpcInterface';
+import type {
+  TransactionConfig,
+  TransactionConfigInput,
+} from './TransactionConfig';
 
 /**
- * The maximum amount of bytes that can be used for a transaction.
+ * The maximum amount of bytes that can be used for a legacy or V0 transaction.
  * @category Transactions
  */
 export const TRANSACTION_SIZE_LIMIT = 1232;
+
+/**
+ * The maximum amount of bytes that can be used for a V1 transaction.
+ * @category Transactions
+ */
+export const TRANSACTION_V1_SIZE_LIMIT = 4096;
+
+/**
+ * The maximum number of accounts a V1 transaction can reference.
+ * @category Transactions
+ */
+export const TRANSACTION_V1_MAX_ACCOUNTS = 64;
+
+/**
+ * The maximum number of instructions a V1 transaction can contain.
+ * @category Transactions
+ */
+export const TRANSACTION_V1_MAX_INSTRUCTIONS = 64;
+
+/**
+ * The maximum number of signatures a V1 transaction can require.
+ * @category Transactions
+ */
+export const TRANSACTION_V1_MAX_SIGNATURES = 12;
 
 /**
  * The version of a transaction.
  * - Legacy is the very first iteration of Solana transactions.
  * - V0 introduces the concept of versioned transaction for
  * the first time and adds supports for address lookup tables.
+ * - V1 raises the size limit to 4096 bytes and moves the compute
+ * budget into the message itself (see {@link TransactionConfig})
+ * but does not support address lookup tables. See SIMD-0385.
  *
  * @category Transactions
  */
-export type TransactionVersion = 'legacy' | 0;
+export type TransactionVersion = 'legacy' | 0 | 1;
+
+/**
+ * The highest transaction version Umi can decode, as sent to the RPC
+ * when fetching transactions or blocks.
+ * @category Transactions
+ */
+export const MAX_SUPPORTED_TRANSACTION_VERSION: Extract<
+  TransactionVersion,
+  number
+> = 1;
+
+/**
+ * The maximum amount of bytes that can be used for a
+ * transaction of the given version.
+ * @category Transactions
+ */
+export function getTransactionSizeLimit(version: TransactionVersion): number {
+  switch (version) {
+    case 'legacy':
+    case 0:
+      return TRANSACTION_SIZE_LIMIT;
+    case 1:
+      return TRANSACTION_V1_SIZE_LIMIT;
+    default: {
+      const never: never = version;
+      throw new SdkError(`Unsupported transaction version: ${never}.`);
+    }
+  }
+}
 
 /**
  * A Uint8Array that represents a serialized transaction.
@@ -79,6 +140,8 @@ export interface TransactionMessage {
   readonly blockhash: Blockhash;
   readonly instructions: CompiledInstruction[];
   readonly addressLookupTables: CompiledAddressLookupTable[];
+  /** The compute budget of the transaction. Only set on V1 messages. */
+  readonly transactionConfig?: TransactionConfig;
 }
 
 /**
@@ -170,7 +233,10 @@ export type TransactionMetaLoadedAddresses = {
  * Defines the various ways to create a transaction.
  * @category Transactions
  */
-export type TransactionInput = TransactionInputLegacy | TransactionInputV0;
+export type TransactionInput =
+  | TransactionInputLegacy
+  | TransactionInputV0
+  | TransactionInputV1;
 
 /**
  * Defines transaction input for legacy transactions.
@@ -178,6 +244,8 @@ export type TransactionInput = TransactionInputLegacy | TransactionInputV0;
  */
 export type TransactionInputLegacy = TransactionInputBase & {
   version: 'legacy';
+  addressLookupTables?: never;
+  transactionConfig?: never;
 };
 
 /**
@@ -187,6 +255,17 @@ export type TransactionInputLegacy = TransactionInputBase & {
 export type TransactionInputV0 = TransactionInputBase & {
   version?: 0;
   addressLookupTables?: AddressLookupTableInput[];
+  transactionConfig?: never;
+};
+
+/**
+ * Defines transaction input for V1 transactions.
+ * @category Transactions
+ */
+export type TransactionInputV1 = TransactionInputBase & {
+  version: 1;
+  addressLookupTables?: never;
+  transactionConfig: TransactionConfigInput;
 };
 
 /**
