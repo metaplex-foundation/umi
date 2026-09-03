@@ -8,11 +8,25 @@ import {
   fromWeb3JsPublicKey,
   fromWeb3JsTransaction,
   toWeb3JsTransaction,
+  Web3JsTransactionVersionError,
 } from '@metaplex-foundation/umi-web3js-adapters';
 import {
   OperationNotSupportedByWalletAdapterError,
   UninitializedWalletAdapterError,
 } from './errors';
+
+const V1_FIX =
+  'Use a wallet stack that supports V1 transactions, or build the ' +
+  'transaction with useV0().';
+
+const assertWalletCanSign = (
+  operation: 'signTransaction' | 'signAllTransactions',
+  transactions: Transaction[]
+): void => {
+  if (transactions.some(({ message }) => message.version === 1)) {
+    throw new Web3JsTransactionVersionError(operation, 1, V1_FIX);
+  }
+};
 
 type Web3JsTransactionOrVersionedTransaction =
   | Web3JsTransaction
@@ -49,6 +63,7 @@ export const createSignerFromWalletAdapter = (
   },
 
   async signTransaction(transaction: Transaction): Promise<Transaction> {
+    assertWalletCanSign('signTransaction', [transaction]);
     if (walletAdapter.signTransaction === undefined) {
       throw new OperationNotSupportedByWalletAdapterError('signTransaction');
     }
@@ -61,6 +76,7 @@ export const createSignerFromWalletAdapter = (
   async signAllTransactions(
     transactions: Transaction[]
   ): Promise<Transaction[]> {
+    assertWalletCanSign('signAllTransactions', transactions);
     if (walletAdapter.signAllTransactions === undefined) {
       throw new OperationNotSupportedByWalletAdapterError(
         'signAllTransactions'
