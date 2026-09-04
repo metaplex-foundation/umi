@@ -1,6 +1,33 @@
 import test from 'ava';
-import { createNoopSigner, publicKey, transactionBuilder } from '../src';
+import {
+  createBaseUmi,
+  createNoopSigner,
+  lamports,
+  publicKey,
+  transactionBuilder,
+  TransactionInput,
+  TransactionMessage,
+  Umi,
+} from '../src';
 import { createUmi, mockInstruction, transferSol } from './_setup';
+
+/** Records the inputs given to `umi.transactions.create`. */
+const captureTransactionInputs = (umi: Umi): TransactionInput[] => {
+  const inputs: TransactionInput[] = [];
+  umi.transactions.create = (input) => {
+    inputs.push(input);
+    return {
+      message: {} as TransactionMessage,
+      serializedMessage: new Uint8Array(),
+      signatures: [],
+    };
+  };
+  return inputs;
+};
+
+const feePayer = createNoopSigner(
+  publicKey('auth9SigNpDKz4sJJ1DfCTuZrZNSAgh9sFD3rboVmgg')
+);
 
 test.skip('it can get the size of the transaction to build', (t) => {
   const umi = createUmi();
@@ -197,4 +224,67 @@ test('it can add signer and remaining accounts to a specific instruction', (t) =
   // And the second and last instructions still have 1 account meta.
   t.is(mappedBuilder.items[1].instruction.keys.length, 1);
   t.is(mappedBuilder.items[2].instruction.keys.length, 1);
+});
+
+test('it builds V1 transactions with a default compute budget', (t) => {
+  // Given a V1 builder with two instructions and no explicit config.
+  const umi = createBaseUmi();
+  const inputs = captureTransactionInputs(umi);
+  transactionBuilder()
+    .add([mockInstruction(), mockInstruction()])
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111')
+    .useV1()
+    .build(umi);
+
+  // Then the built transaction is a V1 transaction with legacy-like limits.
+  const [input] = inputs;
+  t.is(input.version, 1);
+  if (input.version !== 1) return;
+  t.deepEqual(input.transactionConfig, {
+    computeUnitLimit: 400_000,
+    loadedAccountsDataSizeLimit: 64 * 1024 * 1024,
+  });
+});
+
+test('it builds V1 transactions with an explicit compute budget', (t) => {
+  // Given a V1 builder with an explicit compute unit limit and priority fee.
+  const umi = createBaseUmi();
+  const inputs = captureTransactionInputs(umi);
+  transactionBuilder()
+    .add(mockInstruction())
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111')
+    .useV1()
+    .setTransactionConfig({
+      computeUnitLimit: 50_000,
+      priorityFee: lamports(5_000),
+    })
+    .build(umi);
+
+  // Then the explicit values win and the rest is defaulted.
+  const [input] = inputs;
+  t.is(input.version, 1);
+  if (input.version !== 1) return;
+  t.deepEqual(input.transactionConfig, {
+    computeUnitLimit: 50_000,
+    loadedAccountsDataSizeLimit: 64 * 1024 * 1024,
+    priorityFee: lamports(5_000),
+  });
+});
+
+test('it does not attach a compute budget to V0 transactions', (t) => {
+  // Given a V0 builder with a transaction config.
+  const umi = createBaseUmi();
+  const inputs = captureTransactionInputs(umi);
+  transactionBuilder()
+    .add(mockInstruction())
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111')
+    .setTransactionConfig({ computeUnitLimit: 50_000 })
+    .build(umi);
+
+  // Then the built transaction is a V0 transaction without config.
+  t.is(inputs[0].version, 0);
+  t.false('transactionConfig' in inputs[0]);
 });

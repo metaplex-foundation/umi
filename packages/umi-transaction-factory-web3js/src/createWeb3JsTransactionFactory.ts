@@ -2,6 +2,9 @@
 import {
   CompiledAddressLookupTable,
   CompiledInstruction,
+  getTransactionMessageHeaderSerializer,
+  getTransactionV1MessageSerializer,
+  getTransactionV1Serializer,
   SdkError,
   SerializedTransaction,
   SerializedTransactionMessage,
@@ -9,19 +12,19 @@ import {
   TransactionFactoryInterface,
   TransactionInput,
   TransactionMessage,
-  TransactionMessageHeader,
   TransactionVersion,
+  TRANSACTION_V1_PREFIX,
 } from '@metaplex-foundation/umi';
 import {
-  shortU16,
-  base58,
-  Serializer,
-  mapSerializer,
-  struct,
-  bytes,
   array,
-  string,
+  base58,
+  bytes,
+  mapSerializer,
   publicKey,
+  Serializer,
+  shortU16,
+  string,
+  struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
 import {
@@ -66,8 +69,26 @@ export function createWeb3JsTransactionFactory(): TransactionFactoryInterface {
   ): TransactionMessage =>
     getTransactionMessageSerializer().deserialize(serializedMessage)[0];
 
-  const getTransactionSerializer = (): Serializer<Transaction> => ({
-    ...mapSerializer(
+  const getTransactionSerializer = (): Serializer<Transaction> => {
+    const legacyOrV0 = getLegacyOrV0TransactionSerializer();
+    const v1 = getTransactionV1Serializer();
+    return {
+      description: 'Transaction',
+      fixedSize: null,
+      maxSize: null,
+      serialize: (value: Transaction): Uint8Array =>
+        (value.message.version === 1 ? v1 : legacyOrV0).serialize(value),
+      deserialize: (buffer: Uint8Array, offset = 0): [Transaction, number] =>
+        (buffer[offset] === TRANSACTION_V1_PREFIX
+          ? v1
+          : legacyOrV0
+        ).deserialize(buffer, offset),
+    };
+  };
+
+  /** Legacy and V0 transactions: a short-vec of signatures then the message. */
+  const getLegacyOrV0TransactionSerializer = (): Serializer<Transaction> =>
+    mapSerializer(
       struct<Omit<Transaction, 'message'>>([
         ['signatures', array(bytes({ size: 64 }), { size: shortU16() })],
         ['serializedMessage', bytes()],
@@ -77,53 +98,53 @@ export function createWeb3JsTransactionFactory(): TransactionFactoryInterface {
         ...value,
         message: deserializeMessage(value.serializedMessage),
       })
-    ),
-    description: 'Transaction',
-  });
+    );
 
   const getTransactionMessageSerializer =
     (): Serializer<TransactionMessage> => ({
       description: 'TransactionMessage',
       fixedSize: null,
       maxSize: null,
-      serialize: (value: TransactionMessage): Uint8Array => {
-        const serializer = getTransactionMessageSerializerForVersion(
-          value.version
-        );
-        return serializer.serialize(value);
-      },
+      serialize: (value: TransactionMessage): Uint8Array =>
+        getTransactionMessageSerializerForVersion(value.version).serialize(
+          value
+        ),
       deserialize: (
-        bytes: Uint8Array,
+        buffer: Uint8Array,
         offset = 0
       ): [TransactionMessage, number] => {
         const [version] = getTransactionVersionSerializer().deserialize(
-          bytes,
+          buffer,
           offset
         );
-        const serializer = getTransactionMessageSerializerForVersion(version);
-        return serializer.deserialize(bytes, offset);
+        return getTransactionMessageSerializerForVersion(version).deserialize(
+          buffer,
+          offset
+        );
       },
     });
 
   const getTransactionMessageSerializerForVersion = (
     version: TransactionVersion
   ): Serializer<TransactionMessage> =>
-    struct<TransactionMessage, TransactionMessage>([
-      ['version', getTransactionVersionSerializer()],
-      ['header', getTransactionMessageHeaderSerializer()],
-      ['accounts', array(publicKey(), { size: shortU16() })],
-      ['blockhash', string({ encoding: base58, size: 32 })],
-      [
-        'instructions',
-        array(getCompiledInstructionSerializer(), { size: shortU16() }),
-      ],
-      [
-        'addressLookupTables',
-        array(getCompiledAddressLookupTableSerializer(), {
-          size: version === 'legacy' ? 0 : shortU16(),
-        }),
-      ],
-    ]);
+    version === 1
+      ? getTransactionV1MessageSerializer()
+      : struct<TransactionMessage, TransactionMessage>([
+          ['version', getTransactionVersionSerializer()],
+          ['header', getTransactionMessageHeaderSerializer()],
+          ['accounts', array(publicKey(), { size: shortU16() })],
+          ['blockhash', string({ encoding: base58, size: 32 })],
+          [
+            'instructions',
+            array(getCompiledInstructionSerializer(), { size: shortU16() }),
+          ],
+          [
+            'addressLookupTables',
+            array(getCompiledAddressLookupTableSerializer(), {
+              size: version === 'legacy' ? 0 : shortU16(),
+            }),
+          ],
+        ]);
 
   const getTransactionVersionSerializer =
     (): Serializer<TransactionVersion> => ({
@@ -135,28 +156,20 @@ export function createWeb3JsTransactionFactory(): TransactionFactoryInterface {
         return new Uint8Array([TRANSACTION_VERSION_FLAG | value]);
       },
       deserialize: (
-        bytes: Uint8Array,
+        buffer: Uint8Array,
         offset = 0
       ): [TransactionVersion, number] => {
-        const slice = bytes.slice(offset);
+        const slice = buffer.slice(offset);
         if (slice.length === 0 || (slice[0] & TRANSACTION_VERSION_FLAG) === 0) {
           return ['legacy', offset];
         }
         const version = slice[0] & TRANSACTION_VERSION_MASK;
-        if (version > 0) {
+        if (version > 1) {
           throw new SdkError(`Unsupported transaction version: ${version}.`);
         }
         return [version as TransactionVersion, offset + 1];
       },
     });
-
-  const getTransactionMessageHeaderSerializer =
-    (): Serializer<TransactionMessageHeader> =>
-      struct([
-        ['numRequiredSignatures', u8()],
-        ['numReadonlySignedAccounts', u8()],
-        ['numReadonlyUnsignedAccounts', u8()],
-      ]);
 
   const getCompiledInstructionSerializer =
     (): Serializer<CompiledInstruction> =>

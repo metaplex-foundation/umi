@@ -20,10 +20,12 @@ import {
   Blockhash,
   BlockhashWithExpiryBlockHeight,
   Transaction,
+  TransactionConfig,
   TransactionInput,
   TransactionSignature,
   TransactionVersion,
   TRANSACTION_SIZE_LIMIT,
+  TRANSACTION_V1_SIZE_LIMIT,
 } from './Transaction';
 
 /**
@@ -52,8 +54,10 @@ export type TransactionBuilderOptions = {
   feePayer?: Signer;
   /** The version of the transaction to build. */
   version?: TransactionVersion;
-  /** The address lookup tables to attach to the built transaction. */
+  /** The address lookup tables to attach to the built transaction. V0 only. */
   addressLookupTables?: AddressLookupTableInput[];
+  /** The compute budget to attach to the built transaction. V1 only. */
+  transactionConfig?: TransactionConfig;
   /** The blockhash that should be associated with the built transaction. */
   blockhash?: Blockhash | BlockhashWithExpiryBlockHeight;
 };
@@ -204,12 +208,25 @@ export class TransactionBuilder implements HasWrappedInstructions {
     return this.setVersion(0);
   }
 
+  useV1(): TransactionBuilder {
+    return this.setVersion(1);
+  }
+
   setAddressLookupTables(
     addressLookupTables: AddressLookupTableInput[]
   ): TransactionBuilder {
     return new TransactionBuilder(this.items, {
       ...this.options,
       addressLookupTables,
+    });
+  }
+
+  setTransactionConfig(
+    transactionConfig: TransactionConfig
+  ): TransactionBuilder {
+    return new TransactionBuilder(this.items, {
+      ...this.options,
+      transactionConfig,
     });
   }
 
@@ -264,7 +281,11 @@ export class TransactionBuilder implements HasWrappedInstructions {
   minimumTransactionsRequired(
     context: Pick<Context, 'transactions' | 'payer'>
   ): number {
-    return Math.ceil(this.getTransactionSize(context) / TRANSACTION_SIZE_LIMIT);
+    const sizeLimit =
+      this.options.version === 1
+        ? TRANSACTION_V1_SIZE_LIMIT
+        : TRANSACTION_SIZE_LIMIT;
+    return Math.ceil(this.getTransactionSize(context) / sizeLimit);
   }
 
   fitsInOneTransaction(
@@ -289,6 +310,20 @@ export class TransactionBuilder implements HasWrappedInstructions {
     };
     if (input.version === 0 && this.options.addressLookupTables) {
       input.addressLookupTables = this.options.addressLookupTables;
+    }
+    if (input.version === 1) {
+      input.transactionConfig = {
+        // The runtime treats unset V1 limits as zero, so default them to
+        // what legacy and V0 transactions get without ComputeBudget
+        // instructions: 200k compute units per instruction, capped at
+        // 1.4M, and 64MiB of loaded account data.
+        computeUnitLimit: Math.min(
+          200_000 * input.instructions.length,
+          1_400_000
+        ),
+        loadedAccountsDataSizeLimit: 64 * 1024 * 1024,
+        ...this.options.transactionConfig,
+      };
     }
     return context.transactions.create(input);
   }
