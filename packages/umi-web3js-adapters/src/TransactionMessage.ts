@@ -123,12 +123,10 @@ export function toWeb3JsMessageFromInput(
       return legacyMessage;
     }
     // V1 messages lay out their accounts exactly like legacy messages.
-    return new SerializableMessageV1({
-      header: legacyMessage.header,
-      staticAccountKeys: legacyMessage.staticAccountKeys,
-      recentBlockhash: legacyMessage.recentBlockhash,
-      compiledInstructions: legacyMessage.compiledInstructions,
-      transactionConfig: toWeb3JsTransactionConfig(input.transactionConfig),
+    return toWeb3JsMessage({
+      ...fromWeb3JsMessage(legacyMessage),
+      version: 1,
+      transactionConfig: input.transactionConfig,
     });
   }
 

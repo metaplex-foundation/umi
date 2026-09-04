@@ -30,7 +30,8 @@ import type {
  */
 export const TRANSACTION_V1_PREFIX = 0x81;
 
-const SIGNATURE_SIZE = 64;
+const getSignaturesSerializer = (count: number) =>
+  array(bytes({ size: 64 }), { size: count });
 
 // The bits of the config mask of V1 messages, see SIMD-0385.
 const CONFIG_PRIORITY_FEE_BITS = 0b00011;
@@ -155,8 +156,8 @@ export const getTransactionV1MessageSerializer =
         const blockhash = read(blockhashSerializer);
         const numInstructions = read(u8());
         const numAccounts = read(u8());
-        const accounts = Array.from({ length: numAccounts }, () =>
-          read(publicKeySerializer)
+        const accounts = read(
+          array(publicKeySerializer, { size: numAccounts })
         );
 
         const transactionConfig: TransactionConfig = {};
@@ -220,26 +221,19 @@ export const getTransactionV1Serializer = (): Serializer<Transaction> => ({
   description: 'TransactionV1',
   fixedSize: null,
   maxSize: null,
-  serialize: (value: Transaction): Uint8Array => {
-    const { numRequiredSignatures } = value.message.header;
-    if (value.signatures.length !== numRequiredSignatures) {
-      throw new SdkError(
-        `Expected ${numRequiredSignatures} signatures but got ${value.signatures.length}.`
-      );
-    }
-    return mergeBytes([
+  serialize: (value: Transaction): Uint8Array =>
+    mergeBytes([
       value.serializedMessage,
-      ...value.signatures.map((signature) =>
-        bytes({ size: SIGNATURE_SIZE }).serialize(signature)
-      ),
-    ]);
-  },
+      getSignaturesSerializer(
+        value.message.header.numRequiredSignatures
+      ).serialize(value.signatures),
+    ]),
   deserialize: (buffer: Uint8Array, offset = 0): [Transaction, number] => {
     const [message, messageEnd] =
       getTransactionV1MessageSerializer().deserialize(buffer, offset);
-    const [signatures, end] = array(bytes({ size: SIGNATURE_SIZE }), {
-      size: message.header.numRequiredSignatures,
-    }).deserialize(buffer, messageEnd);
+    const [signatures, end] = getSignaturesSerializer(
+      message.header.numRequiredSignatures
+    ).deserialize(buffer, messageEnd);
     return [
       {
         message,

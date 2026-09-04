@@ -37,7 +37,6 @@
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
     "@metaplex-foundation/umi": "workspace:^",
-    "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
     "@metaplex-foundation/umi-transaction-factory-web3js": "workspace:^",
     "@solana/web3.js": "^1.99.0-beta.0",
     "ava": "^5.1.0",

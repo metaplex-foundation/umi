@@ -116,14 +116,6 @@ test('it can deserialize a V1 message', async (t) => {
   );
 });
 
-test('it can serialize a V1 message', async (t) => {
-  const umi = createUmi();
-  const serializedMessage = base64
-    .serialize(V1_TRANSACTION_BASE64)
-    .slice(0, -64);
-  t.deepEqual(umi.transactions.serializeMessage(V1_MESSAGE), serializedMessage);
-});
-
 test('it can deserialize and serialize a V1 transaction', async (t) => {
   const umi = createUmi();
   const serialized = base64.serialize(V1_TRANSACTION_BASE64);

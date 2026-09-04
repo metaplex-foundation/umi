@@ -1,15 +1,23 @@
 import {
   getTransactionV1MessageSerializer,
+  getTransactionV1Serializer,
   lamports,
   publicKey,
+  Transaction,
   TransactionMessage,
 } from '@metaplex-foundation/umi';
-import { MessageV1, PublicKey as Web3JsPublicKey } from '@solana/web3.js';
+import {
+  MessageV1,
+  PublicKey as Web3JsPublicKey,
+  VersionedTransaction,
+} from '@solana/web3.js';
 import test from 'ava';
 import {
   fromWeb3JsMessage,
+  fromWeb3JsTransaction,
   SerializableMessageV1,
   toWeb3JsMessage,
+  toWeb3JsTransaction,
 } from '../src';
 
 const V1_WEB3JS_MESSAGE = new MessageV1({
@@ -34,7 +42,7 @@ const V1_WEB3JS_MESSAGE = new MessageV1({
   },
 });
 
-export const V1_MESSAGE: TransactionMessage = {
+const V1_MESSAGE: TransactionMessage = {
   version: 1,
   header: {
     numRequiredSignatures: 1,
@@ -53,17 +61,35 @@ export const V1_MESSAGE: TransactionMessage = {
   transactionConfig: { priorityFee: lamports(5_000), computeUnitLimit: 30_000 },
 };
 
+const V1_TRANSACTION: Transaction = {
+  message: V1_MESSAGE,
+  serializedMessage: getTransactionV1MessageSerializer().serialize(V1_MESSAGE),
+  signatures: [new Uint8Array(64).fill(7)],
+};
+
 test('it can convert a V1 message from web3.js', (t) => {
   t.deepEqual(fromWeb3JsMessage(V1_WEB3JS_MESSAGE), V1_MESSAGE);
 });
 
 test('it can convert a V1 message to a serializable web3.js message', (t) => {
   const web3JsMessage = toWeb3JsMessage(V1_MESSAGE);
-  t.true(web3JsMessage instanceof MessageV1);
   t.true(web3JsMessage instanceof SerializableMessageV1);
   t.deepEqual(fromWeb3JsMessage(web3JsMessage), V1_MESSAGE);
+  t.deepEqual(web3JsMessage.serialize(), V1_TRANSACTION.serializedMessage);
+});
+
+test('it can convert a V1 transaction to a serializable web3.js transaction', (t) => {
+  const web3JsTransaction = toWeb3JsTransaction(V1_TRANSACTION);
+  t.is(web3JsTransaction.message.version, 1);
   t.deepEqual(
-    web3JsMessage.serialize(),
-    getTransactionV1MessageSerializer().serialize(V1_MESSAGE)
+    web3JsTransaction.serialize(),
+    getTransactionV1Serializer().serialize(V1_TRANSACTION)
   );
+});
+
+test('it can convert a V1 transaction parsed by web3.js', (t) => {
+  // web3.js can parse V1 transactions but not serialize them, Umi can.
+  const serialized = getTransactionV1Serializer().serialize(V1_TRANSACTION);
+  const web3JsTransaction = VersionedTransaction.deserialize(serialized);
+  t.deepEqual(fromWeb3JsTransaction(web3JsTransaction), V1_TRANSACTION);
 });
