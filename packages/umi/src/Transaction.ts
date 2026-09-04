@@ -4,20 +4,29 @@ import type { Instruction } from './Instruction';
 import type { Commitment } from './RpcInterface';
 
 /**
- * The maximum amount of bytes that can be used for a transaction.
+ * The maximum amount of bytes that can be used for a legacy or V0 transaction.
  * @category Transactions
  */
 export const TRANSACTION_SIZE_LIMIT = 1232;
+
+/**
+ * The maximum amount of bytes that can be used for a V1 transaction.
+ * @category Transactions
+ */
+export const TRANSACTION_V1_SIZE_LIMIT = 4096;
 
 /**
  * The version of a transaction.
  * - Legacy is the very first iteration of Solana transactions.
  * - V0 introduces the concept of versioned transaction for
  * the first time and adds supports for address lookup tables.
+ * - V1 raises the size limit to 4096 bytes and moves the compute
+ * budget into the message itself (see {@link TransactionConfig})
+ * but does not support address lookup tables. See SIMD-0385.
  *
  * @category Transactions
  */
-export type TransactionVersion = 'legacy' | 0;
+export type TransactionVersion = 'legacy' | 0 | 1;
 
 /**
  * A Uint8Array that represents a serialized transaction.
@@ -79,6 +88,8 @@ export interface TransactionMessage {
   readonly blockhash: Blockhash;
   readonly instructions: CompiledInstruction[];
   readonly addressLookupTables: CompiledAddressLookupTable[];
+  /** The compute budget of the transaction. Only set on V1 messages. */
+  readonly transactionConfig?: TransactionConfig;
 }
 
 /**
@@ -109,6 +120,29 @@ export type CompiledAddressLookupTable = {
   readonly publicKey: PublicKey;
   readonly writableIndexes: number[];
   readonly readonlyIndexes: number[];
+};
+
+/**
+ * The compute budget of a V1 transaction. It replaces the
+ * ComputeBudget program instructions used by legacy and V0
+ * transactions, which V1 transactions ignore.
+ *
+ * Beware that the runtime treats an unset `computeUnitLimit` or
+ * `loadedAccountsDataSizeLimit` as zero, so a V1 transaction that
+ * leaves them unset fails at execution. The {@link TransactionBuilder}
+ * defaults them for you, `TransactionFactoryInterface.create` does not.
+ *
+ * @category Transactions
+ */
+export type TransactionConfig = {
+  /** The total priority fee to pay for the transaction. */
+  priorityFee?: SolAmount;
+  /** The maximum number of compute units the transaction may consume. At most 1,400,000. */
+  computeUnitLimit?: number;
+  /** The maximum number of bytes of account data the transaction may load. */
+  loadedAccountsDataSizeLimit?: number;
+  /** The requested heap size in bytes. A multiple of 1,024 between 32,768 and 262,144. */
+  heapSize?: number;
 };
 
 /**
@@ -170,7 +204,10 @@ export type TransactionMetaLoadedAddresses = {
  * Defines the various ways to create a transaction.
  * @category Transactions
  */
-export type TransactionInput = TransactionInputLegacy | TransactionInputV0;
+export type TransactionInput =
+  | TransactionInputLegacy
+  | TransactionInputV0
+  | TransactionInputV1;
 
 /**
  * Defines transaction input for legacy transactions.
@@ -187,6 +224,15 @@ export type TransactionInputLegacy = TransactionInputBase & {
 export type TransactionInputV0 = TransactionInputBase & {
   version?: 0;
   addressLookupTables?: AddressLookupTableInput[];
+};
+
+/**
+ * Defines transaction input for V1 transactions.
+ * @category Transactions
+ */
+export type TransactionInputV1 = TransactionInputBase & {
+  version: 1;
+  transactionConfig?: TransactionConfig;
 };
 
 /**

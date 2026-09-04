@@ -4,6 +4,8 @@ import {
   generateSigner,
   Instruction,
   KeypairSigner,
+  lamports,
+  signTransaction,
   Transaction,
   TransactionMessage,
   Umi,
@@ -123,4 +125,24 @@ export const createOversizedTransaction = (
     ),
   };
   return [transaction, toWeb3JsTransaction(transaction)];
+};
+
+export const createV1Transaction = async (
+  umi: Umi
+): Promise<[Transaction, KeypairSigner[]]> => {
+  const payer = generateSigner(umi);
+  const [instruction, , signers] = createTransferInstruction(umi);
+  const transaction = umi.transactions.create({
+    version: 1,
+    payer: payer.publicKey,
+    instructions: [instruction],
+    blockhash: '11111111111111111111111111111111',
+    transactionConfig: {
+      computeUnitLimit: 30_000,
+      loadedAccountsDataSizeLimit: 200_000,
+      priorityFee: lamports(5_000),
+    },
+  });
+  const allSigners = [payer, ...signers];
+  return [await signTransaction(transaction, allSigners), allSigners];
 };
