@@ -67,6 +67,20 @@ export interface RpcInterface {
   ): Promise<RpcAccount[]>;
 
   /**
+   * Subscribe to changes of the account at the given address.
+   *
+   * @param publicKey The public key of the account to watch.
+   * @param callback The function to call with the updated account each time it changes.
+   * @param options The options to use when subscribing to the account.
+   * @returns A function that removes the subscription.
+   */
+  onAccountChange(
+    publicKey: PublicKey,
+    callback: RpcAccountChangeCallback,
+    options?: RpcOnAccountChangeOptions
+  ): RpcUnsubscribe;
+
+  /**
    * Fetch the estimated production time of a block.
    *
    * @param slot The slot to get the estimated production time for.
@@ -317,6 +331,30 @@ export type RpcGetProgramAccountsOptions = RpcBaseOptions & {
 };
 
 /**
+ * The options to use when subscribing to account changes.
+ * @category Rpc
+ */
+export type RpcOnAccountChangeOptions = {
+  /** The commitment level to use when watching the account. */
+  commitment?: Commitment;
+};
+
+/**
+ * The function called each time a watched account changes.
+ * @category Rpc
+ */
+export type RpcAccountChangeCallback = (
+  account: RpcAccount,
+  context: { slot: number }
+) => void;
+
+/**
+ * A function that removes an RPC subscription.
+ * @category Rpc
+ */
+export type RpcUnsubscribe = () => Promise<void>;
+
+/**
  * The options to use when fetching a block.
  * @category Rpc
  */
@@ -536,6 +574,7 @@ export function createNullRpc(): RpcInterface {
     getAccount: errorHandler,
     getAccounts: errorHandler,
     getProgramAccounts: errorHandler,
+    onAccountChange: errorHandler,
     getBlockTime: errorHandler,
     getBalance: errorHandler,
     getRent: errorHandler,
