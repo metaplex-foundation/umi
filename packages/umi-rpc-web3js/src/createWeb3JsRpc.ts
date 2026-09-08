@@ -146,7 +146,11 @@ export function createWeb3JsRpc(
   ): RpcUnsubscribe => {
     const id = getConnection().onAccountChange(
       toWeb3JsPublicKey(publicKey),
-      (account, context) => callback(parseAccount(account, publicKey), context),
+      (account, context) =>
+        callback(
+          parseMaybeAccount(account.lamports === 0 ? null : account, publicKey),
+          context
+        ),
       options.commitment
     );
     return () => getConnection().removeAccountChangeListener(id);

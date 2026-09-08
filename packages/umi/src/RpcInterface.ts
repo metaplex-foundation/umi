@@ -71,6 +71,7 @@ export interface RpcInterface {
    *
    * @param publicKey The public key of the account to watch.
    * @param callback The function to call with the updated account each time it changes.
+   * Once the account is closed, it receives an account that does not exist.
    * @param options The options to use when subscribing to the account.
    * @returns A function that removes the subscription.
    */
@@ -341,10 +342,11 @@ export type RpcOnAccountChangeOptions = {
 
 /**
  * The function called each time a watched account changes.
+ * Once the watched account is closed, it receives an account that does not exist.
  * @category Rpc
  */
 export type RpcAccountChangeCallback = (
-  account: RpcAccount,
+  account: MaybeRpcAccount,
   context: { slot: number }
 ) => void;
 
