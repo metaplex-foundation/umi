@@ -16,6 +16,7 @@ import {
   PublicKey,
   resolveClusterFromEndpoint,
   RpcAccount,
+  RpcAccountChangeCallback,
   RpcAccountExistsOptions,
   RpcAirdropOptions,
   RpcCallOptions,
@@ -34,9 +35,11 @@ import {
   RpcGetTransactionOptions,
   RpcGetTransactionResponseOther,
   RpcInterface,
+  RpcOnAccountChangeOptions,
   RpcSendTransactionOptions,
   RpcSimulateTransactionOptions,
   RpcSimulateTransactionResult,
+  RpcUnsubscribe,
   SolAmount,
   Transaction,
   TransactionMetaInnerInstruction,
@@ -134,6 +137,23 @@ export function createWeb3JsRpc(
     return accounts.map(({ pubkey, account }) =>
       parseAccount(account, fromWeb3JsPublicKey(pubkey))
     );
+  };
+
+  const onAccountChange = (
+    publicKey: PublicKey,
+    callback: RpcAccountChangeCallback,
+    options: RpcOnAccountChangeOptions = {}
+  ): RpcUnsubscribe => {
+    const id = getConnection().onAccountChange(
+      toWeb3JsPublicKey(publicKey),
+      (account, context) =>
+        callback(
+          parseMaybeAccount(account.lamports === 0 ? null : account, publicKey),
+          context
+        ),
+      options.commitment
+    );
+    return () => getConnection().removeAccountChangeListener(id);
   };
 
   const getBlockTime = async (
@@ -420,6 +440,7 @@ export function createWeb3JsRpc(
     getAccount,
     getAccounts,
     getProgramAccounts,
+    onAccountChange,
     getBlockTime,
     getGenesisHash,
     getBalance,
