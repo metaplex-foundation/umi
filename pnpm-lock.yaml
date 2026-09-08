@@ -369,6 +369,12 @@ importers:
       '@metaplex-foundation/umi':
         specifier: workspace:^
         version: link:../umi
+      '@metaplex-foundation/umi-eddsa-web3js':
+        specifier: workspace:^
+        version: link:../umi-eddsa-web3js
+      '@metaplex-foundation/umi-transaction-factory-web3js':
+        specifier: workspace:^
+        version: link:../umi-transaction-factory-web3js
       '@solana/web3.js':
         specifier: ^1.72.0
         version: 1.72.0

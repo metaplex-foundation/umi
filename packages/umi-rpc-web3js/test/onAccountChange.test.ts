@@ -1,41 +1,61 @@
 import {
   assertAccountExists,
-  createNullContext,
+  createBaseUmi,
+  generatedSignerIdentity,
+  generateSigner,
   MaybeRpcAccount,
+  PublicKey,
   publicKey,
+  RpcUnsubscribe,
+  Signer,
   sol,
+  transactionBuilder,
 } from '@metaplex-foundation/umi';
-import { fromWeb3JsPublicKey } from '@metaplex-foundation/umi-web3js-adapters';
+import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
+import { web3JsTransactionFactory } from '@metaplex-foundation/umi-transaction-factory-web3js';
 import {
-  Keypair,
-  sendAndConfirmTransaction,
-  SystemProgram,
-  Transaction,
-} from '@solana/web3.js';
+  fromWeb3JsInstruction,
+  toWeb3JsPublicKey,
+} from '@metaplex-foundation/umi-web3js-adapters';
+import { SystemProgram } from '@solana/web3.js';
 import test from 'ava';
-import { createWeb3JsRpc } from '../src';
+import { web3JsRpc } from '../src';
 
-const DEVNET_ENDPOINT = 'https://api.devnet.solana.com';
 const LOCALHOST = 'http://127.0.0.1:8899';
 // The clock sysvar is updated every slot, so it is a reliable source of changes.
 const CLOCK_SYSVAR = publicKey('SysvarC1ock11111111111111111111111111111111');
 const SYSVAR_OWNER = publicKey('Sysvar1111111111111111111111111111111111111');
 
-const sleep = (ms: number) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms);
+const createUmi = () =>
+  createBaseUmi()
+    .use(web3JsEddsa())
+    .use(web3JsTransactionFactory())
+    .use(web3JsRpc(LOCALHOST, 'confirmed'))
+    .use(generatedSignerIdentity());
+
+const transferSol = (from: Signer, to: PublicKey, lamports: number) =>
+  transactionBuilder().add({
+    instruction: fromWeb3JsInstruction(
+      SystemProgram.transfer({
+        fromPubkey: toWeb3JsPublicKey(from.publicKey),
+        toPubkey: toWeb3JsPublicKey(to),
+        lamports,
+      })
+    ),
+    signers: [from],
+    bytesCreatedOnChain: 0,
   });
 
 test('it notifies with the updated account when it changes', async (t) => {
-  // Given an RPC client.
-  const rpc = createWeb3JsRpc(createNullContext(), DEVNET_ENDPOINT);
+  // Given a Umi instance.
+  const umi = createUmi();
 
   // When we subscribe to an account that changes every slot.
   const { account, context } = await new Promise<{
     account: MaybeRpcAccount;
     context: { slot: number };
   }>((resolve) => {
-    rpc.onAccountChange(CLOCK_SYSVAR, (account, context) => {
+    umi.rpc.onAccountChange(CLOCK_SYSVAR, (account, context) => {
       resolve({ account, context });
     });
   });
@@ -50,56 +70,41 @@ test('it notifies with the updated account when it changes', async (t) => {
 });
 
 test('it notifies with a non-existing account once it is closed', async (t) => {
-  // Given a funded payer and a subscription to a fresh account.
-  const rpc = createWeb3JsRpc(createNullContext(), LOCALHOST);
-  const payer = Keypair.generate();
-  const target = Keypair.generate();
-  const targetPublicKey = fromWeb3JsPublicKey(target.publicKey);
-  await rpc.airdrop(fromWeb3JsPublicKey(payer.publicKey), sol(1), {
-    commitment: 'finalized',
-  });
+  // Given a funded identity and a subscription to a fresh account.
+  const umi = createUmi();
+  await umi.rpc.airdrop(umi.identity.publicKey, sol(1));
+  const target = generateSigner(umi);
   const notifications: MaybeRpcAccount[] = [];
-  const unsubscribe = rpc.onAccountChange(
-    targetPublicKey,
-    (account) => {
-      notifications.push(account);
-    },
-    { commitment: 'confirmed' }
-  );
-  const transfer = (from: Keypair, to: Keypair, lamports: number) =>
-    sendAndConfirmTransaction(
-      rpc.connection,
-      new Transaction({ feePayer: payer.publicKey }).add(
-        SystemProgram.transfer({
-          fromPubkey: from.publicKey,
-          toPubkey: to.publicKey,
-          lamports,
-        })
-      ),
-      from === payer ? [payer] : [payer, from],
-      { commitment: 'confirmed' }
-    );
+  const unsubscribe = umi.rpc.onAccountChange(target.publicKey, (account) => {
+    notifications.push(account);
+  });
 
   // When we fund the account and then drain it entirely, which closes it.
-  await transfer(payer, target, 500_000_000);
-  await transfer(target, payer, 500_000_000);
-  await sleep(2000);
+  await transferSol(umi.identity, target.publicKey, 500000000).sendAndConfirm(
+    umi
+  );
+  await transferSol(target, umi.identity.publicKey, 500000000).sendAndConfirm(
+    umi
+  );
+  await new Promise((resolve) => {
+    setTimeout(resolve, 2000);
+  });
   await unsubscribe();
 
   // Then we were notified of the funded account followed by the closed one.
   t.is(notifications.length, 2);
   t.true(notifications[0].exists);
   t.false(notifications[1].exists);
-  t.is(notifications[1].publicKey, targetPublicKey);
+  t.is(notifications[1].publicKey, target.publicKey);
 });
 
 test('it stops notifying once unsubscribed', async (t) => {
-  // Given an RPC client subscribed to an account that changes every slot.
-  const rpc = createWeb3JsRpc(createNullContext(), DEVNET_ENDPOINT);
+  // Given a Umi instance subscribed to an account that changes every slot.
+  const umi = createUmi();
   let notifications = 0;
-  let unsubscribe: () => Promise<void> = async () => {};
+  let unsubscribe: RpcUnsubscribe = async () => {};
   await new Promise<void>((resolve) => {
-    unsubscribe = rpc.onAccountChange(CLOCK_SYSVAR, () => {
+    unsubscribe = umi.rpc.onAccountChange(CLOCK_SYSVAR, () => {
       notifications += 1;
       resolve();
     });
@@ -110,6 +115,8 @@ test('it stops notifying once unsubscribed', async (t) => {
   const countAfterUnsubscribe = notifications;
 
   // Then no further notifications arrive.
-  await sleep(2000);
+  await new Promise((resolve) => {
+    setTimeout(resolve, 2000);
+  });
   t.is(notifications, countAfterUnsubscribe);
 });
