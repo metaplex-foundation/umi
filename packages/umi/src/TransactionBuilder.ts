@@ -19,6 +19,7 @@ import {
   AddressLookupTableInput,
   Blockhash,
   BlockhashWithExpiryBlockHeight,
+  COMPUTE_BUDGET_PROGRAM_ID,
   Transaction,
   TransactionConfig,
   TransactionInput,
@@ -312,6 +313,21 @@ export class TransactionBuilder implements HasWrappedInstructions {
       input.addressLookupTables = this.options.addressLookupTables;
     }
     if (input.version === 1) {
+      if (this.options.addressLookupTables?.length) {
+        throw new SdkError(
+          'Address lookup tables are not supported by V1 transactions.'
+        );
+      }
+      if (
+        input.instructions.some(
+          (ix) => ix.programId === COMPUTE_BUDGET_PROGRAM_ID
+        )
+      ) {
+        throw new SdkError(
+          'V1 transactions ignore ComputeBudget instructions. ' +
+            'Set the compute budget with `setTransactionConfig` instead.'
+        );
+      }
       input.transactionConfig = {
         // The runtime treats unset V1 limits as zero, so default them to
         // what legacy and V0 transactions get without ComputeBudget

@@ -30,6 +30,43 @@ import type {
  */
 export const TRANSACTION_V1_PREFIX = 0x81;
 
+/**
+ * Asserts that a {@link TransactionConfig} only holds values the Solana runtime
+ * will honor as written for a V1 transaction, throwing a clear {@link SdkError}
+ * otherwise. This mirrors the runtime's own sanitization: an out-of-range
+ * compute unit limit is silently clamped, and an invalid heap size is rejected
+ * by the node with an unrelated-sounding error, so failing here is friendlier.
+ * @category Transactions
+ */
+export const assertValidTransactionConfig = (
+  config: TransactionConfig
+): void => {
+  const { computeUnitLimit, heapSize } = config;
+  if (
+    computeUnitLimit !== undefined &&
+    (!Number.isInteger(computeUnitLimit) ||
+      computeUnitLimit < 0 ||
+      computeUnitLimit > 1_400_000)
+  ) {
+    throw new SdkError(
+      `Invalid computeUnitLimit: ${computeUnitLimit}. ` +
+        'Expected an integer between 0 and 1,400,000.'
+    );
+  }
+  if (
+    heapSize !== undefined &&
+    (!Number.isInteger(heapSize) ||
+      heapSize < 32_768 ||
+      heapSize > 262_144 ||
+      heapSize % 1_024 !== 0)
+  ) {
+    throw new SdkError(
+      `Invalid heapSize: ${heapSize}. ` +
+        'Expected a multiple of 1,024 between 32,768 and 262,144.'
+    );
+  }
+};
+
 const getSignaturesSerializer = (count: number) =>
   array(bytes({ size: 64 }), { size: count });
 
@@ -72,6 +109,7 @@ export const getTransactionV1MessageSerializer =
       maxSize: null,
       serialize: (value: TransactionMessage): Uint8Array => {
         const config = value.transactionConfig ?? {};
+        assertValidTransactionConfig(config);
         let configMask = 0;
         const configValues: Uint8Array[] = [];
         if (config.priorityFee !== undefined) {

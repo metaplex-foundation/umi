@@ -1,4 +1,4 @@
-import { PublicKey } from '@metaplex-foundation/umi-public-keys';
+import { publicKey, PublicKey } from '@metaplex-foundation/umi-public-keys';
 import { Amount, SolAmount } from './Amount';
 import type { Instruction } from './Instruction';
 import type { Commitment } from './RpcInterface';
@@ -14,6 +14,16 @@ export const TRANSACTION_SIZE_LIMIT = 1232;
  * @category Transactions
  */
 export const TRANSACTION_V1_SIZE_LIMIT = 4096;
+
+/**
+ * The address of the Compute Budget program. Its instructions configure the
+ * compute budget of legacy and V0 transactions, but are ignored by V1
+ * transactions, which use {@link TransactionConfig} instead.
+ * @category Transactions
+ */
+export const COMPUTE_BUDGET_PROGRAM_ID: PublicKey = publicKey(
+  'ComputeBudget111111111111111111111111111111'
+);
 
 /**
  * The version of a transaction.

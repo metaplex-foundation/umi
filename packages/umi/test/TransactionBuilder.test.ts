@@ -1,5 +1,6 @@
 import test from 'ava';
 import {
+  COMPUTE_BUDGET_PROGRAM_ID,
   createBaseUmi,
   createNoopSigner,
   lamports,
@@ -287,4 +288,44 @@ test('it does not attach a compute budget to V0 transactions', (t) => {
   // Then the built transaction is a V0 transaction without config.
   t.is(inputs[0].version, 0);
   t.false('transactionConfig' in inputs[0]);
+});
+
+test('it throws when a V1 transaction contains a ComputeBudget instruction', (t) => {
+  // Given a V1 builder with a (mock) ComputeBudget instruction.
+  const umi = createBaseUmi();
+  const builder = transactionBuilder()
+    .add({
+      instruction: {
+        programId: COMPUTE_BUDGET_PROGRAM_ID,
+        keys: [],
+        data: new Uint8Array([2, 64, 13, 3, 0]),
+      },
+      signers: [],
+      bytesCreatedOnChain: 0,
+    })
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111')
+    .useV1();
+
+  // Then building it throws instead of silently ignoring the instruction.
+  t.throws(() => builder.build(umi), { message: /ComputeBudget/ });
+});
+
+test('it throws when a V1 transaction has address lookup tables', (t) => {
+  // Given a V1 builder with address lookup tables.
+  const umi = createBaseUmi();
+  const builder = transactionBuilder()
+    .add(mockInstruction())
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111')
+    .useV1()
+    .setAddressLookupTables([
+      {
+        publicKey: publicKey('11111111111111111111111111111111'),
+        addresses: [publicKey('auth9SigNpDKz4sJJ1DfCTuZrZNSAgh9sFD3rboVmgg')],
+      },
+    ]);
+
+  // Then building it throws instead of silently dropping the tables.
+  t.throws(() => builder.build(umi), { message: /lookup tables/ });
 });

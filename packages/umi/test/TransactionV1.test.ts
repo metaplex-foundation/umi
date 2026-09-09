@@ -4,6 +4,7 @@ import {
   getTransactionV1Serializer,
   lamports,
   publicKey,
+  TransactionConfig,
   TransactionMessage,
 } from '../src';
 import { base64 } from '../src/serializers';
@@ -84,4 +85,36 @@ test('it rejects V1 messages with an invalid config mask', (t) => {
   t.throws(() => serializer.deserialize(withMask(0b00001)), {
     message: /priority fee bits/,
   });
+});
+
+const withConfig = (config: TransactionConfig): TransactionMessage => ({
+  ...V1_MESSAGE,
+  transactionConfig: config,
+});
+
+test('it validates the compute unit limit when serializing', (t) => {
+  const serializer = getTransactionV1MessageSerializer();
+  t.throws(
+    () => serializer.serialize(withConfig({ computeUnitLimit: 2_000_000 })),
+    {
+      message: /computeUnitLimit/,
+    }
+  );
+  t.throws(() => serializer.serialize(withConfig({ computeUnitLimit: 1.5 })), {
+    message: /computeUnitLimit/,
+  });
+  t.notThrows(() =>
+    serializer.serialize(withConfig({ computeUnitLimit: 1_400_000 }))
+  );
+});
+
+test('it validates the heap size when serializing', (t) => {
+  const serializer = getTransactionV1MessageSerializer();
+  t.throws(() => serializer.serialize(withConfig({ heapSize: 1000 })), {
+    message: /heapSize/,
+  });
+  t.throws(() => serializer.serialize(withConfig({ heapSize: 33_000 })), {
+    message: /heapSize/,
+  });
+  t.notThrows(() => serializer.serialize(withConfig({ heapSize: 65_536 })));
 });
