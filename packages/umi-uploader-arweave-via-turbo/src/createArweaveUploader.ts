@@ -193,7 +193,7 @@ export function createArweaveUploader(
 
       const gateway =
         context.rpc.getCluster() === 'devnet'
-          ? 'https://turbo.ardrive.dev/raw'
+          ? 'https://ar-io.dev/raw'
           : 'https://arweave.net';
 
       return `${gateway}/${dataItemId}`;
@@ -297,8 +297,8 @@ export function createArweaveUploader(
   const defaultAddresses =
     context.rpc.getCluster() === 'devnet'
       ? {
-          uploadServiceUrl: 'https://upload.ardrive.dev',
-          paymentServiceUrl: 'https://payment.ardrive.dev',
+          uploadServiceUrl: 'https://upload.services.ar-io.dev',
+          paymentServiceUrl: 'https://payment.services.ar-io.dev',
         }
       : {
           uploadServiceUrl: 'https://upload.ardrive.io',
