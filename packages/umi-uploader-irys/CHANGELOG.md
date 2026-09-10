@@ -1,5 +1,15 @@
 # @metaplex-foundation/umi-uploader-irys
 
+## 1.6.0
+
+### Patch Changes
+
+- [#164](https://github.com/metaplex-foundation/umi/pull/164) [`5790f21`](https://github.com/metaplex-foundation/umi/commit/5790f219a797e9667ce15065d8851ce9c023bc38) Thanks [@tonyboylehub](https://github.com/tonyboylehub)! - Updated PromisePool import method for umi-uploader-irys which would error out on default import. Changing to a named import as per the docs seems to fix this issue.
+
+- Updated dependencies [[`b51f80e`](https://github.com/metaplex-foundation/umi/commit/b51f80e57e9a83a98fe1be2bc322f610e9ad12ec)]:
+  - @metaplex-foundation/umi@1.6.0
+  - @metaplex-foundation/umi-web3js-adapters@1.6.0
+
 ## 1.0.0
 
 ### Major Changes

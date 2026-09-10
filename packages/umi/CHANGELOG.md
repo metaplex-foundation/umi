@@ -1,5 +1,11 @@
 # @metaplex-foundation/umi-core
 
+## 1.6.0
+
+### Minor Changes
+
+- [#210](https://github.com/metaplex-foundation/umi/pull/210) [`b51f80e`](https://github.com/metaplex-foundation/umi/commit/b51f80e57e9a83a98fe1be2bc322f610e9ad12ec) Thanks [@blockiosaurus](https://github.com/blockiosaurus)! - Add `fetchAllMixedAccounts` and `safeFetchAllMixedAccounts` helpers that fetch multiple accounts of potentially different types (possibly from different programs) in a single RPC call and deserialize each one with its own deserializer. The result tuple preserves per-account types through TypeScript inference, e.g. `[Metadata, Edition]` rather than a union.
+
 ## 1.0.0
 
 ### Major Changes

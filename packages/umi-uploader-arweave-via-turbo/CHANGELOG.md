@@ -1,5 +1,15 @@
 # @metaplex-foundation/umi-uploader-arweave-via-turbo
 
+## 1.6.0
+
+### Patch Changes
+
+- [#218](https://github.com/metaplex-foundation/umi/pull/218) [`8682e0d`](https://github.com/metaplex-foundation/umi/commit/8682e0dc60551a40c095a8e76e522e50d3f588d3) Thanks [@brandontulsi](https://github.com/brandontulsi)! - Point the devnet defaults at the ar.io testnet sandbox (`upload.services.ar-io.dev`, `payment.services.ar-io.dev`, data served from `ar-io.dev`) now that ArDrive has retired the `ardrive.dev` environment and its hostnames no longer resolve.
+
+- Updated dependencies [[`b51f80e`](https://github.com/metaplex-foundation/umi/commit/b51f80e57e9a83a98fe1be2bc322f610e9ad12ec)]:
+  - @metaplex-foundation/umi@1.6.0
+  - @metaplex-foundation/umi-web3js-adapters@1.6.0
+
 ## 1.0.0
 
 ### Major Changes

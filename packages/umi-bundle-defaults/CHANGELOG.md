@@ -1,5 +1,20 @@
 # @metaplex-foundation/umi-bundle-defaults
 
+## 1.6.0
+
+### Patch Changes
+
+- Updated dependencies [[`b51f80e`](https://github.com/metaplex-foundation/umi/commit/b51f80e57e9a83a98fe1be2bc322f610e9ad12ec)]:
+  - @metaplex-foundation/umi@1.6.0
+  - @metaplex-foundation/umi-downloader-http@1.6.0
+  - @metaplex-foundation/umi-eddsa-web3js@1.6.0
+  - @metaplex-foundation/umi-http-fetch@1.6.0
+  - @metaplex-foundation/umi-program-repository@1.6.0
+  - @metaplex-foundation/umi-rpc-chunk-get-accounts@1.6.0
+  - @metaplex-foundation/umi-rpc-web3js@1.6.0
+  - @metaplex-foundation/umi-serializer-data-view@1.6.0
+  - @metaplex-foundation/umi-transaction-factory-web3js@1.6.0
+
 ## 1.0.0
 
 ### Major Changes
