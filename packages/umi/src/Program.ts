@@ -1,6 +1,7 @@
 import type { PublicKey } from '@metaplex-foundation/umi-public-keys';
 import type { Cluster } from './Cluster';
 import type { ProgramError } from './errors';
+import type { InstructionDescriptor } from './TransactionParser';
 
 /**
  * An error that contains Program logs.
@@ -63,4 +64,10 @@ export type Program = {
    * returns `true` for the appropriate cluster.
    */
   isOnCluster: (cluster: Cluster) => boolean;
+
+  /**
+   * An optional array of instruction descriptors that can be used
+   * to parse instructions for this program from a transaction.
+   */
+  instructions?: InstructionDescriptor[];
 };
