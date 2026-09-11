@@ -1,0 +1,67 @@
+{
+  "name": "@metaplex-foundation/umi-rpc-quasar",
+  "version": "0.1.0",
+  "description": "An in-process Solana SVM test RPC for Umi, powered by QuasarSVM",
+  "license": "MIT",
+  "sideEffects": false,
+  "module": "dist/esm/index.mjs",
+  "main": "dist/cjs/index.cjs",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    }
+  },
+  "files": [
+    "/dist/cjs",
+    "/dist/esm",
+    "/dist/types",
+    "/src"
+  ],
+  "scripts": {
+    "lint": "eslint --ext js,ts,tsx src",
+    "lint:fix": "eslint --fix --ext js,ts,tsx src",
+    "clean": "rimraf dist",
+    "build": "pnpm clean && tsc && tsc -p test/tsconfig.json && rollup -c",
+    "test": "ava --timeout=1m"
+  },
+  "dependencies": {
+    "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
+    "@blueshift-gg/quasar-svm": "^0.1.4"
+  },
+  "peerDependencies": {
+    "@metaplex-foundation/umi": "workspace:^",
+    "@solana/web3.js": "^1.72.0"
+  },
+  "devDependencies": {
+    "@ava/typescript": "^3.0.1",
+    "@metaplex-foundation/umi": "workspace:^",
+    "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
+    "@metaplex-foundation/umi-serializer-data-view": "workspace:^",
+    "@metaplex-foundation/umi-program-repository": "workspace:^",
+    "@metaplex-foundation/umi-transaction-factory-web3js": "workspace:^",
+    "@metaplex-foundation/umi-http-fetch": "workspace:^",
+    "@metaplex-foundation/umi-storage-mock": "workspace:^",
+    "@solana/web3.js": "^1.72.0",
+    "ava": "^5.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Metaplex Maintainers <contact@metaplex.com>",
+  "homepage": "https://metaplex.com",
+  "repository": {
+    "url": "https://github.com/metaplex-foundation/umi.git"
+  },
+  "ava": {
+    "typescript": {
+      "compile": false,
+      "rewritePaths": {
+        "src/": "dist/test/src/",
+        "test/": "dist/test/test/"
+      }
+    }
+  }
+}
