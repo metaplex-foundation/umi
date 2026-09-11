@@ -3,7 +3,12 @@ import {
   HttpRequest,
   HttpResponse,
 } from '@metaplex-foundation/umi';
-import fetch, { BodyInit, RequestInit } from 'node-fetch';
+import fetch from 'cross-fetch';
+
+type FetchRequestInit = RequestInit & {
+  follow?: number;
+  timeout?: number;
+};
 
 export function createFetchHttp(): HttpInterface {
   return {
@@ -33,7 +38,7 @@ export function createFetchHttp(): HttpInterface {
         body = request.data as BodyInit | undefined;
       }
 
-      const requestInit: RequestInit = {
+      const requestInit: FetchRequestInit = {
         method: request.method,
         body,
         headers,

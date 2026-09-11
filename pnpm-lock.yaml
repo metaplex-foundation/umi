@@ -248,9 +248,9 @@ importers:
 
   packages/umi-http-fetch:
     dependencies:
-      node-fetch:
-        specifier: ^2.6.7
-        version: 2.6.9
+      cross-fetch:
+        specifier: ^3.1.5
+        version: 3.1.5
     devDependencies:
       '@ava/typescript':
         specifier: ^3.0.1
@@ -258,9 +258,6 @@ importers:
       '@metaplex-foundation/umi':
         specifier: workspace:^
         version: link:../umi
-      '@types/node-fetch':
-        specifier: ^2.6.2
-        version: 2.6.2
       ava:
         specifier: ^5.1.0
         version: 5.1.0(@ava/typescript@3.0.1)
@@ -8804,7 +8801,6 @@ packages:
     transitivePeerDependencies:
       - encoding
     dev: false
-    optional: true
 
   /cross-spawn@5.1.0:
     resolution: {integrity: sha512-pTgQJ5KC0d2hcY8eyL1IzlBPYjTkyH72XRZPnLyKus2mBfNjQs3klqbJU2VILqZryAZUt9JOb3h/mWMy23/f5A==}
