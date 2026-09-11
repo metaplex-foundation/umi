@@ -41,9 +41,9 @@ test.skip('it can upload one file', async (t) => {
     createGenericFile('some-image', 'some-image.jpg'),
   ]);
 
-  // Then the URI should be a valid IPFS URI.
+  // Then the URI should be a Cascade gateway download URI.
   t.truthy(uri);
-  t.true(uri.startsWith('https://ipfs.io/'));
+  t.true(uri.startsWith('https://api.lumera.help/download/'));
 
   // and it should point to the uploaded asset.
   const [asset] = await context.downloader.download([uri]);
