@@ -2,6 +2,7 @@ import {
   base58,
   getTransactionV1MessageSerializer,
   lamports,
+  SdkError,
   TransactionConfig,
   TransactionInput,
   TransactionMessage,
@@ -173,13 +174,22 @@ export function fromWeb3JsTransactionConfig(
 export function toWeb3JsTransactionConfig(
   config: TransactionConfig = {}
 ): Web3JsTransactionConfig {
+  const priorityFee = config.priorityFee?.basisPoints;
+  // web3.js models the fee as a number and, like its own reader, we refuse
+  // to silently narrow a u64 that a number cannot hold.
+  if (
+    priorityFee !== undefined &&
+    priorityFee > BigInt(Number.MAX_SAFE_INTEGER)
+  ) {
+    throw new SdkError(
+      `A priority fee of ${priorityFee} lamports cannot be represented by ` +
+        `@solana/web3.js, which models it as a number (max ${Number.MAX_SAFE_INTEGER}).`
+    );
+  }
   return {
     computeUnitLimit: config.computeUnitLimit ?? null,
     heapSize: config.heapSize ?? null,
     loadedAccountsDataSizeLimit: config.loadedAccountsDataSizeLimit ?? null,
-    priorityFee:
-      config.priorityFee === undefined
-        ? null
-        : Number(config.priorityFee.basisPoints),
+    priorityFee: priorityFee === undefined ? null : Number(priorityFee),
   };
 }

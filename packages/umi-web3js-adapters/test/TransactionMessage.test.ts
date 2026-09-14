@@ -93,3 +93,13 @@ test('it can convert a V1 transaction parsed by web3.js', (t) => {
   const web3JsTransaction = VersionedTransaction.deserialize(serialized);
   t.deepEqual(fromWeb3JsTransaction(web3JsTransaction), V1_TRANSACTION);
 });
+
+test('it refuses to convert a priority fee that web3.js cannot represent', (t) => {
+  const message = {
+    ...V1_MESSAGE,
+    transactionConfig: { priorityFee: lamports(2n ** 60n) },
+  };
+  t.throws(() => toWeb3JsMessage(message), {
+    message: /cannot be represented/,
+  });
+});

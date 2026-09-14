@@ -38,8 +38,19 @@ const TRANSACTION_VERSION_MASK = 0x7f;
 
 export function createWeb3JsTransactionFactory(): TransactionFactoryInterface {
   const create = (input: TransactionInput): Transaction => {
-    const web3JsMessage = toWeb3JsMessageFromInput(input);
-    const message = fromWeb3JsMessage(web3JsMessage);
+    // @solana/web3.js models the V1 compute budget with JS numbers, which
+    // cannot hold a u64 priority fee. Compile the accounts without it and
+    // keep the caller's exact config on the Umi message instead.
+    const web3JsMessage = toWeb3JsMessageFromInput(
+      input.version === 1 ? { ...input, transactionConfig: undefined } : input
+    );
+    let message = fromWeb3JsMessage(web3JsMessage);
+    if (input.version === 1) {
+      message = {
+        ...message,
+        transactionConfig: input.transactionConfig ?? {},
+      };
+    }
     const web3JsTransaction = new Web3JsTransaction(
       web3JsMessage,
       input.signatures

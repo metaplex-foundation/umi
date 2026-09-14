@@ -5,6 +5,7 @@ import { V1_LARGE_TRANSACTION_BASE64 } from './_fixtures';
 import {
   createLegacyMessage,
   createOversizedTransaction,
+  createTransferInstruction,
   createUmi,
   createV0Message,
   createV0Transaction,
@@ -122,4 +123,22 @@ test('it can create a V1 transaction', async (t) => {
   const serialized = umi.transactions.serialize(transaction);
   t.is(serialized[0], 0x81);
   t.deepEqual(umi.transactions.deserialize(serialized), transaction);
+});
+
+test('it keeps V1 priority fees above 2^53 lamports exact', async (t) => {
+  const umi = createUmi();
+  const [instruction, , [payer]] = createTransferInstruction(umi);
+  const priorityFee = lamports(2n ** 60n + 5n);
+  const transaction = umi.transactions.create({
+    version: 1,
+    payer: payer.publicKey,
+    instructions: [instruction],
+    blockhash: '11111111111111111111111111111111',
+    transactionConfig: { computeUnitLimit: 1, priorityFee },
+  });
+  t.deepEqual(transaction.message.transactionConfig?.priorityFee, priorityFee);
+  const roundTrip = umi.transactions.deserialize(
+    umi.transactions.serialize(transaction)
+  );
+  t.deepEqual(roundTrip.message.transactionConfig?.priorityFee, priorityFee);
 });
