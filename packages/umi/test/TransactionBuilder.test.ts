@@ -311,6 +311,20 @@ test('it throws when a V1 transaction contains a ComputeBudget instruction', (t)
   t.throws(() => builder.build(umi), { message: /ComputeBudget/ });
 });
 
+test('it uses a larger size limit for V1 transactions', (t) => {
+  const umi = createBaseUmi();
+  captureTransactionInputs(umi);
+  umi.transactions.serialize = () => new Uint8Array(2000);
+  const builder = transactionBuilder()
+    .add(mockInstruction())
+    .setFeePayer(feePayer);
+
+  t.is(builder.useV0().minimumTransactionsRequired(umi), 2);
+  t.false(builder.useV0().fitsInOneTransaction(umi));
+  t.is(builder.useV1().minimumTransactionsRequired(umi), 1);
+  t.true(builder.useV1().fitsInOneTransaction(umi));
+});
+
 test('it throws when a V1 transaction has address lookup tables', (t) => {
   // Given a V1 builder with address lookup tables.
   const umi = createBaseUmi();

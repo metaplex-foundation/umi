@@ -30,6 +30,10 @@ import type {
  */
 export const TRANSACTION_V1_PREFIX = 0x81;
 
+const MAX_COMPUTE_UNIT_LIMIT = 1_400_000;
+const DEFAULT_COMPUTE_UNITS_PER_INSTRUCTION = 200_000;
+const DEFAULT_LOADED_ACCOUNTS_DATA_SIZE_LIMIT = 64 * 1024 * 1024;
+
 /**
  * Asserts that a {@link TransactionConfig} only holds values the Solana runtime
  * will honor as written for a V1 transaction, throwing a clear {@link SdkError}
@@ -46,7 +50,7 @@ export const assertValidTransactionConfig = (
     computeUnitLimit !== undefined &&
     (!Number.isInteger(computeUnitLimit) ||
       computeUnitLimit < 0 ||
-      computeUnitLimit > 1_400_000)
+      computeUnitLimit > MAX_COMPUTE_UNIT_LIMIT)
   ) {
     throw new SdkError(
       `Invalid computeUnitLimit: ${computeUnitLimit}. ` +
@@ -66,6 +70,27 @@ export const assertValidTransactionConfig = (
     );
   }
 };
+
+/**
+ * The compute budget a {@link TransactionBuilder} attaches to a V1
+ * transaction when the caller does not set one. Matches what legacy
+ * and V0 transactions get without ComputeBudget instructions: 200k
+ * compute units per instruction, capped at 1.4M, and 64MiB of loaded
+ * account data. `TransactionFactoryInterface.create` does not apply
+ * these defaults.
+ * @category Transactions
+ */
+export const defaultTransactionConfig = (
+  instructionCount: number,
+  overrides: TransactionConfig = {}
+): TransactionConfig => ({
+  computeUnitLimit: Math.min(
+    DEFAULT_COMPUTE_UNITS_PER_INSTRUCTION * instructionCount,
+    MAX_COMPUTE_UNIT_LIMIT
+  ),
+  loadedAccountsDataSizeLimit: DEFAULT_LOADED_ACCOUNTS_DATA_SIZE_LIMIT,
+  ...overrides,
+});
 
 const getSignaturesSerializer = (count: number) =>
   array(bytes({ size: 64 }), { size: count });

@@ -1,15 +1,7 @@
 /**
- * V1 transaction test vectors borrowed from @solana/web3.js
- * (test/transaction.test.ts and test/fixtures/v1-transaction-large.b64).
+ * V1 transaction test vector borrowed from @solana/web3.js
+ * (test/fixtures/v1-transaction-large.b64).
  */
-
-export const V1_TRANSACTION_BASE64 = [
-  'gQEAAQ8AAADomUshQUu++wfzaydJlLMCXvZqJHDIekamPKt/+nouRQED6kpsY+KcUgq+9VB7',
-  'Ey7F+ZVHdq6+vnuSQh7qaRRG0iz9FyQ4WqDHW2T7eM1gL6HZkf3r92sTxY7XAurINen2GAAA',
-  'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiBMAAAAAAAAwdQAAQA0DAAICDAAAAQIA',
-  'AABAQg8AAAAAAE+PfvytpVg+OwZUsJfh3nrH0WuuO9+NStlru2gn0ecx/F/h7BAGXmEWVFVX',
-  'sjzEsQxk0VLc9Pi0kJaLLOJp4wE=',
-].join('');
 
 export const V1_LARGE_TRANSACTION_BASE64 = [
   'gQEAAh8AAADomUshQUu++wfzaydJlLMCXvZqJHDIekamPKt/+nouRQIE6kpsY+KcUgq+9VB7',

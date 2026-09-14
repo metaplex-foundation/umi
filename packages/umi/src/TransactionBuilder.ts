@@ -28,6 +28,7 @@ import {
   TRANSACTION_SIZE_LIMIT,
   TRANSACTION_V1_SIZE_LIMIT,
 } from './Transaction';
+import { defaultTransactionConfig } from './TransactionV1';
 
 /**
  * Defines an generic object with wrapped instructions,
@@ -282,11 +283,10 @@ export class TransactionBuilder implements HasWrappedInstructions {
   minimumTransactionsRequired(
     context: Pick<Context, 'transactions' | 'payer'>
   ): number {
-    const sizeLimit =
-      this.options.version === 1
-        ? TRANSACTION_V1_SIZE_LIMIT
-        : TRANSACTION_SIZE_LIMIT;
-    return Math.ceil(this.getTransactionSize(context) / sizeLimit);
+    return Math.ceil(
+      this.getTransactionSize(context) /
+        transactionSizeLimit(this.options.version)
+    );
   }
 
   fitsInOneTransaction(
@@ -303,45 +303,64 @@ export class TransactionBuilder implements HasWrappedInstructions {
           'Please use the `setBlockhash` or `setLatestBlockhash` methods.'
       );
     }
-    const input: TransactionInput = {
-      version: this.options.version ?? 0,
+    return context.transactions.create(
+      this.toTransactionInput(context, blockhash)
+    );
+  }
+
+  protected toTransactionInput(
+    context: Pick<Context, 'payer'>,
+    blockhash: Blockhash
+  ): TransactionInput {
+    const version = this.options.version ?? 0;
+    const base = {
       payer: this.getFeePayer(context).publicKey,
       instructions: this.getInstructions(),
       blockhash,
     };
-    if (input.version === 0 && this.options.addressLookupTables) {
-      input.addressLookupTables = this.options.addressLookupTables;
-    }
-    if (input.version === 1) {
-      if (this.options.addressLookupTables?.length) {
+
+    switch (version) {
+      case 'legacy':
+        return { ...base, version: 'legacy' };
+      case 0:
+        return {
+          ...base,
+          version: 0,
+          ...(this.options.addressLookupTables
+            ? { addressLookupTables: this.options.addressLookupTables }
+            : {}),
+        };
+      case 1:
+        if (this.options.addressLookupTables?.length) {
+          throw new SdkError(
+            'Address lookup tables are not supported by V1 transactions.'
+          );
+        }
+        if (
+          base.instructions.some(
+            (ix) => ix.programId === COMPUTE_BUDGET_PROGRAM_ID
+          )
+        ) {
+          throw new SdkError(
+            'V1 transactions ignore ComputeBudget instructions. ' +
+              'Set the compute budget with `setTransactionConfig` instead.'
+          );
+        }
+        return {
+          ...base,
+          version: 1,
+          transactionConfig: defaultTransactionConfig(
+            base.instructions.length,
+            this.options.transactionConfig
+          ),
+        };
+      default: {
+        const exhaustiveCheck: never = version;
         throw new SdkError(
-          'Address lookup tables are not supported by V1 transactions.'
+          `Unsupported transaction version: ${exhaustiveCheck}.`
         );
       }
-      if (
-        input.instructions.some(
-          (ix) => ix.programId === COMPUTE_BUDGET_PROGRAM_ID
-        )
-      ) {
-        throw new SdkError(
-          'V1 transactions ignore ComputeBudget instructions. ' +
-            'Set the compute budget with `setTransactionConfig` instead.'
-        );
-      }
-      input.transactionConfig = {
-        // The runtime treats unset V1 limits as zero, so default them to
-        // what legacy and V0 transactions get without ComputeBudget
-        // instructions: 200k compute units per instruction, capped at
-        // 1.4M, and 64MiB of loaded account data.
-        computeUnitLimit: Math.min(
-          200_000 * input.instructions.length,
-          1_400_000
-        ),
-        loadedAccountsDataSizeLimit: 64 * 1024 * 1024,
-        ...this.options.transactionConfig,
-      };
     }
-    return context.transactions.create(input);
   }
 
   async buildWithLatestBlockhash(
@@ -420,6 +439,9 @@ export class TransactionBuilder implements HasWrappedInstructions {
     );
   }
 }
+
+const transactionSizeLimit = (version?: TransactionVersion): number =>
+  version === 1 ? TRANSACTION_V1_SIZE_LIMIT : TRANSACTION_SIZE_LIMIT;
 
 /**
  * Creates a new transaction builder.
