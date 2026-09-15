@@ -157,3 +157,24 @@ test('it refuses to serialize non-V1 messages as V1', (t) => {
     { message: /lookup tables/ }
   );
 });
+
+test('it validates account indexes when serializing', (t) => {
+  const serializer = getTransactionV1MessageSerializer();
+  const withIndexes = (
+    programIndex: number,
+    accountIndexes: number[]
+  ): TransactionMessage => ({
+    ...V1_MESSAGE,
+    instructions: [{ programIndex, accountIndexes, data: new Uint8Array() }],
+  });
+  t.throws(() => serializer.serialize(withIndexes(2, [300])), {
+    message: /account index/,
+  });
+  t.throws(() => serializer.serialize(withIndexes(2, [1.5])), {
+    message: /account index/,
+  });
+  t.throws(() => serializer.serialize(withIndexes(256, [0])), {
+    message: /account index/,
+  });
+  t.notThrows(() => serializer.serialize(withIndexes(2, [0, 1])));
+});

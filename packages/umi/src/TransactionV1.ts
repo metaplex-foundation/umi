@@ -101,6 +101,16 @@ export const defaultTransactionConfig = (
 const getSignaturesSerializer = (count: number) =>
   array(bytes({ size: 64 }), { size: count });
 
+// A Uint8Array would silently wrap out-of-range or fractional indexes.
+const assertAccountIndex = (index: number): number => {
+  if (!Number.isInteger(index) || index < 0 || index > 255) {
+    throw new SdkError(
+      `Invalid account index: ${index}. Expected an integer between 0 and 255.`
+    );
+  }
+  return index;
+};
+
 // The bits of the config mask of V1 messages, see SIMD-0385.
 const CONFIG_PRIORITY_FEE_BITS = 0b00011;
 const CONFIG_COMPUTE_UNIT_LIMIT_BIT = 0b00100;
@@ -184,14 +194,16 @@ export const getTransactionV1MessageSerializer =
           ...configValues,
           ...value.instructions.map((instruction) =>
             mergeBytes([
-              u8().serialize(instruction.programIndex),
+              u8().serialize(assertAccountIndex(instruction.programIndex)),
               u8().serialize(instruction.accountIndexes.length),
               u16().serialize(instruction.data.length),
             ])
           ),
           ...value.instructions.map((instruction) =>
             mergeBytes([
-              new Uint8Array(instruction.accountIndexes),
+              new Uint8Array(
+                instruction.accountIndexes.map(assertAccountIndex)
+              ),
               instruction.data,
             ])
           ),
