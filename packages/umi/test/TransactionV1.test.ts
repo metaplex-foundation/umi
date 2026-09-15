@@ -1,5 +1,6 @@
 import test from 'ava';
 import {
+  defaultTransactionConfig,
   getTransactionV1MessageSerializer,
   getTransactionV1Serializer,
   lamports,
@@ -117,4 +118,21 @@ test('it validates the heap size when serializing', (t) => {
     message: /heapSize/,
   });
   t.notThrows(() => serializer.serialize(withConfig({ heapSize: 65_536 })));
+});
+
+test('it keeps the default compute budget when an override is undefined', (t) => {
+  t.deepEqual(
+    defaultTransactionConfig(2, {
+      computeUnitLimit: undefined,
+      loadedAccountsDataSizeLimit: undefined,
+    }),
+    { computeUnitLimit: 400_000, loadedAccountsDataSizeLimit: 64 * 1024 * 1024 }
+  );
+  t.deepEqual(
+    defaultTransactionConfig(2, {
+      computeUnitLimit: 0,
+      loadedAccountsDataSizeLimit: 0,
+    }),
+    { computeUnitLimit: 0, loadedAccountsDataSizeLimit: 0 }
+  );
 });

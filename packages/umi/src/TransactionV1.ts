@@ -84,12 +84,18 @@ export const defaultTransactionConfig = (
   instructionCount: number,
   overrides: TransactionConfig = {}
 ): TransactionConfig => ({
-  computeUnitLimit: Math.min(
-    DEFAULT_COMPUTE_UNITS_PER_INSTRUCTION * instructionCount,
-    MAX_COMPUTE_UNIT_LIMIT
-  ),
-  loadedAccountsDataSizeLimit: DEFAULT_LOADED_ACCOUNTS_DATA_SIZE_LIMIT,
   ...overrides,
+  // Nullish coalescing so that an `undefined` override keeps the default
+  // while an explicit zero is preserved.
+  computeUnitLimit:
+    overrides.computeUnitLimit ??
+    Math.min(
+      DEFAULT_COMPUTE_UNITS_PER_INSTRUCTION * instructionCount,
+      MAX_COMPUTE_UNIT_LIMIT
+    ),
+  loadedAccountsDataSizeLimit:
+    overrides.loadedAccountsDataSizeLimit ??
+    DEFAULT_LOADED_ACCOUNTS_DATA_SIZE_LIMIT,
 });
 
 const getSignaturesSerializer = (count: number) =>
