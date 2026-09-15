@@ -33,6 +33,8 @@ export * from './Transaction';
 export * from './TransactionBuilder';
 export * from './TransactionBuilderGroup';
 export * from './TransactionFactoryInterface';
+export * from './TransactionSerializers';
+export * from './TransactionV1';
 export * from './Umi';
 export * from './UmiPlugin';
 export * from './UploaderInterface';

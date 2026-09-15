@@ -1,6 +1,34 @@
 import test from 'ava';
-import { createNoopSigner, publicKey, transactionBuilder } from '../src';
+import {
+  COMPUTE_BUDGET_PROGRAM_ID,
+  createBaseUmi,
+  createNoopSigner,
+  lamports,
+  publicKey,
+  transactionBuilder,
+  TransactionInput,
+  TransactionMessage,
+  Umi,
+} from '../src';
 import { createUmi, mockInstruction, transferSol } from './_setup';
+
+/** Records the inputs given to `umi.transactions.create`. */
+const captureTransactionInputs = (umi: Umi): TransactionInput[] => {
+  const inputs: TransactionInput[] = [];
+  umi.transactions.create = (input) => {
+    inputs.push(input);
+    return {
+      message: {} as TransactionMessage,
+      serializedMessage: new Uint8Array(),
+      signatures: [],
+    };
+  };
+  return inputs;
+};
+
+const feePayer = createNoopSigner(
+  publicKey('auth9SigNpDKz4sJJ1DfCTuZrZNSAgh9sFD3rboVmgg')
+);
 
 test.skip('it can get the size of the transaction to build', (t) => {
   const umi = createUmi();
@@ -197,4 +225,121 @@ test('it can add signer and remaining accounts to a specific instruction', (t) =
   // And the second and last instructions still have 1 account meta.
   t.is(mappedBuilder.items[1].instruction.keys.length, 1);
   t.is(mappedBuilder.items[2].instruction.keys.length, 1);
+});
+
+test('it builds V1 transactions with a default compute budget', (t) => {
+  // Given a V1 builder with two instructions and no explicit config.
+  const umi = createBaseUmi();
+  const inputs = captureTransactionInputs(umi);
+  transactionBuilder()
+    .add([mockInstruction(), mockInstruction()])
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111')
+    .useV1()
+    .build(umi);
+
+  // Then the built transaction is a V1 transaction with legacy-like limits.
+  const [input] = inputs;
+  t.is(input.version, 1);
+  if (input.version !== 1) return;
+  t.deepEqual(input.transactionConfig, {
+    computeUnitLimit: 400_000,
+    loadedAccountsDataSizeLimit: 64 * 1024 * 1024,
+  });
+});
+
+test('it builds V1 transactions with an explicit compute budget', (t) => {
+  // Given a V1 builder with an explicit compute unit limit and priority fee.
+  const umi = createBaseUmi();
+  const inputs = captureTransactionInputs(umi);
+  transactionBuilder()
+    .add(mockInstruction())
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111')
+    .useV1()
+    .setTransactionConfig({
+      computeUnitLimit: 50_000,
+      priorityFee: lamports(5_000),
+    })
+    .build(umi);
+
+  // Then the explicit values win and the rest is defaulted.
+  const [input] = inputs;
+  t.is(input.version, 1);
+  if (input.version !== 1) return;
+  t.deepEqual(input.transactionConfig, {
+    computeUnitLimit: 50_000,
+    loadedAccountsDataSizeLimit: 64 * 1024 * 1024,
+    priorityFee: lamports(5_000),
+  });
+});
+
+test('it does not attach a compute budget to V0 transactions', (t) => {
+  // Given a V0 builder with a transaction config.
+  const umi = createBaseUmi();
+  const inputs = captureTransactionInputs(umi);
+  transactionBuilder()
+    .add(mockInstruction())
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111')
+    .setTransactionConfig({ computeUnitLimit: 50_000 })
+    .build(umi);
+
+  // Then the built transaction is a V0 transaction without config.
+  t.is(inputs[0].version, 0);
+  t.false('transactionConfig' in inputs[0]);
+});
+
+test('it throws when a V1 transaction contains a ComputeBudget instruction', (t) => {
+  // Given a V1 builder with a (mock) ComputeBudget instruction.
+  const umi = createBaseUmi();
+  const builder = transactionBuilder()
+    .add({
+      instruction: {
+        programId: COMPUTE_BUDGET_PROGRAM_ID,
+        keys: [],
+        data: new Uint8Array([2, 64, 13, 3, 0]),
+      },
+      signers: [],
+      bytesCreatedOnChain: 0,
+    })
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111')
+    .useV1();
+
+  // Then building it throws instead of silently ignoring the instruction.
+  t.throws(() => builder.build(umi), { message: /ComputeBudget/ });
+});
+
+test('it uses a larger size limit for V1 transactions', (t) => {
+  const umi = createBaseUmi();
+  captureTransactionInputs(umi);
+  umi.transactions.serialize = () => new Uint8Array(2000);
+  const builder = transactionBuilder()
+    .add(mockInstruction())
+    .setFeePayer(feePayer);
+
+  t.is(builder.useV0().minimumTransactionsRequired(umi), 2);
+  t.false(builder.useV0().fitsInOneTransaction(umi));
+  t.is(builder.useV1().minimumTransactionsRequired(umi), 1);
+  t.true(builder.useV1().fitsInOneTransaction(umi));
+});
+
+test('it throws when a V1 transaction has address lookup tables', (t) => {
+  // Given a V1 builder with address lookup tables.
+  const umi = createBaseUmi();
+  const builder = transactionBuilder()
+    .add(mockInstruction())
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111')
+    .useV1()
+    .setAddressLookupTables([
+      {
+        publicKey: publicKey('11111111111111111111111111111111'),
+        addresses: [publicKey('auth9SigNpDKz4sJJ1DfCTuZrZNSAgh9sFD3rboVmgg')],
+      },
+    ]);
+
+  // Then building it throws instead of silently dropping the tables.
+  t.throws(() => builder.build(umi), { message: /lookup tables/ });
 });

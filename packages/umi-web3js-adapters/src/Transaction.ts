@@ -1,4 +1,9 @@
-import { base58, Transaction } from '@metaplex-foundation/umi';
+import {
+  base58,
+  getTransactionV1MessageSerializer,
+  getTransactionV1Serializer,
+  Transaction,
+} from '@metaplex-foundation/umi';
 import {
   SIGNATURE_LENGTH_IN_BYTES,
   Transaction as Web3JsLegacyTransaction,
@@ -7,12 +12,31 @@ import {
 } from '@solana/web3.js';
 import { fromWeb3JsMessage, toWeb3JsMessage } from './TransactionMessage';
 
+/**
+ * A `VersionedTransaction` that can serialize V1 transactions,
+ * which `@solana/web3.js` cannot do itself. Legacy and V0
+ * transactions are serialized by `@solana/web3.js` as usual.
+ */
+export class SerializableVersionedTransaction extends Web3JsTransaction {
+  serialize(): Uint8Array {
+    if (this.message.version !== 1) {
+      return super.serialize();
+    }
+    return getTransactionV1Serializer().serialize(fromWeb3JsTransaction(this));
+  }
+}
+
 export function fromWeb3JsTransaction(
   web3JsTransaction: Web3JsTransaction
 ): Transaction {
+  const message = fromWeb3JsMessage(web3JsTransaction.message);
   return {
-    message: fromWeb3JsMessage(web3JsTransaction.message),
-    serializedMessage: web3JsTransaction.message.serialize(),
+    message,
+    // @solana/web3.js cannot serialize V1 messages, so Umi does it.
+    serializedMessage:
+      message.version === 1
+        ? getTransactionV1MessageSerializer().serialize(message)
+        : web3JsTransaction.message.serialize(),
     signatures: web3JsTransaction.signatures,
   };
 }
@@ -20,7 +44,7 @@ export function fromWeb3JsTransaction(
 export function toWeb3JsTransaction(
   transaction: Transaction
 ): Web3JsTransaction {
-  return new Web3JsTransaction(
+  return new SerializableVersionedTransaction(
     toWeb3JsMessage(transaction.message),
     transaction.signatures
   );
