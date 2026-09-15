@@ -136,3 +136,24 @@ test('it keeps the default compute budget when an override is undefined', (t) =>
     { computeUnitLimit: 0, loadedAccountsDataSizeLimit: 0 }
   );
 });
+
+test('it refuses to serialize non-V1 messages as V1', (t) => {
+  const serializer = getTransactionV1MessageSerializer();
+  t.throws(() => serializer.serialize({ ...V1_MESSAGE, version: 0 }), {
+    message: /version 0/,
+  });
+  t.throws(
+    () =>
+      serializer.serialize({
+        ...V1_MESSAGE,
+        addressLookupTables: [
+          {
+            publicKey: V1_MESSAGE.accounts[2],
+            writableIndexes: [0],
+            readonlyIndexes: [],
+          },
+        ],
+      }),
+    { message: /lookup tables/ }
+  );
+});

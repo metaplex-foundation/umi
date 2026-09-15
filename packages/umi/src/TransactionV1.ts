@@ -139,6 +139,16 @@ export const getTransactionV1MessageSerializer =
       fixedSize: null,
       maxSize: null,
       serialize: (value: TransactionMessage): Uint8Array => {
+        if (value.version !== 1) {
+          throw new SdkError(
+            `Expected a V1 transaction message but got version ${value.version}.`
+          );
+        }
+        if (value.addressLookupTables.length > 0) {
+          throw new SdkError(
+            'V1 transaction messages do not support address lookup tables.'
+          );
+        }
         const config = value.transactionConfig ?? {};
         assertValidTransactionConfig(config);
         let configMask = 0;
