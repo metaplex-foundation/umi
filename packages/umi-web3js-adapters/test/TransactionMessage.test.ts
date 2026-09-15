@@ -15,6 +15,7 @@ import test from 'ava';
 import {
   fromWeb3JsMessage,
   fromWeb3JsTransaction,
+  fromWeb3JsTransactionConfig,
   SerializableMessageV1,
   toWeb3JsMessage,
   toWeb3JsTransaction,
@@ -102,4 +103,17 @@ test('it refuses to convert a priority fee that web3.js cannot represent', (t) =
   t.throws(() => toWeb3JsMessage(message), {
     message: /cannot be represented/,
   });
+});
+
+test('it refuses a priority fee from web3.js that lost precision', (t) => {
+  t.throws(
+    () =>
+      fromWeb3JsTransactionConfig({
+        computeUnitLimit: null,
+        heapSize: null,
+        loadedAccountsDataSizeLimit: null,
+        priorityFee: 2 ** 60,
+      }),
+    { message: /safe integer/ }
+  );
 });

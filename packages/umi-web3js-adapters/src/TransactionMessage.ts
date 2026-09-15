@@ -156,6 +156,13 @@ export function fromWeb3JsTransactionConfig(
 ): TransactionConfig {
   const transactionConfig: TransactionConfig = {};
   if (config.priorityFee != null) {
+    // A fee above Number.MAX_SAFE_INTEGER has already lost precision.
+    if (!Number.isSafeInteger(config.priorityFee)) {
+      throw new SdkError(
+        `Invalid priority fee from @solana/web3.js: ${config.priorityFee}. ` +
+          'Expected a safe integer.'
+      );
+    }
     transactionConfig.priorityFee = lamports(config.priorityFee);
   }
   if (config.computeUnitLimit != null) {
