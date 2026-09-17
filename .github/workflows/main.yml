@@ -15,15 +15,15 @@ jobs:
       contents: write
     steps:
     - name: Git checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup pnpm
-      uses: pnpm/action-setup@v2
+      uses: pnpm/action-setup@v4
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: 18
+        node-version: 20
         cache: 'pnpm'
 
     - name: Install dependencies
@@ -46,15 +46,15 @@ jobs:
     if: github.event_name == 'push'
     steps:
     - name: Git checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup pnpm
-      uses: pnpm/action-setup@v2
+      uses: pnpm/action-setup@v4
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: 18
+        node-version: 20
         cache: 'pnpm'
 
     - name: Install dependencies
@@ -76,7 +76,7 @@ jobs:
 
     steps:
     - name: Git checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -86,10 +86,10 @@ jobs:
         solana_version: ${{ matrix.solana }}
 
     - name: Install pnpm
-      uses: pnpm/action-setup@v2
+      uses: pnpm/action-setup@v4
 
     - name: Setup Node.js ${{ matrix.node }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node }}
         cache: 'pnpm'
@@ -108,20 +108,35 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     needs: [lint, tests]
+    # Publishes to npm with OIDC trusted publishing: `id-token: write` lets the
+    # job mint a token that npm exchanges for a short-lived publish credential,
+    # so there is no long-lived NPM_TOKEN to expire. Every published package
+    # must list this repo and workflow as a trusted publisher on npmjs.com.
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
     outputs:
       published: ${{ steps.changesets.outputs.published }}
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
           cache: 'pnpm'
+
+      # `changeset publish` runs `pnpm publish`, which hands the actual publish
+      # and the OIDC exchange to the npm CLI; trusted publishing needs npm 11.5.1+.
+      - name: Upgrade npm for OIDC trusted publishing
+        run: |
+          npm install -g npm@11.19.1
+          npm --version
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -136,17 +151,22 @@ jobs:
 
       - name: Create Release Pull Request or Publish
         id: changesets
-        uses: lorisleiva/changesets-action@main
+        uses: changesets/action@v1
         with:
           commit: "Release packages"
           title: "Release packages"
           publish: pnpm packages:publish
-          createGithubReleases: "aggregate"
-          githubReleaseName: v${{ env.BUILD_VERSION }}
-          githubTagName: v${{ env.BUILD_VERSION }}
+          # One aggregate release per version is created below instead of one per package.
+          createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # No NPM_TOKEN on purpose: without it the action uses OIDC trusted publishing.
+
+      - name: Create GitHub release
+        if: steps.changesets.outputs.published == 'true'
+        run: gh release create "v${BUILD_VERSION}" --title "v${BUILD_VERSION}" --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy_docs:
     name: Deploy docs
@@ -158,7 +178,7 @@ jobs:
       url: ${{ steps.deploy.outputs.url }}
     steps:
       - name: Git checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Deploy to Vercel
         id: deploy
