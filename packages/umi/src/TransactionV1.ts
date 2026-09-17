@@ -18,9 +18,9 @@ import { SdkError } from './errors';
 import type {
   CompiledInstruction,
   Transaction,
-  TransactionConfig,
   TransactionMessage,
   TransactionMessageHeader,
+  TransactionV1Config,
 } from './Transaction';
 
 /**
@@ -35,7 +35,7 @@ const DEFAULT_COMPUTE_UNITS_PER_INSTRUCTION = 200_000;
 const DEFAULT_LOADED_ACCOUNTS_DATA_SIZE_LIMIT = 64 * 1024 * 1024;
 
 /**
- * Asserts that a {@link TransactionConfig} only holds values the Solana runtime
+ * Asserts that a {@link TransactionV1Config} only holds values the Solana runtime
  * will honor as written for a V1 transaction, throwing a clear {@link SdkError}
  * otherwise. This mirrors the runtime's own sanitization: an out-of-range
  * compute unit limit is silently clamped, and an invalid heap size is rejected
@@ -43,7 +43,7 @@ const DEFAULT_LOADED_ACCOUNTS_DATA_SIZE_LIMIT = 64 * 1024 * 1024;
  * @category Transactions
  */
 export const assertValidTransactionConfig = (
-  config: TransactionConfig
+  config: TransactionV1Config
 ): void => {
   const { computeUnitLimit, heapSize } = config;
   if (
@@ -82,8 +82,8 @@ export const assertValidTransactionConfig = (
  */
 export const defaultTransactionConfig = (
   instructionCount: number,
-  overrides: TransactionConfig = {}
-): TransactionConfig => ({
+  overrides: TransactionV1Config = {}
+): TransactionV1Config => ({
   ...overrides,
   // Nullish coalescing so that an `undefined` override keeps the default
   // while an explicit zero is preserved.
@@ -251,7 +251,7 @@ export const getTransactionV1MessageSerializer =
           array(publicKeySerializer, { size: numAccounts })
         );
 
-        const transactionConfig: TransactionConfig = {};
+        const transactionConfig: TransactionV1Config = {};
         if (priorityFeeBits !== 0) {
           transactionConfig.priorityFee = lamports(read(u64()));
         }

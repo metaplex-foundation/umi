@@ -3,9 +3,9 @@ import {
   getTransactionV1MessageSerializer,
   lamports,
   SdkError,
-  TransactionConfig,
   TransactionInput,
   TransactionMessage,
+  TransactionV1Config,
 } from '@metaplex-foundation/umi';
 import {
   AddressLookupTableAccount as Web3JsAddressLookupTableAccount,
@@ -153,8 +153,8 @@ export function toWeb3JsMessageFromInput(
 
 export function fromWeb3JsTransactionConfig(
   config: Web3JsTransactionConfig
-): TransactionConfig {
-  const transactionConfig: TransactionConfig = {};
+): TransactionV1Config {
+  const transactionConfig: TransactionV1Config = {};
   if (config.priorityFee != null) {
     // A fee above Number.MAX_SAFE_INTEGER has already lost precision.
     if (!Number.isSafeInteger(config.priorityFee)) {
@@ -179,7 +179,7 @@ export function fromWeb3JsTransactionConfig(
 }
 
 export function toWeb3JsTransactionConfig(
-  config: TransactionConfig = {}
+  config: TransactionV1Config = {}
 ): Web3JsTransactionConfig {
   const priorityFee = config.priorityFee?.basisPoints;
   // web3.js models the fee as a number and, like its own reader, we refuse

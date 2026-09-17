@@ -5,8 +5,8 @@ import {
   getTransactionV1Serializer,
   lamports,
   publicKey,
-  TransactionConfig,
   TransactionMessage,
+  TransactionV1Config,
 } from '../src';
 import { base64 } from '../src/serializers';
 
@@ -88,7 +88,7 @@ test('it rejects V1 messages with an invalid config mask', (t) => {
   });
 });
 
-const withConfig = (config: TransactionConfig): TransactionMessage => ({
+const withConfig = (config: TransactionV1Config): TransactionMessage => ({
   ...V1_MESSAGE,
   transactionConfig: config,
 });

@@ -21,9 +21,9 @@ import {
   BlockhashWithExpiryBlockHeight,
   COMPUTE_BUDGET_PROGRAM_ID,
   Transaction,
-  TransactionConfig,
   TransactionInput,
   TransactionSignature,
+  TransactionV1Config,
   TransactionVersion,
   TRANSACTION_SIZE_LIMIT,
   TRANSACTION_V1_SIZE_LIMIT,
@@ -62,7 +62,7 @@ export type TransactionBuilderOptions = {
   /** The address lookup tables to attach to the built transaction. V0 only. */
   addressLookupTables?: AddressLookupTableInput[];
   /** The compute budget to attach to the built transaction. V1 only. */
-  transactionConfig?: TransactionConfig;
+  transactionConfig?: TransactionV1Config;
   /** The blockhash that should be associated with the built transaction. */
   blockhash?: Blockhash | BlockhashWithExpiryBlockHeight;
 };
@@ -231,7 +231,7 @@ export class TransactionBuilder implements HasWrappedInstructions {
   }
 
   setTransactionConfig(
-    transactionConfig: TransactionConfig
+    transactionConfig: TransactionV1Config
   ): TransactionBuilder {
     return new TransactionBuilder(this.items, {
       ...this.options,
