@@ -34,8 +34,6 @@
     "entryPointStrategy": "packages",
     "out": "typedoc",
     "readme": "README.md",
-    "name": "Umi — API References",
-    "includeVersion": true,
     "excludeNotDocumented": false,
     "categorizeByGroup": false,
     "defaultCategory": "Other",
