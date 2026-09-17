@@ -19,6 +19,7 @@ import {
   SerializableMessageV1,
   toWeb3JsMessage,
   toWeb3JsTransaction,
+  toWeb3JsTransactionConfig,
 } from '../src';
 
 const V1_WEB3JS_MESSAGE = new MessageV1({
@@ -115,5 +116,39 @@ test('it refuses a priority fee from web3.js that lost precision', (t) => {
         priorityFee: 2 ** 60,
       }),
     { message: /safe integer/ }
+  );
+});
+
+test('it converts every transaction config field in both directions', (t) => {
+  const config = {
+    priorityFee: lamports(5_000),
+    computeUnitLimit: 30_000,
+    loadedAccountsDataSizeLimit: 1024 * 1024,
+    heapSize: 65_536,
+  };
+  const web3JsConfig = toWeb3JsTransactionConfig(config);
+  t.deepEqual(web3JsConfig, {
+    priorityFee: 5_000,
+    computeUnitLimit: 30_000,
+    loadedAccountsDataSizeLimit: 1024 * 1024,
+    heapSize: 65_536,
+  });
+  t.deepEqual(fromWeb3JsTransactionConfig(web3JsConfig), config);
+});
+
+test('it converts empty and zero configs without inventing values', (t) => {
+  const allNull = {
+    computeUnitLimit: null,
+    heapSize: null,
+    loadedAccountsDataSizeLimit: null,
+    priorityFee: null,
+  };
+  t.deepEqual(toWeb3JsTransactionConfig(undefined), allNull);
+  t.deepEqual(fromWeb3JsTransactionConfig(allNull), {});
+  t.deepEqual(
+    fromWeb3JsTransactionConfig(
+      toWeb3JsTransactionConfig({ priorityFee: lamports(0) })
+    ),
+    { priorityFee: lamports(0) }
   );
 });

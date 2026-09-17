@@ -347,6 +347,69 @@ test('it throws when a V1 transaction has address lookup tables', (t) => {
   t.throws(() => builder.build(umi), { message: /lookup tables/ });
 });
 
+test('it accepts an empty list of address lookup tables on V1', (t) => {
+  // Given a V1 builder whose lookup tables were cleared.
+  const umi = createBaseUmi();
+  const inputs = captureTransactionInputs(umi);
+  const builder = transactionBuilder()
+    .add(mockInstruction())
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111')
+    .useV1()
+    .setAddressLookupTables([]);
+
+  // Then it builds a V1 transaction.
+  t.notThrows(() => builder.build(umi));
+  t.is(inputs[0].version, 1);
+});
+
+test('it splits V1 builders into V1 chunks with their own defaults', (t) => {
+  // Given a V1 builder with three instructions that weigh 1500 bytes each,
+  // so two fit in a 4096-byte V1 transaction but none would fit in a V0 one.
+  const umi = createBaseUmi();
+  const inputs = captureTransactionInputs(umi);
+  umi.transactions.serialize = () =>
+    new Uint8Array(inputs[inputs.length - 1].instructions.length * 1500);
+  const builder = transactionBuilder()
+    .add([mockInstruction(), mockInstruction(), mockInstruction()])
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111')
+    .useV1()
+    .setTransactionConfig({ heapSize: 65_536 });
+
+  // When we split it by transaction size and build each chunk.
+  const chunks = builder.unsafeSplitByTransactionSize(umi);
+  inputs.length = 0;
+  chunks.forEach((chunk) => chunk.build(umi));
+
+  // Then both chunks are V1, keep the config and default their own limits.
+  t.is(chunks.length, 2);
+  t.deepEqual(
+    inputs.map((input) => [
+      input.version,
+      input.version === 1 ? input.transactionConfig : undefined,
+    ]),
+    [
+      [
+        1,
+        {
+          heapSize: 65_536,
+          computeUnitLimit: 400_000,
+          loadedAccountsDataSizeLimit: 64 * 1024 * 1024,
+        },
+      ],
+      [
+        1,
+        {
+          heapSize: 65_536,
+          computeUnitLimit: 200_000,
+          loadedAccountsDataSizeLimit: 64 * 1024 * 1024,
+        },
+      ],
+    ]
+  );
+});
+
 test('it inherits the default version of the transaction factory', (t) => {
   // Given a factory defaulting to V1 and a builder with no version set.
   const umi = createBaseUmi();

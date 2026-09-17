@@ -32,20 +32,21 @@ export const TRANSACTION_V1_PREFIX = 0x81;
 
 const MAX_COMPUTE_UNIT_LIMIT = 1_400_000;
 const DEFAULT_COMPUTE_UNITS_PER_INSTRUCTION = 200_000;
-const DEFAULT_LOADED_ACCOUNTS_DATA_SIZE_LIMIT = 64 * 1024 * 1024;
+const MAX_LOADED_ACCOUNTS_DATA_SIZE_LIMIT = 64 * 1024 * 1024;
 
 /**
  * Asserts that a {@link TransactionV1Config} only holds values the Solana runtime
  * will honor as written for a V1 transaction, throwing a clear {@link SdkError}
  * otherwise. This mirrors the runtime's own sanitization: an out-of-range
- * compute unit limit is silently clamped, and an invalid heap size is rejected
- * by the node with an unrelated-sounding error, so failing here is friendlier.
+ * compute unit limit or data size limit is silently clamped, and an invalid
+ * heap size is rejected by the node with an unrelated-sounding error, so
+ * failing here is friendlier.
  * @category Transactions
  */
 export const assertValidTransactionV1Config = (
   config: TransactionV1Config
 ): void => {
-  const { computeUnitLimit, heapSize } = config;
+  const { computeUnitLimit, loadedAccountsDataSizeLimit, heapSize } = config;
   if (
     computeUnitLimit !== undefined &&
     (!Number.isInteger(computeUnitLimit) ||
@@ -55,6 +56,17 @@ export const assertValidTransactionV1Config = (
     throw new SdkError(
       `Invalid computeUnitLimit: ${computeUnitLimit}. ` +
         'Expected an integer between 0 and 1,400,000.'
+    );
+  }
+  if (
+    loadedAccountsDataSizeLimit !== undefined &&
+    (!Number.isInteger(loadedAccountsDataSizeLimit) ||
+      loadedAccountsDataSizeLimit < 0 ||
+      loadedAccountsDataSizeLimit > MAX_LOADED_ACCOUNTS_DATA_SIZE_LIMIT)
+  ) {
+    throw new SdkError(
+      `Invalid loadedAccountsDataSizeLimit: ${loadedAccountsDataSizeLimit}. ` +
+        'Expected an integer between 0 and 67,108,864.'
     );
   }
   if (
@@ -95,7 +107,7 @@ export const defaultTransactionV1Config = (
     ),
   loadedAccountsDataSizeLimit:
     overrides.loadedAccountsDataSizeLimit ??
-    DEFAULT_LOADED_ACCOUNTS_DATA_SIZE_LIMIT,
+    MAX_LOADED_ACCOUNTS_DATA_SIZE_LIMIT,
 });
 
 const getSignaturesSerializer = (count: number) =>

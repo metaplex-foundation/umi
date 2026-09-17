@@ -137,6 +137,45 @@ test('it keeps the default compute budget when an override is undefined', (t) =>
   );
 });
 
+test('it validates the loaded accounts data size limit when serializing', (t) => {
+  const serializer = getTransactionV1MessageSerializer();
+  t.throws(
+    () =>
+      serializer.serialize(withConfig({ loadedAccountsDataSizeLimit: 1.5 })),
+    { message: /loadedAccountsDataSizeLimit/ }
+  );
+  t.throws(
+    () =>
+      serializer.serialize(
+        withConfig({ loadedAccountsDataSizeLimit: 64 * 1024 * 1024 + 1 })
+      ),
+    { message: /loadedAccountsDataSizeLimit/ }
+  );
+  t.notThrows(() =>
+    serializer.serialize(
+      withConfig({ loadedAccountsDataSizeLimit: 64 * 1024 * 1024 })
+    )
+  );
+});
+
+test('it round-trips every transaction config field', (t) => {
+  const serializer = getTransactionV1MessageSerializer();
+  const message = withConfig({
+    priorityFee: lamports(5_000),
+    computeUnitLimit: 30_000,
+    loadedAccountsDataSizeLimit: 1024 * 1024,
+    heapSize: 65_536,
+  });
+  const [deserialized] = serializer.deserialize(serializer.serialize(message));
+  t.deepEqual(deserialized, message);
+});
+
+test('it caps the default compute unit limit at 1,400,000', (t) => {
+  t.is(defaultTransactionV1Config(6).computeUnitLimit, 1_200_000);
+  t.is(defaultTransactionV1Config(7).computeUnitLimit, 1_400_000);
+  t.is(defaultTransactionV1Config(100).computeUnitLimit, 1_400_000);
+});
+
 test('it refuses to serialize non-V1 messages as V1', (t) => {
   const serializer = getTransactionV1MessageSerializer();
   t.throws(() => serializer.serialize({ ...V1_MESSAGE, version: 0 }), {
