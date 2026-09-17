@@ -8,10 +8,7 @@ test('example test', async (t) => {
 
 test('it passes the default transaction version to the transaction factory', (t) => {
   const endpoint = 'http://localhost:8899';
-  t.is(
-    createUmi(endpoint, { defaultTransactionVersion: 1 }).transactions
-      .defaultVersion,
-    1
-  );
-  t.is(createUmi(endpoint).transactions.defaultVersion, undefined);
+  const withDefault = createUmi(endpoint, { defaultTransactionVersion: 1 });
+  t.is(withDefault.transactions.getDefaultVersion(), 1);
+  t.is(createUmi(endpoint).transactions.getDefaultVersion(), 0);
 });

@@ -28,10 +28,10 @@ export interface TransactionFactoryInterface {
     serializedMessage: SerializedTransactionMessage
   ): TransactionMessage;
   /**
-   * The version `TransactionBuilder` builds when none was set on it,
-   * V0 when unset. `create` still requires the version in its input.
+   * The version `TransactionBuilder` builds when none was set on it.
+   * `create` still requires the version in its input.
    */
-  defaultVersion?: TransactionVersion;
+  getDefaultVersion(): TransactionVersion;
 }
 
 /**
@@ -51,5 +51,6 @@ export function createNullTransactionFactory(): TransactionFactoryInterface {
     deserialize: errorHandler,
     serializeMessage: errorHandler,
     deserializeMessage: errorHandler,
+    getDefaultVersion: errorHandler,
   };
 }

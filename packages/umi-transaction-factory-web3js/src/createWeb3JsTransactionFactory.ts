@@ -75,6 +75,6 @@ export function createWeb3JsTransactionFactory(
     deserialize,
     serializeMessage,
     deserializeMessage,
-    defaultVersion: options.defaultTransactionVersion,
+    getDefaultVersion: () => options.defaultTransactionVersion ?? 0,
   };
 }

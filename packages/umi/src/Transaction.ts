@@ -238,7 +238,7 @@ export type TransactionInputLegacy = TransactionInputBase & {
  * @category Transactions
  */
 export type TransactionInputV0 = TransactionInputBase & {
-  version?: 0;
+  version: 0;
   addressLookupTables?: AddressLookupTableInput[];
 };
 

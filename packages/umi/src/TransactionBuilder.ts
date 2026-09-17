@@ -56,7 +56,7 @@ export type TransactionBuilderOptions = {
   feePayer?: Signer;
   /**
    * The version of the transaction to build. Falls back to the
-   * transaction factory's `defaultVersion`, then to V0.
+   * transaction factory's `getDefaultVersion()`.
    */
   version?: TransactionVersion;
   /** The address lookup tables to attach to the built transaction. V0 only. */
@@ -206,7 +206,7 @@ export class TransactionBuilder implements HasWrappedInstructions {
   }
 
   getVersion(context: Pick<Context, 'transactions'>): TransactionVersion {
-    return this.options.version ?? context.transactions.defaultVersion ?? 0;
+    return this.options.version ?? context.transactions.getDefaultVersion();
   }
 
   useLegacyVersion(): TransactionBuilder {

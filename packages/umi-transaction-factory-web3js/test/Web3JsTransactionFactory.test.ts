@@ -148,8 +148,8 @@ test('it can set the default version that transaction builders use', (t) => {
   const withDefault = createBaseUmi().use(
     web3JsTransactionFactory({ defaultTransactionVersion: 1 })
   );
-  t.is(withDefault.transactions.defaultVersion, 1);
+  t.is(withDefault.transactions.getDefaultVersion(), 1);
 
   const withoutDefault = createBaseUmi().use(web3JsTransactionFactory());
-  t.is(withoutDefault.transactions.defaultVersion, undefined);
+  t.is(withoutDefault.transactions.getDefaultVersion(), 0);
 });

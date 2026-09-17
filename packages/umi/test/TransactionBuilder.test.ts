@@ -12,9 +12,10 @@ import {
 } from '../src';
 import { createUmi, mockInstruction, transferSol } from './_setup';
 
-/** Records the inputs given to `umi.transactions.create`. */
+/** Fakes a V0 transaction factory that records the inputs given to `create`. */
 const captureTransactionInputs = (umi: Umi): TransactionInput[] => {
   const inputs: TransactionInput[] = [];
+  umi.transactions.getDefaultVersion = () => 0;
   umi.transactions.create = (input) => {
     inputs.push(input);
     return {
@@ -350,7 +351,7 @@ test('it inherits the default version of the transaction factory', (t) => {
   // Given a factory defaulting to V1 and a builder with no version set.
   const umi = createBaseUmi();
   const inputs = captureTransactionInputs(umi);
-  umi.transactions.defaultVersion = 1;
+  umi.transactions.getDefaultVersion = () => 1;
   const builder = transactionBuilder()
     .add([mockInstruction(), mockInstruction()])
     .setFeePayer(feePayer)
@@ -379,7 +380,7 @@ test('it sizes transactions against the default version of the factory', (t) => 
 
   // Then it fits only once the factory defaults to V1.
   t.false(builder.fitsInOneTransaction(umi));
-  umi.transactions.defaultVersion = 1;
+  umi.transactions.getDefaultVersion = () => 1;
   t.true(builder.fitsInOneTransaction(umi));
 });
 
@@ -387,7 +388,7 @@ test('an explicit version wins over the default version of the factory', (t) => 
   // Given a factory defaulting to V1 and a builder explicitly set to V0.
   const umi = createBaseUmi();
   const inputs = captureTransactionInputs(umi);
-  umi.transactions.defaultVersion = 1;
+  umi.transactions.getDefaultVersion = () => 1;
   const builder = transactionBuilder()
     .add(mockInstruction())
     .setFeePayer(feePayer)
@@ -400,6 +401,18 @@ test('an explicit version wins over the default version of the factory', (t) => 
   t.is(inputs[0].version, 0);
 });
 
-test('it defaults to V0 when neither the builder nor the factory set a version', (t) => {
-  t.is(transactionBuilder().getVersion(createBaseUmi()), 0);
+test('it asks the transaction factory for the version when none was set', (t) => {
+  // Given a factory whose default version is legacy and a builder with no version set.
+  const umi = createBaseUmi();
+  const inputs = captureTransactionInputs(umi);
+  umi.transactions.getDefaultVersion = () => 'legacy';
+  const builder = transactionBuilder()
+    .add(mockInstruction())
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111');
+
+  // Then the builder reports and builds the factory's version.
+  t.is(builder.getVersion(umi), 'legacy');
+  builder.build(umi);
+  t.is(inputs[0].version, 'legacy');
 });
