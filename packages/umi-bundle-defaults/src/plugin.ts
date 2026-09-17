@@ -12,20 +12,27 @@ import {
   ChunkGetAccountsRpcOptions,
 } from '@metaplex-foundation/umi-rpc-chunk-get-accounts';
 import { dataViewSerializer } from '@metaplex-foundation/umi-serializer-data-view';
-import { web3JsTransactionFactory } from '@metaplex-foundation/umi-transaction-factory-web3js';
+import {
+  web3JsTransactionFactory,
+  Web3JsTransactionFactoryOptions,
+} from '@metaplex-foundation/umi-transaction-factory-web3js';
 import type { Connection as Web3JsConnection } from '@solana/web3.js';
 
 export function defaultPlugins(
   endpoint: string,
-  rpcOptions?: Web3JsRpcOptions & ChunkGetAccountsRpcOptions
+  options?: Web3JsRpcOptions &
+    ChunkGetAccountsRpcOptions &
+    Web3JsTransactionFactoryOptions
 ): UmiPlugin;
 export function defaultPlugins(
   connection: Web3JsConnection,
-  rpcOptions?: ChunkGetAccountsRpcOptions
+  options?: ChunkGetAccountsRpcOptions & Web3JsTransactionFactoryOptions
 ): UmiPlugin;
 export function defaultPlugins(
   endpointOrConnection: string | Web3JsConnection,
-  rpcOptions?: Web3JsRpcOptions & ChunkGetAccountsRpcOptions
+  options?: Web3JsRpcOptions &
+    ChunkGetAccountsRpcOptions &
+    Web3JsTransactionFactoryOptions
 ): UmiPlugin {
   return {
     install(umi) {
@@ -36,11 +43,15 @@ export function defaultPlugins(
       umi.use(web3JsEddsa());
       umi.use(
         typeof endpointOrConnection === 'string'
-          ? web3JsRpc(endpointOrConnection, rpcOptions)
+          ? web3JsRpc(endpointOrConnection, options)
           : web3JsRpc(endpointOrConnection)
       );
-      umi.use(chunkGetAccountsRpc(rpcOptions?.getAccountsChunkSize));
-      umi.use(web3JsTransactionFactory());
+      umi.use(chunkGetAccountsRpc(options?.getAccountsChunkSize));
+      umi.use(
+        web3JsTransactionFactory({
+          defaultTransactionVersion: options?.defaultTransactionVersion,
+        })
+      );
     },
   };
 }

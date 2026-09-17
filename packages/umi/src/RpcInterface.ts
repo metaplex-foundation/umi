@@ -20,6 +20,11 @@ import { InterfaceImplementationMissingError } from './errors';
  * Defines the interface for an RPC client.
  * It allows us to interact with the Solana blockchain.
  *
+ * Implementations should submit transactions base64-encoded when
+ * sending or simulating them: the RPC caps base58-encoded transactions
+ * at 1232 bytes regardless of version, so larger V1 transactions are
+ * only accepted over base64.
+ *
  * @category Context and Interfaces
  */
 export interface RpcInterface {

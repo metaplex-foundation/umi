@@ -191,7 +191,7 @@ export function createWeb3JsRpc(
       base58.deserialize(signature)[0],
       {
         commitment: options.commitment as 'confirmed' | 'finalized' | undefined,
-        maxSupportedTransactionVersion: 0,
+        maxSupportedTransactionVersion: 1,
       }
     );
 

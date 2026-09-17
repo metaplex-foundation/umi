@@ -5,6 +5,7 @@ import type {
   Transaction,
   TransactionInput,
   TransactionMessage,
+  TransactionVersion,
 } from './Transaction';
 
 /**
@@ -26,6 +27,11 @@ export interface TransactionFactoryInterface {
   deserializeMessage(
     serializedMessage: SerializedTransactionMessage
   ): TransactionMessage;
+  /**
+   * The version `TransactionBuilder` builds when none was set on it.
+   * `create` still requires the version in its input.
+   */
+  getDefaultVersion(): TransactionVersion;
 }
 
 /**
@@ -45,5 +51,6 @@ export function createNullTransactionFactory(): TransactionFactoryInterface {
     deserialize: errorHandler,
     serializeMessage: errorHandler,
     deserializeMessage: errorHandler,
+    getDefaultVersion: errorHandler,
   };
 }

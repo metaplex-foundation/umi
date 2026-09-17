@@ -19,12 +19,16 @@ import {
   AddressLookupTableInput,
   Blockhash,
   BlockhashWithExpiryBlockHeight,
+  COMPUTE_BUDGET_PROGRAM_ID,
   Transaction,
   TransactionInput,
   TransactionSignature,
+  TransactionV1Config,
   TransactionVersion,
   TRANSACTION_SIZE_LIMIT,
+  TRANSACTION_V1_SIZE_LIMIT,
 } from './Transaction';
+import { defaultTransactionV1Config } from './TransactionV1';
 
 /**
  * Defines an generic object with wrapped instructions,
@@ -50,10 +54,15 @@ export type TransactionBuilderItemsInput =
 export type TransactionBuilderOptions = {
   /** The signer paying for the transaction fee. */
   feePayer?: Signer;
-  /** The version of the transaction to build. */
+  /**
+   * The version of the transaction to build. Falls back to the
+   * transaction factory's `getDefaultVersion()`.
+   */
   version?: TransactionVersion;
-  /** The address lookup tables to attach to the built transaction. */
+  /** The address lookup tables to attach to the built transaction. V0 only. */
   addressLookupTables?: AddressLookupTableInput[];
+  /** The compute budget to attach to the built transaction. V1 only. */
+  transactionConfig?: TransactionV1Config;
   /** The blockhash that should be associated with the built transaction. */
   blockhash?: Blockhash | BlockhashWithExpiryBlockHeight;
 };
@@ -196,6 +205,10 @@ export class TransactionBuilder implements HasWrappedInstructions {
     return new TransactionBuilder(this.items, { ...this.options, version });
   }
 
+  getVersion(context: Pick<Context, 'transactions'>): TransactionVersion {
+    return this.options.version ?? context.transactions.getDefaultVersion();
+  }
+
   useLegacyVersion(): TransactionBuilder {
     return this.setVersion('legacy');
   }
@@ -204,12 +217,25 @@ export class TransactionBuilder implements HasWrappedInstructions {
     return this.setVersion(0);
   }
 
+  useV1(): TransactionBuilder {
+    return this.setVersion(1);
+  }
+
   setAddressLookupTables(
     addressLookupTables: AddressLookupTableInput[]
   ): TransactionBuilder {
     return new TransactionBuilder(this.items, {
       ...this.options,
       addressLookupTables,
+    });
+  }
+
+  setTransactionConfig(
+    transactionConfig: TransactionV1Config
+  ): TransactionBuilder {
+    return new TransactionBuilder(this.items, {
+      ...this.options,
+      transactionConfig,
     });
   }
 
@@ -264,7 +290,10 @@ export class TransactionBuilder implements HasWrappedInstructions {
   minimumTransactionsRequired(
     context: Pick<Context, 'transactions' | 'payer'>
   ): number {
-    return Math.ceil(this.getTransactionSize(context) / TRANSACTION_SIZE_LIMIT);
+    return Math.ceil(
+      this.getTransactionSize(context) /
+        transactionSizeLimit(this.getVersion(context))
+    );
   }
 
   fitsInOneTransaction(
@@ -281,16 +310,70 @@ export class TransactionBuilder implements HasWrappedInstructions {
           'Please use the `setBlockhash` or `setLatestBlockhash` methods.'
       );
     }
-    const input: TransactionInput = {
-      version: this.options.version ?? 0,
+    return context.transactions.create(
+      this.toTransactionInput(context, blockhash)
+    );
+  }
+
+  protected toTransactionInput(
+    context: Pick<Context, 'transactions' | 'payer'>,
+    blockhash: Blockhash
+  ): TransactionInput {
+    const version = this.getVersion(context);
+    if (version !== 1 && this.options.transactionConfig !== undefined) {
+      throw new SdkError(
+        'Transaction configs are only supported by V1 transactions. ' +
+          'Call `useV1()` or set the compute budget with ComputeBudget instructions instead.'
+      );
+    }
+    const base = {
       payer: this.getFeePayer(context).publicKey,
       instructions: this.getInstructions(),
       blockhash,
     };
-    if (input.version === 0 && this.options.addressLookupTables) {
-      input.addressLookupTables = this.options.addressLookupTables;
+
+    switch (version) {
+      case 'legacy':
+        return { ...base, version: 'legacy' };
+      case 0:
+        return {
+          ...base,
+          version: 0,
+          ...(this.options.addressLookupTables
+            ? { addressLookupTables: this.options.addressLookupTables }
+            : {}),
+        };
+      case 1:
+        if (this.options.addressLookupTables?.length) {
+          throw new SdkError(
+            'Address lookup tables are not supported by V1 transactions.'
+          );
+        }
+        if (
+          base.instructions.some(
+            (ix) => ix.programId === COMPUTE_BUDGET_PROGRAM_ID
+          )
+        ) {
+          throw new SdkError(
+            'V1 transactions ignore ComputeBudget instructions. ' +
+              'Set the compute budget with `setTransactionConfig` instead.'
+          );
+        }
+        return {
+          ...base,
+          version: 1,
+          transactionConfig: defaultTransactionV1Config(
+            base.instructions.length,
+            this.options.transactionConfig
+          ),
+        };
+      default: {
+        const exhaustiveCheck: never = version;
+        throw new SdkError(
+          `Unsupported transaction version: ${exhaustiveCheck}.`
+        );
+      }
     }
-    return context.transactions.create(input);
   }
 
   async buildWithLatestBlockhash(
@@ -369,6 +452,9 @@ export class TransactionBuilder implements HasWrappedInstructions {
     );
   }
 }
+
+const transactionSizeLimit = (version: TransactionVersion): number =>
+  version === 1 ? TRANSACTION_V1_SIZE_LIMIT : TRANSACTION_SIZE_LIMIT;
 
 /**
  * Creates a new transaction builder.
