@@ -320,6 +320,12 @@ export class TransactionBuilder implements HasWrappedInstructions {
     blockhash: Blockhash
   ): TransactionInput {
     const version = this.getVersion(context);
+    if (version !== 1 && this.options.transactionConfig !== undefined) {
+      throw new SdkError(
+        'Transaction configs are only supported by V1 transactions. ' +
+          'Call `useV1()` or set the compute budget with ComputeBudget instructions instead.'
+      );
+    }
     const base = {
       payer: this.getFeePayer(context).publicKey,
       instructions: this.getInstructions(),

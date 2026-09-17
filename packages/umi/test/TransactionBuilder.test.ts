@@ -274,20 +274,22 @@ test('it builds V1 transactions with an explicit compute budget', (t) => {
   });
 });
 
-test('it does not attach a compute budget to V0 transactions', (t) => {
-  // Given a V0 builder with a transaction config.
+test('it throws when a legacy or V0 transaction has a transaction config', (t) => {
+  // Given a builder with a transaction config.
   const umi = createBaseUmi();
-  const inputs = captureTransactionInputs(umi);
-  transactionBuilder()
+  captureTransactionInputs(umi);
+  const builder = transactionBuilder()
     .add(mockInstruction())
     .setFeePayer(feePayer)
     .setBlockhash('11111111111111111111111111111111')
-    .setTransactionConfig({ computeUnitLimit: 50_000 })
-    .build(umi);
+    .setTransactionConfig({ computeUnitLimit: 50_000 });
 
-  // Then the built transaction is a V0 transaction without config.
-  t.is(inputs[0].version, 0);
-  t.false('transactionConfig' in inputs[0]);
+  // Then building it as anything but V1 throws instead of dropping the config.
+  const message = /only supported by V1/;
+  t.throws(() => builder.build(umi), { message });
+  t.throws(() => builder.useV0().build(umi), { message });
+  t.throws(() => builder.useLegacyVersion().build(umi), { message });
+  t.notThrows(() => builder.useV1().build(umi));
 });
 
 test('it throws when a V1 transaction contains a ComputeBudget instruction', (t) => {
