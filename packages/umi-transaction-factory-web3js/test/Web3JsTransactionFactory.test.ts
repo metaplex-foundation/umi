@@ -1,6 +1,7 @@
-import { lamports } from '@metaplex-foundation/umi';
+import { createBaseUmi, lamports } from '@metaplex-foundation/umi';
 import { base64 } from '@metaplex-foundation/umi/serializers';
 import test from 'ava';
+import { web3JsTransactionFactory } from '../src';
 import { V1_LARGE_TRANSACTION_BASE64 } from './_fixtures';
 import {
   createLegacyMessage,
@@ -141,4 +142,14 @@ test('it keeps V1 priority fees above 2^53 lamports exact', async (t) => {
     umi.transactions.serialize(transaction)
   );
   t.deepEqual(roundTrip.message.transactionConfig?.priorityFee, priorityFee);
+});
+
+test('it can set the default version that transaction builders use', (t) => {
+  const withDefault = createBaseUmi().use(
+    web3JsTransactionFactory({ defaultTransactionVersion: 1 })
+  );
+  t.is(withDefault.transactions.defaultVersion, 1);
+
+  const withoutDefault = createBaseUmi().use(web3JsTransactionFactory());
+  t.is(withoutDefault.transactions.defaultVersion, undefined);
 });

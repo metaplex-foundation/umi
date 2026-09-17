@@ -343,3 +343,61 @@ test('it throws when a V1 transaction has address lookup tables', (t) => {
   // Then building it throws instead of silently dropping the tables.
   t.throws(() => builder.build(umi), { message: /lookup tables/ });
 });
+
+test('it inherits the default version of the transaction factory', (t) => {
+  // Given a factory defaulting to V1 and a builder with no version set.
+  const umi = createBaseUmi();
+  const inputs = captureTransactionInputs(umi);
+  umi.transactions.defaultVersion = 1;
+  const builder = transactionBuilder()
+    .add([mockInstruction(), mockInstruction()])
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111');
+
+  // Then the builder reports and builds a V1 transaction with default limits.
+  t.is(builder.getVersion(umi), 1);
+  builder.build(umi);
+  const [input] = inputs;
+  t.is(input.version, 1);
+  if (input.version !== 1) return;
+  t.deepEqual(input.transactionConfig, {
+    computeUnitLimit: 400_000,
+    loadedAccountsDataSizeLimit: 64 * 1024 * 1024,
+  });
+});
+
+test('it sizes transactions against the default version of the factory', (t) => {
+  // Given a 2000-byte transaction and a builder with no version set.
+  const umi = createBaseUmi();
+  captureTransactionInputs(umi);
+  umi.transactions.serialize = () => new Uint8Array(2000);
+  const builder = transactionBuilder()
+    .add(mockInstruction())
+    .setFeePayer(feePayer);
+
+  // Then it fits only once the factory defaults to V1.
+  t.false(builder.fitsInOneTransaction(umi));
+  umi.transactions.defaultVersion = 1;
+  t.true(builder.fitsInOneTransaction(umi));
+});
+
+test('an explicit version wins over the default version of the factory', (t) => {
+  // Given a factory defaulting to V1 and a builder explicitly set to V0.
+  const umi = createBaseUmi();
+  const inputs = captureTransactionInputs(umi);
+  umi.transactions.defaultVersion = 1;
+  const builder = transactionBuilder()
+    .add(mockInstruction())
+    .setFeePayer(feePayer)
+    .setBlockhash('11111111111111111111111111111111')
+    .useV0();
+
+  // Then the builder stays V0.
+  t.is(builder.getVersion(umi), 0);
+  builder.build(umi);
+  t.is(inputs[0].version, 0);
+});
+
+test('it defaults to V0 when neither the builder nor the factory set a version', (t) => {
+  t.is(transactionBuilder().getVersion(createBaseUmi()), 0);
+});

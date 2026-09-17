@@ -54,7 +54,10 @@ export type TransactionBuilderItemsInput =
 export type TransactionBuilderOptions = {
   /** The signer paying for the transaction fee. */
   feePayer?: Signer;
-  /** The version of the transaction to build. */
+  /**
+   * The version of the transaction to build. Falls back to the
+   * transaction factory's `defaultVersion`, then to V0.
+   */
   version?: TransactionVersion;
   /** The address lookup tables to attach to the built transaction. V0 only. */
   addressLookupTables?: AddressLookupTableInput[];
@@ -202,6 +205,10 @@ export class TransactionBuilder implements HasWrappedInstructions {
     return new TransactionBuilder(this.items, { ...this.options, version });
   }
 
+  getVersion(context: Pick<Context, 'transactions'>): TransactionVersion {
+    return this.options.version ?? context.transactions.defaultVersion ?? 0;
+  }
+
   useLegacyVersion(): TransactionBuilder {
     return this.setVersion('legacy');
   }
@@ -285,7 +292,7 @@ export class TransactionBuilder implements HasWrappedInstructions {
   ): number {
     return Math.ceil(
       this.getTransactionSize(context) /
-        transactionSizeLimit(this.options.version)
+        transactionSizeLimit(this.getVersion(context))
     );
   }
 
@@ -309,10 +316,10 @@ export class TransactionBuilder implements HasWrappedInstructions {
   }
 
   protected toTransactionInput(
-    context: Pick<Context, 'payer'>,
+    context: Pick<Context, 'transactions' | 'payer'>,
     blockhash: Blockhash
   ): TransactionInput {
-    const version = this.options.version ?? 0;
+    const version = this.getVersion(context);
     const base = {
       payer: this.getFeePayer(context).publicKey,
       instructions: this.getInstructions(),
@@ -440,7 +447,7 @@ export class TransactionBuilder implements HasWrappedInstructions {
   }
 }
 
-const transactionSizeLimit = (version?: TransactionVersion): number =>
+const transactionSizeLimit = (version: TransactionVersion): number =>
   version === 1 ? TRANSACTION_V1_SIZE_LIMIT : TRANSACTION_SIZE_LIMIT;
 
 /**

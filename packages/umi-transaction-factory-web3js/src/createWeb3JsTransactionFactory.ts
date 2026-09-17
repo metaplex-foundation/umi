@@ -7,6 +7,7 @@ import {
   TransactionFactoryInterface,
   TransactionInput,
   TransactionMessage,
+  TransactionVersion,
 } from '@metaplex-foundation/umi';
 import {
   fromWeb3JsMessage,
@@ -14,7 +15,17 @@ import {
 } from '@metaplex-foundation/umi-web3js-adapters';
 import { VersionedTransaction as Web3JsTransaction } from '@solana/web3.js';
 
-export function createWeb3JsTransactionFactory(): TransactionFactoryInterface {
+export type Web3JsTransactionFactoryOptions = {
+  /**
+   * The version `TransactionBuilder` builds when none was set on it.
+   * Defaults to V0. `umi.transactions.create()` is unaffected.
+   */
+  defaultTransactionVersion?: TransactionVersion;
+};
+
+export function createWeb3JsTransactionFactory(
+  options: Web3JsTransactionFactoryOptions = {}
+): TransactionFactoryInterface {
   const create = (input: TransactionInput): Transaction => {
     // @solana/web3.js models the V1 compute budget with JS numbers, which
     // cannot hold a u64 priority fee. Compile the accounts without it and
@@ -64,5 +75,6 @@ export function createWeb3JsTransactionFactory(): TransactionFactoryInterface {
     deserialize,
     serializeMessage,
     deserializeMessage,
+    defaultVersion: options.defaultTransactionVersion,
   };
 }
