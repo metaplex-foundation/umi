@@ -1,5 +1,18 @@
 # @metaplex-foundation/umi-serializers
 
+## 1.6.0
+
+### Patch Changes
+
+- [#216](https://github.com/metaplex-foundation/umi/pull/216) [`19dbf19`](https://github.com/metaplex-foundation/umi/commit/19dbf199e600e02307ea00653860a9e5bd7c692e) Thanks [@brandontulsi](https://github.com/brandontulsi)! - Version bump only, so that every Umi package ships at the same version as the V1 transaction release.
+
+- Updated dependencies [[`19dbf19`](https://github.com/metaplex-foundation/umi/commit/19dbf199e600e02307ea00653860a9e5bd7c692e)]:
+  - @metaplex-foundation/umi-options@1.6.0
+  - @metaplex-foundation/umi-public-keys@1.6.0
+  - @metaplex-foundation/umi-serializers-core@1.6.0
+  - @metaplex-foundation/umi-serializers-encodings@1.6.0
+  - @metaplex-foundation/umi-serializers-numbers@1.6.0
+
 ## 1.0.0
 
 ### Major Changes
