@@ -145,13 +145,19 @@ export type CompiledAddressLookupTable = {
  * @category Transactions
  */
 export type TransactionConfig = {
-  /** The total priority fee to pay for the transaction. */
+  /** The total priority fee in lamports, not a price per compute unit. */
   priorityFee?: SolAmount;
-  /** The maximum number of compute units the transaction may consume. At most 1,400,000. */
+  /**
+   * The maximum number of compute units the transaction may consume. At most 1,400,000.
+   * The {@link TransactionBuilder} defaults it to 200,000 per instruction, capped at 1,400,000.
+   */
   computeUnitLimit?: number;
-  /** The maximum number of bytes of account data the transaction may load. */
+  /**
+   * The maximum number of bytes of account data the transaction may load. At most 64 MiB.
+   * The {@link TransactionBuilder} defaults it to 64 MiB.
+   */
   loadedAccountsDataSizeLimit?: number;
-  /** The requested heap size in bytes. A multiple of 1,024 between 32,768 and 262,144. */
+  /** The requested heap size in bytes. A multiple of 1,024 between 32,768 and 262,144; the runtime uses 32,768 when unset. */
   heapSize?: number;
 };
 
