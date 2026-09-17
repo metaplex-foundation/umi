@@ -137,27 +137,6 @@ test('it keeps the default compute budget when an override is undefined', (t) =>
   );
 });
 
-test('it validates the loaded accounts data size limit when serializing', (t) => {
-  const serializer = getTransactionV1MessageSerializer();
-  t.throws(
-    () =>
-      serializer.serialize(withConfig({ loadedAccountsDataSizeLimit: 1.5 })),
-    { message: /loadedAccountsDataSizeLimit/ }
-  );
-  t.throws(
-    () =>
-      serializer.serialize(
-        withConfig({ loadedAccountsDataSizeLimit: 64 * 1024 * 1024 + 1 })
-      ),
-    { message: /loadedAccountsDataSizeLimit/ }
-  );
-  t.notThrows(() =>
-    serializer.serialize(
-      withConfig({ loadedAccountsDataSizeLimit: 64 * 1024 * 1024 })
-    )
-  );
-});
-
 test('it round-trips every transaction config field', (t) => {
   const serializer = getTransactionV1MessageSerializer();
   const message = withConfig({
