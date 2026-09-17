@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-Umi is a modular JavaScript framework for building Solana clients. It uses a zero-dependency core library that defines interfaces, with pluggable implementations provided via packages. The repository is a monorepo managed with pnpm workspaces (pnpm 8.15.9) and Turbo for build orchestration.
+Umi is a modular JavaScript framework for building Solana clients. It uses a zero-dependency core library that defines interfaces, with pluggable implementations provided via packages. The repository is a monorepo managed with pnpm workspaces (pnpm 10.34.5) and Turbo for build orchestration.
 
 ## Common Commands
 
