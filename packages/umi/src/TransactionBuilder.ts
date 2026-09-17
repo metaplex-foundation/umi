@@ -28,7 +28,7 @@ import {
   TRANSACTION_SIZE_LIMIT,
   TRANSACTION_V1_SIZE_LIMIT,
 } from './Transaction';
-import { defaultTransactionConfig } from './TransactionV1';
+import { defaultTransactionV1Config } from './TransactionV1';
 
 /**
  * Defines an generic object with wrapped instructions,
@@ -362,7 +362,7 @@ export class TransactionBuilder implements HasWrappedInstructions {
         return {
           ...base,
           version: 1,
-          transactionConfig: defaultTransactionConfig(
+          transactionConfig: defaultTransactionV1Config(
             base.instructions.length,
             this.options.transactionConfig
           ),

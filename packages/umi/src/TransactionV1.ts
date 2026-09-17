@@ -42,7 +42,7 @@ const DEFAULT_LOADED_ACCOUNTS_DATA_SIZE_LIMIT = 64 * 1024 * 1024;
  * by the node with an unrelated-sounding error, so failing here is friendlier.
  * @category Transactions
  */
-export const assertValidTransactionConfig = (
+export const assertValidTransactionV1Config = (
   config: TransactionV1Config
 ): void => {
   const { computeUnitLimit, heapSize } = config;
@@ -80,7 +80,7 @@ export const assertValidTransactionConfig = (
  * these defaults.
  * @category Transactions
  */
-export const defaultTransactionConfig = (
+export const defaultTransactionV1Config = (
   instructionCount: number,
   overrides: TransactionV1Config = {}
 ): TransactionV1Config => ({
@@ -160,7 +160,7 @@ export const getTransactionV1MessageSerializer =
           );
         }
         const config = value.transactionConfig ?? {};
-        assertValidTransactionConfig(config);
+        assertValidTransactionV1Config(config);
         let configMask = 0;
         const configValues: Uint8Array[] = [];
         if (config.priorityFee !== undefined) {

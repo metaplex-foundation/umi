@@ -1,6 +1,6 @@
 import test from 'ava';
 import {
-  defaultTransactionConfig,
+  defaultTransactionV1Config,
   getTransactionV1MessageSerializer,
   getTransactionV1Serializer,
   lamports,
@@ -122,14 +122,14 @@ test('it validates the heap size when serializing', (t) => {
 
 test('it keeps the default compute budget when an override is undefined', (t) => {
   t.deepEqual(
-    defaultTransactionConfig(2, {
+    defaultTransactionV1Config(2, {
       computeUnitLimit: undefined,
       loadedAccountsDataSizeLimit: undefined,
     }),
     { computeUnitLimit: 400_000, loadedAccountsDataSizeLimit: 64 * 1024 * 1024 }
   );
   t.deepEqual(
-    defaultTransactionConfig(2, {
+    defaultTransactionV1Config(2, {
       computeUnitLimit: 0,
       loadedAccountsDataSizeLimit: 0,
     }),
