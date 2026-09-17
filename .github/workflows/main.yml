@@ -116,8 +116,6 @@ jobs:
       contents: write
       pull-requests: write
       id-token: write
-    outputs:
-      published: ${{ steps.changesets.outputs.published }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -162,27 +160,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # No NPM_TOKEN on purpose: without it the action uses OIDC trusted publishing.
 
+      # Independent of the action's `published` output so a rerun can still
+      # create a release that failed on a previous attempt: skip when it exists,
+      # create it when this run published or the version is already on npm.
       - name: Create GitHub release
-        if: steps.changesets.outputs.published == 'true'
-        run: gh release create "v${BUILD_VERSION}" --title "v${BUILD_VERSION}" --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  deploy_docs:
-    name: Deploy docs
-    runs-on: ubuntu-latest
-    needs: release
-    if: needs.release.outputs.published == 'true'
-    environment:
-      name: js-documentation
-      url: ${{ steps.deploy.outputs.url }}
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v4
-
-      - name: Deploy to Vercel
-        id: deploy
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: echo "url=$(vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }})" | tee $GITHUB_OUTPUT
+          PUBLISHED: ${{ steps.changesets.outputs.published }}
+        run: |
+          if gh release view "v${BUILD_VERSION}" >/dev/null 2>&1; then
+            echo "Release v${BUILD_VERSION} already exists."
+          elif [ "${PUBLISHED}" = "true" ] || npm view "@metaplex-foundation/umi@${BUILD_VERSION}" version >/dev/null 2>&1; then
+            gh release create "v${BUILD_VERSION}" --title "v${BUILD_VERSION}" --generate-notes
+          else
+            echo "@metaplex-foundation/umi@${BUILD_VERSION} is not on npm; nothing to release."
+          fi
