@@ -54,5 +54,7 @@ SyntaxError: The requested module '@metaplex-foundation/umi'
 does not provide an export named '...'
 ```
 
-If you need fully reproducible installs, lock the whole tree with a lockfile — or an
-`npm-shrinkwrap.json` if you publish a CLI — rather than pinning individual packages.
+If you need reproducible installs, lock the whole tree with a lockfile in the consuming
+project rather than pinning individual packages. Note that a library's or CLI's own lockfile
+does not travel to its users: npm ignores a dependency's lockfile, and in our testing npm 11
+ignored a published `npm-shrinkwrap.json` as well.
