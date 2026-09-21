@@ -113,13 +113,13 @@ importers:
   packages/umi:
     dependencies:
       '@metaplex-foundation/umi-options':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-options
       '@metaplex-foundation/umi-public-keys':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-public-keys
       '@metaplex-foundation/umi-serializers':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-serializers
     devDependencies:
       '@ava/typescript':
@@ -132,28 +132,28 @@ importers:
   packages/umi-bundle-defaults:
     dependencies:
       '@metaplex-foundation/umi-downloader-http':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-downloader-http
       '@metaplex-foundation/umi-eddsa-web3js':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-eddsa-web3js
       '@metaplex-foundation/umi-http-fetch':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-http-fetch
       '@metaplex-foundation/umi-program-repository':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-program-repository
       '@metaplex-foundation/umi-rpc-chunk-get-accounts':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-rpc-chunk-get-accounts
       '@metaplex-foundation/umi-rpc-web3js':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-rpc-web3js
       '@metaplex-foundation/umi-serializer-data-view':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-serializer-data-view
       '@metaplex-foundation/umi-transaction-factory-web3js':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-transaction-factory-web3js
       '@solana/web3.js':
         specifier: ^1.99.0
@@ -172,28 +172,28 @@ importers:
   packages/umi-bundle-tests:
     dependencies:
       '@metaplex-foundation/umi-eddsa-web3js':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-eddsa-web3js
       '@metaplex-foundation/umi-http-fetch':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-http-fetch
       '@metaplex-foundation/umi-program-repository':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-program-repository
       '@metaplex-foundation/umi-rpc-web3js':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-rpc-web3js
       '@metaplex-foundation/umi-serializer-data-view':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-serializer-data-view
       '@metaplex-foundation/umi-serializers-encodings':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-serializers-encodings
       '@metaplex-foundation/umi-storage-mock':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-storage-mock
       '@metaplex-foundation/umi-transaction-factory-web3js':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-transaction-factory-web3js
     devDependencies:
       '@ava/typescript':
@@ -224,7 +224,7 @@ importers:
   packages/umi-eddsa-web3js:
     dependencies:
       '@metaplex-foundation/umi-web3js-adapters':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-web3js-adapters
       '@noble/curves':
         specifier: ^1.0.0
@@ -335,7 +335,7 @@ importers:
   packages/umi-public-keys:
     dependencies:
       '@metaplex-foundation/umi-serializers-encodings':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-serializers-encodings
     devDependencies:
       '@ava/typescript':
@@ -360,7 +360,7 @@ importers:
   packages/umi-rpc-web3js:
     dependencies:
       '@metaplex-foundation/umi-web3js-adapters':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-web3js-adapters
     devDependencies:
       '@ava/typescript':
@@ -419,19 +419,19 @@ importers:
   packages/umi-serializers:
     dependencies:
       '@metaplex-foundation/umi-options':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-options
       '@metaplex-foundation/umi-public-keys':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-public-keys
       '@metaplex-foundation/umi-serializers-core':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-serializers-core
       '@metaplex-foundation/umi-serializers-encodings':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-serializers-encodings
       '@metaplex-foundation/umi-serializers-numbers':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-serializers-numbers
     devDependencies:
       '@ava/typescript':
@@ -453,7 +453,7 @@ importers:
   packages/umi-serializers-encodings:
     dependencies:
       '@metaplex-foundation/umi-serializers-core':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-serializers-core
     devDependencies:
       '@ava/typescript':
@@ -466,7 +466,7 @@ importers:
   packages/umi-serializers-numbers:
     dependencies:
       '@metaplex-foundation/umi-serializers-core':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-serializers-core
     devDependencies:
       '@ava/typescript':
@@ -495,7 +495,7 @@ importers:
   packages/umi-signer-wallet-adapters:
     dependencies:
       '@metaplex-foundation/umi-web3js-adapters':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-web3js-adapters
     devDependencies:
       '@ava/typescript':
@@ -545,7 +545,7 @@ importers:
   packages/umi-transaction-factory-web3js:
     dependencies:
       '@metaplex-foundation/umi-web3js-adapters':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-web3js-adapters
     devDependencies:
       '@ava/typescript':
@@ -570,7 +570,7 @@ importers:
         specifier: ^1.20.0
         version: 1.21.0(bufferutil@4.0.7)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@metaplex-foundation/umi-web3js-adapters':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-web3js-adapters
       bignumber.js:
         specifier: ^9.1.2
@@ -677,7 +677,7 @@ importers:
         specifier: ^0.1.7
         version: 0.1.7(arweave@1.15.5)(bufferutil@4.0.7)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@metaplex-foundation/umi-web3js-adapters':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../umi-web3js-adapters
       '@supercharge/promise-pool':
         specifier: ^3.2.0
