@@ -35,9 +35,9 @@
     "test": "ava"
   },
   "dependencies": {
-    "@metaplex-foundation/umi-options": "workspace:^",
-    "@metaplex-foundation/umi-public-keys": "workspace:^",
-    "@metaplex-foundation/umi-serializers": "workspace:^"
+    "@metaplex-foundation/umi-options": "workspace:~",
+    "@metaplex-foundation/umi-public-keys": "workspace:~",
+    "@metaplex-foundation/umi-serializers": "workspace:~"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
