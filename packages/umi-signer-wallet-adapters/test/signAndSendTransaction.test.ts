@@ -13,7 +13,12 @@ import {
   PublicKey as Web3JsPublicKey,
 } from '@solana/web3.js';
 import test from 'ava';
-import { createSignerFromWalletAdapter, WalletAdapter } from '../src';
+import {
+  createSignerFromWalletAdapter,
+  walletAdapterIdentity,
+  walletAdapterPayer,
+  WalletAdapter,
+} from '../src';
 
 const createUmi = (): Umi =>
   createBaseUmi().use(web3JsEddsa()).use(web3JsTransactionFactory());
@@ -48,6 +53,46 @@ test('it signs and sends a transaction through a wallet that supports sendTransa
   const signature = await signer.signAndSendTransaction?.(transaction);
 
   t.deepEqual(signature, base58.serialize(expectedSignature));
+});
+
+test('walletAdapterIdentity and walletAdapterPayer forward the connection through to signAndSendTransaction', async (t) => {
+  // Regression coverage: the test above only calls createSignerFromWalletAdapter
+  // directly, so it wouldn't catch either plugin dropping its connection argument.
+  const connection = new Web3JsConnection('https://example.com');
+  const expectedSignature =
+    '4gJ3ZUiCzqhKtwrCVzT4RLPPz39aSAKY7g5N6q4Bxq3mSNQjRW1cFrjCbFDbAtbWkajvw6oW7hSHR8QzXWtSKGuo';
+
+  const identityUmi = createUmi();
+  const identityPayer = generateSigner(identityUmi);
+  const identityWallet: WalletAdapter = {
+    publicKey: new Web3JsPublicKey(identityPayer.publicKey),
+    sendTransaction: async () => expectedSignature,
+  };
+  identityUmi.use(walletAdapterIdentity(identityWallet, true, connection));
+  const identityTransaction = createTransaction(
+    identityUmi,
+    identityUmi.identity.publicKey
+  );
+  t.deepEqual(
+    await identityUmi.identity.signAndSendTransaction?.(identityTransaction),
+    base58.serialize(expectedSignature)
+  );
+
+  const payerUmi = createUmi();
+  const payerSigner = generateSigner(payerUmi);
+  const payerWallet: WalletAdapter = {
+    publicKey: new Web3JsPublicKey(payerSigner.publicKey),
+    sendTransaction: async () => expectedSignature,
+  };
+  payerUmi.use(walletAdapterPayer(payerWallet, connection));
+  const payerTransaction = createTransaction(
+    payerUmi,
+    payerUmi.payer.publicKey
+  );
+  t.deepEqual(
+    await payerUmi.payer.signAndSendTransaction?.(payerTransaction),
+    base58.serialize(expectedSignature)
+  );
 });
 
 test('it throws when the wallet does not support sendTransaction', async (t) => {
