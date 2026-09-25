@@ -1,6 +1,17 @@
-import type { PublicKey, Signer, Transaction } from '@metaplex-foundation/umi';
+import type {
+  PublicKey,
+  Signer,
+  Transaction,
+  TransactionSignature,
+} from '@metaplex-foundation/umi';
+// eslint-disable-next-line no-restricted-imports -- `@metaplex-foundation/umi/serializers` can't be
+// resolved by some bundlers/older Jest (see #175); importing the deprecated re-export from the
+// package root avoids the same failure here.
+import { base58 } from '@metaplex-foundation/umi';
 import {
+  Connection as Web3JsConnection,
   PublicKey as Web3JsPublicKey,
+  SendOptions as Web3JsSendOptions,
   Transaction as Web3JsTransaction,
   VersionedTransaction as Web3JsVersionedTransaction,
 } from '@solana/web3.js';
@@ -27,10 +38,27 @@ export type WalletAdapter = {
   signAllTransactions?: <T extends Web3JsTransactionOrVersionedTransaction>(
     transactions: T[]
   ) => Promise<T[]>;
+  /**
+   * The long-standing Wallet Adapter capability (predating the Wallet
+   * Standard's `signAndSendTransaction`) that lets a connected wallet sign
+   * and submit a transaction in a single prompt. Requires a `Connection` to
+   * submit through, passed separately to `createSignerFromWalletAdapter`.
+   */
+  sendTransaction?: (
+    transaction: Web3JsTransactionOrVersionedTransaction,
+    connection: Web3JsConnection,
+    options?: Web3JsSendOptions
+  ) => Promise<string>;
 };
 
+/**
+ * @param walletAdapter The wallet adapter to wrap in a Umi `Signer`.
+ * @param connection A `Connection` to submit through. Only required to use
+ * `signer.signAndSendTransaction`; every other capability works without it.
+ */
 export const createSignerFromWalletAdapter = (
-  walletAdapter: WalletAdapter
+  walletAdapter: WalletAdapter,
+  connection?: Web3JsConnection
 ): Signer => ({
   get publicKey(): PublicKey {
     if (!walletAdapter.publicKey) {
@@ -73,5 +101,22 @@ export const createSignerFromWalletAdapter = (
     );
 
     return signedTransactions.map(fromWeb3JsTransaction);
+  },
+
+  async signAndSendTransaction(
+    transaction: Transaction
+  ): Promise<TransactionSignature> {
+    if (walletAdapter.sendTransaction === undefined || connection === undefined) {
+      throw new OperationNotSupportedByWalletAdapterError(
+        'signAndSendTransaction'
+      );
+    }
+
+    const signature = await walletAdapter.sendTransaction(
+      toWeb3JsTransaction(transaction),
+      connection
+    );
+
+    return base58.serialize(signature);
   },
 });
