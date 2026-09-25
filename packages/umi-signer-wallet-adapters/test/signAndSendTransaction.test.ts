@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {
+  base58,
   createBaseUmi,
   generateSigner,
   PublicKey,
@@ -46,8 +47,7 @@ test('it signs and sends a transaction through a wallet that supports sendTransa
 
   const signature = await signer.signAndSendTransaction?.(transaction);
 
-  t.truthy(signature);
-  t.is(signature?.length, 64); // A valid ed25519 signature is 64 bytes.
+  t.deepEqual(signature, base58.serialize(expectedSignature));
 });
 
 test('it throws when the wallet does not support sendTransaction', async (t) => {
