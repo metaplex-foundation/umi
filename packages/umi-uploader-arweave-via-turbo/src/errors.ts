@@ -43,3 +43,7 @@ export class AssetUploadFailedError extends ArweaveError {
     super(message);
   }
 }
+
+export class ArweaveFundError extends ArweaveError {
+  readonly name: string = 'ArweaveFundError';
+}
