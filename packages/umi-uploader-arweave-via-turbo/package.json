@@ -28,10 +28,8 @@
     "test": "ava"
   },
   "dependencies": {
-    "@ardrive/turbo-sdk": "^1.20.0",
-    "@metaplex-foundation/umi-web3js-adapters": "workspace:^",
-    "bignumber.js": "^9.1.2",
-    "buffer": "^6.0.3"
+    "@ardrive/turbo-upload": "^0.5.0",
+    "bignumber.js": "^9.1.2"
   },
   "peerDependencies": {
     "@metaplex-foundation/umi": "workspace:^",
@@ -44,6 +42,7 @@
     "@metaplex-foundation/umi-eddsa-web3js": "workspace:^",
     "@metaplex-foundation/umi-http-fetch": "workspace:^",
     "@metaplex-foundation/umi-rpc-web3js": "workspace:^",
+    "@metaplex-foundation/umi-transaction-factory-web3js": "workspace:^",
     "@solana/web3.js": "^1.99.0",
     "ava": "^5.1.0"
   },
