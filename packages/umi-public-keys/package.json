@@ -28,7 +28,7 @@
     "test": "ava"
   },
   "dependencies": {
-    "@metaplex-foundation/umi-serializers-encodings": "workspace:^"
+    "@metaplex-foundation/umi-serializers-encodings": "workspace:~"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
