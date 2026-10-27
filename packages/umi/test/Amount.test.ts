@@ -139,7 +139,7 @@ test('it can compare amounts together', (t) => {
   t.false(isNegativeAmount(a));
   t.false(isZeroAmount(a));
 
-  t.true(isPositiveAmount(sol(0)));
+  t.false(isPositiveAmount(sol(0)));
   t.false(isNegativeAmount(sol(0)));
   t.true(isZeroAmount(sol(0)));
 
