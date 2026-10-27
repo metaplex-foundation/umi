@@ -65,13 +65,13 @@ export function deserializeAccount<From extends object, To extends From = From>(
   try {
     const [parsedData] = dataSerializer.deserialize(data);
     return { publicKey, header: rest, ...parsedData };
-  } catch (error: any) {
+  } catch (error: unknown) {
     throw new UnexpectedAccountError(
       publicKey,
       dataSerializer.description,
-      error
+      error instanceof Error ? error : new Error(String(error))
     );
-  }
+  }  
 }
 
 /**
@@ -82,7 +82,7 @@ export function assertAccountExists(
   account: MaybeRpcAccount,
   name?: string,
   solution?: string
-): asserts account is MaybeRpcAccount & { exists: true } {
+): asserts account is RpcAccount & { exists: true } {
   if (!account.exists) {
     throw new AccountNotFoundError(account.publicKey, name, solution);
   }
