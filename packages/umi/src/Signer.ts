@@ -2,7 +2,7 @@ import {
   PublicKey,
   PublicKeyInput,
 } from '@metaplex-foundation/umi-public-keys';
-import { Transaction } from './Transaction';
+import { Transaction, TransactionSignature } from './Transaction';
 import { uniqueBy } from './utils';
 
 /**
@@ -20,6 +20,17 @@ export interface Signer {
   readonly signAllTransactions: (
     transactions: Transaction[]
   ) => Promise<Transaction[]>;
+  /**
+   * Signs the given transaction and immediately submits it to the network in
+   * one step, for signers that can do both without a separate call to
+   * `umi.rpc.sendTransaction` — e.g. a connected wallet that only prompts
+   * the user once. Optional: a signer with no network connection of its own,
+   * such as a `Keypair` signer, has no way to send a transaction and leaves
+   * this unset.
+   */
+  readonly signAndSendTransaction?: (
+    transaction: Transaction
+  ) => Promise<TransactionSignature>;
 }
 
 /**
@@ -142,5 +153,6 @@ export function createNullSigner(): Signer {
     signMessage: errorHandler,
     signTransaction: errorHandler,
     signAllTransactions: errorHandler,
+    signAndSendTransaction: errorHandler,
   };
 }
